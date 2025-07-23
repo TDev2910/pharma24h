@@ -1,0 +1,475 @@
+/* Header */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Header MediAid */
+.mediaid-header {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: white;
+    position: relative;
+    z-index: 1030;
+}
+
+.mediaid-header .navbar {
+    padding: 1rem 0;
+    background: white !important;
+}
+
+.mediaid-header .sticky-top {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1030 !important;
+}
+
+/* Brand Logo */
+.brand-container {
+    display: flex;
+    align-items: center;
+}
+
+.brand-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1976d2;
+    margin: 0;
+}
+
+/* Navigation */
+.navbar-nav .nav-link {
+    color: #333 !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #1976d2 !important;
+}
+
+.navbar-nav .nav-link:hover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 1rem;
+    right: 1rem;
+    height: 2px;
+    background: #1976d2;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        width: 0;
+        left: 50%;
+        right: 50%;
+    }
+    to {
+        width: auto;
+        left: 1rem;
+        right: 1rem;
+    }
+}
+
+/* Search */
+.search-form {
+    width: 350px;
+}
+
+.search-container {
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    border: 2px solid #e0e6ed;
+    border-radius: 25px;
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    width: 100%;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #1976d2;
+    background: white;
+    box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.25);
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 0.9rem;
+    z-index: 10;
+}
+
+/* User Actions */
+.user-actions {
+    gap: 0.5rem;
+}
+
+.action-link {
+    color: #333;
+    text-decoration: none;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.action-link:hover {
+    color: #1976d2;
+    background: rgba(25, 118, 210, 0.1);
+}
+
+.action-link i {
+    font-size: 1.1rem;
+}
+
+/* Cart Badge */
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    border: 2px solid white;
+}
+
+/* Mobile */
+.navbar-toggler {
+    border: none !important;
+    padding: 0.25rem !important;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none !important;
+}
+
+/* Offcanvas Mobile Menu */
+.offcanvas-header {
+    border-bottom: 1px solid #e0e6ed;
+    padding: 1.5rem;
+}
+
+.offcanvas-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1976d2;
+}
+
+.offcanvas-body {
+    padding: 1.5rem;
+}
+
+.offcanvas .nav-link {
+    padding: 0.75rem 0 !important;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333 !important;
+    font-weight: 500;
+}
+
+.offcanvas .nav-link:hover {
+    color: #1976d2 !important;
+    background: rgba(25, 118, 210, 0.05);
+    padding-left: 0.5rem !important;
+}
+
+
+/* Footer */
+
+.footer-section {
+    margin-top: 2rem;
+}
+
+/* Map Container - nhỏ gọn hơn */
+.map-container {
+    height: 280px;
+    min-height: 280px;
+    position: relative;
+}
+
+#googleMap {
+    width: 100%;
+    height: 100%;
+    min-height: 280px;
+    border-radius: 0;
+}
+
+/* Map Overlay - góc trên trái của map */
+.map-overlay {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    min-width: 150px;
+    z-index: 10;
+}
+
+.map-info h6 {
+    color: #1976d2;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Contact Section - compact */
+.contact-section {
+    background: #fff;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+}
+
+.footer-brand .brand-text {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1976d2;
+}
+
+.contact-title {
+    color: #333;
+    font-weight: 600;
+    font-size: 1rem;
+    border-bottom: 2px solid #1976d2;
+    padding-bottom: 0.3rem;
+    display: inline-block;
+    margin-bottom: 0.75rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 0.5rem;
+}
+
+.contact-item i {
+    width: 16px;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+.contact-link {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.contact-link:hover {
+    color: #1976d2;
+    text-decoration: underline;
+}
+
+.store-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin-bottom: 0.5rem;
+}
+
+.store-item i {
+    width: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-size: 0.9rem;
+}
+
+.store-info strong {
+    color: #333;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.store-info small {
+    font-size: 0.75rem;
+    line-height: 1.3;
+}
+
+/* Footer Bottom - compact */
+.footer-bottom {
+    border-top: 1px solid #e0e6ed;
+    padding: 0.75rem 0;
+}
+
+.footer-links a {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #1976d2;
+}
+
+/* Floating Contacts - nhỏ hơn */
+.floating-contacts {
+    position: fixed;
+    right: 20px;
+    bottom: 80px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.floating-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.floating-phone {
+    background: #28a745;
+    animation: pulse-phone 2s infinite;
+}
+
+.floating-zalo {
+    background: #0180c7;
+}
+
+.floating-facebook {
+    background: #1877f2;
+}
+
+.floating-btn:hover {
+    transform: scale(1.1);
+    color: #fff;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes pulse-phone {
+    0%, 100% {
+        box-shadow: 0 3px 15px rgba(40, 167, 69, 0.4);
+    }
+    50% {
+        box-shadow: 0 3px 20px rgba(40, 167, 69, 0.7);
+        transform: scale(1.05);
+    }
+}
+
+/* Back to Top - nhỏ hơn */
+.btn-back-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    font-size: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+
+.btn-back-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.btn-back-top:hover {
+    background: #1565c0;
+    transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 991.98px) {
+    .map-container {
+        height: 220px;
+        min-height: 220px;
+    }
+    
+    #googleMap {
+        min-height: 220px;
+    }
+    
+    .contact-section {
+        min-height: auto;
+        padding: 1.5rem 1rem !important;
+    }
+    
+    .floating-contacts {
+        right: 15px;
+        bottom: 70px;
+    }
+    
+    .floating-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .map-container {
+        height: 180px;
+        min-height: 180px;
+    }
+    
+    #googleMap {
+        min-height: 180px;
+    }
+    
+    .footer-brand .brand-text {
+        font-size: 1.2rem;
+    }
+    
+    .contact-section {
+        padding: 1rem !important;
+    }
+    
+    .store-item,
+    .contact-item {
+        margin-bottom: 0.4rem;
+    }
+    
+    .footer-bottom {
+        text-align: center;
+    }
+    
+    .footer-bottom .col-md-6:last-child {
+        margin-top: 0.5rem;
+    }
+}

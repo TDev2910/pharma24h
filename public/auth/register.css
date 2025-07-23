@@ -1,0 +1,156 @@
+/* Register Page Styles */
+.register-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px 0;
+}
+
+.register-card {
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: none;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.auth-card .card-body {
+    padding: 2rem;
+}
+
+.register-header h2 {
+    color: #333;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.register-header p {
+    color: #6c757d;
+    line-height: 1.4;
+}
+
+/* Form Controls */
+.form-control,
+.form-select {
+    border-radius: 12px !important;
+    padding: 12px 15px !important;
+    border: 1px solid #e0e0e0 !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #ff9d5c !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 157, 92, 0.25) !important;
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+/* Upload Container */
+.upload-container {
+    transition: all 0.3s ease;
+}
+
+.upload-container:hover {
+    border-color: #ff9d5c !important;
+    background-color: rgba(255, 157, 92, 0.05);
+}
+
+/* Button Styles */
+.btn-register {
+    background: linear-gradient(45deg, #ff9d5c, #ffb074);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 157, 92, 0.3);
+}
+
+.btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 157, 92, 0.4);
+    color: white;
+}
+
+.btn-register:active {
+    transform: translateY(0);
+}
+
+/* Password Toggle */
+.password-toggle {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 12px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+    color: #ff9d5c;
+}
+
+/* Checkbox */
+.form-check-input {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+}
+
+.form-check-input:checked {
+    background-color: #ff9d5c;
+    border-color: #ff9d5c;
+}
+
+/* Links */
+a {
+    color: #ff9d5c !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: #e8854a !important;
+    text-decoration: underline !important;
+}
+
+/* Error Messages */
+.invalid-feedback {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Loading States */
+.form-select:disabled {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .auth-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .register-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .register-header p {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 576px) {
+    .auth-card .card-body {
+        padding: 1rem;
+    }
+    
+    .register-header h2 {
+        font-size: 1.3rem;
+    }
+}
