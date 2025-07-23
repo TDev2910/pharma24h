@@ -1,0 +1,97 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6fb;
+}
+.navbar {
+    background: #0080ff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.nav-menu {
+    display: flex;
+    gap: 24px;
+    position: relative;
+}
+.nav-item {
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    position: relative;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+.nav-item.active, .nav-item:hover {
+    background: #005edb;
+}
+.nav-item.dropdown .nav-dropdown {
+    display: none;
+}
+.nav-item.dropdown:hover .nav-dropdown {
+    display: flex;
+}
+.nav-dropdown {
+    position: absolute;
+    top: 48px;
+    left: 0;
+    background: #fff;
+    color: #222;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border-radius: 10px;
+    padding: 20px 32px;
+    min-width: 600px;
+    z-index: 100;
+    gap: 40px;
+}
+.dropdown-col {
+    min-width: 160px;
+    border-right: 1px solid #eee;
+    padding-right: 32px;
+}
+.dropdown-col:last-child {
+    border-right: none;
+    padding-right: 0;
+}
+.dropdown-title {
+    font-weight: 600;
+    color: #6c7a89;
+    margin-bottom: 12px;
+    font-size: 15px;
+}
+.dropdown-link {
+    display: block;
+    color: #222;
+    text-decoration: none;
+    padding: 6px 0;
+    border-radius: 6px;
+    transition: background 0.2s;
+    font-size: 16px;
+}
+.dropdown-link:hover, .dropdown-link.active {
+    background: #f4f6fb;
+    color: #0080ff;
+}
+.sell-btn {
+    background: #fff;
+    color: #0080ff;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+.sell-btn:hover {
+    background: #e6f0ff;
+}
+.cart-icon {
+    font-size: 20px;
+}

@@ -202,134 +202,153 @@ body {
 }
 
 
-/* Footer */
-
+/* Footer chỉnh đẹp và đều hơn */
 .footer-section {
-    margin-top: 2rem;
-}
-
-/* Map Container - nhỏ gọn hơn */
-.map-container {
-    height: 280px;
-    min-height: 280px;
-    position: relative;
-}
-
-#googleMap {
-    width: 100%;
-    height: 100%;
-    min-height: 280px;
-    border-radius: 0;
-}
-
-/* Map Overlay - góc trên trái của map */
-.map-overlay {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    min-width: 150px;
-    z-index: 10;
-}
-
-.map-info h6 {
-    color: #1976d2;
-    font-weight: 600;
-    margin: 0;
-}
-
-/* Contact Section - compact */
-.contact-section {
+    margin-top: 0;
     background: #fff;
-    min-height: 280px;
-    display: flex;
-    align-items: center;
+    border-top: 1px solid #e0e6ed;
+    width: 100vw;
+    overflow-x: hidden;
+}
+
+.footer-bottom {
+    border-top: 1px solid #e0e6ed;
+    padding: 0.75rem 0;
+    background: #f9fafd;
+    margin-top: 0;
 }
 
 .footer-brand .brand-text {
-    font-size: 1.4rem;
+    font-size: 2rem;
     font-weight: 700;
     color: #1976d2;
 }
 
-.contact-title {
-    color: #333;
-    font-weight: 600;
-    font-size: 1rem;
-    border-bottom: 2px solid #1976d2;
-    padding-bottom: 0.3rem;
-    display: inline-block;
-    margin-bottom: 0.75rem;
+.contact-section, .map-container {
+    height: 100%;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.contact-item {
-    display: flex;
-    align-items: center;
-    gap: 0;
+.contact-title {
+    font-weight: 600;
     margin-bottom: 0.5rem;
 }
 
-.contact-item i {
-    width: 16px;
-    flex-shrink: 0;
-    font-size: 0.9rem;
+.contact-item, .store-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.4rem;
+    font-size: 1rem;
 }
 
 .contact-link {
-    color: #666;
+    color: #1976d2;
     text-decoration: none;
-    transition: color 0.3s ease;
-    font-size: 0.85rem;
+    margin-left: 0.5rem;
+    word-break: break-all;
 }
 
 .contact-link:hover {
-    color: #1976d2;
     text-decoration: underline;
 }
 
-.store-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0;
-    margin-bottom: 0.5rem;
-}
-
-.store-item i {
-    width: 16px;
-    flex-shrink: 0;
-    margin-top: 2px;
-    font-size: 0.9rem;
-}
-
-.store-info strong {
-    color: #333;
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-.store-info small {
-    font-size: 0.75rem;
-    line-height: 1.3;
-}
-
-/* Footer Bottom - compact */
-.footer-bottom {
-    border-top: 1px solid #e0e6ed;
-    padding: 0.75rem 0;
+.store-info {
+    margin-left: 0.5rem;
 }
 
 .footer-links a {
     color: #666;
     text-decoration: none;
-    font-size: 0.8rem;
-    transition: color 0.3s ease;
+    font-size: 0.9rem;
+    margin-right: 1.2rem;
+    transition: color 0.3s;
+}
+
+.footer-links a:last-child {
+    margin-right: 0;
 }
 
 .footer-links a:hover {
     color: #1976d2;
+}
+
+/* Đảm bảo không bị kéo ngang */
+html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+/* Responsive cho footer */
+@media (max-width: 991.98px) {
+    .footer-section .container-fluid > .row > div {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    .contact-section, .map-container {
+        min-height: 180px;
+        padding: 1rem 0.5rem !important;
+    }
+    .map-container iframe {
+        width: 100% !important;
+        height: 180px !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .footer-brand .brand-text {
+        font-size: 1.2rem;
+    }
+    .footer-bottom {
+        text-align: center;
+    }
+    .footer-bottom .col-md-6 {
+        text-align: center !important;
+        margin-top: 0.5rem;
+    }
+    .footer-links a {
+        display: inline-block;
+        margin-bottom: 0.3rem;
+    }
+    .map-container iframe {
+        width: 100% !important;
+        height: 140px !important;
+    }
+    .map-container {
+        height: 140px !important;
+        min-height: 140px !important;
+    }
+    .contact-section {
+        padding: 1rem !important;
+    }
+}
+
+/* Đảm bảo footer luôn sát đáy nếu nội dung ít */
+html, body {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.main-content {
+    flex: 1 0 auto;
+}
+.footer-section {
+    flex-shrink: 0;
+}
+
+/* Responsive chỉnh lại footer cho mobile */
+@media (max-width: 767.98px) {
+    .footer-bottom {
+        text-align: center;
+    }
+    .footer-bottom .col-md-6:last-child {
+        margin-top: 0.5rem;
+    }
 }
 
 /* Floating Contacts - nhỏ hơn */
@@ -355,11 +374,6 @@ body {
     box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
     font-size: 1.1rem;
-}
-
-.floating-phone {
-    background: #28a745;
-    animation: pulse-phone 2s infinite;
 }
 
 .floating-zalo {
@@ -473,3 +487,4 @@ body {
         margin-top: 0.5rem;
     }
 }
+

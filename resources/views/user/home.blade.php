@@ -34,6 +34,31 @@
             <span class="visually-hidden">Next</span>
         </button>
     </div>
+
+    <div class="container mt-5" id="section_introduction3" data-section-name="Introduction3" data-section-active="true">
+    <div class="row">
+        <!-- Cột Nội Dung -->
+        <div class="col-md-6">
+            <div class="MuiBox-root css-11mgf69">
+                <div class="MuiBox-root css-11icu4z">
+                    <br>
+                    <br>
+                    <br>
+                    <p class="MuiTypography-root MuiTypography-body1 css-1vvyywl" texttype="text28S"><h1>Dược sĩ tận tâm, tư vấn chuyên nghiệp</h1></p>
+                    <p class="MuiTypography-root MuiTypography-body1 css-1yi16y8" texttype="text14R">Đội ngũ Dược sĩ được đào tạo bài bản, có chuyên môn cao và giàu kinh nghiệm. Luôn đặt lợi ích khách hàng lên hàng đầu, sẵn sàng tư vấn, giải đáp thắc mắc và hướng dẫn sử dụng sản phẩm hiệu quả, an toàn.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cột Hình Ảnh -->
+        <div class="col-md-6">
+            <div class="MuiBox-root css-1g29oey">
+                <img loading="lazy" alt="Introduction" src="https://cdn.kiotvietweb.vn/page_builder_default_config/pharmacy/theme_2/homepage/introduction/picture_1.webp" width="80%" style="max-height: 80%; object-fit: cover; border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+    </div>
+
     {{-- DỊCH VỤ --}}
     <div class="row justify-content-center mt-5">
         <div class="col-lg-10">

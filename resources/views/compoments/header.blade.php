@@ -20,7 +20,7 @@
                     <li class="nav-item"><a class="nav-link" href="#facilities">Cơ sở khám bệnh</a></li>
                     <li class="nav-item"><a class="nav-link" href="#products">Sản phẩm</a></li>
                     <li class="nav-item"><a class="nav-link" href="#team">Đội ngũ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#certificates">Hình ảnh chứng tỏi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#certificates">Hình ảnh chúng tôi</a></li>
                 </ul>
 
                 <!-- Search Bar -->

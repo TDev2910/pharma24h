@@ -1,7 +1,7 @@
 // Initialize Google Maps
 function initGoogleMaps() {
-    // Tọa độ của MediAid (1A Yết Kiêu, Hoàn Kiếm, Hà Nội)
-    const mediaidLocation = { lat: 21.0245, lng: 105.8412 };
+    // Tọa độ của địa chỉ mới (12 Đô Lương, Phường 11, Vũng Tàu, Bà Rịa - Vũng Tàu)
+    const mediaidLocation = { lat: 10.3551, lng: 107.0775 };
     
     const map = new google.maps.Map(document.getElementById("googleMap"), {
         zoom: 16,
@@ -37,7 +37,7 @@ function initGoogleMaps() {
                 </h6>
                 <p style="margin: 5px 0; font-size: 14px;">
                     <i class="fas fa-map-marker-alt text-danger"></i>
-                    1A Yết Kiêu, Trần Hưng Đạo, Hoàn Kiếm, Hà Nội
+                    12 Đô Lương, Phường 11, Vũng Tàu, Bà Rịa - Vũng Tàu
                 </p>
                 <p style="margin: 5px 0; font-size: 14px;">
                     <i class="fas fa-phone text-success"></i>
