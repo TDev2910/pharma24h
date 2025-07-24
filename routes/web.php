@@ -19,6 +19,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/logout', [AuthController::class, 'logout']); 
 
 // Các route khác cho user
+
+
+
 Route::get('/products', function () {
     return view('user.products');
 })->name('products');
