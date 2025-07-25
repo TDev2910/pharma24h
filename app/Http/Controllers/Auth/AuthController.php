@@ -82,7 +82,7 @@ class AuthController extends Controller
         
         return redirect('/')->with('success', 'Đăng ký thành công! Chào mừng bạn đến với MediAid!');
     }
-
+    
     /**
      * Handle logout request
      */

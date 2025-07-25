@@ -17,7 +17,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#facilities">Cơ sở khám bệnh</a></li>
+                    <li class="nav-item">
+                            <a class="nav-link" href="{{ url('co-so-kham-benh') }}">Cơ sở khám bệnh</a>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="#products">Sản phẩm</a></li>
                     <li class="nav-item"><a class="nav-link" href="#team">Đội ngũ</a></li>
                     <li class="nav-item"><a class="nav-link" href="#certificates">Hình ảnh chúng tôi</a></li>
