@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\ProductController;
+
 
 // Trang chủ
 Route::get('/', function () {
@@ -46,5 +48,6 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/admindashboard', function () {
         return view('admin.admindashboard');
-    })->name('admin.dashboard');
+    })->name('admin.dashboard');    
 });
+

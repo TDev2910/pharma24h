@@ -35,8 +35,8 @@ body {
     
 /* Nếu dùng margin cho từng item */
 .nav-item {
-    margin-right: 0; /* Nếu có margin thì bỏ đi để dùng gap */
-    padding: 0 8px; /* Tăng vùng click, nhưng không làm mục cách xa quá */
+    margin-right: 0; 
+    padding: 0 8px; 
     font-weight: 600;
     font-size: 17px;
 }
