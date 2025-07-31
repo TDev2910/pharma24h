@@ -15,7 +15,7 @@
             <!-- Controls Section -->
             <div class="controls-section d-flex align-items-center gap-3">
                 <!-- Search Section -->
-                <div class="col-lg-4 col-md-5" style="margin-right: 60px; width: 550px;">
+                <div class="col-lg-4 col-md-5" style="margin-right: 60px; width: 470px;">
                     <div class="search-container">
                         <div class="input-group">
                             <span class="input-group-text">
@@ -32,16 +32,16 @@
                 <!-- Action Buttons -->
                 <div class="action-buttons d-flex align-items-center gap-2">
                     <!-- Dropdown Tạo mới -->
-                    <div class="dropdown">
-                        <button class="btn btn-success dropdown-toggle d-flex align-items-center" 
-                                type="button" data-bs-toggle="dropdown">
+                     <div class="dropdown">
+                         <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center" 
+                            type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-plus me-2"></i>
                             Tạo mới
-                        </button>
+                         </button>
                         <ul class="dropdown-menu">
                             <li>
                                 <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#createMedicineModal">
-                                    Thuốc
+                                Thuốc
                                 </a>
                             </li>
                             <li><a class="dropdown-item" href="#">Hàng hóa</a></li>
@@ -54,8 +54,7 @@
                     <button class="btn btn-outline-secondary d-flex align-items-center">
                         <i class="fas fa-download me-2"></i>
                         Import file
-                    </button>
-                    
+                    </button>                                                       
                     <!-- Xuất file -->
                     <button class="btn btn-outline-secondary d-flex align-items-center">
                         <i class="fas fa-upload me-2"></i>
@@ -358,9 +357,7 @@
                                                                              </div>
                                                                          </div>
                                                                      </div>
-                                                                 </div>
-                                                                
-                                                                                                                             <!-- Tab Mô tả -->
+                                                                 </div>                                                                                                                                                                                        <!-- Tab Mô tả -->
                                                                  <div class="tab-pane fade" id="description-{{ $medicine->id }}" role="tabpanel">
                                                                      <div class="description-content">
                                                                          <h6 class="text-muted mb-3">Mô tả sản phẩm</h6>
@@ -743,10 +740,6 @@
         white-space: nowrap;
     }
     
-    .btn-success {
-        background-color: #28a745;
-        border-color: #28a745;
-    }
     
     .btn-outline-secondary {
         border-color: #ced4da;
@@ -856,8 +849,7 @@
         .action-buttons {
             flex-wrap: wrap;
             justify-content: center;
-        }
-        
+        }       
         .search-container {
             order: -1;
         }
