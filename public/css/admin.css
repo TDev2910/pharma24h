@@ -110,7 +110,7 @@ body {
 /* Cột con trong dropdown */
 .dropdown-col {
     min-width: 180px;
-    border-right: 1px solid #eee;
+    border-right: 1px solid #eee;   
     padding-right: 32px;
 }
 
