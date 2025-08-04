@@ -145,7 +145,7 @@
                             <div class="col-md-4">
                                 <label class="form-label">Hãng sản xuất<span class="text-danger">*</span></label>
                                 <div class="position-relative">
-                                    <select class="form-select" name="manufacturer" id="manufacturer_select" required onchange="handleManufacturerChange(this)">
+                                    <select class="form-select" name="manufacturer_id" id="manufacturer_select" required onchange="handleManufacturerChange(this)">
                                         <option value="">Tìm hãng sản xuất</option>
                                         @foreach($manufacturers as $manu)
                                             <option value="{{ $manu->id }}">{{ $manu->name }}</option>

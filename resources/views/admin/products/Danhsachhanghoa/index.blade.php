@@ -1295,11 +1295,4 @@
         </div>
     </div>
 </div>
-
-<!-- Hidden form for delete submission -->
-<form id="deleteMedicineForm" method="POST" style="display: none;">
-    @csrf
-    @method('DELETE')
-    <input type="hidden" id="deleteMedicineId" name="medicine_id">
-</form>
 @endsection         
