@@ -8,6 +8,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::get('products/create-medicine', [ProductController::class, 'createMedicine'])->name('products.createMedicine');
     Route::post('products/store-medicine', [ProductController::class, 'storeMedicine'])->name('products.storeMedicine');
     Route::get('medicines', [ProductController::class, 'listMedicines'])->name('medicines.list');
+    Route::post('medicines', [ProductController::class, 'storeMedicine'])->name('medicines.store');
     Route::get('medicines/{medicine}/edit', [ProductController::class, 'editMedicine'])->name('medicines.edit');
     Route::put('medicines/{medicine}', [ProductController::class, 'updateMedicine'])->name('medicines.update');
     Route::delete('medicines/{medicine}', [ProductController::class, 'deleteMedicine'])->name('medicines.delete');

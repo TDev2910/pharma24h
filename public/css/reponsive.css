@@ -32,6 +32,42 @@
         width: 100%;
         margin-bottom: 1rem;
     }
+    
+    /* Medicine Management Mobile Styles */
+    .header-control-bar {
+        padding: 12px 0;
+    }
+    
+    .header-title {
+        font-size: 1.25rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .action-buttons .btn {
+        font-size: 13px;
+        padding: 6px 12px;
+    }
+    
+    .search-container .input-group {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .search-container .form-control {
+        border: 1px solid #dee2e6;
+        border-right: none;
+    }
+    
+    .search-container .input-group-text {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-right: none;
+    }
+    
+    .search-container .btn {
+        border: 1px solid #dee2e6;
+        border-left: none;
+    }
 }
 
 /* Tablet: từ 768px đến 991px */
@@ -41,6 +77,26 @@
     }
     .user-actions .dropdown-menu {
         min-width: 200px;
+    }
+    
+    /* Medicine Management Tablet Styles */
+    .header-control-bar .d-flex {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 1rem;
+    }
+    
+    .controls-section {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+    
+    .action-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+    }       
+    .search-container {
+        order: -1;
     }
 }
 
@@ -53,3 +109,41 @@
         min-width: 220px;
     }
 }
+
+/* Large Desktop: từ 1400px trở lên */
+@media (min-width: 1400px) {
+    /* Medicine Management Large Desktop Styles */
+    .container-fluid {
+        max-width: 1400px !important;
+        margin: 0 auto;
+    }
+    
+    .content-area {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .header-control-bar {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    /* Typography scaling for large screens */
+    .header-title {
+        font-size: 1.5rem;
+    }
+    
+    .product-table th,
+    .product-table td {
+        font-size: 14px;
+    }
+    
+    .filter-section label {
+        font-size: 15px;
+    }
+    
+    .btn {
+        font-size: 15px;
+    }
+}
+
