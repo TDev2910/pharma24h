@@ -1,4 +1,3 @@
-<!-- Modal Thêm đơn vị cơ bản -->
 <div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -70,11 +69,18 @@ function saveUnit() {
         return;
     }
     
-    // Cập nhật input field
-    document.getElementById('don_vi_tinh_input').value = unitName;
+    // Kiểm tra xem đang ở form nào (create hay edit)
+    const createInput = document.getElementById('don_vi_tinh_input');
+    const editInput = document.getElementById('edit_don_vi_tinh_input');
     
-    document.getElementById('unit_price_hidden').value = unitPrice;
-    document.getElementById('direct_sale_hidden').value = directSale ? '1' : '0';
+    if (createInput && createInput.offsetParent !== null) {
+        createInput.value = unitName; // Đang ở form create
+        document.getElementById('unit_price_hidden').value = unitPrice;
+        document.getElementById('direct_sale_hidden').value = directSale ? '1' : '0';
+    } 
+    else if (editInput && editInput.offsetParent !== null) { // Đang ở form edit
+        editInput.value = unitName;
+    }
     
     // Đóng modal
     closeUnitModal();

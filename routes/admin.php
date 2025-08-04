@@ -3,10 +3,15 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductCategoryController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->group(function () 
+{
     Route::get('products/create-medicine', [ProductController::class, 'createMedicine'])->name('products.createMedicine');
     Route::post('products/store-medicine', [ProductController::class, 'storeMedicine'])->name('products.storeMedicine');
-    
+    Route::get('medicines', [ProductController::class, 'listMedicines'])->name('medicines.list');
+    Route::get('medicines/{medicine}/edit', [ProductController::class, 'editMedicine'])->name('medicines.edit');
+    Route::put('medicines/{medicine}', [ProductController::class, 'updateMedicine'])->name('medicines.update');
+    Route::delete('medicines/{medicine}', [ProductController::class, 'deleteMedicine'])->name('medicines.delete');
+    Route::get('medicines/{medicine}/detail', [ProductController::class, 'showDetail'])->name('medicines.detail');
     // Route tạo thuốc mới
     Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('products/store', [ProductController::class, 'store'])->name('products.store');

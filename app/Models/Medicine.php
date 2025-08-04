@@ -22,7 +22,7 @@ class Medicine extends Model
         'ham_luong',
         'drugusage_id',
         'quy_cach_dong_goi',
-        'manufacturer',
+        'manufacturer_id',
         'nuoc_san_xuat',
         'ton_thap_nhat',
         'ton_cao_nhat',
@@ -52,7 +52,7 @@ class Medicine extends Model
 
     public function manufacturer()
     {
-        return $this->belongsTo(Manufacturer::class, 'manufacturer');
+        return $this->belongsTo(Manufacturer::class);
     }
 
     public function drugRoute()

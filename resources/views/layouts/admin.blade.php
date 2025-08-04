@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+   
 </head>
 <body>
     <!-- Menu trên cùng --> 
@@ -20,8 +20,8 @@
                     <div class="dropdown-col">
                         <div class="dropdown-title">Hàng hóa</div>
                         <a href="{{ route('admin.products.index') }}" class="dropdown-link">Danh sách hàng hóa</a>
-                        <a href="#" class="dropdown-link">Danh sách thuốc</a>
-                        <a href="#" class="dropdown-link">Thiết lập giá</a>
+                        <a href="{{ route('admin.medicines.list') }}" class="dropdown-link">Danh sách thuốc</a>
+                        {{-- <a href="#" class="dropdown-link">Thiết lập giá</a> --}}
                     </div>
                     <div class="dropdown-col">
                         <div class="dropdown-title">Kho hàng</div>
@@ -46,10 +46,13 @@
             <i class="fas fa-cart-shopping cart-icon"></i> Bán hàng
         </button>
     </nav>
-    <div class="container-fluid">
+    <div>
         @yield('content')
     </div>
-    <script src="{{ asset('js/debug.js') }}"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     @stack('scripts')
 </body>
 </html>
