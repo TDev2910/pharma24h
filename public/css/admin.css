@@ -46,19 +46,19 @@ body {
 }
 
 /* Các item bình thường */
-.nav-item {
-    color: #fff;
-    padding: 6px 10px; /* Giảm padding */
-    border-radius: 8px 8px 0 0;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 15px; /* Giảm font */
-    transition: background 0.2s, color 0.2s;
-    cursor: pointer;
-    position: relative;
-    background: transparent;
-    margin-right: 10px; /* Giảm giá trị margin */
-}
+    .nav-item {
+        color: #fff;
+        padding: 6px 10px; 
+        border-radius: 8px 8px 0 0;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 15px; 
+        transition: background 0.2s, color 0.2s;
+        cursor: pointer;
+        position: relative;
+        background: transparent;
+        margin-right: 10px; 
+    }
 
 .nav-item:last-child {
     margin-right: 0;
@@ -78,6 +78,8 @@ body {
 .dropdown {
     position: relative;     /* cho phép .nav-dropdown absolute dựa vào đây */
 }
+
+
 
 /* Dropdown ẩn mặc định */
 .nav-dropdown {

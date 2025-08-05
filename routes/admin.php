@@ -17,7 +17,16 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('products/store', [ProductController::class, 'store'])->name('products.store');
     Route::get('products/{id}/detail', [ProductController::class, 'showDetail'])->name('products.detail');
-    
+    //Route tao hang hoa
+    Route::get('products/create-goods', [ProductController::class,'createGoods'])->name('products.createGoods');
+    Route::post('products/store-goods', [ProductController::class,'storeGoods'])->name('products.storeGoods');
+    Route::get('products/goods', [ProductController::class,'listGoods'])->name('products.goods.list');
+    Route::get('products/goods/{goods}/edit', [ProductController::class,'editGoods'])->name('products.goods.edit');
+    Route::put('products/goods/{goods}', [ProductController::class,'updateGoods'])->name('products.goods.update');
+    Route::delete('products/goods/{goods}', [ProductController::class,'deleteGoods'])->name('products.goods.delete');
+    Route::get('products/goods/{goods}/detail', [ProductController::class,'showGoodsDetail'])->name('products.goods.detail');
+    // Thêm route cho goods detail API
+    Route::get('goods/{goods}/detail', [ProductController::class,'showGoodsDetail'])->name('goods.detail');
     // Thêm route tạo mới đường dùng, hãng sản xuất, vị trí
     Route::post('products/drugroute', [ProductController::class, 'storeDrugRoute'])->name('products.drugroute.store');
     Route::post('products/manufacturer', [ProductController::class, 'storeManufacturer'])->name('products.manufacturer.store');

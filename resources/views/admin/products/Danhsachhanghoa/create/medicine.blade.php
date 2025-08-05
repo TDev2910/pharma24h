@@ -1,186 +1,510 @@
 <!-- Modal tạo thuốc -->
-<div class="modal fade" id="createMedicineModal" tabindex="-1" aria-labelledby="createMedicineModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createMedicineModalLabel">Tạo thuốc mới</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('admin.medicines.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-body">
-                    <div class="row">
-                        <!-- Thông tin cơ bản -->
-                        <div class="col-md-6">
-                            <h6 class="mb-3">Thông tin cơ bản</h6>
-                            
-                            <div class="mb-3">
-                                <label for="ma_hang" class="form-label">Mã hàng</label>
-                                <input type="text" class="form-control" id="ma_hang" name="ma_hang" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="ma_vach" class="form-label">Mã vạch</label>
-                                <input type="text" class="form-control" id="ma_vach" name="ma_vach">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="ten_thuoc" class="form-label">Tên thuốc</label>
-                                <input type="text" class="form-control" id="ten_thuoc" name="ten_thuoc" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="ten_viet_tat" class="form-label">Tên viết tắt</label>
-                                <input type="text" class="form-control" id="ten_viet_tat" name="ten_viet_tat">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="nhom_hang_id" class="form-label">Nhóm hàng</label>
-                                <select class="form-select" id="nhom_hang_id" name="nhom_hang_id" required>
-                                    <option value="">Chọn nhóm hàng</option>
-                                    @foreach($categories as $id => $name)
-                                        <option value="{{ $id }}">{{ $name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="gia_von" class="form-label">Giá vốn</label>
-                                <input type="number" class="form-control" id="gia_von" name="gia_von" min="0" step="1000">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="gia_ban" class="form-label">Giá bán</label>
-                                <input type="number" class="form-control" id="gia_ban" name="gia_ban" min="0" step="1000" required>
-                            </div>
-                        </div>
-                        
-                        <!-- Thông tin thuốc -->
-                        <div class="col-md-6">
-                            <h6 class="mb-3">Thông tin thuốc</h6>
-                            
-                            <div class="mb-3">
-                                <label for="so_dang_ky" class="form-label">Số đăng ký</label>
-                                <input type="text" class="form-control" id="so_dang_ky" name="so_dang_ky">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="hoat_chat" class="form-label">Hoạt chất</label>
-                                <input type="text" class="form-control" id="hoat_chat" name="hoat_chat">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="ham_luong" class="form-label">Hàm lượng</label>
-                                <input type="text" class="form-control" id="ham_luong" name="ham_luong">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="duong_dung_select" class="form-label">Đường dùng</label>
-                                <select class="form-select" id="duong_dung_select" name="drugusage_id">
-                                    <option value="">Chọn đường dùng</option>
-                                    @foreach($drugRoutes as $id => $name)
-                                        <option value="{{ $id }}">{{ $name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="manufacturer_select" class="form-label">Hãng sản xuất</label>
-                                <select class="form-select" id="manufacturer_select" name="manufacturer_id" required onchange="handleManufacturerChange(this)">
-                                    <option value="">Chọn hãng sản xuất</option>
-                                    @foreach($manufacturers as $id => $name)
-                                        <option value="{{ $id }}">{{ $name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="nuoc_san_xuat" class="form-label">Nước sản xuất</label>
-                                <input type="text" class="form-control" id="nuoc_san_xuat" name="nuoc_san_xuat" value="Việt Nam">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="quy_cach_dong_goi" class="form-label">Quy cách đóng gói</label>
-                                <input type="text" class="form-control" id="quy_cach_dong_goi" name="quy_cach_dong_goi">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <!-- Thông tin kho -->
-                        <div class="col-md-6">
-                            <h6 class="mb-3">Thông tin kho</h6>
-                            
-                            <div class="mb-3">
-                                <label for="ton_thap_nhat" class="form-label">Tồn kho tối thiểu</label>
-                                <input type="number" class="form-control" id="ton_thap_nhat" name="ton_thap_nhat" min="0" value="0">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="ton_cao_nhat" class="form-label">Tồn kho tối đa</label>
-                                <input type="number" class="form-control" id="ton_cao_nhat" name="ton_cao_nhat" min="0" value="999999999">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="position_select" class="form-label">Vị trí</label>
-                                <select class="form-select" id="position_select" name="position_id">
-                                    <option value="">Chọn vị trí</option>
-                                    @foreach($positions as $id => $name)
-                                        <option value="{{ $id }}">{{ $name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="trong_luong" class="form-label">Trọng lượng (g)</label>
-                                <input type="number" class="form-control" id="trong_luong" name="trong_luong" min="0" step="0.1">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="don_vi_tinh_input" class="form-label">Đơn vị tính</label>
-                                <input type="text" class="form-control" id="don_vi_tinh_input" name="don_vi_tinh" value="Viên">
-                            </div>
-                        </div>
-                        
-                        <!-- Thông tin khác -->
-                        <div class="col-md-6">
-                            <h6 class="mb-3">Thông tin khác</h6>
-                            
-                            <div class="mb-3">
-                                <label for="mo_ta" class="form-label">Mô tả</label>
-                                <textarea class="form-control" id="mo_ta" name="mo_ta" rows="4"></textarea>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="image" class="form-label">Hình ảnh</label>
-                                <input type="file" class="form-control" id="image" name="image" accept="image/*">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="ban_truc_tiep" name="ban_truc_tiep" value="1">
-                                    <label class="form-check-label" for="ban_truc_tiep">
-                                        Bán trực tiếp
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bỏ qua</button>
-                    <button type="submit" class="btn btn-success">Lưu thuốc</button>
-                </div>
-            </form>
+<div class="modal fade create-modal" id="createMedicineModal" tabindex="-1" aria-labelledby="createMedicineModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content" style="border-radius:16px;">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createMedicineModalLabel">
+            <i class="fas fa-plus me-2"></i>Tạo thuốc mới
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+        <form action="{{ route('admin.medicines.store') }}" method="POST" enctype="multipart/form-data">
+          @csrf
+          <div class="modal-body p-4">
+              <!-- Tabs -->
+              <ul class="nav nav-tabs border-0 mb-3" id="createMedicineTab" role="tablist">
+                  <li class="" role="presentation">
+                      <button class="nav-link active px-4 py-2 fw-bold" id="create-info-tab" data-bs-toggle="tab" data-bs-target="#create-info" type="button" role="tab" style="margin-left:-25px;">Thông tin</button>
+                  </li>
+                  <li class="" role="presentation">
+                      <button class="nav-link px-4 py-2 fw-bold" id="create-desc-tab" data-bs-toggle="tab" data-bs-target="#create-desc" type="button" role="tab" style="border-radius:8px;">Mô tả</button>
+                  </li>
+              </ul>
+              <div class="tab-content" id="createMedicineTabContent">
+                  <!-- Tab Thông tin -->
+                  <div class="tab-pane fade show active" id="create-info" role="tabpanel">
+                      <!-- THÔNG TIN CƠ BẢN -->
+                      <div class="row mb-4">
+                          <!-- Inputs bên trái -->
+                          <div class="col-md-8">
+                              <div class="row g-2">
+                                  <div class="col-md-6">
+                                      <label class="form-label">Mã hàng</label>
+                                      <input type="text" class="form-control" name="ma_hang" id="ma_hang" placeholder="Tự động">
+                                  </div>
+                                  <div class="col-md-6">
+                                      <label class="form-label">Mã vạch</label>
+                                      <input type="text" class="form-control" name="ma_vach" id="ma_vach" placeholder="Nhập mã vạch">
+                                  </div>
+                                  <div class="col-md-12">
+                                      <label class="form-label">Tên thuốc <span class="text-danger">*</span></label>
+                                      <input type="text" class="form-control" name="ten_thuoc" id="ten_thuoc" placeholder="Nhập tên thuốc" required>
+                                  </div>
+                                  <div class="col-md-6">
+                                      <label class="form-label">Tên viết tắt</label>
+                                      <input type="text" class="form-control" name="ten_viet_tat" id="ten_viet_tat" placeholder="Nhập tên viết tắt">
+                                  </div>
+                                  <div class="col-md-6">
+                                      <label class="form-label">Nhóm hàng <span class="text-danger">*</span></label>
+                                      <select class="form-select" name="nhom_hang_id" id="nhom_hang_id" required>
+                                          <option value="">Chọn nhóm hàng (Bắt buộc)</option>
+                                          @foreach($categories as $id => $name)
+                                              <option value="{{ $id }}">{{ $name }}</option>
+                                          @endforeach
+                                      </select>
+                                  </div>
+                              </div>
+                          </div> 
+                          <!-- Ảnh bên phải -->
+                          <div class="col-md-4">
+                              <!-- Chỉ 1 ảnh duy nhất - CÓ PREVIEW -->
+                              <div class="border-2 border-dashed border-primary rounded-3 d-flex flex-column align-items-center justify-content-center position-relative bg-light" 
+                                   style="width:200px;height:200px;background:linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);" id="create-image-preview-container">
+                                  <input type="file" name="image" accept="image/*" 
+                                      style="opacity:0;position:absolute;width:100%;height:100%;cursor:pointer;top:0;left:0;z-index:1;"
+                                      onchange="previewCreateImage(this)">
+                                  <div class="text-center" id="create-image-placeholder"> 
+                                      <i class="fas fa-image fa-3x text-primary mb-3"></i>
+                                      <div class="fw-bold text-primary mb-2">Thêm ảnh sản phẩm</div>
+                                      <small class="text-muted">Click để chọn ảnh</small>
+                                      <div class="mt-3">
+                                          <span class="badge bg-light text-dark">Tối đa 2MB</span>
+                                      </div>
+                                  </div>
+                                  <img id="create-image-preview" src="" alt="Preview" 
+                                       style="width:100%;height:100%;object-fit:cover;border-radius:8px;display:none;">
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <!-- Giá vốn, giá bán -->
+                      <fieldset class="mb-4 border rounded p-3">
+                          <legend class="float-none w-auto px-2 fs-6">Giá vốn, giá bán</legend>
+                          <div class="row g-3 mb-2">
+                              <div class="col-md-6">
+                                  <label class="form-label">Giá vốn <span class="text-danger">*</span></label>
+                                  <input type="number" class="form-control" name="gia_von" id="gia_von" value="0" required>
+                              </div>
+                              <div class="col-md-6">
+                                  <label class="form-label">Giá bán <span class="text-danger">*</span></label>
+                                  <div class="input-group">
+                                      <input type="number" class="form-control" name="gia_ban" id="gia_ban" value="0" required>
+                                      <button class="btn btn-outline-secondary" type="button">Thiết lập giá</button>
+                                  </div>
+                              </div>
+                          </div>
+                      </fieldset>
+  
+                      <!-- Thông tin thuốc -->
+                      <fieldset class="mb-4 border rounded p-3">
+                          <legend class="float-none w-auto px-2 fs-6">Thông tin thuốc</legend>
+                          <div class="row g-3 mb-2">
+                              <div class="col-md-4">
+                                  <label class="form-label">Số đăng ký <span class="text-danger">*</span></label>
+                                  <input type="text" class="form-control" name="so_dang_ky" id="so_dang_ky" placeholder="Bắt buộc" required>
+                              </div>
+                              <div class="col-md-4">
+                                  <label class="form-label">Hoạt chất <span class="text-danger">*</span></label>
+                                  <input type="text" class="form-control" name="hoat_chat" id="hoat_chat" placeholder="Bắt buộc" required>
+                              </div>
+                              <div class="col-md-4">
+                                  <label class="form-label">Hàm lượng <span class="text-danger">*</span></label>
+                                  <input type="text" class="form-control" name="ham_luong" id="ham_luong" placeholder="Bắt buộc" required>
+                              </div>
+                              <div class="col-md-4">
+                                  <label class="form-label">
+                                      Đường dùng <span class="text-danger">*</span>
+                                  </label>
+                                  <div class="position-relative">
+                                      <select class="form-select" name="drugusage_id" id="duong_dung_select" required onchange="handleCreateDrugRouteChange(this)">
+                                          <option value="">Bắt buộc</option>
+                                          @foreach($drugRoutes as $usage)
+                                              <option value="{{ $usage->id }}">{{ $usage->name }}</option>
+                                          @endforeach
+                                          <option value="create_new">+ Tạo mới đường dùng</option>
+                                      </select>
+                                      
+                                      <!-- Inline form cho Drug Route -->
+                                      <div id="createDrugRouteInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
+                                          <div class="mb-2">
+                                              <input type="text" class="form-control" id="createNewDrugRouteName" placeholder="Nhập tên đường dùng mới">
+                                          </div>
+                                          <div class="d-flex gap-2">
+                                              <button type="button" class="btn btn-success" onclick="createNewCreateDrugRouteInline()">
+                                                  <i class="fas fa-save"></i> Lưu
+                                              </button>
+                                              <button type="button" class="btn btn-secondary" onclick="cancelCreateDrugRouteForm()">
+                                                  <i class="fas fa-times"></i> Hủy
+                                              </button>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>   
+                              <div class="col-md-4">
+                                  <label class="form-label">Hãng sản xuất<span class="text-danger">*</span></label>
+                                  <div class="position-relative">
+                                      <select class="form-select" name="manufacturer_id" id="manufacturer_select" required onchange="handleCreateManufacturerChange(this)">
+                                          <option value="">Tìm hãng sản xuất</option>
+                                          @foreach($manufacturers as $manu)
+                                              <option value="{{ $manu->id }}">{{ $manu->name }}</option>
+                                          @endforeach
+                                          <option value="create_new">+ Tạo mới hãng sản xuất</option>
+                                      </select>
+                                      
+                                      <!-- Inline form cho Manufacturer -->
+                                      <div id="createManufacturerInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
+                                          <div class="mb-2">
+                                              <input type="text" class="form-control" id="createNewManufacturerName" placeholder="Nhập tên hãng sản xuất mới">
+                                          </div>
+                                          <div class="d-flex gap-2">
+                                              <button type="button" class="btn btn-success" onclick="createNewCreateManufacturerInline()">
+                                                  <i class="fas fa-save"></i> Lưu
+                                              </button>
+                                              <button type="button" class="btn btn-secondary" onclick="cancelCreateManufacturerForm()">
+                                                  <i class="fas fa-times"></i> Hủy
+                                              </button>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>                  
+                              <div class="col-md-4">
+                                  <label class="form-label">Nước sản xuất</label>
+                                  <input type="text" class="form-control" name="nuoc_san_xuat" id="nuoc_san_xuat" placeholder="Tìm nước sản xuất">
+                              </div>
+                          </div>
+                          <div class="row g-3 mb-2">
+                              <div class="col-md-3">
+                                  <label class="form-label">Quy cách đóng gói <span class="text-danger">*</span></label>
+                                  <input type="text" class="form-control" name="quy_cach_dong_goi" id="quy_cach_dong_goi" placeholder="Bắt buộc" required>
+                              </div>
+                          </div>
+                      </fieldset>
+  
+                      <!-- Tồn kho -->
+                      <fieldset class="mb-4 border rounded p-3">
+                          <legend class="float-none w-auto px-2 fs-6">Tồn kho</legend>
+                          <div class="row g-3 mb-2">
+                              <div class="col-md-6">
+                                  <label class="form-label">Định mức tồn thấp nhất</label>
+                                  <input type="number" class="form-control" name="ton_thap_nhat" id="ton_thap_nhat" value="0">
+                              </div>
+                              <div class="col-md-6">
+                                  <label class="form-label">Định mức tồn cao nhất</label>
+                                  <input type="number" class="form-control" name="ton_cao_nhat" id="ton_cao_nhat" value="999999999">
+                              </div>
+                          </div>
+                      </fieldset>
+  
+                      <!-- Vị trí, trọng lượng -->
+                      <fieldset class="mb-4 border rounded p-3">
+                          <legend class="float-none w-auto px-2 fs-6">Vị trí, trọng lượng</legend>
+                          <div class="row g-3 mb-2">
+                              <div class="col-md-4">
+                                  <label class="form-label">Vị trí</label>
+                                  <div class="position-relative">
+                                      <select class="form-select" name="position_id" id="position_select" onchange="handleCreatePositionChange(this)">
+                                          <option value="">Chọn vị trí</option>
+                                          @foreach($positions as $pos)
+                                              <option value="{{ $pos->id }}">{{ $pos->name }}</option>
+                                          @endforeach
+                                          <option value="create_new">+ Tạo mới vị trí</option>
+                                      </select>
+                                      
+                                      <!-- Inline form cho Position -->
+                                      <div id="createPositionInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
+                                          <div class="mb-2">
+                                              <input type="text" class="form-control" id="createNewPositionName" placeholder="Nhập tên vị trí mới">
+                                          </div>
+                                          <div class="d-flex gap-2">
+                                              <button type="button" class="btn btn-success" onclick="createNewCreatePositionInline()">
+                                                  <i class="fas fa-save"></i> Lưu
+                                              </button>
+                                              <button type="button" class="btn btn-secondary" onclick="cancelCreatePositionForm()">
+                                                  <i class="fas fa-times"></i> Hủy
+                                              </button>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <label class="form-label">Trọng lượng</label>
+                                  <div class="input-group">
+                                      <input type="number" class="form-control" name="trong_luong" id="trong_luong" value="0">
+                                      <span class="input-group-text">g</span>
+                                  </div>
+                              </div>
+                          </div>
+                      </fieldset>
+  
+                      <!-- Thiết lập đơn vị tính -->
+                      <fieldset class="mb-4 border rounded p-3">
+                          <legend class="float-none w-auto px-2 fs-6">Thiết lập đơn vị tính</legend>
+                          <div class="row g-3 mb-2">
+                              <div class="col-md-8">
+                                  <input type="text" class="form-control" name="don_vi_tinh" id="don_vi_tinh_input" placeholder="Nhập đơn vị tính" readonly>
+                              </div>
+                              <div class="col-md-4 d-flex align-items-end">
+                                  <button type="button" class="btn btn-outline-primary w-100" onclick="openCreateUnitModal()">Thiết lập</button>
+                              </div>
+                          </div>
+                      </fieldset>
+  
+                      <!-- Bán trực tiếp -->
+                      <div class="form-check mb-3">
+                          <input class="form-check-input" type="checkbox" id="ban_truc_tiep" name="ban_truc_tiep">
+                          <label class="form-check-label" for="ban_truc_tiep">
+                              Bán trực tiếp
+                          </label>
+                      </div>          
+                  </div>
+                  
+                  <!-- Tab Mô tả -->
+                  <div class="tab-pane fade" id="create-desc" role="tabpanel">
+                      <div class="mb-3">
+                          <label for="mo_ta" class="form-label">Mô tả sản phẩm</label>
+                          <textarea class="form-control" id="mo_ta" name="mo_ta" rows="5" placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+              <button type="submit" class="btn btn-success">
+                  <i class="fas fa-save"></i> Lưu thuốc
+              </button>
+          </div>
+        </form>
+      </div>
     </div>
-</div>
+  </div>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/create-modal.css') }}">
+@endpush
 
+@push('scripts')
 <script>
+// Logic riêng cho modal thuốc
 function handleManufacturerChange(select) {
     const selectedOption = select.options[select.selectedIndex];
     if (selectedOption.value) {
         console.log('Selected manufacturer:', selectedOption.text);
     }
 }
-</script> 
+
+// Function preview ảnh cho modal thuốc
+function previewCreateImage(input) {
+    const preview = document.getElementById('create-image-preview');
+    const placeholder = document.getElementById('create-image-placeholder');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+        };
+        
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.style.display = 'none';
+        placeholder.style.display = 'block';
+    }
+}
+
+// Handle Drug Route Change - RIÊNG CHO THUỐC
+function handleCreateDrugRouteChange(select) {
+    const selectedOption = select.options[select.selectedIndex];
+    const inlineForm = document.getElementById('createDrugRouteInlineForm');
+    
+    if (selectedOption.value === 'create_new') {
+        inlineForm.style.display = 'block';
+        select.value = '';
+    } else {
+        inlineForm.style.display = 'none';
+    }
+}
+
+// Create new drug route inline - RIÊNG CHO THUỐC
+function createNewCreateDrugRouteInline() {
+    const nameInput = document.getElementById('createNewDrugRouteName');
+    const name = nameInput.value.trim();
+    
+    if (!name) {
+        alert('Vui lòng nhập tên đường dùng!');
+        return;
+    }
+    
+    // Gửi request tạo drug route mới
+    fetch('{{ route("admin.products.drugroute.store") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ name: name })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Thêm option mới vào select
+            const select = document.getElementById('duong_dung_select');
+            const newOption = new Option(data.drugRoute.name, data.drugRoute.id);
+            select.add(newOption);
+            select.value = data.drugRoute.id;
+            
+            // Ẩn form inline
+            document.getElementById('createDrugRouteInlineForm').style.display = 'none';
+            nameInput.value = '';
+        } else {
+            alert('Có lỗi xảy ra: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi tạo đường dùng!');
+    });
+}
+
+// Cancel drug route form - RIÊNG CHO THUỐC
+function cancelCreateDrugRouteForm() {
+    document.getElementById('createDrugRouteInlineForm').style.display = 'none';
+    document.getElementById('createNewDrugRouteName').value = '';
+    document.getElementById('duong_dung_select').value = '';
+}
+
+// Handle Manufacturer Change - RIÊNG CHO THUỐC
+function handleCreateManufacturerChange(select) {
+    const selectedOption = select.options[select.selectedIndex];
+    const inlineForm = document.getElementById('createManufacturerInlineForm');
+    
+    if (selectedOption.value === 'create_new') {
+        inlineForm.style.display = 'block';
+        select.value = '';
+    } else {
+        inlineForm.style.display = 'none';
+    }
+}
+
+// Create new manufacturer inline - RIÊNG CHO THUỐC
+function createNewCreateManufacturerInline() {
+    const nameInput = document.getElementById('createNewManufacturerName');
+    const name = nameInput.value.trim();
+    
+    if (!name) {
+        alert('Vui lòng nhập tên hãng sản xuất!');
+        return;
+    }
+    
+    // Gửi request tạo manufacturer mới
+    fetch('{{ route("admin.products.manufacturer.store") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ name: name })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Thêm option mới vào select
+            const select = document.getElementById('manufacturer_select');
+            const newOption = new Option(data.manufacturer.name, data.manufacturer.id);
+            select.add(newOption);
+            select.value = data.manufacturer.id;
+            
+            // Ẩn form inline
+            document.getElementById('createManufacturerInlineForm').style.display = 'none';
+            nameInput.value = '';
+        } else {
+            alert('Có lỗi xảy ra: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi tạo hãng sản xuất!');
+    });
+}
+
+// Cancel manufacturer form - RIÊNG CHO THUỐC
+function cancelCreateManufacturerForm() {
+    document.getElementById('createManufacturerInlineForm').style.display = 'none';
+    document.getElementById('createNewManufacturerName').value = '';
+    document.getElementById('manufacturer_select').value = '';
+}
+
+// Handle Position Change - RIÊNG CHO THUỐC
+function handleCreatePositionChange(select) {
+    const selectedOption = select.options[select.selectedIndex];
+    const inlineForm = document.getElementById('createPositionInlineForm');
+    
+    if (selectedOption.value === 'create_new') {
+        inlineForm.style.display = 'block';
+        select.value = '';
+    } else {
+        inlineForm.style.display = 'none';
+    }
+}
+
+// Create new position inline - RIÊNG CHO THUỐC
+function createNewCreatePositionInline() {
+    const nameInput = document.getElementById('createNewPositionName');
+    const name = nameInput.value.trim();
+    
+    if (!name) {
+        alert('Vui lòng nhập tên vị trí!');
+        return;
+    }
+    
+    // Gửi request tạo position mới
+    fetch('{{ route("admin.products.position.store") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ name: name })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Thêm option mới vào select
+            const select = document.getElementById('position_select');
+            const newOption = new Option(data.position.name, data.position.id);
+            select.add(newOption);
+            select.value = data.position.id;
+            
+            // Ẩn form inline
+            document.getElementById('createPositionInlineForm').style.display = 'none';
+            nameInput.value = '';
+        } else {
+            alert('Có lỗi xảy ra: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi tạo vị trí!');
+    });
+}
+
+// Cancel position form - RIÊNG CHO THUỐC
+function cancelCreatePositionForm() {
+    document.getElementById('createPositionInlineForm').style.display = 'none';
+    document.getElementById('createNewPositionName').value = '';
+    document.getElementById('position_select').value = '';
+}
+
+// Open unit modal - RIÊNG CHO THUỐC
+function openCreateUnitModal() {
+    const modalElement = document.getElementById('unitModal');
+    if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    } else {
+        alert('Modal đơn vị tính không tìm thấy!');
+    }
+}
+</script>
+@endpush 

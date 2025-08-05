@@ -1,4 +1,3 @@
-<!-- Modal chỉnh sửa thuốc -->
 <div class="modal fade" id="editMedicineModal" tabindex="-1" aria-labelledby="editMedicineModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
       <div class="modal-content" style="border-radius:16px;">

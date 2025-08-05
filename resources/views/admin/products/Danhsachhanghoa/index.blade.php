@@ -42,7 +42,11 @@
                                     Thuốc
                                 </a>
                             </li>
-                            <li><a class="dropdown-item" href="#">Hàng hóa</a></li>
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#createGoodsModal">
+                                    Hàng hóa
+                                </a>
+                            </li>
                             <li><a class="dropdown-item" href="#">Dịch vụ</a></li>
                             <li><a class="dropdown-item" href="#">Combo - đóng gói</a></li>
                         </ul>
@@ -70,7 +74,7 @@
                         </button>
                     </div>
                 </div>
-            </div>
+            </div>  
         </div>
     </div>
     <!-- Content Area -->
@@ -181,6 +185,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <!-- Hiển thị thuốc -->
                                     @forelse($medicines as $medicine)
                                         <tr class="product-row" data-product-id="{{ $medicine->id }}" style="cursor: pointer;" onclick="toggleProductDetail({{ $medicine->id }}, this)">
                                             <td>
@@ -203,8 +208,8 @@
                                             <td><span class="product-abbreviation">{{ $medicine->ten_viet_tat ?? 'N/A' }}</span></td>
                                             <td>{{ number_format($medicine->gia_ban ?? 0) }} VNĐ</td>
                                             <td>{{ number_format($medicine->gia_von ?? 0) }} VNĐ</td>
-                                            <td>{{ $medicine->ton_thap_nhat ?? 0 }}</td>
-                                            <td>{{ $medicine->created_at ? $medicine->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
+                                        <td>{{ $medicine->ton_thap_nhat ?? 0 }}</td>
+                                        <td>{{ $medicine->created_at ? $medicine->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
                                         </tr>
                                         <!-- Expandable Detail Row -->
                                         <tr class="detail-row" id="detail-row-{{ $medicine->id }}" style="display: none;">
@@ -430,6 +435,9 @@
                                                                             <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="printLabel({{ $medicine->id }})">
                                                                                 <i class="fas fa-print"></i> In tem mã
                                                                             </button>
+                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="openUnitModal({{ $medicine->id }})">
+                                                                                <i class="fas fa-cog"></i> Thiết lập đơn vị tính
+                                                                            </button>
                                                                             <button type="button" class="btn btn-outline-secondary btn-sm">
                                                                                 <i class="fas fa-ellipsis-h"></i>
                                                                             </button>
@@ -445,7 +453,272 @@
                                     @empty
                                         <tr>
                                             <td colspan="10" class="text-center text-muted py-4">
-                                                <br>Chưa có sản phẩm nào
+                                                <br>Chưa có thuốc nào
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                    
+                                    <!-- Hiển thị hàng hóa -->
+                                    @forelse($goods as $good)
+                                        <tr class="product-row" data-product-id="goods-{{ $good->id }}" style="cursor: pointer;" onclick="toggleGoodsDetail({{ $good->id }}, this)">
+                                            <td>
+                                                <input type="checkbox" class="form-check-input" onclick="event.stopPropagation()">
+                                            </td>
+                                            <td>
+                                                <div class="product-image-container">
+                                                    <img src="{{ $good->image_url }}"
+                                                    alt="{{ $good->ten_hang_hoa }}"
+                                                    class="img-thumbnail product-image"
+                                                    style="width: 50px; height: 50px; object-fit: cover;">
+                                                </div>
+                                            </td>
+                                            <td><span class="product-code">{{ $good->ma_hang ?? 'N/A' }}</span></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="product-name">{{ $good->ten_hang_hoa ?? 'N/A' }}</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="product-abbreviation">{{ $good->don_vi_tinh ?? 'N/A' }}</span></td>
+                                            <td>{{ number_format($good->gia_ban ?? 0) }} VNĐ</td>
+                                            <td>{{ number_format($good->gia_von ?? 0) }} VNĐ</td>
+                                            <td>{{ $good->ton_kho ?? 0 }}</td>
+                                            <td>{{ $good->created_at ? $good->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
+                                        </tr>
+                                        <!-- Expandable Detail Row cho hàng hóa -->
+                                        <tr class="detail-row" id="detail-row-goods-{{ $good->id }}" style="display: none;">
+                                            <td colspan="10" class="p-0">
+                                                <div class="detail-content">
+                                                    <div class="row">
+                                                        <!-- Ảnh sản phẩm -->
+                                                        <div class="col-md-3">
+                                                            <div class="product-image-detail-large">
+                                                                <img id="productDetailImageLarge-goods-{{ $good->id }}" src="{{ $good->image_url }}"
+                                                                    alt="Product Image"
+                                                                    class="img-fluid rounded"
+                                                                    style="width: 100%; height: 200px; object-fit: cover;">
+                                                            </div>
+                                                        </div>
+                                                        <!-- Thông tin sản phẩm -->
+                                                        <div class="col-md-9">
+                                                            <div class="product-info-detail">
+                                                                <!-- Product Header -->
+                                                                <div class="product-header mb-4">
+                                                                    <h4 class="product-title mb-2">{{ $good->ten_hang_hoa ?? 'N/A' }}</h4>
+                                                                    <div class="product-category mb-2">
+                                                                        <small class="text-muted">Nhóm hàng: {{ $good->category->name ?? 'N/A' }}</small>
+                                                                    </div>
+                                                                    <div class="product-tags">
+                                                                        <span class="badge bg-success me-2">Hàng hóa</span>
+                                                                        <span class="badge bg-light text-dark me-2">Bán trực tiếp</span>
+                                                                        <span class="badge bg-warning">Không tích điểm</span>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- Tabs -->
+                                                                <ul class="nav nav-tabs" id="productDetailTabs-goods-{{ $good->id }}" role="tablist">
+                                                                    <li class="" role="presentation">
+                                                                        <button class="nav-link active" id="info-tab-goods-{{ $good->id }}" data-bs-toggle="tab" data-bs-target="#info-goods-{{ $good->id }}" type="button" role="tab" style="margin-left:-15px;">Thông tin</button>
+                                                                    </li>
+                                                                    <li class="" role="presentation">
+                                                                        <button class="nav-link" id="description-tab-goods-{{ $good->id }}" data-bs-toggle="tab" data-bs-target="#description-goods-{{ $good->id }}" type="button" role="tab">Mô tả, ghi chú</button>
+                                                                    </li>
+                                                                    <li class="" role="presentation">
+                                                                        <button class="nav-link" id="inventory-tab-goods-{{ $good->id }}" data-bs-toggle="tab" data-bs-target="#inventory-goods-{{ $good->id }}" type="button" role="tab">Tồn kho</button>
+                                                                    </li>
+                                                                </ul>
+                                                                <!-- Tab content -->
+                                                                <div class="tab-content mt-3" id="productDetailTabContent-goods-{{ $good->id }}">
+                                                                    <!-- Tab Thông tin -->
+                                                                    <div class="tab-pane fade show active" id="info-goods-{{ $good->id }}" role="tabpanel">
+                                                                        <div class="row">
+                                                                            <div class="col-md-6">
+                                                                                <div class="info-group">
+                                                                                    <h6 class="text-muted mb-3">Thông tin chung</h6>
+                                                                                    <div class="table-responsive">
+                                                                                        <table class="table table-bordered table-striped align-middle text-center">
+                                                                                            <thead class="table-primary">
+                                                                                                <tr>
+                                                                                                    <th scope="col">Chỉ tiêu</th>
+                                                                                                    <th scope="col">Giá trị</th>
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody>
+                                                                                                <tr>
+                                                                                                    <td><strong>Mã hàng</strong></td>
+                                                                                                    <td id="productDetailCodeLarge-goods-{{ $good->id }}">{{ $good->ma_hang ?? 'N/A' }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Mã vạch</strong></td>
+                                                                                                    <td id="productDetailBarcode-goods-{{ $good->id }}">{{ $good->ma_vach ?? 'N/A' }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Giá vốn</strong></td>
+                                                                                                    <td id="productDetailCostLarge-goods-{{ $good->id }}">{{ number_format($good->gia_von ?? 0) }} VNĐ</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Giá bán</strong></td>
+                                                                                                    <td class="text-success" id="productDetailPriceLarge-goods-{{ $good->id }}">{{ number_format($good->gia_ban ?? 0) }} VNĐ</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Đơn vị tính</strong></td>
+                                                                                                    <td id="productDetailUnit-goods-{{ $good->id }}">{{ $good->don_vi_tinh ?? 'N/A' }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Vị trí</strong></td>
+                                                                                                    <td id="productDetailPositionLarge-goods-{{ $good->id }}">{{ $good->position->name ?? 'N/A' }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Định mức tồn</strong></td>
+                                                                                                    <td id="productDetailStockRange-goods-{{ $good->id }}">{{ $good->ton_thap_nhat ?? 0 }} - {{ $good->ton_cao_nhat ?? '999,999,999' }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Trọng lượng</strong></td>
+                                                                                                    <td id="productDetailWeight-goods-{{ $good->id }}">{{ $good->trong_luong ? $good->trong_luong . ' g' : 'N/A' }}</td>
+                                                                                                </tr>
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <div class="info-group">
+                                                                                    <h6 class="text-muted mb-3">Thông tin hàng hóa</h6>
+                                                                                    <div class="table-responsive">
+                                                                                        <table class="table table-bordered table-striped align-middle text-center">
+                                                                                            <thead class="table-primary">
+                                                                                                <tr>
+                                                                                                    <th scope="col">Chỉ tiêu</th>
+                                                                                                    <th scope="col">Giá trị</th>
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody>
+                                                                                                <tr>
+                                                                                                    <td><strong>Quy cách đóng gói</strong></td>
+                                                                                                    <td id="productDetailPackaging-goods-{{ $good->id }}">{{ $good->quy_cach_dong_goi ?? 'N/A' }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Hãng sản xuất</strong></td>
+                                                                                                    <td id="productDetailManufacturerLarge-goods-{{ $good->id }}">
+                                                                                                        @if($good->manufacturer)
+                                                                                                            {{ $good->manufacturer->name }}
+                                                                                                        @else
+                                                                                                            N/A (manufacturer_id: {{ $good->manufacturer_id }})
+                                                                                                        @endif
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Nước sản xuất</strong></td>
+                                                                                                    <td id="productDetailCountry-goods-{{ $good->id }}">{{ $good->nuoc_san_xuat ?? 'Việt Nam' }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Quản lý theo lô</strong></td>
+                                                                                                    <td id="productDetailBatchManagement-goods-{{ $good->id }}">{{ $good->quan_ly_theo_lo ? 'Có' : 'Không' }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Bán trực tiếp</strong></td>
+                                                                                                    <td id="productDetailDirectSale-goods-{{ $good->id }}">{{ $good->ban_truc_tiep ? 'Có' : 'Không' }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Khách đặt</strong></td>
+                                                                                                    <td id="productDetailCustomerOrder-goods-{{ $good->id }}">{{ $good->khach_dat ? 'Có' : 'Không' }}</td>
+                                                                                                </tr>
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!-- Tab Mô tả -->
+                                                                    <div class="tab-pane fade" id="description-goods-{{ $good->id }}" role="tabpanel">
+                                                                        <div class="description-content">
+                                                                            <h6 class="text-muted mb-3">Mô tả sản phẩm</h6>
+                                                                            <div class="table-responsive">
+                                                                                <table class="table table-bordered table-striped align-middle text-center">
+                                                                                    <thead class="table-primary">
+                                                                                        <tr>
+                                                                                            <th scope="col">Nội dung</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        <tr>
+                                                                                            <td id="productDetailDescriptionLarge-goods-{{ $good->id }}" class="text-start">
+                                                                                                {{ $good->mo_ta ?? 'Chưa có mô tả' }}
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!-- Tab Tồn kho trong detail -->
+                                                                    <div class="tab-pane fade" id="inventory-goods-{{ $good->id }}" role="tabpanel">
+                                                                        <div class="inventory-content">
+                                                                            <h6 class="text-muted mb-3">Thông tin tồn kho</h6>
+                                                                            <div class="table-responsive" style="max-width: 500px;">
+                                                                                <table class="table table-bordered table-striped align-middle text-center">
+                                                                                    <thead class="table-primary">
+                                                                                        <tr>
+                                                                                            <th scope="col">Chỉ tiêu</th>
+                                                                                            <th scope="col">Giá trị</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        <tr>
+                                                                                            <td><strong>Tồn kho hiện tại</strong></td>
+                                                                                            <td id="productDetailCurrentStock-goods-{{ $good->id }}">{{ $good->ton_kho ?? 0 }}</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td><strong>Tồn kho tối đa</strong></td>
+                                                                                            <td id="productDetailMaxStock-goods-{{ $good->id }}">{{ $good->ton_cao_nhat ?? '999,999,999' }}</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td><strong>Tồn kho tối thiểu</strong></td>
+                                                                                            <td id="productDetailMinStock-goods-{{ $good->id }}">{{ $good->ton_thap_nhat ?? 0 }}</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td><strong>Định mức tồn</strong></td>
+                                                                                            <td id="productDetailStockRange-goods-{{ $good->id }}">{{ $good->ton_thap_nhat ?? 0 }} - {{ $good->ton_cao_nhat ?? '999,999,999' }}</td>
+                                                                                        </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- Action Buttons -->
+                                                                <div class="action-buttons-container">
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        <div class="left-actions">
+                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="showDeleteGoodsConfirmation({{ $good->id }}, '{{ $good->ma_hang }}', '{{ $good->ten_hang_hoa }}')">
+                                                                                <i class="fas fa-trash"></i> Xóa
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="right-actions">
+                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #1db46a; border-color: #1db46a; color: white;" onclick="openEditGoodsModal({{ $good->id }})">
+                                                                                <i class="fas fa-edit"></i> Chỉnh sửa
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="printLabel({{ $good->id }})">
+                                                                                <i class="fas fa-print"></i> In tem mã
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="openUnitModal({{ $good->id }})">
+                                                                                <i class="fas fa-cog"></i> Thiết lập đơn vị tính
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-outline-secondary btn-sm">
+                                                                                <i class="fas fa-ellipsis-h"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="10" class="text-center text-muted py-4">
+                                                <br>Chưa có hàng hóa nào
                                             </td>
                                         </tr>
                                     @endforelse
@@ -511,7 +784,10 @@
 
 <!-- Include Modal Components -->
 @include('admin.products.Danhsachhanghoa.create.medicine')
+@include('admin.products.Danhsachhanghoa.create.goods')
 @include('admin.products.Danhsachhanghoa.edit.medicine')
+@include('admin.products.Danhsachhanghoa.formmodal.unit_modal')
+
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/medicine-management.css') }}">
@@ -520,6 +796,93 @@
 
 @push('scripts')
 <script src="{{ asset('js/medicine-management.js') }}"></script>
+<script>
+// Debug modal functionality
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded');
+    
+    // Check if modal elements exist
+    const medicineModal = document.getElementById('createMedicineModal');
+    const goodsModal = document.getElementById('createGoodsModal');
+    
+    if (medicineModal) {
+        console.log('Medicine modal found:', medicineModal);
+        console.log('Medicine modal HTML:', medicineModal.outerHTML.substring(0, 200) + '...');
+    } else {
+        console.log('Medicine modal not found');
+    }
+    
+    if (goodsModal) {
+        console.log('Goods modal found:', goodsModal);
+        console.log('Goods modal HTML:', goodsModal.outerHTML.substring(0, 200) + '...');
+    } else {
+        console.log('Goods modal not found');
+    }
+    
+    // Check if Bootstrap is loaded
+    if (typeof bootstrap !== 'undefined') {
+        console.log('Bootstrap loaded');
+    } else {
+        console.log('Bootstrap not loaded');
+    }
+    
+    // Test modal triggers
+    const medicineTrigger = document.querySelector('[data-bs-target="#createMedicineModal"]');
+    const goodsTrigger = document.querySelector('[data-bs-target="#createGoodsModal"]');
+    
+    if (medicineTrigger) {
+        console.log('Medicine trigger found:', medicineTrigger);
+        medicineTrigger.addEventListener('click', function(e) {
+            console.log('Medicine trigger clicked');
+        });
+    } else {
+        console.log('Medicine trigger not found');
+    }
+    
+    if (goodsTrigger) {
+        console.log('Goods trigger found:', goodsTrigger);
+        goodsTrigger.addEventListener('click', function(e) {
+            console.log('Goods trigger clicked');
+        });
+    } else {
+        console.log('Goods trigger not found');
+    }
+    
+    // Test manual modal opening
+    window.testMedicineModal = function() {
+        console.log('Testing medicine modal...');
+        const modalElement = document.getElementById('createMedicineModal');
+        if (modalElement) {
+            console.log('Medicine modal element found, opening...');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        } else {
+            console.log('Medicine modal element not found!');
+            alert('Medicine modal not found in DOM!');
+        }
+    };
+    
+    window.testGoodsModal = function() {
+        console.log('Testing goods modal...');
+        const modalElement = document.getElementById('createGoodsModal');
+        if (modalElement) {
+            console.log('Goods modal element found, opening...');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        } else {
+            console.log('Goods modal element not found!');
+            alert('Goods modal not found in DOM!');
+        }
+    };
+    
+    // List all modals in page
+    const allModals = document.querySelectorAll('.modal');
+    console.log('All modals found:', allModals.length);
+    allModals.forEach((modal, index) => {
+        console.log(`Modal ${index}:`, modal.id);
+    });
+});
+</script>
 @endpush
 
 <!-- Delete Confirmation Modal -->
@@ -552,4 +915,11 @@
         </div>
     </div>
 </div>
+
+<!-- Hidden form for delete -->
+<form id="deleteMedicineForm" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+    <input type="hidden" id="deleteMedicineId" name="medicine_id">
+</form>
 @endsection         
