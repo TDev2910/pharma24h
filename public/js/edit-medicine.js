@@ -1,6 +1,3 @@
-// Edit Medicine JavaScript
-
-// Image preview function for edit modal
 function previewEditImage(input) {
     const file = input.files[0];
     const preview = document.getElementById('edit-image-preview');
@@ -101,11 +98,11 @@ function openEditMedicineModal(medicineId) {
                 const modal = new bootstrap.Modal(document.getElementById('editMedicineModal'));
                 modal.show();
             } else {
-                alert('Không thể tải thông tin thuốc!');
+                // Failed to load medicine data
             }
         })
         .catch(error => {
-            alert('Đã xảy ra lỗi khi tải thông tin thuốc!');
+            // Error loading medicine data
         });
 }
 
@@ -121,7 +118,7 @@ function handleEditDrugRouteChange(select) {
 function createNewEditDrugRouteInline() {
     const name = document.getElementById('editNewDrugRouteName').value.trim();
     if (!name) {
-        alert('Vui lòng nhập tên đường dùng!');
+        // Validation failed
         return;
     }
     
@@ -150,11 +147,11 @@ function createNewEditDrugRouteInline() {
             cancelEditDrugRouteForm();
             showSuccessMessage('Tạo đường dùng thành công!');
         } else {
-            alert(data.message || 'Có lỗi xảy ra khi tạo đường dùng.');
+            // Error creating drug route
         }
     })
     .catch(error => {
-        alert('Đã xảy ra lỗi mạng hoặc lỗi server.');
+        // Network or server error
     });
 }
 
@@ -174,7 +171,7 @@ function handleEditManufacturerChange(select) {
 function createNewEditManufacturerInline() {
     const name = document.getElementById('editNewManufacturerName').value.trim();
     if (!name) {
-        alert('Vui lòng nhập tên hãng sản xuất!');
+        // Validation failed
         return;
     }
     
@@ -203,11 +200,11 @@ function createNewEditManufacturerInline() {
             cancelEditManufacturerForm();
             showSuccessMessage('Tạo hãng sản xuất thành công!');
         } else {
-            alert(data.message || 'Có lỗi xảy ra khi tạo hãng sản xuất.');
+            // Error creating manufacturer
         }
     })
     .catch(error => {
-        alert('Đã xảy ra lỗi mạng hoặc lỗi server.');
+        // Network or server error
     });
 }
 
@@ -227,7 +224,7 @@ function handleEditPositionChange(select) {
 function createNewEditPositionInline() {
     const name = document.getElementById('editNewPositionName').value.trim();
     if (!name) {
-        alert('Vui lòng nhập tên vị trí!');
+        // Validation failed
         return;
     }
     
@@ -256,11 +253,11 @@ function createNewEditPositionInline() {
             cancelEditPositionForm();
             showSuccessMessage('Tạo vị trí thành công!');
         } else {
-            alert(data.message || 'Có lỗi xảy ra khi tạo vị trí.');
+            // Error creating position
         }
     })
     .catch(error => {
-        alert('Đã xảy ra lỗi mạng hoặc lỗi server.');
+        // Network or server error
     });
 }
 

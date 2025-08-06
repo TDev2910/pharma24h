@@ -65,7 +65,7 @@ function saveUnit() {
     const directSale = document.getElementById('directSale').checked;
     
     if (!unitName) {
-        alert('Vui lòng nhập tên đơn vị cơ bản!');
+        // Validation failed
         return;
     }
     

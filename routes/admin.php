@@ -27,6 +27,8 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::get('products/goods/{goods}/detail', [ProductController::class,'showGoodsDetail'])->name('products.goods.detail');
     // Thêm route cho goods detail API
     Route::get('goods/{goods}/detail', [ProductController::class,'showGoodsDetail'])->name('goods.detail');
+    // Thêm route cho goods store
+    Route::post('goods', [ProductController::class, 'storeGoods'])->name('goods.store');
     // Thêm route tạo mới đường dùng, hãng sản xuất, vị trí
     Route::post('products/drugroute', [ProductController::class, 'storeDrugRoute'])->name('products.drugroute.store');
     Route::post('products/manufacturer', [ProductController::class, 'storeManufacturer'])->name('products.manufacturer.store');

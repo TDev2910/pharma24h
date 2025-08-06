@@ -1,214 +1,303 @@
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Goods management loaded');
-    
-    // Debug goods modal
-    const goodsModal = document.getElementById('createGoodsModal');
-    if (goodsModal) {
-        console.log('Goods modal found:', goodsModal);
-    } else {
-        console.log('Goods modal not found');
-    }
-    
-    // Test goods modal trigger
-    const createGoodsLink = document.querySelector('[data-bs-target="#createGoodsModal"]');
-    if (createGoodsLink) {
-        console.log('Create goods link found:', createGoodsLink);
-        createGoodsLink.addEventListener('click', function(e) {
-            console.log('Create goods link clicked');
-        });
-    } else {
-        console.log('Create goods link not found');
-    }
-    
-    // Debug goods form submission
-    const goodsForm = document.querySelector('#createGoodsModal form');
-    if (goodsForm) {
-        console.log('Goods form found:', goodsForm);
-        goodsForm.addEventListener('submit', function(e) {
-            console.log('Goods form submitted');
-            const formData = new FormData(this);
-            console.log('Goods form data:', Object.fromEntries(formData));
-        });
-    } else {
-        console.log('Goods form not found');
-    }
-});
+// Edit Medicine JavaScript
 
-// Toggle hiển thị thông tin chi tiết hàng hóa
-window.toggleGoodsDetail = function(goodsId, element) {
-    const detailRow = document.getElementById(`detail-row-${goodsId}`);
-    if (!detailRow) return;
+// Image preview function for edit modal
+function previewEditImage(input) {
+    const file = input.files[0];
+    const preview = document.getElementById('edit-image-preview');
+    const placeholder = document.getElementById('edit-image-placeholder');
     
-    const isVisible = detailRow.style.display !== 'none';
-    
-    // Đóng tất cả các detail rows khác
-    document.querySelectorAll('.detail-row').forEach(row => {
-        row.style.display = 'none';
-    });
-    
-    // Xóa highlight từ tất cả các hàng
-    document.querySelectorAll('.goods-table tbody tr').forEach(row => {
-        row.classList.remove('selected-row');
-    });
-    
-    if (!isVisible) {
-        // Mở detail row
-        detailRow.style.display = 'table-row';
-        
-        // Highlight hàng được chọn
-        const selectedRow = element.closest('tr');
-        if (selectedRow) {
-            selectedRow.classList.add('selected-row');
+    if (file) {
+        // Kiểm tra kích thước file anh tai len (2MB = 2 * 1024 * 1024 bytes)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('File quá lớn! Vui lòng chọn ảnh nhỏ hơn 2MB.');
+            input.value = '';
+            return;
         }
         
-        // Scroll đến detail row
-        detailRow.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest'
-        });
+        // Kiểm tra loại file
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn file ảnh!');
+            input.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.style.display = 'none';
+        placeholder.style.display = 'block';
     }
 }
 
-// Format tiền tệ
-function formatCurrency(amount) {
-    if (!amount) return '0 VNĐ';
-    return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND'
-    }).format(amount);
-}
-
-// Delete goods function
-window.deleteGoods = function(goodsId) {
-    if (confirm('Bạn có chắc chắn muốn xóa hàng hóa này?')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/admin/goods/${goodsId}`;
-        
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        
-        const methodField = document.createElement('input');
-        methodField.type = 'hidden';
-        methodField.name = '_method';
-        methodField.value = 'DELETE';
-        
-        form.appendChild(csrfToken);
-        form.appendChild(methodField);
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
-
-// Edit goods function
-window.openEditGoodsModal = function(goodsId) {
-    console.log('Opening edit modal for goods ID:', goodsId);
-    
-    fetch(`/admin/goods/${goodsId}/detail`)
-        .then(response => {
-            console.log('Response status:', response.status);
-            return response.json();
-        })
+// Function to open edit modal and populate data
+function openEditMedicineModal(medicineId) {
+    fetch(`/admin/medicines/${medicineId}/detail`)
+        .then(response => response.json())
         .then(data => {
-            console.log('Response data:', data);
             if (data.success) {
-                const goods = data.product;
-                console.log('Goods data:', goods);
+                const medicine = data.product;
                 
-                // Populate form fields for goods
+                // Populate form fields
                 const fields = {
-                    'edit_ma_hang': goods.ma_hang || '',
-                    'edit_ma_vach': goods.ma_vach || '',
-                    'edit_ten_hang_hoa': goods.ten_hang_hoa || '',
-                    'edit_nhom_hang_id': goods.nhom_hang_id || '',
-                    'edit_gia_von': goods.gia_von || 0,
-                    'edit_gia_ban': goods.gia_ban || 0,
-                    'edit_ton_kho': goods.ton_kho || 0,
-                    'edit_ton_thap_nhat': goods.ton_thap_nhat || 0,
-                    'edit_ton_cao_nhat': goods.ton_cao_nhat || 999999999,
-                    'edit_manufacturer_select': goods.manufacturer_id || '',
-                    'edit_nuoc_san_xuat': goods.nuoc_san_xuat || '',
-                    'edit_quy_cach_dong_goi': goods.quy_cach_dong_goi || '',
-                    'edit_position_select': goods.position_id || '',
-                    'edit_trong_luong': goods.trong_luong || 0,
-                    'edit_don_vi_tinh': goods.don_vi_tinh || '',
-                    'edit_mo_ta': goods.mo_ta || ''
+                    'edit_ma_hang': medicine.ma_hang || '',
+                    'edit_ma_vach': medicine.ma_vach || '',
+                    'edit_ten_thuoc': medicine.ten_thuoc || '',
+                    'edit_ten_viet_tat': medicine.ten_viet_tat || '',
+                    'edit_nhom_hang_id': medicine.nhom_hang_id || '',
+                    'edit_gia_von': medicine.gia_von || 0,
+                    'edit_gia_ban': medicine.gia_ban || 0,
+                    'edit_so_dang_ky': medicine.so_dang_ky || '',
+                    'edit_hoat_chat': medicine.hoat_chat || '',
+                    'edit_ham_luong': medicine.ham_luong || '',
+                    'edit_duong_dung_select': medicine.drugusage_id || '',
+                    'edit_manufacturer_select': medicine.manufacturer_id || '',
+                    'edit_nuoc_san_xuat': medicine.nuoc_san_xuat || '',
+                    'edit_quy_cach_dong_goi': medicine.quy_cach_dong_goi || '',
+                    'edit_ton_thap_nhat': medicine.ton_thap_nhat || 0,
+                    'edit_ton_cao_nhat': medicine.ton_cao_nhat || 999999999,
+                    'edit_position_select': medicine.position_id || '',
+                    'edit_trong_luong': medicine.trong_luong || 0,
+                    'edit_don_vi_tinh_input': medicine.don_vi_tinh || '',
+                    'edit_mo_ta': medicine.mo_ta || ''
                 };
                 
-                // Set form values
+                // Set all field values
                 Object.keys(fields).forEach(fieldId => {
                     const element = document.getElementById(fieldId);
                     if (element) {
                         element.value = fields[fieldId];
-                        console.log(`Set ${fieldId} to:`, fields[fieldId]);
-                    } else {
-                        console.log(`Element not found: ${fieldId}`);
                     }
                 });
                 
                 // Set checkbox
                 const banTrucTiep = document.getElementById('edit_ban_truc_tiep');
                 if (banTrucTiep) {
-                    banTrucTiep.checked = goods.ban_truc_tiep == 1;
+                    banTrucTiep.checked = medicine.ban_truc_tiep == 1;
                 }
                 
                 // Set form action
-                const form = document.getElementById('editGoodsForm');
+                const form = document.getElementById('editMedicineForm');
                 if (form) {
-                    form.action = `/admin/goods/${goodsId}`;
-                    console.log('Form action set to:', form.action);
-                } else {
-                    console.log('Form not found: editGoodsForm');
+                    form.action = `/admin/medicines/${medicineId}`;
                 }
                 
                 // Show current image if exists
-                if (goods.image) {
+                if (medicine.image) {
                     const preview = document.getElementById('edit-image-preview');
                     const placeholder = document.getElementById('edit-image-placeholder');
                     if (preview && placeholder) {
-                        preview.src = `/storage/${goods.image}`;
+                        preview.src = `/storage/${medicine.image}`;
                         preview.style.display = 'block';
                         placeholder.style.display = 'none';
                     }
                 }
                 
                 // Open modal
-                const modalElement = document.getElementById('editGoodsModal');
-                if (modalElement) {
-                    const modal = new bootstrap.Modal(modalElement);
-                    modal.show();
-                    console.log('Goods modal opened successfully');
-                } else {
-                    console.log('Modal element not found: editGoodsModal');
-                    alert('Không tìm thấy modal chỉnh sửa hàng hóa!');
-                }
+                const modal = new bootstrap.Modal(document.getElementById('editMedicineModal'));
+                modal.show();
             } else {
-                alert('Không thể tải thông tin hàng hóa!');
+                // Failed to load medicine data
             }
         })
         .catch(error => {
-            console.error('Error loading goods data:', error);
-            alert('Đã xảy ra lỗi khi tải thông tin hàng hóa!');
+            // Error loading medicine data
         });
 }
 
-// Delete confirmation modal functions
-window.showDeleteConfirmation = function(goodsId, goodsCode, goodsName) {
-    // Set modal content
-    document.getElementById('deleteGoodsId').value = goodsId;
-    document.getElementById('deleteGoodsCode').textContent = goodsCode;
-    document.getElementById('deleteGoodsName').textContent = goodsName;
-    
-    // Show modal
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-    deleteModal.show();
+// Inline form handlers for edit modal
+function handleEditDrugRouteChange(select) {
+    if (select.value === 'create_new') {
+        document.getElementById('editDrugRouteInlineForm').style.display = 'block';
+        document.getElementById('editNewDrugRouteName').focus();
+        select.value = '';
+    }
 }
 
-window.confirmDelete = function() {
-    const goodsId = document.getElementById('deleteGoodsId').value;
-    const form = document.getElementById('deleteGoodsForm');
-    form.action = `/admin/goods/${goodsId}`;
-    form.submit();
+function createNewEditDrugRouteInline() {
+    const name = document.getElementById('editNewDrugRouteName').value.trim();
+    if (!name) {
+        // Validation failed
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}');
+    
+    fetch('/admin/products/drugroute', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success || data.drug_route) {
+            const select = document.getElementById('edit_duong_dung_select');
+            const newOption = document.createElement('option');
+            newOption.value = data.drug_route.id;
+            newOption.textContent = data.drug_route.name;
+            const createNewOption = select.querySelector('option[value="create_new"]');
+            select.insertBefore(newOption, createNewOption);
+            select.value = data.drug_route.id;
+            
+            cancelEditDrugRouteForm();
+            showSuccessMessage('Tạo đường dùng thành công!');
+        } else {
+            // Error creating drug route
+        }
+    })
+    .catch(error => {
+        // Network or server error
+    });
 }
+
+function cancelEditDrugRouteForm() {
+    document.getElementById('editDrugRouteInlineForm').style.display = 'none';
+    document.getElementById('editNewDrugRouteName').value = '';
+}
+
+function handleEditManufacturerChange(select) {
+    if (select.value === 'create_new') {
+        document.getElementById('editManufacturerInlineForm').style.display = 'block';
+        document.getElementById('editNewManufacturerName').focus();
+        select.value = '';
+    }
+}
+
+function createNewEditManufacturerInline() {
+    const name = document.getElementById('editNewManufacturerName').value.trim();
+    if (!name) {
+        // Validation failed
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}');
+    
+    fetch('/admin/products/manufacturer', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success || data.manufacturer) {
+            const select = document.getElementById('edit_manufacturer_select');
+            const newOption = document.createElement('option');
+            newOption.value = data.manufacturer.id;
+            newOption.textContent = data.manufacturer.name;
+            const createNewOption = select.querySelector('option[value="create_new"]');
+            select.insertBefore(newOption, createNewOption);
+            select.value = data.manufacturer.id;
+            
+            cancelEditManufacturerForm();
+            showSuccessMessage('Tạo hãng sản xuất thành công!');
+        } else {
+            // Error creating manufacturer
+        }
+    })
+    .catch(error => {
+        // Network or server error
+    });
+}
+
+function cancelEditManufacturerForm() {
+    document.getElementById('editManufacturerInlineForm').style.display = 'none';
+    document.getElementById('editNewManufacturerName').value = '';
+}
+
+function handleEditPositionChange(select) {
+    if (select.value === 'create_new') {
+        document.getElementById('editPositionInlineForm').style.display = 'block';
+        document.getElementById('editNewPositionName').focus();
+        select.value = '';
+    }
+}
+
+function createNewEditPositionInline() {
+    const name = document.getElementById('editNewPositionName').value.trim();
+    if (!name) {
+        // Validation failed
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}');
+    
+    fetch('/admin/products/position', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success || data.position) {
+            const select = document.getElementById('edit_position_select');
+            const newOption = document.createElement('option');
+            newOption.value = data.position.id;
+            newOption.textContent = data.position.name;
+            const createNewOption = select.querySelector('option[value="create_new"]');
+            select.insertBefore(newOption, createNewOption);
+            select.value = data.position.id;
+            
+            cancelEditPositionForm();
+            showSuccessMessage('Tạo vị trí thành công!');
+        } else {
+            // Error creating position
+        }
+    })
+    .catch(error => {
+        // Network or server error
+    });
+}
+
+function cancelEditPositionForm() {
+    document.getElementById('editPositionInlineForm').style.display = 'none';
+    document.getElementById('editNewPositionName').value = '';
+}
+
+// Unit modal functions for edit
+function openEditUnitModal() {
+    const modal = new bootstrap.Modal(document.getElementById('unitModal'));
+    modal.show();
+}
+
+// Success message function
+function showSuccessMessage(message) {
+    const toast = document.createElement('div');
+    toast.className = 'position-fixed top-0 end-0 p-3';
+    toast.style.zIndex = '9999';
+    toast.innerHTML = `
+        <div class="toast align-items-center text-white bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i>${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast.querySelector('.toast'));
+    bsToast.show();
+    
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+        }
+    }, 3000);
+} 

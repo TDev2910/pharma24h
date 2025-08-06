@@ -88,7 +88,7 @@ function initTooltips() {
 
 // Update DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ User JavaScript loaded successfully!');
+    // User JavaScript loaded successfully
     
     // Initialize all components
     initSmoothScrolling();

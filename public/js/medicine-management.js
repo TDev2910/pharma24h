@@ -1,40 +1,33 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded');
-    // Check if modal element exists
+    // Initialize modal functionality
     const modal = document.getElementById('createCategoryModal');
     if (modal) {
-        console.log('Modal found:', modal);
-    } else {
-        console.log('Modal not found');
+        // Modal found
     }
+    
     // Check if Bootstrap is loaded
     if (typeof bootstrap !== 'undefined') {
-        console.log('Bootstrap loaded');
-    } else {
-        console.log('Bootstrap not loaded');
+        // Bootstrap loaded
     }
+    
     // Test modal trigger
     const createLink = document.querySelector('[data-bs-target="#createCategoryModal"]');
     if (createLink) {
-        console.log('Create link found:', createLink);
         createLink.addEventListener('click', function(e) {
-            console.log('Create link clicked');
+            // Create link clicked
         });
-    } else {
-        console.log('Create link not found');
     }
-    // Debug form submission
+    
+    // Form submission handling
     const categoryForm = document.querySelector('#createCategoryModal form');
     if (categoryForm) {
-        console.log('Category form found:', categoryForm);
         categoryForm.addEventListener('submit', function(e) {
-            console.log('Form submitted');
+            // Form submitted
             const formData = new FormData(this);
-            console.log('Form data:', Object.fromEntries(formData));
+            // Process form data
         });
-    } else {
-        console.log('Category form not found');
     }
+    
     // Test manual modal opening
     window.testModal = function() {
         const modal = new bootstrap.Modal(document.getElementById('createCategoryModal'));
@@ -104,18 +97,14 @@ window.deleteMedicine = function(medicineId) {
 
 // Function để mở modal chỉnh sửa sản phẩm
 window.openEditMedicineModal = function(medicineId) {
-    console.log('Opening edit modal for medicine ID:', medicineId);
     // Gọi API để lấy thông tin sản phẩm
     fetch(`/admin/medicines/${medicineId}/detail`)
         .then(response => {
-            console.log('Response status:', response.status);
             return response.json();
         })
         .then(data => {
-            console.log('Response data:', data);
             if (data.success) {
                 const medicine = data.product;
-                console.log('Medicine data:', medicine);
                 // Populate form fields
                 const fields = {
                     'edit_ma_hang': medicine.ma_hang || '',
@@ -144,9 +133,6 @@ window.openEditMedicineModal = function(medicineId) {
                     const element = document.getElementById(fieldId);
                     if (element) {
                         element.value = fields[fieldId];
-                        console.log(`Set ${fieldId} to:`, fields[fieldId]);
-                    } else {
-                        console.log(`Element not found: ${fieldId}`);
                     }
                 });
                 // Set checkbox
@@ -158,9 +144,6 @@ window.openEditMedicineModal = function(medicineId) {
                 const form = document.getElementById('editMedicineForm');
                 if (form) {
                     form.action = `/admin/medicines/${medicineId}`;
-                    console.log('Form action set to:', form.action);
-                } else {
-                    console.log('Form not found: editMedicineForm');
                 }
                 // Show current image if exists
                 if (medicine.image) {
@@ -177,9 +160,7 @@ window.openEditMedicineModal = function(medicineId) {
                 if (modalElement) {
                     const modal = new bootstrap.Modal(modalElement);
                     modal.show();
-                    console.log('Modal opened successfully');
                 } else {
-                    console.log('Modal element not found: editMedicineModal');
                     alert('Không tìm thấy modal chỉnh sửa!');
                 }
             } else {
@@ -267,18 +248,14 @@ window.showDeleteGoodsConfirmation = function(goodsId, goodsCode, goodsName) {
 
 // Open edit goods modal
 window.openEditGoodsModal = function(goodsId) {
-    console.log('Opening edit modal for goods ID:', goodsId);
     // Gọi API để lấy thông tin hàng hóa
     fetch(`/admin/goods/${goodsId}/detail`)
         .then(response => {
-            console.log('Response status:', response.status);
             return response.json();
         })
         .then(data => {
-            console.log('Response data:', data);
             if (data.success) {
                 const goods = data.product;
-                console.log('Goods data:', goods);
                 // Populate form fields
                 const fields = {
                     'edit_ma_hang': goods.ma_hang || '',
@@ -303,9 +280,6 @@ window.openEditGoodsModal = function(goodsId) {
                     const element = document.getElementById(fieldId);
                     if (element) {
                         element.value = fields[fieldId];
-                        console.log(`Set ${fieldId} to:`, fields[fieldId]);
-                    } else {
-                        console.log(`Element not found: ${fieldId}`);
                     }
                 });
                 // Set checkbox
@@ -317,9 +291,6 @@ window.openEditGoodsModal = function(goodsId) {
                 const form = document.getElementById('editGoodsForm');
                 if (form) {
                     form.action = `/admin/goods/${goodsId}`;
-                    console.log('Form action set to:', form.action);
-                } else {
-                    console.log('Form not found: editGoodsForm');
                 }
                 // Show current image if exists
                 if (goods.image) {
@@ -336,9 +307,7 @@ window.openEditGoodsModal = function(goodsId) {
                 if (modalElement) {
                     const modal = new bootstrap.Modal(modalElement);
                     modal.show();
-                    console.log('Modal opened successfully');
                 } else {
-                    console.log('Modal element not found: editGoodsModal');
                     alert('Không tìm thấy modal chỉnh sửa!');
                 }
             } else {

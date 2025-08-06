@@ -143,7 +143,7 @@
                               <div class="col-md-4">
                                   <label class="form-label">Hãng sản xuất<span class="text-danger">*</span></label>
                                   <div class="position-relative">
-                                      <select class="form-select" name="manufacturer_id" id="manufacturer_select" required onchange="handleCreateManufacturerChange(this)">
+                                      <select class="form-select" name="manufacturer_id" id="medicine_manufacturer_select" required onchange="handleMedicineManufacturerChange(this)">
                                           <option value="">Tìm hãng sản xuất</option>
                                           @foreach($manufacturers as $manu)
                                               <option value="{{ $manu->id }}">{{ $manu->name }}</option>
@@ -151,16 +151,16 @@
                                           <option value="create_new">+ Tạo mới hãng sản xuất</option>
                                       </select>
                                       
-                                      <!-- Inline form cho Manufacturer -->
-                                      <div id="createManufacturerInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
+                                      <!-- Inline form cho Manufacturer - MEDICINE -->
+                                      <div id="createMedicineManufacturerInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
                                           <div class="mb-2">
-                                              <input type="text" class="form-control" id="createNewManufacturerName" placeholder="Nhập tên hãng sản xuất mới">
+                                              <input type="text" class="form-control" id="createNewMedicineManufacturerName" placeholder="Nhập tên hãng sản xuất mới">
                                           </div>
                                           <div class="d-flex gap-2">
-                                              <button type="button" class="btn btn-success" onclick="createNewCreateManufacturerInline()">
+                                              <button type="button" class="btn btn-success" onclick="createNewMedicineManufacturerInline()">
                                                   <i class="fas fa-save"></i> Lưu
                                               </button>
-                                              <button type="button" class="btn btn-secondary" onclick="cancelCreateManufacturerForm()">
+                                              <button type="button" class="btn btn-secondary" onclick="cancelMedicineManufacturerForm()">
                                                   <i class="fas fa-times"></i> Hủy
                                               </button>
                                           </div>
@@ -202,18 +202,17 @@
                               <div class="col-md-4">
                                   <label class="form-label">Vị trí</label>
                                   <div class="position-relative">
-                                      <select class="form-select" name="position_id" id="position_select" onchange="handleCreatePositionChange(this)">
+                                                                             <select class="form-select" name="position_id" id="medicine_position_select" onchange="handleMedicinePositionChange(this)">
                                           <option value="">Chọn vị trí</option>
                                           @foreach($positions as $pos)
                                               <option value="{{ $pos->id }}">{{ $pos->name }}</option>
                                           @endforeach
                                           <option value="create_new">+ Tạo mới vị trí</option>
-                                      </select>
-                                      
-                                      <!-- Inline form cho Position -->
-                                      <div id="createPositionInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
+                                      </select>                                     
+                                        <!-- Inline form cho Position -->
+                                       <div id="createMedicinePositionInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
                                           <div class="mb-2">
-                                              <input type="text" class="form-control" id="createNewPositionName" placeholder="Nhập tên vị trí mới">
+                                              <input type="text" class="form-control" id="createNewMedicinePositionName" placeholder="Nhập tên vị trí mới">
                                           </div>
                                           <div class="d-flex gap-2">
                                               <button type="button" class="btn btn-success" onclick="createNewCreatePositionInline()">
@@ -288,7 +287,7 @@
 function handleManufacturerChange(select) {
     const selectedOption = select.options[select.selectedIndex];
     if (selectedOption.value) {
-        console.log('Selected manufacturer:', selectedOption.text);
+        // Manufacturer selected
     }
 }
 
@@ -375,9 +374,9 @@ function cancelCreateDrugRouteForm() {
 }
 
 // Handle Manufacturer Change - RIÊNG CHO THUỐC
-function handleCreateManufacturerChange(select) {
+function handleMedicineManufacturerChange(select) {
     const selectedOption = select.options[select.selectedIndex];
-    const inlineForm = document.getElementById('createManufacturerInlineForm');
+    const inlineForm = document.getElementById('createMedicineManufacturerInlineForm');
     
     if (selectedOption.value === 'create_new') {
         inlineForm.style.display = 'block';
@@ -388,8 +387,8 @@ function handleCreateManufacturerChange(select) {
 }
 
 // Create new manufacturer inline - RIÊNG CHO THUỐC
-function createNewCreateManufacturerInline() {
-    const nameInput = document.getElementById('createNewManufacturerName');
+function createNewMedicineManufacturerInline() {
+    const nameInput = document.getElementById('createNewMedicineManufacturerName');
     const name = nameInput.value.trim();
     
     if (!name) {
@@ -410,13 +409,13 @@ function createNewCreateManufacturerInline() {
     .then(data => {
         if (data.success) {
             // Thêm option mới vào select
-            const select = document.getElementById('manufacturer_select');
+            const select = document.getElementById('medicine_manufacturer_select');
             const newOption = new Option(data.manufacturer.name, data.manufacturer.id);
             select.add(newOption);
             select.value = data.manufacturer.id;
             
             // Ẩn form inline
-            document.getElementById('createManufacturerInlineForm').style.display = 'none';
+            document.getElementById('createMedicineManufacturerInlineForm').style.display = 'none';
             nameInput.value = '';
         } else {
             alert('Có lỗi xảy ra: ' + data.message);
@@ -429,16 +428,16 @@ function createNewCreateManufacturerInline() {
 }
 
 // Cancel manufacturer form - RIÊNG CHO THUỐC
-function cancelCreateManufacturerForm() {
-    document.getElementById('createManufacturerInlineForm').style.display = 'none';
-    document.getElementById('createNewManufacturerName').value = '';
-    document.getElementById('manufacturer_select').value = '';
+function cancelMedicineManufacturerForm() {
+    document.getElementById('createMedicineManufacturerInlineForm').style.display = 'none';
+    document.getElementById('createNewMedicineManufacturerName').value = '';
+    document.getElementById('medicine_manufacturer_select').value = '';
 }
 
 // Handle Position Change - RIÊNG CHO THUỐC
-function handleCreatePositionChange(select) {
+function handleMedicinePositionChange(select) {
     const selectedOption = select.options[select.selectedIndex];
-    const inlineForm = document.getElementById('createPositionInlineForm');
+    const inlineForm = document.getElementById('createMedicinePositionInlineForm');
     
     if (selectedOption.value === 'create_new') {
         inlineForm.style.display = 'block';
@@ -450,7 +449,7 @@ function handleCreatePositionChange(select) {
 
 // Create new position inline - RIÊNG CHO THUỐC
 function createNewCreatePositionInline() {
-    const nameInput = document.getElementById('createNewPositionName');
+    const nameInput = document.getElementById('createNewMedicinePositionName');
     const name = nameInput.value.trim();
     
     if (!name) {
@@ -471,13 +470,13 @@ function createNewCreatePositionInline() {
     .then(data => {
         if (data.success) {
             // Thêm option mới vào select
-            const select = document.getElementById('position_select');
+            const select = document.getElementById('medicine_position_select');
             const newOption = new Option(data.position.name, data.position.id);
             select.add(newOption);
             select.value = data.position.id;
             
             // Ẩn form inline
-            document.getElementById('createPositionInlineForm').style.display = 'none';
+            document.getElementById('createMedicinePositionInlineForm').style.display = 'none';
             nameInput.value = '';
         } else {
             alert('Có lỗi xảy ra: ' + data.message);
@@ -491,9 +490,9 @@ function createNewCreatePositionInline() {
 
 // Cancel position form - RIÊNG CHO THUỐC
 function cancelCreatePositionForm() {
-    document.getElementById('createPositionInlineForm').style.display = 'none';
-    document.getElementById('createNewPositionName').value = '';
-    document.getElementById('position_select').value = '';
+    document.getElementById('createMedicinePositionInlineForm').style.display = 'none';
+    document.getElementById('createNewMedicinePositionName').value = '';
+    document.getElementById('medicine_position_select').value = '';
 }
 
 // Open unit modal - RIÊNG CHO THUỐC

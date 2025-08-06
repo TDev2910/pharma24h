@@ -108,7 +108,7 @@
                               <div class="col-md-4">
                                   <label class="form-label">Hãng sản xuất</label>
                                   <div class="position-relative">
-                                      <select class="form-select" name="manufacturer_id" id="manufacturer_select" onchange="handleCreateManufacturerChange(this)">
+                                      <select class="form-select" name="manufacturer_id" id="goods_manufacturer_select" onchange="handleCreateManufacturerChange(this)">
                                           <option value="">Tìm hãng sản xuất</option>
                                           @foreach($manufacturers as $manu)
                                               <option value="{{ $manu->id }}">{{ $manu->name }}</option>
@@ -258,7 +258,7 @@
 function handleManufacturerChange(select) {
     const selectedOption = select.options[select.selectedIndex];
     if (selectedOption.value) {
-        console.log('Selected manufacturer:', selectedOption.text);
+        // Manufacturer selected
     }
 }
 
@@ -342,7 +342,7 @@ function createNewGoodsManufacturerInline() {
     .then(data => {
         if (data.success) {
             // Thêm option mới vào select
-            const select = document.getElementById('manufacturer_select');
+            const select = document.getElementById('goods_manufacturer_select');
             const newOption = new Option(data.manufacturer.name, data.manufacturer.id);
             select.add(newOption);
             select.value = data.manufacturer.id;
@@ -364,7 +364,7 @@ function createNewGoodsManufacturerInline() {
 function cancelGoodsManufacturerForm() {
     document.getElementById('createGoodsManufacturerInlineForm').style.display = 'none';
     document.getElementById('createNewGoodsManufacturerName').value = '';
-    document.getElementById('manufacturer_select').value = '';
+    document.getElementById('goods_manufacturer_select').value = '';
 }
 
 // Handle Position Change - RIÊNG CHO HÀNG HÓA
