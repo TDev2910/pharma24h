@@ -108,7 +108,7 @@
                               <div class="col-md-4">
                                   <label class="form-label">Hãng sản xuất</label>
                                   <div class="position-relative">
-                                      <select class="form-select" name="manufacturer_id" id="goods_manufacturer_select" onchange="handleCreateManufacturerChange(this)">
+                                      <select class="form-select" name="manufacturer_id" id="goods_manufacturer_select" onchange="handleGoodsManufacturerChange(this)">
                                           <option value="">Tìm hãng sản xuất</option>
                                           @foreach($manufacturers as $manu)
                                               <option value="{{ $manu->id }}">{{ $manu->name }}</option>
@@ -172,7 +172,7 @@
                               <div class="col-md-4">
                                   <label class="form-label">Vị trí</label>
                                   <div class="position-relative">
-                                      <select class="form-select" name="position_id" id="position_select" onchange="handleCreatePositionChange(this)">
+                                      <select class="form-select" name="position_id" id="goods_position_select" onchange="handleGoodsPositionChange(this)">
                                           <option value="">Chọn vị trí</option>
                                           @foreach($positions as $pos)
                                               <option value="{{ $pos->id }}">{{ $pos->name }}</option>
@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Handle Manufacturer Change - RIÊNG CHO HÀNG HÓA
-function handleCreateManufacturerChange(select) {
+function handleGoodsManufacturerChange(select) {
     const selectedOption = select.options[select.selectedIndex];
     const inlineForm = document.getElementById('createGoodsManufacturerInlineForm');
     
@@ -368,7 +368,7 @@ function cancelGoodsManufacturerForm() {
 }
 
 // Handle Position Change - RIÊNG CHO HÀNG HÓA
-function handleCreatePositionChange(select) {
+function handleGoodsPositionChange(select) {
     const selectedOption = select.options[select.selectedIndex];
     const inlineForm = document.getElementById('createGoodsPositionInlineForm');
     
@@ -403,7 +403,7 @@ function createNewGoodsPositionInline() {
     .then(data => {
         if (data.success) {
             // Thêm option mới vào select
-            const select = document.getElementById('position_select');
+            const select = document.getElementById('goods_position_select');
             const newOption = new Option(data.position.name, data.position.id);
             select.add(newOption);
             select.value = data.position.id;
@@ -425,7 +425,7 @@ function createNewGoodsPositionInline() {
 function cancelGoodsPositionForm() {
     document.getElementById('createGoodsPositionInlineForm').style.display = 'none';
     document.getElementById('createNewGoodsPositionName').value = '';
-    document.getElementById('position_select').value = '';
+    document.getElementById('goods_position_select').value = '';
 }
 
 // Open unit modal - RIÊNG CHO HÀNG HÓA

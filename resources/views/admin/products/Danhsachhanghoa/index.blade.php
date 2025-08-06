@@ -90,7 +90,7 @@
                                 <a href="#" class="create-link" data-bs-toggle="modal" data-bs-target="#createCategoryModal" style="margin-left: 115px;">Tạo mới</a>
                             </label>
                             <div>
-                                <select class="form-select form-select-sm" name="category_id">
+                                <select class="form-select form-select-sm" name="category_id" onchange="filterProducts()">
                                     <option value="">Chọn nhóm hàng</option>
                                     @foreach($categories as $id => $name)
                                         <option value="{{ $id }}">{{ $name }}</option>
@@ -137,26 +137,28 @@
                         --}}
                         <div class="filter-section">
                             <label>Nhà cung cấp</label>
-                            <select class="form-select form-select-sm">
-                                <option>Chọn nhà cung cấp</option>
-                                <option>Công ty A</option>
-                                <option>Công ty B</option>
+                            <select class="form-select form-select-sm" name="manufacturer_id" onchange="filterProducts()">
+                                <option value="">Chọn nhà cung cấp</option>
+                                @foreach($manufacturers as $manufacturer)
+                                    <option value="{{ $manufacturer->id }}">{{ $manufacturer->name }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="filter-section">
                             <label>Vị trí</label>
-                            <select class="form-select form-select-sm">
-                                <option>Chọn vị trí</option>
-                                <option>Kho A</option>
-                                <option>Kho B</option>
+                            <select class="form-select form-select-sm" name="position_id" onchange="filterProducts()">
+                                <option value="">Chọn vị trí</option>
+                                @foreach($positions as $position)
+                                    <option value="{{ $position->id }}">{{ $position->name }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="filter-section">
                             <label>Loại hàng</label>
-                            <select class="form-select form-select-sm">
-                                <option>Chọn loại hàng</option>
-                                <option>Thuốc</option>
-                                <option>Thiết bị y tế</option>
+                            <select class="form-select form-select-sm" name="product_type" onchange="filterProducts()">
+                                <option value="">Chọn loại hàng</option>
+                                <option value="medicine">Thuốc</option>
+                                <option value="goods">Hàng hóa</option>
                             </select>
                         </div>
                     </div>
@@ -187,7 +189,13 @@
                                 <tbody>
                                     <!-- Hiển thị thuốc -->
                                     @forelse($medicines as $medicine)
-                                        <tr class="product-row" data-product-id="{{ $medicine->id }}" style="cursor: pointer;" onclick="toggleProductDetail({{ $medicine->id }}, this)">
+                                        <tr class="product-row medicine-row" 
+                                            data-product-id="{{ $medicine->id }}" 
+                                            data-category-id="{{ $medicine->nhom_hang_id }}"
+                                            data-manufacturer-id="{{ $medicine->manufacturer_id }}"
+                                            data-position-id="{{ $medicine->position_id }}"
+                                            style="cursor: pointer;" 
+                                            onclick="toggleProductDetail({{ $medicine->id }}, this)">
                                             <td>
                                                 <input type="checkbox" class="form-check-input" onclick="event.stopPropagation()">
                                             </td>
@@ -460,7 +468,13 @@
                                     
                                     <!-- Hiển thị hàng hóa -->
                                     @forelse($goods as $good)
-                                        <tr class="product-row" data-product-id="goods-{{ $good->id }}" style="cursor: pointer;" onclick="toggleGoodsDetail({{ $good->id }}, this)">
+                                        <tr class="product-row goods-row" 
+                                            data-product-id="goods-{{ $good->id }}" 
+                                            data-category-id="{{ $good->nhom_hang_id }}"
+                                            data-manufacturer-id="{{ $good->manufacturer_id }}"
+                                            data-position-id="{{ $good->position_id }}"
+                                            style="cursor: pointer;" 
+                                            onclick="toggleGoodsDetail({{ $good->id }}, this)">
                                             <td>
                                                 <input type="checkbox" class="form-check-input" onclick="event.stopPropagation()">
                                             </td>
@@ -796,6 +810,7 @@
 
 @push('scripts')
 <script src="{{ asset('js/medicine-management.js') }}"></script>
+<script src="{{ asset('js/goods-management.js') }}"></script>
 @endpush
 
 <!-- Delete Confirmation Modal -->
@@ -835,4 +850,4 @@
     @method('DELETE')
     <input type="hidden" id="deleteMedicineId" name="medicine_id">
 </form>
-@endsection         
+@endsection             

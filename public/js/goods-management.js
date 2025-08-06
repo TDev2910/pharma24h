@@ -300,4 +300,225 @@ function showSuccessMessage(message) {
             toast.parentNode.removeChild(toast);
         }
     }, 3000);
-} 
+}
+
+// ========================================
+// GOODS MANAGEMENT FUNCTIONS
+// ========================================
+
+// Toggle hiển thị thông tin chi tiết hàng hóa
+window.toggleGoodsDetail = function(goodsId, element) {
+    const detailRow = document.getElementById(`detail-row-goods-${goodsId}`);
+    if (!detailRow) return;
+    const isVisible = detailRow.style.display !== 'none';
+    // Đóng tất cả các detail rows khác
+    document.querySelectorAll('.detail-row').forEach(row => {
+        row.style.display = 'none';
+    });
+    // Xóa highlight từ tất cả các hàng
+    document.querySelectorAll('.product-table tbody tr').forEach(row => {
+        row.classList.remove('selected-row');
+    });
+    if (!isVisible) {
+        // Mở detail row
+        detailRow.style.display = 'table-row';
+        // Highlight hàng được chọn
+        const selectedRow = element.closest('tr');
+        if (selectedRow) {
+            selectedRow.classList.add('selected-row');
+        }
+        // Scroll đến detail row
+        detailRow.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest'
+        });
+    }
+}
+
+// Delete goods confirmation
+window.showDeleteGoodsConfirmation = function(goodsId, goodsCode, goodsName) {
+    // Set modal content
+    document.getElementById('deleteMedicineId').value = goodsId;
+    document.getElementById('deleteMedicineCode').textContent = goodsCode;
+    document.getElementById('deleteMedicineName').textContent = goodsName;
+    
+    // Đánh dấu đây là hàng hóa để confirmDelete biết
+    window.isDeletingGoods = true;
+    
+    // Show modal
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+    deleteModal.show();
+}
+
+// Confirm delete function for goods
+window.confirmDelete = function() {
+    const goodsId = document.getElementById('deleteMedicineId').value;
+    const form = document.getElementById('deleteMedicineForm');
+    
+    // Kiểm tra xem đây là thuốc hay hàng hóa dựa vào biến global
+    if (window.isDeletingGoods === true) {
+        // Đây là hàng hóa
+        form.action = `/admin/goods/${goodsId}`;
+        console.log('Deleting goods with ID:', goodsId);
+    } else {
+        // Đây là thuốc
+        form.action = `/admin/medicines/${goodsId}`;
+        console.log('Deleting medicine with ID:', goodsId);
+    }
+    form.submit();
+}
+
+// Open edit goods modal
+window.openEditGoodsModal = function(goodsId) {
+    // Gọi API để lấy thông tin hàng hóa
+    fetch(`/admin/goods/${goodsId}/detail`)
+        .then(response => {
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const goods = data.product;
+                // Populate form fields
+                const fields = {
+                    'edit_ma_hang': goods.ma_hang || '',
+                    'edit_ma_vach': goods.ma_vach || '',
+                    'edit_ten_hang_hoa': goods.ten_hang_hoa || '',
+                    'edit_nhom_hang_id': goods.nhom_hang_id || '',
+                    'edit_gia_von': goods.gia_von || 0,
+                    'edit_gia_ban': goods.gia_ban || 0,
+                    'edit_quy_cach_dong_goi': goods.quy_cach_dong_goi || '',
+                    'edit_manufacturer_select': goods.manufacturer_id || '',
+                    'edit_nuoc_san_xuat': goods.nuoc_san_xuat || '',
+                    'edit_ton_kho': goods.ton_kho || 0,
+                    'edit_ton_thap_nhat': goods.ton_thap_nhat || 0,
+                    'edit_ton_cao_nhat': goods.ton_cao_nhat || 999999999,
+                    'edit_position_select': goods.position_id || '',
+                    'edit_trong_luong': goods.trong_luong || 0,
+                    'edit_don_vi_tinh_input': goods.don_vi_tinh || '',
+                    'edit_mo_ta': goods.mo_ta || ''
+                };
+                // Set form values
+                Object.keys(fields).forEach(fieldId => {
+                    const element = document.getElementById(fieldId);
+                    if (element) {
+                        element.value = fields[fieldId];
+                    }
+                });
+                // Set checkbox
+                const banTrucTiep = document.getElementById('edit_ban_truc_tiep');
+                if (banTrucTiep) {
+                    banTrucTiep.checked = goods.ban_truc_tiep == 1;
+                }
+                // Set form action
+                const form = document.getElementById('editGoodsForm');
+                if (form) {
+                    form.action = `/admin/goods/${goodsId}`;
+                }
+                // Show current image if exists
+                if (goods.image) {
+                    const preview = document.getElementById('edit-image-preview');
+                    const placeholder = document.getElementById('edit-image-placeholder');
+                    if (preview && placeholder) {
+                        preview.src = `/storage/${goods.image}`;
+                        preview.style.display = 'block';
+                        placeholder.style.display = 'none';
+                    }
+                }
+                // Open modal
+                const modalElement = document.getElementById('editGoodsModal');
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                } else {
+                    alert('Không tìm thấy modal chỉnh sửa!');
+                }
+            } else {
+                alert('Không thể tải thông tin hàng hóa!');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading goods data:', error);
+            alert('Đã xảy ra lỗi khi tải thông tin hàng hóa!');
+        });
+}
+
+// Filter products function
+window.filterProducts = function() {
+    const categoryId = document.querySelector('select[name="category_id"]').value;
+    const manufacturerId = document.querySelector('select[name="manufacturer_id"]').value;
+    const positionId = document.querySelector('select[name="position_id"]').value;
+    const productType = document.querySelector('select[name="product_type"]').value;
+    
+    // Lấy tất cả các hàng sản phẩm
+    const productRows = document.querySelectorAll('.product-row');
+    
+    productRows.forEach(row => {
+        let showRow = true;
+        
+        // Lọc theo loại sản phẩm
+        if (productType) {
+            const isMedicine = row.classList.contains('medicine-row');
+            const isGoods = row.classList.contains('goods-row');
+            
+            if (productType === 'medicine' && !isMedicine) {
+                showRow = false;
+            } else if (productType === 'goods' && !isGoods) {
+                showRow = false;
+            }
+        }
+        
+        // Lọc theo vị trí (nếu có data-position-id)
+        if (positionId && showRow) {
+            const rowPositionId = row.getAttribute('data-position-id');
+            if (rowPositionId && rowPositionId !== positionId) {
+                showRow = false;
+            }
+        }
+        
+        // Lọc theo nhà cung cấp (nếu có data-manufacturer-id)
+        if (manufacturerId && showRow) {
+            const rowManufacturerId = row.getAttribute('data-manufacturer-id');
+            if (rowManufacturerId && rowManufacturerId !== manufacturerId) {
+                showRow = false;
+            }
+        }
+        
+        // Lọc theo nhóm hàng (nếu có data-category-id)
+        if (categoryId && showRow) {
+            const rowCategoryId = row.getAttribute('data-category-id');
+            if (rowCategoryId && rowCategoryId !== categoryId) {
+                showRow = false;
+            }
+        }
+        
+        // Hiển thị/ẩn hàng
+        if (showRow) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Cập nhật số lượng sản phẩm hiển thị
+    updateProductCount();
+}
+
+// Update product count
+window.updateProductCount = function() {
+    const visibleRows = document.querySelectorAll('.product-row:not([style*="display: none"])');
+    const totalProducts = document.querySelectorAll('.product-row').length;
+    
+    // Cập nhật thông tin hiển thị
+    const summaryElement = document.querySelector('.summary-section small');
+    if (summaryElement) {
+        summaryElement.innerHTML = `Tổng cộng: <strong>${totalProducts}</strong> sản phẩm | Hiển thị: <strong>${visibleRows.length}</strong> sản phẩm`;
+    }
+}
+
+
+
+// Initialize filters when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Cập nhật số lượng sản phẩm ban đầu
+    updateProductCount();
+}); 
