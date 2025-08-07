@@ -20,9 +20,9 @@
                             <span class="input-group-text">
                                 <i class="fas fa-search"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Theo mã, tên hàng">
-                            <button class="btn btn-outline-secondary" type="button">
-                                <i class="fas fa-filter"></i>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Theo mã, tên hàng" onkeyup="searchProducts()">
+                            <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()">
+                                <i class="fas fa-times"></i>
                             </button>
                         </div>
                     </div>
@@ -107,21 +107,8 @@
                                 <option>Sắp hết</option>
                             </select>
                         </div>
-                        {{-- 
-                        <div class="filter-section">
-                            <label>Dự kiến hết hàng</label>
-                            <div class="radio-group">
-                                <div class="radio-item">
-                                    <input type="radio" id="out_of_stock_all" name="out_of_stock" value="all" checked>
-                                    <label for="out_of_stock_all">Toàn thời gian</label>
-                                </div>
-                                <div class="radio-item">
-                                    <input type="radio" id="out_of_stock_custom" name="out_of_stock" value="custom">
-                                    <label for="out_of_stock_custom">Tùy chỉnh</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="filter-section">
+                      
+                        {{-- <div class="filter-section">
                             <label>Thời gian tạo</label>
                             <div class="radio-group">
                                 <div class="radio-item">
@@ -133,8 +120,8 @@
                                     <label for="created_custom">Tùy chỉnh</label>
                                 </div>
                             </div>
-                        </div>
-                        --}}
+                        </div> --}}
+                       
                         <div class="filter-section">
                             <label>Nhà cung cấp</label>
                             <select class="form-select form-select-sm" name="manufacturer_id" onchange="filterProducts()">
@@ -159,6 +146,8 @@
                                 <option value="">Chọn loại hàng</option>
                                 <option value="medicine">Thuốc</option>
                                 <option value="goods">Hàng hóa</option>
+                                <option value="service">Dịch vụ</option>
+                                <option value="combo">Combo - đóng gói</option>
                             </select>
                         </div>
                     </div>
@@ -809,8 +798,8 @@
 @endpush
 
 @push('scripts')
-<script src="{{ asset('js/medicine-management.js') }}"></script>
-<script src="{{ asset('js/goods-management.js') }}"></script>
+<script src="{{ asset('js/products/medicine-management.js') }}"></script>
+<script src="{{ asset('js/products/goods-management.js') }}"></script>
 @endpush
 
 <!-- Delete Confirmation Modal -->

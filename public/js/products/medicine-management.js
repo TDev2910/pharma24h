@@ -217,6 +217,102 @@ window.openUnitModal = function(medicineId) {
     } else {
         alert('Modal đơn vị tính không tìm thấy!');
     }
+} 
+
+//tim kiem san pham
+window.searchProducts = function() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    const productRows = document.querySelectorAll('.product-row');
+    
+    if (searchTerm === '') {
+        // Nếu không có từ khóa tìm kiếm, hiển thị tất cả
+        productRows.forEach(row => {
+            row.style.display = '';
+        });
+        updateProductCount();
+        return;
+    }
+    
+    productRows.forEach(row => {
+        const productName = row.querySelector('.product-name')?.textContent.toLowerCase() || '';
+        const productCode = row.querySelector('.product-code')?.textContent.toLowerCase() || '';
+        const manufacturer = row.querySelector('[data-manufacturer-name]')?.getAttribute('data-manufacturer-name')?.toLowerCase() || '';
+        
+        // Tìm kiếm trong tên, mã và nhà cung cấp
+        const isMatch = productName.includes(searchTerm) || 
+            productCode.includes(searchTerm) || 
+            manufacturer.includes(searchTerm);
+        
+        if (isMatch) {
+            row.style.display = '';
+            // Highlight từ khóa tìm kiếm
+            highlightSearchTerm(row, searchTerm);
+        }   
+        else 
+        {
+            row.style.display = 'none';
+        }
+    });
+    
+    updateProductCount();
 }
 
- 
+// Highlight từ khóa tìm kiếm
+function highlightSearchTerm(row, searchTerm) {
+    const productNameElement = row.querySelector('.product-name');
+    const productCodeElement = row.querySelector('.product-code');
+    
+    if (productNameElement) {
+        const originalText = productNameElement.textContent;
+        const highlightedText = originalText.replace(
+            new RegExp(searchTerm, 'gi'),
+            match => `<mark style="background-color: #ffeb3b; padding: 1px 2px; border-radius: 2px;">${match}</mark>`
+        );
+        productNameElement.innerHTML = highlightedText;
+    }
+    
+    if (productCodeElement) {
+        const originalText = productCodeElement.textContent; //original text lay noi dung text goc
+        const highlightedText = originalText.replace(
+            new RegExp(searchTerm, 'gi'),
+            match => `<mark style="background-color: #ffeb3b; padding: 1px 2px; border-radius: 2px;">${match}</mark>`
+        );
+        productCodeElement.innerHTML = highlightedText;
+    }
+}
+
+// Clear search function
+window.clearSearch = function() {
+    document.getElementById('searchInput').value = '';
+    // Xóa highlight
+    const productRows = document.querySelectorAll('.product-row');
+    productRows.forEach(row => {
+        row.style.display = '';
+        const productNameElement = row.querySelector('.product-name');
+        const productCodeElement = row.querySelector('.product-code');
+        
+        if (productNameElement) {
+            productNameElement.innerHTML = productNameElement.textContent;
+        }
+        if (productCodeElement) {
+            productCodeElement.innerHTML = productCodeElement.textContent;
+        }
+    });    
+    updateProductCount();
+}
+
+// Debounce function để tối ưu performance
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Áp dụng debounce cho search function
+window.searchProducts = debounce(window.searchProducts, 300); 
