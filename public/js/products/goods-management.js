@@ -539,9 +539,6 @@ document.addEventListener('DOMContentLoaded', function() {
     updateProductCount();
 }); 
 
-// ========================================
-// SEARCH FUNCTIONALITY
-// ========================================
 
 // Search products function
 window.searchProducts = function() {
@@ -549,9 +546,19 @@ window.searchProducts = function() {
     const productRows = document.querySelectorAll('.product-row');
     
     if (searchTerm === '') {
-        // Nếu không có từ khóa tìm kiếm, hiển thị tất cả
+        // Nếu không có từ khóa tìm kiếm, hiển thị tất cả và xóa highlight
         productRows.forEach(row => {
             row.style.display = '';
+            // Xóa highlight khi không có từ khóa
+            const productNameElement = row.querySelector('.product-name');
+            const productCodeElement = row.querySelector('.product-code');
+            
+            if (productNameElement) {
+                productNameElement.innerHTML = productNameElement.textContent;
+            }
+            if (productCodeElement) {
+                productCodeElement.innerHTML = productCodeElement.textContent;
+            }
         });
         updateProductCount();
         return;
