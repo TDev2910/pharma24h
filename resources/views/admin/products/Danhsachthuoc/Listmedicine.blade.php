@@ -21,13 +21,9 @@
                         <i class="fas fa-search"></i>
                     </span>
                     <input type="text" class="form-control" placeholder="Theo mã, tên hàng">
-                    <button class="btn btn-outline-secondary" type="button">
-                        <i class="fas fa-filter"></i>
-                    </button>
                 </div>
             </div>
-            
-            
+                 
                 <div class="ultility-options d-flex align-items-center">
                     <!-- Xuất file -->
                     <button class="btn btn-outline-secondary me-2">

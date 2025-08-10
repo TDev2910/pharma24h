@@ -4,7 +4,7 @@
       <div class="modal-content" style="border-radius:16px;">
         <div class="modal-header">
           <h5 class="modal-title" id="createMedicineModalLabel">
-            <i class="fas fa-plus me-2"></i>Tạo thuốc mới
+            <i style="margin-right:10px"></i>Tạo thuốc 
           </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
@@ -14,12 +14,13 @@
               <!-- Tabs -->
               <ul class="nav nav-tabs border-0 mb-3" id="createMedicineTab" role="tablist">
                   <li class="" role="presentation">
-                      <button class="nav-link active px-4 py-2 fw-bold" id="create-info-tab" data-bs-toggle="tab" data-bs-target="#create-info" type="button" role="tab" style="margin-left:-25px;">Thông tin</button>
+                      <button class="nav-link active px-4 py-2 fw-bold" id="create-info-tab" data-bs-toggle="tab" data-bs-target="#create-info" type="button" role="tab" style="margin-left:1px;margin-bottom:-2px">Thông tin</button>
                   </li>
                   <li class="" role="presentation">
                       <button class="nav-link px-4 py-2 fw-bold" id="create-desc-tab" data-bs-toggle="tab" data-bs-target="#create-desc" type="button" role="tab" style="border-radius:8px;">Mô tả</button>
                   </li>
               </ul>
+              <hr class="border-0 border-top border-secondary-subtle" style="background-color: black; height: 2px;margin-top:-14px">
               <div class="tab-content" id="createMedicineTabContent">
                   <!-- Tab Thông tin -->
                   <div class="tab-pane fade show active" id="create-info" role="tabpanel">
@@ -59,11 +60,11 @@
                           <div class="col-md-4">
                               <!-- Chỉ 1 ảnh duy nhất - CÓ PREVIEW -->
                               <div class="border-2 border-dashed border-primary rounded-3 d-flex flex-column align-items-center justify-content-center position-relative bg-light" 
-                                   style="width:200px;height:200px;background:linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);" id="create-image-preview-container">
+                                   style="width:200px;height:200px;background:linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);" id="create-medicine-image-preview-container">
                                   <input type="file" name="image" accept="image/*" 
                                       style="opacity:0;position:absolute;width:100%;height:100%;cursor:pointer;top:0;left:0;z-index:1;"
-                                      onchange="previewCreateImage(this)">
-                                  <div class="text-center" id="create-image-placeholder"> 
+                                      onchange="previewCreateMedicineImage(this)">
+                                  <div class="text-center" id="create-medicine-image-placeholder"> 
                                       <i class="fas fa-image fa-3x text-primary mb-3"></i>
                                       <div class="fw-bold text-primary mb-2">Thêm ảnh sản phẩm</div>
                                       <small class="text-muted">Click để chọn ảnh</small>
@@ -71,7 +72,7 @@
                                           <span class="badge bg-light text-dark">Tối đa 2MB</span>
                                       </div>
                                   </div>
-                                  <img id="create-image-preview" src="" alt="Preview" 
+                                  <img id="create-medicine-image-preview" src="" alt="Preview" 
                                        style="width:100%;height:100%;object-fit:cover;border-radius:8px;display:none;">
                               </div>
                           </div>
@@ -202,7 +203,7 @@
                               <div class="col-md-4">
                                   <label class="form-label">Vị trí</label>
                                   <div class="position-relative">
-                                                                             <select class="form-select" name="position_id" id="medicine_position_select" onchange="handleMedicinePositionChange(this)">
+                                        <select class="form-select" name="position_id" id="medicine_position_select" onchange="handleMedicinePositionChange(this)">
                                           <option value="">Chọn vị trí</option>
                                           @foreach($positions as $pos)
                                               <option value="{{ $pos->id }}">{{ $pos->name }}</option>
@@ -229,7 +230,7 @@
                                   <label class="form-label">Trọng lượng</label>
                                   <div class="input-group">
                                       <input type="number" class="form-control" name="trong_luong" id="trong_luong" value="0">
-                                      <span class="input-group-text">g</span>
+                                      <select name="" id="">g</select>
                                   </div>
                               </div>
                           </div>
@@ -270,7 +271,7 @@
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
               <button type="submit" class="btn btn-success">
-                  <i class="fas fa-save"></i> Lưu thuốc
+                  <i></i> Lưu thuốc
               </button>
           </div>
         </form>

@@ -113,7 +113,7 @@
 /* Large Desktop: từ 1400px trở lên */
 @media (min-width: 1400px) {
     /* Medicine Management Large Desktop Styles */
-    .container-fluid {
+    .container-fluid:not(.admin-container) {
         max-width: 1400px !important;
         margin: 0 auto;
     }

@@ -1,5 +1,3 @@
-/* ===== FORM STYLES (CREATE + EDIT) ===== */
-
 /* Modal Styling */
 .product-modal .modal-dialog {
     max-width: 90%;
@@ -13,8 +11,8 @@
 
 /* Create Modal Header */
 .create-modal .modal-header {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
+    background: white;
+    color: black;
     border-radius: 16px 16px 0 0;
     border: none;
 }

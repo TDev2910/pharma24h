@@ -19,6 +19,7 @@ class Goods extends Model
         'ton_kho',
         'ton_thap_nhat',
         'ton_cao_nhat',
+        'quan_ly_theo_lo',
         'quy_cach_dong_goi',
         'manufacturer_id',
         'nuoc_san_xuat',

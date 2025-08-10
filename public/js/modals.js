@@ -38,8 +38,6 @@ function hideModalLoading(modalId) {
     }
 }
 
-// ===== DELETE CONFIRMATION MODAL =====
-
 // Show delete confirmation modal
 function showDeleteConfirmation(productId, productCode, productName, type = 'medicine') {
     // Set product info
@@ -63,8 +61,6 @@ function confirmDelete() {
         form.submit();
     }
 }
-
-// ===== UNIT MODAL =====
 
 // Open unit modal
 function openUnitModal() {
@@ -118,8 +114,6 @@ function createNewUnit() {
     });
 }
 
-// ===== CATEGORY MODAL =====
-
 // Open category modal
 function openCategoryModal() {
     openModal('createCategoryModal');
@@ -138,8 +132,6 @@ function createNewCategory() {
         form.submit();
     }
 }
-
-// ===== MODAL EVENT HANDLERS =====
 
 // Handle modal shown event
 function onModalShown(modalId, callback) {
@@ -172,8 +164,6 @@ function onModalHide(modalId, callback) {
         modal.addEventListener('hide.bs.modal', callback);
     }
 }
-
-// ===== MODAL UTILITY FUNCTIONS =====
 
 // Check if modal is open
 function isModalOpen(modalId) {
@@ -219,8 +209,6 @@ function setModalSize(modalId, size) {
     }
 }
 
-// ===== MODAL ANIMATION FUNCTIONS =====
-
 // Fade in modal
 function fadeInModal(modalId, duration = 300) {
     const modal = document.getElementById(modalId);
@@ -247,8 +235,6 @@ function fadeOutModal(modalId, duration = 300) {
         }, duration);
     }
 }
-
-// ===== MODAL CONTENT FUNCTIONS =====
 
 // Update modal content
 function updateModalContent(modalId, content) {
@@ -282,8 +268,6 @@ function updateModalFooter(modalId, content) {
         }
     }
 }
-
-// ===== MODAL FORM FUNCTIONS =====
 
 // Reset modal form
 function resetModalForm(modalId) {
@@ -330,8 +314,6 @@ function submitModalForm(modalId) {
         }
     }
 }
-
-// ===== SUCCESS MESSAGE FUNCTION =====
 
 // Show success message
 function showSuccessMessage(message) {

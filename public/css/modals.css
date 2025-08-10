@@ -90,8 +90,8 @@
 }
 
 #createCategoryModal .modal-header {
-    background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
-    color: white;
+    background: white;
+    color: black;
     border-radius: 12px 12px 0 0;
 }
 

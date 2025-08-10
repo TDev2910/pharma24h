@@ -1,3 +1,70 @@
+// Image preview functions for different modals
+function previewCreateGoodsImage(input) {
+    const file = input.files[0];
+    const preview = document.getElementById('create-goods-image-preview');
+    const placeholder = document.getElementById('create-goods-image-placeholder');
+    
+    if (file) {
+        // Kiểm tra kích thước file anh tai len (2MB = 2 * 1024 * 1024 bytes)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('File quá lớn! Vui lòng chọn ảnh nhỏ hơn 2MB.');
+            input.value = '';
+            return;
+        }
+        
+        // Kiểm tra loại file
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn file ảnh!');
+            input.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.style.display = 'none';
+        placeholder.style.display = 'block';
+    }
+}
+
+function previewCreateMedicineImage(input) {
+    const file = input.files[0];
+    const preview = document.getElementById('create-medicine-image-preview');
+    const placeholder = document.getElementById('create-medicine-image-placeholder');
+    
+    if (file) {
+        // Kiểm tra kích thước file anh tai len (2MB = 2 * 1024 * 1024 bytes)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('File quá lớn! Vui lòng chọn ảnh nhỏ hơn 2MB.');
+            input.value = '';
+            return;
+        }
+        
+        // Kiểm tra loại file
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn file ảnh!');
+            input.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.style.display = 'none';
+        placeholder.style.display = 'block';
+    }
+}
+
 function previewEditImage(input) {
     const file = input.files[0];
     const preview = document.getElementById('edit-image-preview');

@@ -46,12 +46,12 @@
                                   </div>
                                   <div class="col-md-6">
                                       <label class="form-label">Nhóm hàng <span class="text-danger">*</span></label>
-                                                                      <select class="form-select" name="nhom_hang_id" id="edit_nhom_hang_id" required>
-                                      <option value="">Chọn nhóm hàng (Bắt buộc)</option>
-                                      @foreach($categories as $id => $name)
-                                          <option value="{{ $id }}">{{ $name }}</option>
-                                      @endforeach
-                                  </select>
+                                      <select class="form-select" name="nhom_hang_id" id="edit_nhom_hang_id" required>
+                                          <option value="">Chọn nhóm hàng (Bắt buộc)</option>
+                                          @foreach($categories as $id => $name)
+                                              <option value="{{ $id }}">{{ $name }}</option>
+                                          @endforeach
+                                      </select>
                                   </div>
                               </div>
                           </div> 
@@ -62,11 +62,11 @@
                               </label>
                               <!-- Chỉ 1 ảnh duy nhất - CÓ PREVIEW -->
                               <div class="border-2 border-dashed border-primary rounded-3 d-flex flex-column align-items-center justify-content-center position-relative bg-light" 
-                                   style="width:200px;height:200px;background:linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);" id="edit-image-preview-container">
+                                   style="width:200px;height:200px;background:linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);" id="edit-medicine-image-preview-container">
                                   <input type="file" name="image" accept="image/*" 
                                       style="opacity:0;position:absolute;width:100%;height:100%;cursor:pointer;top:0;left:0;z-index:1;"
-                                      onchange="previewEditImage(this)">
-                                  <div class="text-center" id="edit-image-placeholder"> 
+                                      onchange="previewEditMedicineImage(this)">
+                                  <div class="text-center" id="edit-medicine-image-placeholder"> 
                                       <i class="fas fa-image fa-3x text-primary mb-3"></i>
                                       <div class="fw-bold text-primary mb-2">Thêm ảnh sản phẩm</div>
                                       <small class="text-muted">Click để chọn ảnh</small>
@@ -74,7 +74,7 @@
                                           <span class="badge bg-light text-dark">Tối đa 2MB</span>
                                       </div>
                                   </div>
-                                  <img id="edit-image-preview" src="" alt="Preview" 
+                                  <img id="edit-medicine-image-preview" src="" alt="Preview" 
                                        style="width:100%;height:100%;object-fit:cover;border-radius:8px;display:none;">
                               </div>
                           </div>
@@ -97,7 +97,7 @@
                               </div>
                           </div>
                       </fieldset>
-  
+
                       <!-- Thông tin thuốc -->
                       <fieldset class="mb-4 border rounded p-3">
                           <legend class="float-none w-auto px-2 fs-6">Thông tin thuốc</legend>
@@ -154,10 +154,10 @@
                                           <option value="create_new">+ Tạo mới hãng sản xuất</option>
                                       </select>
                                       
-                                      <!-- Inline form cho Manufacturer -->
-                                      <div id="editManufacturerInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
+                                      <!-- Inline form cho Manufacturer - EDIT MEDICINE -->
+                                      <div id="editMedicineManufacturerInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
                                           <div class="mb-2">
-                                              <input type="text" class="form-control" id="editNewManufacturerName" placeholder="Nhập tên hãng sản xuất mới">
+                                              <input type="text" class="form-control" id="editNewMedicineManufacturerName" placeholder="Nhập tên hãng sản xuất mới">
                                           </div>
                                           <div class="d-flex gap-2">
                                               <button type="button" class="btn btn-success" onclick="createNewEditManufacturerInline()">
@@ -182,7 +182,7 @@
                               </div>
                           </div>
                       </fieldset>
-  
+
                       <!-- Tồn kho -->
                       <fieldset class="mb-4 border rounded p-3">
                           <legend class="float-none w-auto px-2 fs-6">Tồn kho</legend>
@@ -197,7 +197,7 @@
                               </div>
                           </div>
                       </fieldset>
-  
+
                       <!-- Vị trí, trọng lượng -->
                       <fieldset class="mb-4 border rounded p-3">
                           <legend class="float-none w-auto px-2 fs-6">Vị trí, trọng lượng</legend>
@@ -214,9 +214,9 @@
                                       </select>
                                       
                                       <!-- Inline form cho Position -->
-                                      <div id="editPositionInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
+                                      <div id="editMedicinePositionInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
                                           <div class="mb-2">
-                                              <input type="text" class="form-control" id="editNewPositionName" placeholder="Nhập tên vị trí mới">
+                                              <input type="text" class="form-control" id="editNewMedicinePositionName" placeholder="Nhập tên vị trí mới">
                                           </div>
                                           <div class="d-flex gap-2">
                                               <button type="button" class="btn btn-success" onclick="createNewEditPositionInline()">
@@ -238,7 +238,7 @@
                               </div>
                           </div>
                       </fieldset>
-  
+
                       <!-- Thiết lập đơn vị tính -->
                       <fieldset class="mb-4 border rounded p-3">
                           <legend class="float-none w-auto px-2 fs-6">Thiết lập đơn vị tính</legend>
@@ -251,7 +251,7 @@
                               </div>
                           </div>
                       </fieldset>
-  
+
                       <!-- Bán trực tiếp -->
                       <div class="form-check mb-3">
                           <input class="form-check-input" type="checkbox" id="edit_ban_truc_tiep" name="ban_truc_tiep">
@@ -273,8 +273,8 @@
           
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-              <button type="submit" class="btn btn-primary">
-                  <i class="fas fa-save"></i> Cập nhật thuốc
+              <button type="submit" class="btn btn-success">
+                  <i class="fas fa-save"></i> Lưu thay đổi
               </button>
           </div>
         </form>
@@ -286,9 +286,9 @@
   @include('admin.products.Danhsachhanghoa.formmodal.unit_modal')
   
   @push('styles')
-  <link rel="stylesheet" href="{{ asset('css/edit-medicine.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/forms.css') }}">
   @endpush
   
   @push('scripts')
-  <script src="{{ asset('js/edit-medicine.js') }}"></script>
-  @endpush 
+  <script src="{{ asset('js/forms.js') }}"></script>
+  @endpush  

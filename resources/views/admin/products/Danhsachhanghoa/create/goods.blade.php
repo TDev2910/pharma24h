@@ -4,7 +4,7 @@
       <div class="modal-content" style="border-radius:16px;">
         <div class="modal-header">
           <h5 class="modal-title" id="createGoodsModalLabel">
-            <i class="fas fa-plus me-2"></i>Tạo hàng hóa mới
+            <i style="margin-right:10px"></i>Tạo hàng hóa 
           </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
@@ -14,12 +14,13 @@
               <!-- Tabs -->
               <ul class="nav nav-tabs border-0 mb-3" id="createGoodsTab" role="tablist">
                   <li class="" role="presentation">
-                      <button class="nav-link active px-4 py-2 fw-bold" id="create-info-tab" data-bs-toggle="tab" data-bs-target="#create-info" type="button" role="tab" style="margin-left:-25px;">Thông tin</button>
-                  </li>
+                    <button class="nav-link active px-4 py-2 fw-bold" id="create-info-tab" data-bs-toggle="tab" data-bs-target="#create-info" type="button" role="tab" style="margin-left:1px;margin-bottom:-2px">Thông tin</button>
+                </li>
                   <li class="" role="presentation">
                       <button class="nav-link px-4 py-2 fw-bold" id="create-desc-tab" data-bs-toggle="tab" data-bs-target="#create-desc" type="button" role="tab" style="border-radius:8px;">Mô tả</button>
                   </li>
               </ul>
+              <hr class="border-0 border-top border-secondary-subtle" style="background-color: black; height: 2px;margin-top:-14px">
               <div class="tab-content" id="createGoodsTabContent">
                   <!-- Tab Thông tin -->
                   <div class="tab-pane fade show active" id="create-info" role="tabpanel">
@@ -61,11 +62,11 @@
                               </label>
                               <!-- Chỉ 1 ảnh duy nhất - CÓ PREVIEW -->
                               <div class="border-2 border-dashed border-primary rounded-3 d-flex flex-column align-items-center justify-content-center position-relative bg-light" 
-                                   style="width:200px;height:200px;background:linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);" id="create-image-preview-container">
+                                   style="width:200px;height:200px;background:linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);" id="create-goods-image-preview-container">
                                   <input type="file" name="image" accept="image/*" 
                                       style="opacity:0;position:absolute;width:100%;height:100%;cursor:pointer;top:0;left:0;z-index:1;"
-                                      onchange="previewCreateImage(this)">
-                                  <div class="text-center" id="create-image-placeholder"> 
+                                      onchange="previewCreateGoodsImage(this)">
+                                  <div class="text-center" id="create-goods-image-placeholder"> 
                                       <i class="fas fa-image fa-3x text-primary mb-3"></i>
                                       <div class="fw-bold text-primary mb-2">Thêm ảnh sản phẩm</div>
                                       <small class="text-muted">Click để chọn ảnh</small>
@@ -73,7 +74,7 @@
                                           <span class="badge bg-light text-dark">Tối đa 2MB</span>
                                       </div>
                                   </div>
-                                  <img id="create-image-preview" src="" alt="Preview" 
+                                  <img id="create-goods-image-preview" src="" alt="Preview" 
                                        style="width:100%;height:100%;object-fit:cover;border-radius:8px;display:none;">
                               </div>
                           </div>

@@ -21,9 +21,6 @@
                                 <i class="fas fa-search"></i>
                             </span>
                             <input type="text" class="form-control" id="searchInput" placeholder="Theo mã, tên hàng" onkeyup="searchProducts()">
-                            <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()">
-                                <i class="fas fa-times"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -800,6 +797,7 @@
 @push('scripts')
 <script src="{{ asset('js/products/medicine-management.js') }}"></script>
 <script src="{{ asset('js/products/goods-management.js') }}"></script>
+<script src="{{ asset('js/forms.js') }}"></script>
 @endpush
 
 <!-- Delete Confirmation Modal -->

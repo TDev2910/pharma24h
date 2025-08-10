@@ -161,6 +161,7 @@ class ProductController extends Controller
             'ton_kho'           => 'required|integer|min:0',
             'ton_thap_nhat'     => 'required|integer|min:0',
             'ton_cao_nhat'      => 'required|integer|min:0',
+            'quan_ly_theo_lo'   => 'boolean',
             'manufacturer_id'   => 'nullable|exists:manufacturers,id',
             'nuoc_san_xuat'     => 'nullable|string',
             'quy_cach_dong_goi' => 'nullable|string|max:255',
@@ -175,6 +176,7 @@ class ProductController extends Controller
 
         $data = $request->all();
         $data['ban_truc_tiep'] = $request->has('ban_truc_tiep') ? 1 : 0;
+        $data['quan_ly_theo_lo'] = $request->has('quan_ly_theo_lo') ? 1 : 0;
 
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('goods', 'public');
@@ -309,6 +311,7 @@ class ProductController extends Controller
             'ton_kho'           => 'required|integer|min:0',
             'ton_thap_nhat'     => 'required|integer|min:0',
             'ton_cao_nhat'      => 'required|integer|min:0',
+            'quan_ly_theo_lo'   => 'boolean',
             'manufacturer_id'   => 'nullable|exists:manufacturers,id',
             'nuoc_san_xuat'     => 'nullable|string',
             'quy_cach_dong_goi' => 'nullable|string|max:255',
@@ -323,6 +326,7 @@ class ProductController extends Controller
 
         $data = $request->all();
         $data['ban_truc_tiep'] = $request->has('ban_truc_tiep') ? 1 : 0;
+        $data['quan_ly_theo_lo'] = $request->has('quan_ly_theo_lo') ? 1 : 0;
 
         if ($request->hasFile('image')) {
             // Xóa ảnh cũ nếu có
