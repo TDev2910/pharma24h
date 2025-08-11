@@ -11,7 +11,6 @@
           @csrf
           @method('PUT')
           <div class="modal-body p-4">
-              <!-- Tabs -->
               <ul class="nav nav-tabs border-0 mb-3" id="editMedicineTab" role="tablist">
                   <li class="" role="presentation">
                       <button class="nav-link active px-4 py-2 fw-bold" id="edit-info-tab" data-bs-toggle="tab" data-bs-target="#edit-info" type="button" role="tab" style="margin-left:-25px;">Thông tin</button>
@@ -60,7 +59,6 @@
                               <label class="form-label fw-bold mb-3">
                                   <i class="fas fa-image me-2 text-primary"></i>Ảnh sản phẩm
                               </label>
-                              <!-- Chỉ 1 ảnh duy nhất - CÓ PREVIEW -->
                               <div class="border-2 border-dashed border-primary rounded-3 d-flex flex-column align-items-center justify-content-center position-relative bg-light" 
                                    style="width:200px;height:200px;background:linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);" id="edit-medicine-image-preview-container">
                                   <input type="file" name="image" accept="image/*" 

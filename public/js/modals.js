@@ -109,7 +109,7 @@ function createNewUnit() {
         }
     })
     .catch(error => {
-        console.error('Error creating unit:', error);
+        // Error creating unit
         alert('Đã xảy ra lỗi mạng!');
     });
 }

@@ -786,6 +786,7 @@
 @include('admin.products.Danhsachhanghoa.create.medicine')
 @include('admin.products.Danhsachhanghoa.create.goods')
 @include('admin.products.Danhsachhanghoa.edit.medicine')
+@include('admin.products.Danhsachhanghoa.edit.goods')
 @include('admin.products.Danhsachhanghoa.formmodal.unit_modal')
 
 

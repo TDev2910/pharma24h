@@ -230,7 +230,7 @@
                                   <label class="form-label">Trọng lượng</label>
                                   <div class="input-group">
                                       <input type="number" class="form-control" name="trong_luong" id="trong_luong" value="0">
-                                      <select name="" id="">g</select>
+                                      <span class="input-group-text">g</span>
                                   </div>
                               </div>
                           </div>

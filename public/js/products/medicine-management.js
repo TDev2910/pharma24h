@@ -168,7 +168,7 @@ window.openEditMedicineModal = function(medicineId) {
             }
         })
         .catch(error => {
-            console.error('Error loading medicine data:', error);
+            // Error loading medicine data
             alert('Đã xảy ra lỗi khi tải thông tin thuốc!');
         });
 }
@@ -197,11 +197,11 @@ window.confirmDelete = function() {
     if (window.isDeletingGoods === true) {
         // Đây là hàng hóa
         form.action = `/admin/goods/${medicineId}`;
-        console.log('Deleting goods with ID:', medicineId);
+
     } else {
         // Đây là thuốc
         form.action = `/admin/medicines/${medicineId}`;
-        console.log('Deleting medicine with ID:', medicineId);
+
     }
     form.submit();
 }

@@ -23,6 +23,7 @@
                         <div class="dropdown-title">Hàng hóa</div>
                         <a href="{{ route('admin.products.index') }}" class="dropdown-link">Danh sách hàng hóa</a>
                         <a href="{{ route('admin.medicines.list') }}" class="dropdown-link">Danh sách thuốc</a>
+                        <a href="{{ route('admin.goods.inventory') }}" class="dropdown-link">Tồn kho hàng hóa</a>
                     </div>
                     <div class="dropdown-col">
                         <div class="dropdown-title">Kho hàng</div>
@@ -50,13 +51,13 @@
     <div>
         @yield('content')
     </div>
-    <!-- Bootstrap JS -->
+    <!-- Bootstrap JS (Load trước) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    <!-- Custom JS -->
-    <script src="{{ asset('js/forms.js') }}"></script>
+    <!-- Custom JS (Load sau Bootstrap) -->
     <script src="{{ asset('js/modals.js') }}"></script>
+    <script src="{{ asset('js/forms.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

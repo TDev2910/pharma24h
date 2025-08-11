@@ -1,6 +1,3 @@
-// Edit Medicine JavaScript
-
-// Image preview function for edit modal
 function previewEditImage(input) {
     const file = input.files[0];
     const preview = document.getElementById('edit-image-preview');
@@ -34,80 +31,9 @@ function previewEditImage(input) {
     }
 }
 
-// Function to open edit modal and populate data
-function openEditMedicineModal(medicineId) {
-    fetch(`/admin/medicines/${medicineId}/detail`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const medicine = data.product;
-                
-                // Populate form fields
-                const fields = {
-                    'edit_ma_hang': medicine.ma_hang || '',
-                    'edit_ma_vach': medicine.ma_vach || '',
-                    'edit_ten_thuoc': medicine.ten_thuoc || '',
-                    'edit_ten_viet_tat': medicine.ten_viet_tat || '',
-                    'edit_nhom_hang_id': medicine.nhom_hang_id || '',
-                    'edit_gia_von': medicine.gia_von || 0,
-                    'edit_gia_ban': medicine.gia_ban || 0,
-                    'edit_so_dang_ky': medicine.so_dang_ky || '',
-                    'edit_hoat_chat': medicine.hoat_chat || '',
-                    'edit_ham_luong': medicine.ham_luong || '',
-                    'edit_duong_dung_select': medicine.drugusage_id || '',
-                    'edit_manufacturer_select': medicine.manufacturer_id || '',
-                    'edit_nuoc_san_xuat': medicine.nuoc_san_xuat || '',
-                    'edit_quy_cach_dong_goi': medicine.quy_cach_dong_goi || '',
-                    'edit_ton_thap_nhat': medicine.ton_thap_nhat || 0,
-                    'edit_ton_cao_nhat': medicine.ton_cao_nhat || 999999999,
-                    'edit_position_select': medicine.position_id || '',
-                    'edit_trong_luong': medicine.trong_luong || 0,
-                    'edit_don_vi_tinh_input': medicine.don_vi_tinh || '',
-                    'edit_mo_ta': medicine.mo_ta || ''
-                };
-                
-                // Set all field values
-                Object.keys(fields).forEach(fieldId => {
-                    const element = document.getElementById(fieldId);
-                    if (element) {
-                        element.value = fields[fieldId];
-                    }
-                });
-                
-                // Set checkbox
-                const banTrucTiep = document.getElementById('edit_ban_truc_tiep');
-                if (banTrucTiep) {
-                    banTrucTiep.checked = medicine.ban_truc_tiep == 1;
-                }
-                
-                // Set form action
-                const form = document.getElementById('editMedicineForm');
-                if (form) {
-                    form.action = `/admin/medicines/${medicineId}`;
-                }
-                
-                // Show current image if exists
-                if (medicine.image) {
-                    const preview = document.getElementById('edit-image-preview');
-                    const placeholder = document.getElementById('edit-image-placeholder');
-                    if (preview && placeholder) {
-                        preview.src = `/storage/${medicine.image}`;
-                        preview.style.display = 'block';
-                        placeholder.style.display = 'none';
-                    }
-                }
-                
-                // Open modal
-                const modal = new bootstrap.Modal(document.getElementById('editMedicineModal'));
-                modal.show();
-            } else {
-                // Failed to load medicine data
-            }
-        })
-        .catch(error => {
-            // Error loading medicine data
-        });
-}
+
+
+
 
 // Inline form handlers for edit modal
 function handleEditDrugRouteChange(select) {
@@ -359,88 +285,16 @@ window.confirmDelete = function() {
     if (window.isDeletingGoods === true) {
         // Đây là hàng hóa
         form.action = `/admin/goods/${goodsId}`;
-        console.log('Deleting goods with ID:', goodsId);
+
     } else {
         // Đây là thuốc
         form.action = `/admin/medicines/${goodsId}`;
-        console.log('Deleting medicine with ID:', goodsId);
+
     }
     form.submit();
 }
 
-// Open edit goods modal
-window.openEditGoodsModal = function(goodsId) {
-    // Gọi API để lấy thông tin hàng hóa
-    fetch(`/admin/goods/${goodsId}/detail`)
-        .then(response => {
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                const goods = data.product;
-                // Populate form fields
-                const fields = {
-                    'edit_ma_hang': goods.ma_hang || '',
-                    'edit_ma_vach': goods.ma_vach || '',
-                    'edit_ten_hang_hoa': goods.ten_hang_hoa || '',
-                    'edit_nhom_hang_id': goods.nhom_hang_id || '',
-                    'edit_gia_von': goods.gia_von || 0,
-                    'edit_gia_ban': goods.gia_ban || 0,
-                    'edit_quy_cach_dong_goi': goods.quy_cach_dong_goi || '',
-                    'edit_manufacturer_select': goods.manufacturer_id || '',
-                    'edit_nuoc_san_xuat': goods.nuoc_san_xuat || '',
-                    'edit_ton_kho': goods.ton_kho || 0,
-                    'edit_ton_thap_nhat': goods.ton_thap_nhat || 0,
-                    'edit_ton_cao_nhat': goods.ton_cao_nhat || 999999999,
-                    'edit_position_select': goods.position_id || '',
-                    'edit_trong_luong': goods.trong_luong || 0,
-                    'edit_don_vi_tinh_input': goods.don_vi_tinh || '',
-                    'edit_mo_ta': goods.mo_ta || ''
-                };
-                // Set form values
-                Object.keys(fields).forEach(fieldId => {
-                    const element = document.getElementById(fieldId);
-                    if (element) {
-                        element.value = fields[fieldId];
-                    }
-                });
-                // Set checkbox
-                const banTrucTiep = document.getElementById('edit_ban_truc_tiep');
-                if (banTrucTiep) {
-                    banTrucTiep.checked = goods.ban_truc_tiep == 1;
-                }
-                // Set form action
-                const form = document.getElementById('editGoodsForm');
-                if (form) {
-                    form.action = `/admin/goods/${goodsId}`;
-                }
-                // Show current image if exists
-                if (goods.image) {
-                    const preview = document.getElementById('edit-image-preview');
-                    const placeholder = document.getElementById('edit-image-placeholder');
-                    if (preview && placeholder) {
-                        preview.src = `/storage/${goods.image}`;
-                        preview.style.display = 'block';
-                        placeholder.style.display = 'none';
-                    }
-                }
-                // Open modal
-                const modalElement = document.getElementById('editGoodsModal');
-                if (modalElement) {
-                    const modal = new bootstrap.Modal(modalElement);
-                    modal.show();
-                } else {
-                    alert('Không tìm thấy modal chỉnh sửa!');
-                }
-            } else {
-                alert('Không thể tải thông tin hàng hóa!');
-            }
-        })
-        .catch(error => {
-            console.error('Error loading goods data:', error);
-            alert('Đã xảy ra lỗi khi tải thông tin hàng hóa!');
-        });
-}
+
 
 // Filter products function
 window.filterProducts = function() {

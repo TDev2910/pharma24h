@@ -1,37 +1,3 @@
-// Image preview functions for different modals
-function previewCreateGoodsImage(input) {
-    const file = input.files[0];
-    const preview = document.getElementById('create-goods-image-preview');
-    const placeholder = document.getElementById('create-goods-image-placeholder');
-    
-    if (file) {
-        // Kiểm tra kích thước file anh tai len (2MB = 2 * 1024 * 1024 bytes)
-        if (file.size > 2 * 1024 * 1024) {
-            alert('File quá lớn! Vui lòng chọn ảnh nhỏ hơn 2MB.');
-            input.value = '';
-            return;
-        }
-        
-        // Kiểm tra loại file
-        if (!file.type.startsWith('image/')) {
-            alert('Vui lòng chọn file ảnh!');
-            input.value = '';
-            return;
-        }
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-            placeholder.style.display = 'none';
-        };
-        reader.readAsDataURL(file);
-    } else {
-        preview.style.display = 'none';
-        placeholder.style.display = 'block';
-    }
-}
-
 function previewCreateMedicineImage(input) {
     const file = input.files[0];
     const preview = document.getElementById('create-medicine-image-preview');
@@ -65,6 +31,7 @@ function previewCreateMedicineImage(input) {
     }
 }
 
+// Image preview function for edit modal
 function previewEditImage(input) {
     const file = input.files[0];
     const preview = document.getElementById('edit-image-preview');
@@ -97,7 +64,7 @@ function previewEditImage(input) {
         placeholder.style.display = 'block';
     }
 }
-
+    
 // Function to open edit modal and populate data
 function openEditMedicineModal(medicineId) {
     fetch(`/admin/medicines/${medicineId}/detail`)
@@ -172,7 +139,6 @@ function openEditMedicineModal(medicineId) {
             // Error loading medicine data
         });
 }
-
 // Inline form handlers for edit modal
 function handleEditDrugRouteChange(select) {
     if (select.value === 'create_new') {
@@ -404,9 +370,6 @@ function validateFileUpload(input, maxSize = 2 * 1024 * 1024) {
     
     return true;
 }
-
-// ===== FORM SUBMISSION FUNCTIONS =====
-
 // Submit form with AJAX
 function submitForm(formId, successCallback = null) {
     const form = document.getElementById(formId);
@@ -440,9 +403,6 @@ function submitForm(formId, successCallback = null) {
         alert('Đã xảy ra lỗi mạng!');
     });
 }
-
-// ===== FORM UTILITY FUNCTIONS =====
-
 // Reset form
 function resetForm(formId) {
     const form = document.getElementById(formId);
@@ -477,8 +437,6 @@ function focusFirstField(formId) {
         firstField.focus();
     }
 }
-
-// ===== INLINE FORM FUNCTIONS =====
 
 // Generic inline form handler
 function handleInlineFormChange(select, formId, inputId, type) {
@@ -536,4 +494,243 @@ function cancelInlineForm(type) {
     const inputId = `editNew${type.charAt(0).toUpperCase() + type.slice(1)}Name`;
     document.getElementById(formId).style.display = 'none';
     document.getElementById(inputId).value = '';
+}
+// Image preview function for edit goods modal
+function previewEditGoodsImage(input) {
+    const file = input.files[0];
+    const preview = document.getElementById('edit-goods-image-preview');
+    const placeholder = document.getElementById('edit-goods-image-placeholder');
+    
+    if (file) {
+        // Check file size (2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('File quá lớn! Vui lòng chọn ảnh nhỏ hơn 2MB.');
+            input.value = '';
+            return;
+        }
+        
+        // Check file type
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn file ảnh!');
+            input.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.style.display = 'none';
+        placeholder.style.display = 'block';
+    }
+}
+
+// Function to open edit goods modal and populate data
+/**
+ * Mở modal chỉnh sửa hàng hóa và load dữ liệu
+ * @param {number} goodsId - ID của hàng hóa cần chỉnh sửa
+ */
+function openEditGoodsModal(goodsId) {
+    // 1. Lấy modal element
+    const modalEl = document.getElementById('editGoodsModal');
+    if (!modalEl) {
+        console.error('Edit Goods Modal element not found!');
+        return;
+    }
+
+    // 2. Fetch dữ liệu hàng hóa từ API
+    fetch(`/admin/goods/${goodsId}/detail`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const goods = data.product;
+                
+                // 3. Map dữ liệu vào các field với ID mới (goods_edit_*)
+                const fields = [
+                    ['#goods_edit_ma_hang', goods.ma_hang || ''],
+                    ['#goods_edit_ma_vach', goods.ma_vach || ''],
+                    ['#goods_edit_ten_hang_hoa', goods.ten_hang_hoa || ''],
+                    ['#goods_edit_nhom_hang_id', goods.nhom_hang_id || ''],
+                    ['#goods_edit_manufacturer_id', goods.manufacturer_id || ''],
+                    ['#goods_edit_gia_von', goods.gia_von || 0],
+                    ['#goods_edit_gia_ban', goods.gia_ban || 0],
+                    ['#goods_edit_quy_cach_dong_goi', goods.quy_cach_dong_goi || ''],
+                    ['#goods_edit_nuoc_san_xuat', goods.nuoc_san_xuat || ''],
+                    ['#goods_edit_ton_thap_nhat', goods.ton_thap_nhat || 0],
+                    ['#goods_edit_ton_cao_nhat', goods.ton_cao_nhat || 999999999],
+                    ['#goods_edit_don_vi_tinh_input', goods.don_vi_tinh || ''],
+                    ['#goods_edit_mo_ta', goods.mo_ta || '']
+                ];
+                
+                // 4. Fill dữ liệu vào các input field
+                fields.forEach(([selector, value]) => {
+                    const element = modalEl.querySelector(selector);
+                    if (element) {
+                        element.value = value;
+                    }
+                });
+                
+                // 5. Xử lý checkbox bán trực tiếp
+                const banTrucTiep = modalEl.querySelector('#goods_edit_ban_truc_tiep');
+                if (banTrucTiep) {
+                    banTrucTiep.checked = goods.ban_truc_tiep == 1;
+                }
+                
+                // 6. Set form action URL
+                const form = modalEl.querySelector('#editGoodsForm');
+                if (form) {
+                    form.action = `/admin/goods/${goodsId}`;
+                }
+                
+                // 7. Xử lý hiển thị ảnh sản phẩm
+                if (goods.image) {
+                    const preview = modalEl.querySelector('#edit-goods-image-preview');
+                    const placeholder = modalEl.querySelector('#edit-goods-image-placeholder');
+                    if (preview && placeholder) {
+                        preview.src = `/storage/${goods.image}`;
+                        preview.style.display = 'block';
+                        placeholder.style.display = 'none';
+                    }
+                }
+                
+                // 8. Hiển thị modal
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            } else {
+                alert('Không thể tải dữ liệu hàng hóa');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading goods data:', error);
+            alert('Lỗi khi tải dữ liệu hàng hóa');
+        });
+}
+
+// Handle manufacturer change for goods edit modal
+function handleEditManufacturerChange(select) {
+    if (select.value === 'create_new') {
+        document.getElementById('editGoodsManufacturerInlineForm').style.display = 'block';
+        document.getElementById('editNewGoodsManufacturerName').focus();
+        select.value = '';
+    }
+}
+
+// Handle position change for goods edit modal
+function handleEditPositionChange(select) {
+    if (select.value === 'create_new') {
+        document.getElementById('editGoodsPositionInlineForm').style.display = 'block';
+        document.getElementById('editNewGoodsPositionName').focus();
+        select.value = '';
+    }
+}
+
+// Create new manufacturer inline for goods edit modal
+function createNewEditManufacturerInline() {
+    const name = document.getElementById('editNewGoodsManufacturerName').value.trim();
+    if (!name) {
+        alert('Vui lòng nhập tên hãng sản xuất!');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}');
+    
+    fetch('/admin/products/manufacturer', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success || data.manufacturer) {
+            const select = document.getElementById('edit_manufacturer_id');
+            const newOption = document.createElement('option');
+            newOption.value = data.manufacturer.id;
+            newOption.textContent = data.manufacturer.name;
+            const createNewOption = select.querySelector('option[value="create_new"]');
+            select.insertBefore(newOption, createNewOption);
+            select.value = data.manufacturer.id;
+            
+            cancelEditManufacturerForm();
+            showSuccessMessage('Tạo hãng sản xuất thành công!');
+        } else {
+            alert('Có lỗi xảy ra khi tạo hãng sản xuất!');
+        }
+    })
+    .catch(error => {
+        console.error('Error creating manufacturer:', error);
+        alert('Đã xảy ra lỗi mạng!');
+    });
+}
+
+// Create new position inline for goods edit modal
+function createNewEditPositionInline() {
+    const name = document.getElementById('editNewGoodsPositionName').value.trim();
+    if (!name) {
+        alert('Vui lòng nhập tên vị trí!');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}');
+    
+    fetch('/admin/products/position', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success || data.position) {
+            const select = document.getElementById('edit_position_id');
+            const newOption = document.createElement('option');
+            newOption.value = data.position.id;
+            newOption.textContent = data.position.name;
+            const createNewOption = select.querySelector('option[value="create_new"]');
+            select.insertBefore(newOption, createNewOption);
+            select.value = data.position.id;
+            
+            cancelEditPositionForm();
+            showSuccessMessage('Tạo vị trí thành công!');
+        } else {
+            alert('Có lỗi xảy ra khi tạo vị trí!');
+        }
+    })
+    .catch(error => {
+        console.error('Error creating position:', error);
+        alert('Đã xảy ra lỗi mạng!');
+    });
+}
+
+// Cancel manufacturer form for goods edit modal
+function cancelEditManufacturerForm() {
+    document.getElementById('editGoodsManufacturerInlineForm').style.display = 'none';
+    document.getElementById('editNewGoodsManufacturerName').value = '';
+}
+
+// Cancel position form for goods edit modal
+function cancelEditPositionForm() {
+    document.getElementById('editGoodsPositionInlineForm').style.display = 'none';
+    document.getElementById('editNewGoodsPositionName').value = '';
+}
+
+// Unit modal function for goods edit modal
+function openEditUnitModal() {
+    const modal = new bootstrap.Modal(document.getElementById('unitModal'));
+    modal.show();
 }

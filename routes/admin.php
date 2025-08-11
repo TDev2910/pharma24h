@@ -1,23 +1,52 @@
 <?php
-use App\Http\Controllers\Admin\ProductController;
+
+use App\Http\Controllers\Admin\Product\ProductController;
+use App\Http\Controllers\Admin\Product\MedicineController;
+use App\Http\Controllers\Admin\Product\GoodsController;
+use App\Http\Controllers\Admin\Product\SupportingEntityController;
 use App\Http\Controllers\Admin\ProductCategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () 
 {
+    // MAIN PRODUCT DASHBOARD
+    Route::get('products', [ProductController::class, 'index'])->name('products.index');
+    
+    // MEDICINE ROUTES (MedicineController)
+    Route::prefix('medicines')->name('medicines.')->group(function () {
+        Route::get('/', [MedicineController::class, 'index'])->name('index');
+        Route::get('/list', [MedicineController::class, 'listMedicines'])->name('list');
+        Route::post('/', [MedicineController::class, 'store'])->name('store');
+        Route::get('/{medicine}/edit', [MedicineController::class, 'edit'])->name('edit');
+        Route::put('/{medicine}', [MedicineController::class, 'update'])->name('update');
+        Route::delete('/{medicine}', [MedicineController::class, 'destroy'])->name('delete');
+        Route::get('/{medicine}/detail', [MedicineController::class, 'show'])->name('detail');
+    });
+
+    // GOODS ROUTES (GoodsController)
+    Route::prefix('goods')->name('goods.')->group(function () {
+        Route::get('/', [GoodsController::class, 'index'])->name('index');
+        Route::get('/list', [GoodsController::class, 'listGoods'])->name('list');
+        Route::get('/inventory', [GoodsController::class, 'inventory'])->name('inventory');
+        Route::post('/', [GoodsController::class, 'store'])->name('store');
+        Route::get('/{goods}/edit', [GoodsController::class, 'edit'])->name('edit');
+        Route::put('/{goods}', [GoodsController::class, 'update'])->name('update');
+        Route::delete('/{goods}', [GoodsController::class, 'destroy'])->name('delete');
+        Route::get('/{goods}/detail', [GoodsController::class, 'show'])->name('detail');
+    });
+    // PRODUCT ROUTES (using ProductController - legacy and dashboard)
+    
+    // Main product dashboard
+    Route::get('products', [ProductController::class, 'index'])->name('products.index');
+    
+    // Legacy medicine routes (for backward compatibility)
     Route::get('products/create-medicine', [ProductController::class, 'createMedicine'])->name('products.createMedicine');
     Route::post('products/store-medicine', [ProductController::class, 'storeMedicine'])->name('products.storeMedicine');
-    Route::get('medicines', [ProductController::class, 'listMedicines'])->name('medicines.list');
-    Route::post('medicines', [ProductController::class, 'storeMedicine'])->name('medicines.store');
-    Route::get('medicines/{medicine}/edit', [ProductController::class, 'editMedicine'])->name('medicines.edit');
-    Route::put('medicines/{medicine}', [ProductController::class, 'updateMedicine'])->name('medicines.update');
-    Route::delete('medicines/{medicine}', [ProductController::class, 'deleteMedicine'])->name('medicines.delete');
-    Route::get('medicines/{medicine}/detail', [ProductController::class, 'showDetail'])->name('medicines.detail');
-    // Route tạo thuốc mới
     Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('products/store', [ProductController::class, 'store'])->name('products.store');
     Route::get('products/{id}/detail', [ProductController::class, 'showDetail'])->name('products.detail');
-    //Route tao hang hoa
+    
+    // Legacy goods routes (for backward compatibility)
     Route::get('products/create-goods', [ProductController::class,'createGoods'])->name('products.createGoods');
     Route::post('products/store-goods', [ProductController::class,'storeGoods'])->name('products.storeGoods');
     Route::get('products/goods', [ProductController::class,'listGoods'])->name('products.goods.list');
@@ -25,19 +54,15 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::put('products/goods/{goods}', [ProductController::class,'updateGoods'])->name('products.goods.update');
     Route::delete('products/goods/{goods}', [ProductController::class,'deleteGoods'])->name('products.goods.delete');
     Route::get('products/goods/{goods}/detail', [ProductController::class,'showGoodsDetail'])->name('products.goods.detail');
-    // Thêm route cho goods detail API
-    Route::get('goods/{goods}/detail', [ProductController::class,'showGoodsDetail'])->name('goods.detail');
-    // Thêm route cho goods store
-    Route::post('goods', [ProductController::class, 'storeGoods'])->name('goods.store');
-    // Thêm route cho goods delete
-    Route::delete('goods/{goods}', [ProductController::class, 'deleteGoods'])->name('goods.delete');
-    // Thêm route tạo mới đường dùng, hãng sản xuất, vị trí
-    Route::post('products/drugroute', [ProductController::class, 'storeDrugRoute'])->name('products.drugroute.store');
-    Route::post('products/manufacturer', [ProductController::class, 'storeManufacturer'])->name('products.manufacturer.store');
-    Route::post('products/position', [ProductController::class, 'storePosition'])->name('products.position.store');
+    
+    // Supporting entities routes (using SupportingEntityController)
+    Route::post('products/drugroute', [SupportingEntityController::class, 'storeDrugRoute'])->name('products.drugroute.store');
+    Route::post('products/manufacturer', [SupportingEntityController::class, 'storeManufacturer'])->name('products.manufacturer.store');
+    Route::post('products/position', [SupportingEntityController::class, 'storePosition'])->name('products.position.store');
 
-    // Route resource
-    Route::resource('products', ProductController::class)->names('products');
+    // CATEGORY ROUTES
     Route::resource('categories', ProductCategoryController::class)->names('categories');
     Route::get('categories/{category}/edit', [ProductCategoryController::class, 'edit'])->name('categories.edit');
+    // LEGACY ROUTES (for backward compatibility)
+    Route::resource('products', ProductController::class)->except(['index'])->names('products');
 });
