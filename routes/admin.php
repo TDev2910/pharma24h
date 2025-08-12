@@ -12,7 +12,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     // MAIN PRODUCT DASHBOARD
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
     
-    // MEDICINE ROUTES (MedicineController)
+    //medicine route (MedicineController)
     Route::prefix('medicines')->name('medicines.')->group(function () {
         Route::get('/', [MedicineController::class, 'index'])->name('index');
         Route::get('/list', [MedicineController::class, 'listMedicines'])->name('list');
@@ -23,7 +23,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
         Route::get('/{medicine}/detail', [MedicineController::class, 'show'])->name('detail');
     });
 
-    // GOODS ROUTES (GoodsController)
+    // goods route(GoodsController)
     Route::prefix('goods')->name('goods.')->group(function () {
         Route::get('/', [GoodsController::class, 'index'])->name('index');
         Route::get('/list', [GoodsController::class, 'listGoods'])->name('list');
@@ -33,9 +33,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
         Route::put('/{goods}', [GoodsController::class, 'update'])->name('update');
         Route::delete('/{goods}', [GoodsController::class, 'destroy'])->name('delete');
         Route::get('/{goods}/detail', [GoodsController::class, 'show'])->name('detail');
-    });
-    // PRODUCT ROUTES (using ProductController - legacy and dashboard)
-    
+    });  
     // Main product dashboard
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
     
@@ -63,6 +61,5 @@ Route::prefix('admin')->name('admin.')->group(function ()
     // CATEGORY ROUTES
     Route::resource('categories', ProductCategoryController::class)->names('categories');
     Route::get('categories/{category}/edit', [ProductCategoryController::class, 'edit'])->name('categories.edit');
-    // LEGACY ROUTES (for backward compatibility)
     Route::resource('products', ProductController::class)->except(['index'])->names('products');
 });

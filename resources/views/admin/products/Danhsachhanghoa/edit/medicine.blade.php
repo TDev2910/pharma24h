@@ -29,23 +29,23 @@
                               <div class="row g-2">
                                   <div class="col-md-6">
                                       <label class="form-label">Mã hàng</label>
-                                      <input type="text" class="form-control" name="ma_hang" id="edit_ma_hang" placeholder="Tự động">
+                                      <input type="text" class="form-control" name="ma_hang" id="medicine_edit_ma_hang" placeholder="Tự động">
                                   </div>
                                   <div class="col-md-6">
                                       <label class="form-label">Mã vạch</label>
-                                      <input type="text" class="form-control" name="ma_vach" id="edit_ma_vach" placeholder="Nhập mã vạch">
+                                      <input type="text" class="form-control" name="ma_vach" id="medicine_edit_ma_vach" placeholder="Nhập mã vạch">
                                   </div>
                                   <div class="col-md-12">
                                       <label class="form-label">Tên thuốc <span class="text-danger">*</span></label>
-                                      <input type="text" class="form-control" name="ten_thuoc" id="edit_ten_thuoc" placeholder="Nhập tên thuốc" required>
+                                      <input type="text" class="form-control" name="ten_thuoc" id="medicine_edit_ten_thuoc" placeholder="Nhập tên thuốc" required>
                                   </div>
                                   <div class="col-md-6">
                                       <label class="form-label">Tên viết tắt</label>
-                                      <input type="text" class="form-control" name="ten_viet_tat" id="edit_ten_viet_tat" placeholder="Nhập tên viết tắt">
+                                      <input type="text" class="form-control" name="ten_viet_tat" id="medicine_edit_ten_viet_tat" placeholder="Nhập tên viết tắt">
                                   </div>
                                   <div class="col-md-6">
                                       <label class="form-label">Nhóm hàng <span class="text-danger">*</span></label>
-                                      <select class="form-select" name="nhom_hang_id" id="edit_nhom_hang_id" required>
+                                      <select class="form-select" name="nhom_hang_id" id="medicine_edit_nhom_hang_id" required>
                                           <option value="">Chọn nhóm hàng (Bắt buộc)</option>
                                           @foreach($categories as $id => $name)
                                               <option value="{{ $id }}">{{ $name }}</option>
@@ -84,12 +84,12 @@
                           <div class="row g-3 mb-2">
                               <div class="col-md-6">
                                   <label class="form-label">Giá vốn <span class="text-danger">*</span></label>
-                                  <input type="number" class="form-control" name="gia_von" id="edit_gia_von" value="0" required>
+                                  <input type="number" class="form-control" name="gia_von" id="medicine_edit_gia_von" value="0" required>
                               </div>
                               <div class="col-md-6">
                                   <label class="form-label">Giá bán <span class="text-danger">*</span></label>
                                   <div class="input-group">
-                                      <input type="number" class="form-control" name="gia_ban" id="edit_gia_ban" value="0" required>
+                                      <input type="number" class="form-control" name="gia_ban" id="medicine_edit_gia_ban" value="0" required>
                                       <button class="btn btn-outline-secondary" type="button">Thiết lập giá</button>
                                   </div>
                               </div>
@@ -102,22 +102,22 @@
                           <div class="row g-3 mb-2">
                               <div class="col-md-4">
                                   <label class="form-label">Số đăng ký <span class="text-danger">*</span></label>
-                                  <input type="text" class="form-control" name="so_dang_ky" id="edit_so_dang_ky" placeholder="Bắt buộc" required>
+                                  <input type="text" class="form-control" name="so_dang_ky" id="medicine_edit_so_dang_ky" placeholder="Bắt buộc" required>
                               </div>
                               <div class="col-md-4">
                                   <label class="form-label">Hoạt chất <span class="text-danger">*</span></label>
-                                  <input type="text" class="form-control" name="hoat_chat" id="edit_hoat_chat" placeholder="Bắt buộc" required>
+                                  <input type="text" class="form-control" name="hoat_chat" id="medicine_edit_hoat_chat" placeholder="Bắt buộc" required>
                               </div>
                               <div class="col-md-4">
                                   <label class="form-label">Hàm lượng <span class="text-danger">*</span></label>
-                                  <input type="text" class="form-control" name="ham_luong" id="edit_ham_luong" placeholder="Bắt buộc" required>
+                                  <input type="text" class="form-control" name="ham_luong" id="medicine_edit_ham_luong" placeholder="Bắt buộc" required>
                               </div>
                               <div class="col-md-4">
                                   <label class="form-label">
                                       Đường dùng <span class="text-danger">*</span>
                                   </label>
                                   <div class="position-relative">
-                                      <select class="form-select" name="drugusage_id" id="edit_duong_dung_select" required onchange="handleEditDrugRouteChange(this)">
+                                      <select class="form-select" name="drugusage_id" id="medicine_edit_duong_dung_select" required onchange="handleEditDrugRouteChange(this)">
                                           <option value="">Bắt buộc</option>
                                           @foreach($drugRoutes as $usage)
                                               <option value="{{ $usage->id }}">{{ $usage->name }}</option>
@@ -144,7 +144,7 @@
                               <div class="col-md-4">
                                   <label class="form-label">Hãng sản xuất<span class="text-danger">*</span></label>
                                   <div class="position-relative">
-                                      <select class="form-select" name="manufacturer_id" id="edit_manufacturer_select" required onchange="handleEditManufacturerChange(this)">
+                                      <select class="form-select" name="manufacturer_id" id="medicine_edit_manufacturer_select" required onchange="handleEditManufacturerChange(this)">
                                           <option value="">Tìm hãng sản xuất</option>
                                           @foreach($manufacturers as $manu)
                                               <option value="{{ $manu->id }}">{{ $manu->name }}</option>
@@ -170,13 +170,13 @@
                               </div>                  
                               <div class="col-md-4">
                                   <label class="form-label">Nước sản xuất</label>
-                                  <input type="text" class="form-control" name="nuoc_san_xuat" id="edit_nuoc_san_xuat" placeholder="Tìm nước sản xuất">
+                                  <input type="text" class="form-control" name="nuoc_san_xuat" id="medicine_edit_nuoc_san_xuat" placeholder="Tìm nước sản xuất">
                               </div>
                           </div>
                           <div class="row g-3 mb-2">
                               <div class="col-md-3">
                                   <label class="form-label">Quy cách đóng gói <span class="text-danger">*</span></label>
-                                  <input type="text" class="form-control" name="quy_cach_dong_goi" id="edit_quy_cach_dong_goi" placeholder="Bắt buộc" required>
+                                  <input type="text" class="form-control" name="quy_cach_dong_goi" id="medicine_edit_quy_cach_dong_goi" placeholder="Bắt buộc" required>
                               </div>
                           </div>
                       </fieldset>
@@ -187,11 +187,11 @@
                           <div class="row g-3 mb-2">
                               <div class="col-md-6">
                                   <label class="form-label">Định mức tồn thấp nhất</label>
-                                  <input type="number" class="form-control" name="ton_thap_nhat" id="edit_ton_thap_nhat" value="0">
+                                  <input type="number" class="form-control" name="ton_thap_nhat" id="medicine_edit_ton_thap_nhat" value="0">
                               </div>
                               <div class="col-md-6">
                                   <label class="form-label">Định mức tồn cao nhất</label>
-                                  <input type="number" class="form-control" name="ton_cao_nhat" id="edit_ton_cao_nhat" value="999999999">
+                                  <input type="number" class="form-control" name="ton_cao_nhat" id="medicine_edit_ton_cao_nhat" value="999999999">
                               </div>
                           </div>
                       </fieldset>
@@ -203,7 +203,7 @@
                               <div class="col-md-4">
                                   <label class="form-label">Vị trí</label>
                                   <div class="position-relative">
-                                      <select class="form-select" name="position_id" id="edit_position_select" onchange="handleEditPositionChange(this)">
+                                      <select class="form-select" name="position_id" id="medicine_edit_position_select" onchange="handleEditPositionChange(this)">
                                           <option value="">Chọn vị trí</option>
                                           @foreach($positions as $pos)
                                               <option value="{{ $pos->id }}">{{ $pos->name }}</option>
@@ -230,7 +230,7 @@
                               <div class="col-md-4">
                                   <label class="form-label">Trọng lượng</label>
                                   <div class="input-group">
-                                      <input type="number" class="form-control" name="trong_luong" id="edit_trong_luong" value="0">
+                                      <input type="number" class="form-control" name="trong_luong" id="medicine_edit_trong_luong" value="0">
                                       <span class="input-group-text">g</span>
                                   </div>
                               </div>
@@ -242,7 +242,7 @@
                           <legend class="float-none w-auto px-2 fs-6">Thiết lập đơn vị tính</legend>
                           <div class="row g-3 mb-2">
                               <div class="col-md-8">
-                                  <input type="text" class="form-control" name="don_vi_tinh" id="edit_don_vi_tinh_input" placeholder="Nhập đơn vị tính" readonly>
+                                  <input type="text" class="form-control" name="don_vi_tinh" id="medicine_edit_don_vi_tinh_input" placeholder="Nhập đơn vị tính" readonly>
                               </div>
                               <div class="col-md-4 d-flex align-items-end">
                                   <button type="button" class="btn btn-outline-primary w-100" onclick="openEditUnitModal()">Thiết lập</button>
@@ -252,8 +252,8 @@
 
                       <!-- Bán trực tiếp -->
                       <div class="form-check mb-3">
-                          <input class="form-check-input" type="checkbox" id="edit_ban_truc_tiep" name="ban_truc_tiep">
-                          <label class="form-check-label" for="edit_ban_truc_tiep">
+                          <input class="form-check-input" type="checkbox" id="medicine_edit_ban_truc_tiep" name="ban_truc_tiep">
+                          <label class="form-check-label" for="medicine_edit_ban_truc_tiep">
                               Bán trực tiếp
                           </label>
                       </div>          
@@ -262,8 +262,8 @@
                   <!-- Tab Mô tả -->
                   <div class="tab-pane fade" id="edit-desc" role="tabpanel">
                       <div class="mb-3">
-                          <label for="edit_mo_ta" class="form-label">Mô tả sản phẩm</label>
-                          <textarea class="form-control" id="edit_mo_ta" name="mo_ta" rows="5" placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
+                          <label for="medicine_edit_mo_ta" class="form-label">Mô tả sản phẩm</label>
+                          <textarea class="form-control" id="medicine_edit_mo_ta" name="mo_ta" rows="5" placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
                       </div>
                   </div>
               </div>

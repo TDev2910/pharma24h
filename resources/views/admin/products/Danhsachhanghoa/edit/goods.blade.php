@@ -229,7 +229,7 @@
                                         <div class="position-relative">
                                             <select class="form-select"
                                                     name="position_id"
-                                                    id="edit_position_id"
+                                                    id="goods_edit_position_id"
                                                     onchange="handleEditPositionChange(this)">
                                                 <option value="">Chọn vị trí</option>
                                                 @foreach($positions as $pos)
@@ -266,10 +266,10 @@
                                         <label class="form-label">Trọng lượng</label>
                                         <div class="input-group">
                                             <input type="number"
-                                                   class="form-control"
-                                                   name="trong_luong"
-                                                   id="edit_trong_luong"
-                                                   value="0">
+                                                class="form-control"
+                                                name="trong_luong"
+                                                id="goods_edit_trong_luong"
+                                                value="0">
                                             <span class="input-group-text">g</span>
                                         </div>
                                     </div>
@@ -290,7 +290,7 @@
                                     <div class="col-md-4 d-flex align-items-end">
                                         <button type="button"
                                                 class="btn btn-outline-primary w-100"
-                                                onclick="openEditUnitModal()">
+                                                onclick="openGoodsEditUnitModal()">
                                             Thiết lập
                                         </button>
                                     </div>
@@ -312,10 +312,10 @@
                             <div class="mb-3">
                                 <label for="goods_edit_mo_ta" class="form-label">Mô tả sản phẩm</label>
                                 <textarea class="form-control"
-                                          id="goods_edit_mo_ta"
-                                          name="mo_ta"
-                                          rows="5"
-                                          placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
+                                    id="goods_edit_mo_ta"
+                                    name="mo_ta"
+                                    rows="5"
+                                    placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
                             </div>
                         </div>
                     </div>

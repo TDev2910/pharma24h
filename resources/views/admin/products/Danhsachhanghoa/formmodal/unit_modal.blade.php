@@ -1,4 +1,4 @@
-<div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true">
+<div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -52,6 +52,11 @@ function openUnitModal() {
     modal.show();
 }
 
+function openGoodsEditUnitModal() {
+    const modal = new bootstrap.Modal(document.getElementById('unitModal'));
+    modal.show();
+}
+
 function closeUnitModal() {
     const modal = bootstrap.Modal.getInstance(document.getElementById('unitModal'));
     if (modal) {
@@ -71,15 +76,19 @@ function saveUnit() {
     
     // Kiểm tra xem đang ở form nào (create hay edit)
     const createInput = document.getElementById('don_vi_tinh_input');
-    const editInput = document.getElementById('edit_don_vi_tinh_input');
+    const medicineEditInput = document.getElementById('medicine_edit_don_vi_tinh_input');
+    const goodsEditInput = document.getElementById('goods_edit_don_vi_tinh_input');
     
     if (createInput && createInput.offsetParent !== null) {
         createInput.value = unitName; // Đang ở form create
         document.getElementById('unit_price_hidden').value = unitPrice;
         document.getElementById('direct_sale_hidden').value = directSale ? '1' : '0';
     } 
-    else if (editInput && editInput.offsetParent !== null) { // Đang ở form edit
-        editInput.value = unitName;
+    else if (medicineEditInput && medicineEditInput.offsetParent !== null) { // Đang ở form edit medicine
+        medicineEditInput.value = unitName;
+    }
+    else if (goodsEditInput && goodsEditInput.offsetParent !== null) { // Đang ở form edit goods
+        goodsEditInput.value = unitName;
     }
     
     // Đóng modal
@@ -99,4 +108,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-</script> 
+</script>
+
+<style>
+/* Đảm bảo modal đơn vị tính hiển thị trên modal edit */
+#unitModal {
+    z-index: 1060 !important;
+}
+
+#unitModal .modal-dialog {
+    z-index: 1061 !important;
+}
+
+#unitModal .modal-content {
+    z-index: 1062 !important;
+}
+</style> 

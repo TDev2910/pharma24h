@@ -102,12 +102,30 @@
                               </div>
                               <div class="col-md-4">
                                   <label class="form-label">Hãng sản xuất</label>
-                                  <select class="form-select" name="manufacturer_id" id="manufacturer_id">
-                                      <option value="">Chọn hãng sản xuất</option>
-                                      @foreach($manufacturers as $manu)
-                                          <option value="{{ $manu->id }}">{{ $manu->name }}</option>
-                                      @endforeach
-                                  </select>
+                                  <div class="position-relative">
+                                      <select class="form-select" name="manufacturer_id" id="manufacturer_id" onchange="handleCreateManufacturerChange(this)">
+                                          <option value="">Chọn hãng sản xuất</option>
+                                          @foreach($manufacturers as $manu)
+                                              <option value="{{ $manu->id }}">{{ $manu->name }}</option>
+                                          @endforeach
+                                          <option value="create_new">+ Tạo mới hãng sản xuất</option>
+                                      </select>
+                                      
+                                      <!-- Inline form cho Manufacturer - CREATE GOODS -->
+                                      <div id="createGoodsManufacturerInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
+                                          <div class="mb-2">
+                                              <input type="text" class="form-control" id="createNewGoodsManufacturerName" placeholder="Nhập tên hãng sản xuất mới">
+                                          </div>
+                                          <div class="d-flex gap-2">
+                                              <button type="button" class="btn btn-success" onclick="createNewCreateManufacturerInline()">
+                                                  <i class="fas fa-save"></i> Lưu
+                                              </button>
+                                              <button type="button" class="btn btn-secondary" onclick="cancelCreateManufacturerForm()">
+                                                  <i class="fas fa-times"></i> Hủy
+                                              </button>
+                                          </div>
+                                      </div>
+                                  </div>
                               </div>
                               <div class="col-md-4">
                                   <label class="form-label">Nước sản xuất</label>
@@ -137,12 +155,30 @@
                           <div class="row g-3 mb-2">
                               <div class="col-md-4">
                                   <label class="form-label">Vị trí</label>
-                                  <select class="form-select" name="position_id" id="position_id">
-                                      <option value="">Chọn vị trí</option>
-                                      @foreach($positions as $pos)
-                                          <option value="{{ $pos->id }}">{{ $pos->name }}</option>
-                                      @endforeach
-                                  </select>
+                                  <div class="position-relative">
+                                      <select class="form-select" name="position_id" id="position_id" onchange="handleCreatePositionChange(this)">
+                                          <option value="">Chọn vị trí</option>
+                                          @foreach($positions as $pos)
+                                              <option value="{{ $pos->id }}">{{ $pos->name }}</option>
+                                          @endforeach
+                                          <option value="create_new">+ Tạo mới vị trí</option>
+                                      </select>
+                                      
+                                      <!-- Inline form cho Position - CREATE GOODS -->
+                                      <div id="createGoodsPositionInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
+                                          <div class="mb-2">
+                                              <input type="text" class="form-control" id="createNewGoodsPositionName" placeholder="Nhập tên vị trí mới">
+                                          </div>
+                                          <div class="d-flex gap-2">
+                                              <button type="button" class="btn btn-success" onclick="createNewCreatePositionInline()">
+                                                  <i class="fas fa-save"></i> Lưu
+                                              </button>
+                                              <button type="button" class="btn btn-secondary" onclick="cancelCreatePositionForm()">
+                                                  <i class="fas fa-times"></i> Hủy
+                                              </button>
+                                          </div>
+                                      </div>
+                                  </div>
                               </div>
                               <div class="col-md-4">
                                   <label class="form-label">Trọng lượng</label>

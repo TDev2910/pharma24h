@@ -67,60 +67,73 @@ function previewEditImage(input) {
     
 // Function to open edit modal and populate data
 function openEditMedicineModal(medicineId) {
+    // 1. Lấy modal element
+    const modalEl = document.getElementById('editMedicineModal');
+    if (!modalEl) {
+        console.error('Edit Medicine Modal element not found!');
+        return;
+    }
+
+    // 2. Fetch dữ liệu thuốc từ API
     fetch(`/admin/medicines/${medicineId}/detail`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 const medicine = data.product;
                 
-                // Populate form fields
-                const fields = {
-                    'edit_ma_hang': medicine.ma_hang || '',
-                    'edit_ma_vach': medicine.ma_vach || '',
-                    'edit_ten_thuoc': medicine.ten_thuoc || '',
-                    'edit_ten_viet_tat': medicine.ten_viet_tat || '',
-                    'edit_nhom_hang_id': medicine.nhom_hang_id || '',
-                    'edit_gia_von': medicine.gia_von || 0,
-                    'edit_gia_ban': medicine.gia_ban || 0,
-                    'edit_so_dang_ky': medicine.so_dang_ky || '',
-                    'edit_hoat_chat': medicine.hoat_chat || '',
-                    'edit_ham_luong': medicine.ham_luong || '',
-                    'edit_duong_dung_select': medicine.drugusage_id || '',
-                    'edit_manufacturer_select': medicine.manufacturer_id || '',
-                    'edit_nuoc_san_xuat': medicine.nuoc_san_xuat || '',
-                    'edit_quy_cach_dong_goi': medicine.quy_cach_dong_goi || '',
-                    'edit_ton_thap_nhat': medicine.ton_thap_nhat || 0,
-                    'edit_ton_cao_nhat': medicine.ton_cao_nhat || 999999999,
-                    'edit_position_select': medicine.position_id || '',
-                    'edit_trong_luong': medicine.trong_luong || 0,
-                    'edit_don_vi_tinh_input': medicine.don_vi_tinh || '',
-                    'edit_mo_ta': medicine.mo_ta || ''
-                };
+                // 3. Map dữ liệu vào các field với CSS selector mới (medicine_edit_*)
+                const fields = [
+                    ['#medicine_edit_ma_hang', medicine.ma_hang || ''],
+                    ['#medicine_edit_ma_vach', medicine.ma_vach || ''],
+                    ['#medicine_edit_ten_thuoc', medicine.ten_thuoc || ''],
+                    ['#medicine_edit_ten_viet_tat', medicine.ten_viet_tat || ''],
+                    ['#medicine_edit_nhom_hang_id', medicine.nhom_hang_id || ''],
+                    ['#medicine_edit_gia_von', medicine.gia_von || 0],
+                    ['#medicine_edit_gia_ban', medicine.gia_ban || 0],
+                    ['#medicine_edit_so_dang_ky', medicine.so_dang_ky || ''],
+                    ['#medicine_edit_hoat_chat', medicine.hoat_chat || ''],
+                    ['#medicine_edit_ham_luong', medicine.ham_luong || ''],
+                    ['#medicine_edit_duong_dung_select', medicine.drugusage_id || ''],
+                    ['#medicine_edit_manufacturer_select', medicine.manufacturer_id || ''],
+                    ['#medicine_edit_nuoc_san_xuat', medicine.nuoc_san_xuat || ''],
+                    ['#medicine_edit_quy_cach_dong_goi', medicine.quy_cach_dong_goi || ''],
+                    ['#medicine_edit_ton_thap_nhat', medicine.ton_thap_nhat || 0],
+                    ['#medicine_edit_ton_cao_nhat', medicine.ton_cao_nhat || 999999999],
+                    ['#medicine_edit_position_select', medicine.position_id || ''],
+                    ['#medicine_edit_trong_luong', medicine.trong_luong || 0],
+                    ['#medicine_edit_don_vi_tinh_input', medicine.don_vi_tinh || ''],
+                    ['#medicine_edit_mo_ta', medicine.mo_ta || '']
+                ];
                 
-                // Set all field values
-                Object.keys(fields).forEach(fieldId => {
-                    const element = document.getElementById(fieldId);
+                // 4. Fill dữ liệu vào các input field
+                fields.forEach(([selector, value]) => {
+                    const element = modalEl.querySelector(selector);
                     if (element) {
-                        element.value = fields[fieldId];
+                        element.value = value;
                     }
                 });
                 
-                // Set checkbox
-                const banTrucTiep = document.getElementById('edit_ban_truc_tiep');
+                // 5. Xử lý checkbox bán trực tiếp
+                const banTrucTiep = modalEl.querySelector('#medicine_edit_ban_truc_tiep');
                 if (banTrucTiep) {
                     banTrucTiep.checked = medicine.ban_truc_tiep == 1;
                 }
                 
-                // Set form action
-                const form = document.getElementById('editMedicineForm');
+                // 6. Set form action URL
+                const form = modalEl.querySelector('#editMedicineForm');
                 if (form) {
                     form.action = `/admin/medicines/${medicineId}`;
                 }
                 
-                // Show current image if exists
+                // 7. Xử lý hiển thị ảnh sản phẩm
                 if (medicine.image) {
-                    const preview = document.getElementById('edit-image-preview');
-                    const placeholder = document.getElementById('edit-image-placeholder');
+                    const preview = modalEl.querySelector('#edit-medicine-image-preview');
+                    const placeholder = modalEl.querySelector('#edit-medicine-image-placeholder');
                     if (preview && placeholder) {
                         preview.src = `/storage/${medicine.image}`;
                         preview.style.display = 'block';
@@ -128,15 +141,16 @@ function openEditMedicineModal(medicineId) {
                     }
                 }
                 
-                // Open modal
-                const modal = new bootstrap.Modal(document.getElementById('editMedicineModal'));
+                // 8. Hiển thị modal
+                const modal = new bootstrap.Modal(modalEl);
                 modal.show();
             } else {
-                // Failed to load medicine data
+                alert('Không thể tải dữ liệu thuốc');
             }
         })
         .catch(error => {
-            // Error loading medicine data
+            console.error('Error loading medicine data:', error);
+            alert('Lỗi khi tải dữ liệu thuốc');
         });
 }
 // Inline form handlers for edit modal
@@ -169,7 +183,7 @@ function createNewEditDrugRouteInline() {
     .then(response => response.json())
     .then(data => {
         if (data.success || data.drug_route) {
-            const select = document.getElementById('edit_duong_dung_select');
+            const select = document.getElementById('medicine_edit_duong_dung_select');
             const newOption = document.createElement('option');
             newOption.value = data.drug_route.id;
             newOption.textContent = data.drug_route.name;
@@ -195,14 +209,14 @@ function cancelEditDrugRouteForm() {
 
 function handleEditManufacturerChange(select) {
     if (select.value === 'create_new') {
-        document.getElementById('editManufacturerInlineForm').style.display = 'block';
-        document.getElementById('editNewManufacturerName').focus();
+        document.getElementById('editMedicineManufacturerInlineForm').style.display = 'block';
+        document.getElementById('editNewMedicineManufacturerName').focus();
         select.value = '';
     }
 }
 
 function createNewEditManufacturerInline() {
-    const name = document.getElementById('editNewManufacturerName').value.trim();
+    const name = document.getElementById('editNewMedicineManufacturerName').value.trim();
     if (!name) {
         // Validation failed
         return;
@@ -222,7 +236,7 @@ function createNewEditManufacturerInline() {
     .then(response => response.json())
     .then(data => {
         if (data.success || data.manufacturer) {
-            const select = document.getElementById('edit_manufacturer_select');
+            const select = document.getElementById('medicine_edit_manufacturer_select');
             const newOption = document.createElement('option');
             newOption.value = data.manufacturer.id;
             newOption.textContent = data.manufacturer.name;
@@ -242,20 +256,20 @@ function createNewEditManufacturerInline() {
 }
 
 function cancelEditManufacturerForm() {
-    document.getElementById('editManufacturerInlineForm').style.display = 'none';
-    document.getElementById('editNewManufacturerName').value = '';
+    document.getElementById('editMedicineManufacturerInlineForm').style.display = 'none';
+    document.getElementById('editNewMedicineManufacturerName').value = '';
 }
 
 function handleEditPositionChange(select) {
     if (select.value === 'create_new') {
-        document.getElementById('editPositionInlineForm').style.display = 'block';
-        document.getElementById('editNewPositionName').focus();
+        document.getElementById('editMedicinePositionInlineForm').style.display = 'block';
+        document.getElementById('editNewMedicinePositionName').focus();
         select.value = '';
     }
 }
 
 function createNewEditPositionInline() {
-    const name = document.getElementById('editNewPositionName').value.trim();
+    const name = document.getElementById('editNewMedicinePositionName').value.trim();
     if (!name) {
         // Validation failed
         return;
@@ -275,7 +289,7 @@ function createNewEditPositionInline() {
     .then(response => response.json())
     .then(data => {
         if (data.success || data.position) {
-            const select = document.getElementById('edit_position_select');
+            const select = document.getElementById('medicine_edit_position_select');
             const newOption = document.createElement('option');
             newOption.value = data.position.id;
             newOption.textContent = data.position.name;
@@ -295,12 +309,131 @@ function createNewEditPositionInline() {
 }
 
 function cancelEditPositionForm() {
-    document.getElementById('editPositionInlineForm').style.display = 'none';
-    document.getElementById('editNewPositionName').value = '';
+    document.getElementById('editMedicinePositionInlineForm').style.display = 'none';
+    document.getElementById('editNewMedicinePositionName').value = '';
 }
 
 // Unit modal functions for edit
 function openEditUnitModal() {
+    const modal = new bootstrap.Modal(document.getElementById('unitModal'));
+    modal.show();
+}
+
+function openGoodsEditUnitModal() {
+    const modal = new bootstrap.Modal(document.getElementById('unitModal'));
+    modal.show();
+}
+
+// CREATE GOODS - Inline form handlers
+function handleCreateManufacturerChange(select) {
+    const inlineForm = document.getElementById('createGoodsManufacturerInlineForm');
+    if (select.value === 'create_new') {
+        inlineForm.style.display = 'block';
+    } else {
+        inlineForm.style.display = 'none';
+    }
+}
+
+function handleCreatePositionChange(select) {
+    const inlineForm = document.getElementById('createGoodsPositionInlineForm');
+    if (select.value === 'create_new') {
+        inlineForm.style.display = 'block';
+    } else {
+        inlineForm.style.display = 'none';
+    }
+}
+
+function createNewCreateManufacturerInline() {
+    const name = document.getElementById('createNewGoodsManufacturerName').value.trim();
+    if (!name) {
+        alert('Vui lòng nhập tên hãng sản xuất!');
+        return;
+    }
+
+    fetch('/admin/products/manufacturer', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ name: name })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Thêm option mới vào select
+            const select = document.getElementById('manufacturer_id');
+            const newOption = new Option(data.manufacturer.name, data.manufacturer.id);
+            select.add(newOption);
+            select.value = data.manufacturer.id;
+            
+            // Ẩn inline form
+            document.getElementById('createGoodsManufacturerInlineForm').style.display = 'none';
+            document.getElementById('createNewGoodsManufacturerName').value = '';
+            
+            showSuccessMessage('Tạo hãng sản xuất thành công!');
+        } else {
+            alert(data.message || 'Có lỗi xảy ra!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi tạo hãng sản xuất!');
+    });
+}
+
+function createNewCreatePositionInline() {
+    const name = document.getElementById('createNewGoodsPositionName').value.trim();
+    if (!name) {
+        alert('Vui lòng nhập tên vị trí!');
+        return;
+    }
+
+    fetch('/admin/products/position', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ name: name })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Thêm option mới vào select
+            const select = document.getElementById('position_id');
+            const newOption = new Option(data.position.name, data.position.id);
+            select.add(newOption);
+            select.value = data.position.id;
+            
+            // Ẩn inline form
+            document.getElementById('createGoodsPositionInlineForm').style.display = 'none';
+            document.getElementById('createNewGoodsPositionName').value = '';
+            
+            showSuccessMessage('Tạo vị trí thành công!');
+        } else {
+            alert(data.message || 'Có lỗi xảy ra!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi tạo vị trí!');
+    });
+}
+
+function cancelCreateManufacturerForm() {
+    document.getElementById('createGoodsManufacturerInlineForm').style.display = 'none';
+    document.getElementById('createNewGoodsManufacturerName').value = '';
+    document.getElementById('manufacturer_id').value = '';
+}
+
+function cancelCreatePositionForm() {
+    document.getElementById('createGoodsPositionInlineForm').style.display = 'none';
+    document.getElementById('createNewGoodsPositionName').value = '';
+    document.getElementById('position_id').value = '';
+}
+
+function openCreateUnitModal() {
     const modal = new bootstrap.Modal(document.getElementById('unitModal'));
     modal.show();
 }
@@ -567,6 +700,8 @@ function openEditGoodsModal(goodsId) {
                     ['#goods_edit_nuoc_san_xuat', goods.nuoc_san_xuat || ''],
                     ['#goods_edit_ton_thap_nhat', goods.ton_thap_nhat || 0],
                     ['#goods_edit_ton_cao_nhat', goods.ton_cao_nhat || 999999999],
+                    ['#goods_edit_position_id', goods.position_id || ''],
+                    ['#goods_edit_trong_luong', goods.trong_luong || 0],
                     ['#goods_edit_don_vi_tinh_input', goods.don_vi_tinh || ''],
                     ['#goods_edit_mo_ta', goods.mo_ta || '']
                 ];
@@ -655,7 +790,7 @@ function createNewEditManufacturerInline() {
     .then(response => response.json())
     .then(data => {
         if (data.success || data.manufacturer) {
-            const select = document.getElementById('edit_manufacturer_id');
+            const select = document.getElementById('goods_edit_manufacturer_id');
             const newOption = document.createElement('option');
             newOption.value = data.manufacturer.id;
             newOption.textContent = data.manufacturer.name;
@@ -697,7 +832,7 @@ function createNewEditPositionInline() {
     .then(response => response.json())
     .then(data => {
         if (data.success || data.position) {
-            const select = document.getElementById('edit_position_id');
+            const select = document.getElementById('goods_edit_position_id');
             const newOption = document.createElement('option');
             newOption.value = data.position.id;
             newOption.textContent = data.position.name;
