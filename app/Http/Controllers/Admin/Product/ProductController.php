@@ -7,6 +7,7 @@ use App\Models\DrugRoute;
 use App\Models\Manufacturer;
 use App\Models\Medicine;
 use App\Models\Goods;
+use App\Models\Service;
 use App\Models\Position;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
@@ -20,6 +21,7 @@ class ProductController extends Controller
     {
         $medicines        = Medicine::with(['category', 'manufacturer', 'drugRoute', 'position'])->latest()->paginate(10);
         $goods            = Goods::with(['category', 'manufacturer', 'position'])->latest()->paginate(10);
+        $services         = Service::with(['category', 'creator', 'updater'])->latest()->paginate(10);
         $categories       = ProductCategory::getCategoriesForSelect();
         $parentCategories = ProductCategory::getParentCategories();
         $manufacturers    = Manufacturer::all();
@@ -28,13 +30,9 @@ class ProductController extends Controller
 
         return view(
             'admin.products.Danhsachhanghoa.index',
-            compact('medicines', 'goods', 'categories', 'parentCategories', 'manufacturers', 'drugRoutes', 'positions')
+            compact('medicines', 'goods', 'services', 'categories', 'parentCategories', 'manufacturers', 'drugRoutes', 'positions')
         );
     }
-
-    // ========================================
-    // LEGACY METHODS (for backward compatibility)
-    // ========================================
 
     /**
      * Show the form for creating a new medicine (legacy).

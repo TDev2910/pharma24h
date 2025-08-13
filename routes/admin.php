@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Product\ProductController;
 use App\Http\Controllers\Admin\Product\MedicineController;
 use App\Http\Controllers\Admin\Product\GoodsController;
+use App\Http\Controllers\Admin\Product\ServiceController;
 use App\Http\Controllers\Admin\Product\SupportingEntityController;
 use App\Http\Controllers\Admin\ProductCategoryController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,19 @@ Route::prefix('admin')->name('admin.')->group(function ()
         Route::put('/{goods}', [GoodsController::class, 'update'])->name('update');
         Route::delete('/{goods}', [GoodsController::class, 'destroy'])->name('delete');
         Route::get('/{goods}/detail', [GoodsController::class, 'show'])->name('detail');
+    });
+
+    // services route (ServiceController)
+    Route::prefix('services')->name('services.')->group(function () {
+        Route::get('/', [ServiceController::class, 'index'])->name('index');
+        Route::get('/list', [ServiceController::class, 'listServices'])->name('list');
+        Route::post('/', [ServiceController::class, 'store'])->name('store');
+        Route::get('/{service}/edit', [ServiceController::class, 'edit'])->name('edit');
+        Route::put('/{service}', [ServiceController::class, 'update'])->name('update');
+        Route::delete('/{service}', [ServiceController::class, 'destroy'])->name('delete');
+        Route::get('/{service}/detail', [ServiceController::class, 'detail'])->name('detail');
+        Route::get('/{service}', [ServiceController::class, 'show'])->name('show');
+        Route::patch('/{service}/status', [ServiceController::class, 'updateStatus'])->name('updateStatus');
     });  
     // Main product dashboard
     Route::get('products', [ProductController::class, 'index'])->name('products.index');

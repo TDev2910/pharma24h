@@ -44,7 +44,11 @@
                                     Hàng hóa
                                 </a>
                             </li>
-                            <li><a class="dropdown-item" href="#">Dịch vụ</a></li>
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#createServiceModal">
+                                    Dịch vụ
+                                </a>
+                            </li>
                             <li><a class="dropdown-item" href="#">Combo - đóng gói</a></li>
                         </ul>
                     </div>
@@ -74,6 +78,23 @@
             </div>  
         </div>
     </div>
+    <!-- Success/Error Messages -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <!-- Content Area -->
     <div class="content-area mt-4">
         <div class="row">
@@ -722,6 +743,221 @@
                                             </td>
                                         </tr>
                                     @endforelse
+
+                                    <!-- Hiển thị dịch vụ -->
+                                    @forelse($services ?? [] as $service)
+                                        <tr class="product-row service-row" 
+                                            data-product-id="service-{{ $service->id }}" 
+                                            data-category-id="{{ $service->nhom_dich_vu_id }}"
+                                            style="cursor: pointer;" 
+                                            onclick="toggleServiceDetail({{ $service->id }}, this)">
+                                            <td>
+                                                <input type="checkbox" class="form-check-input" onclick="event.stopPropagation()">
+                                            </td>
+                                            <td>
+                                                <div class="product-image-container">
+                                                    <img src="{{ $service->image ? asset('storage/' . $service->image) : asset('images/default-service.png') }}"
+                                                         alt="{{ $service->ten_dich_vu }}"
+                                                         class="img-thumbnail product-image"
+                                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                                </div>
+                                            </td>
+                                            <td><span class="product-code">{{ $service->ma_dich_vu ?? 'N/A' }}</span></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="product-name">{{ $service->ten_dich_vu ?? 'N/A' }}</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="product-abbreviation">{{ $service->hinh_thuc == 'tai_nha_thuoc' ? 'Tại NT' : 'Tại nhà' }}</span></td>
+                                            <td>{{ number_format($service->gia_ban ?? 0) }} VNĐ</td>
+                                            <td>-</td>
+                                            <td>
+                                                <span class="badge {{ $service->trang_thai == 'kich_hoat' ? 'bg-success' : ($service->trang_thai == 'tam_ngung' ? 'bg-warning' : 'bg-secondary') }}">
+                                                    {{ $service->trang_thai == 'kich_hoat' ? 'Kích hoạt' : ($service->trang_thai == 'tam_ngung' ? 'Tạm ngưng' : 'Lưu tạm') }}
+                                                </span>
+                                            </td>
+                                            <td>{{ $service->created_at ? $service->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
+                                        </tr>
+                                        <!-- Expandable Detail Row cho dịch vụ -->
+                                        <tr class="detail-row" id="detail-row-service-{{ $service->id }}" style="display: none;">
+                                            <td colspan="10" class="p-0">
+                                                <div class="detail-content">
+                                                    <div class="row">
+                                                        <!-- Ảnh dịch vụ -->
+                                                        <div class="col-md-3">
+                                                            <div class="product-image-detail-large">
+                                                                <img id="serviceDetailImageLarge-{{ $service->id }}" 
+                                                                     src="{{ $service->image ? asset('storage/' . $service->image) : asset('images/default-service.png') }}"
+                                                                     alt="Service Image"
+                                                                     class="img-fluid rounded"
+                                                                     style="width: 100%; height: 200px; object-fit: cover;">
+                                                            </div>
+                                                        </div>
+                                                        <!-- Thông tin dịch vụ -->
+                                                        <div class="col-md-9">
+                                                            <div class="product-info-detail">
+                                                                <!-- Service Header -->
+                                                                <div class="product-header mb-4">
+                                                                    <h4 class="product-title mb-2">{{ $service->ten_dich_vu ?? 'N/A' }}</h4>
+                                                                    <div class="product-category mb-2">
+                                                                        <small class="text-muted">Nhóm dịch vụ: {{ $service->category->name ?? 'N/A' }}</small>
+                                                                    </div>
+                                                                    <div class="product-tags">
+                                                                        <span class="badge bg-info me-2">Dịch vụ</span>
+                                                                        <span class="badge {{ $service->hinh_thuc == 'tai_nha_thuoc' ? 'bg-primary' : 'bg-secondary' }} me-2">
+                                                                            {{ $service->hinh_thuc == 'tai_nha_thuoc' ? 'Tại nhà thuốc' : 'Tại nhà khách' }}
+                                                                        </span>
+                                                                        <span class="badge {{ $service->trang_thai == 'kich_hoat' ? 'bg-success' : ($service->trang_thai == 'tam_ngung' ? 'bg-warning' : 'bg-secondary') }}">
+                                                                            {{ $service->trang_thai == 'kich_hoat' ? 'Kích hoạt' : ($service->trang_thai == 'tam_ngung' ? 'Tạm ngưng' : 'Lưu tạm') }}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- Tabs -->
+                                                                <ul class="nav nav-tabs" id="serviceDetailTabs-{{ $service->id }}" role="tablist">
+                                                                    <li class="" role="presentation">
+                                                                        <button class="nav-link active" id="info-tab-service-{{ $service->id }}" data-bs-toggle="tab" data-bs-target="#info-service-{{ $service->id }}" type="button" role="tab" style="margin-left:-15px;">Thông tin</button>
+                                                                    </li>
+                                                                    <li class="" role="presentation">
+                                                                        <button class="nav-link" id="description-tab-service-{{ $service->id }}" data-bs-toggle="tab" data-bs-target="#description-service-{{ $service->id }}" type="button" role="tab">Mô tả, ghi chú</button>
+                                                                    </li>
+                                                                </ul>
+                                                                <!-- Tab content -->
+                                                                <div class="tab-content mt-3" id="serviceDetailTabContent-{{ $service->id }}">
+                                                                    <!-- Tab Thông tin -->
+                                                                    <div class="tab-pane fade show active" id="info-service-{{ $service->id }}" role="tabpanel">
+                                                                        <div class="row">
+                                                                            <div class="col-md-6">
+                                                                                <div class="info-group">
+                                                                                    <h6 class="text-muted mb-3">Thông tin chung</h6>
+                                                                                    <div class="table-responsive">
+                                                                                        <table class="table table-bordered table-striped align-middle text-center">
+                                                                                            <thead class="table-primary">
+                                                                                                <tr>
+                                                                                                    <th scope="col">Chỉ tiêu</th>
+                                                                                                    <th scope="col">Giá trị</th>
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody>
+                                                                                                <tr>
+                                                                                                    <td><strong>Mã dịch vụ</strong></td>
+                                                                                                    <td id="serviceDetailCodeLarge-{{ $service->id }}">{{ $service->ma_dich_vu ?? 'N/A' }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Chi phí thực hiện</strong></td>
+                                                                                                    <td class="text-success" id="serviceDetailPriceLarge-{{ $service->id }}">{{ number_format($service->gia_ban ?? 0) }} VNĐ</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Hình thức</strong></td>
+                                                                                                    <td id="serviceDetailType-{{ $service->id }}">{{ $service->hinh_thuc == 'tai_nha_thuoc' ? 'Tại nhà thuốc' : 'Tại nhà khách' }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Thời gian thực hiện</strong></td>
+                                                                                                    <td id="serviceDetailDuration-{{ $service->id }}">{{ $service->thoi_gian_thuc_hien ? $service->thoi_gian_thuc_hien . ' phút' : 'Chưa xác định' }}</td>
+                                                                                                </tr>
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <div class="info-group">
+                                                                                    <h6 class="text-muted mb-3">Thông tin bổ sung</h6>
+                                                                                    <div class="table-responsive">
+                                                                                        <table class="table table-bordered table-striped align-middle text-center">
+                                                                                            <thead class="table-primary">
+                                                                                                <tr>
+                                                                                                    <th scope="col">Chỉ tiêu</th>
+                                                                                                    <th scope="col">Giá trị</th>
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody>
+                                                                                                <tr>
+                                                                                                    <td><strong>Nhóm dịch vụ</strong></td>
+                                                                                                    <td id="serviceDetailCategory-{{ $service->id }}">{{ $service->category->name ?? 'Chưa phân nhóm' }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Ngày tạo</strong></td>
+                                                                                                    <td id="serviceDetailCreated-{{ $service->id }}">{{ $service->created_at ? $service->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td><strong>Cập nhật lần cuối</strong></td>
+                                                                                                    <td id="serviceDetailUpdated-{{ $service->id }}">{{ $service->updated_at ? $service->updated_at->format('d/m/Y H:i') : 'N/A' }}</td>
+                                                                                                </tr>
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!-- Tab Mô tả -->
+                                                                    <div class="tab-pane fade" id="description-service-{{ $service->id }}" role="tabpanel">
+                                                                        <div class="description-content">
+                                                                            <h6 class="text-muted mb-3">Mô tả dịch vụ</h6>
+                                                                            <div class="table-responsive">
+                                                                                <table class="table table-bordered table-striped align-middle text-center">
+                                                                                    <thead class="table-primary">
+                                                                                        <tr>
+                                                                                            <th scope="col">Nội dung</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        <tr>
+                                                                                            <td id="serviceDetailDescriptionLarge-{{ $service->id }}" class="text-start">
+                                                                                                {{ $service->mo_ta ?? 'Chưa có mô tả' }}
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                            @if($service->ghi_chu)
+                                                                                <h6 class="text-muted mb-3 mt-4">Ghi chú</h6>
+                                                                                <div class="table-responsive">
+                                                                                    <table class="table table-bordered table-striped align-middle text-center">
+                                                                                        <thead class="table-primary">
+                                                                                            <tr>
+                                                                                                <th scope="col">Ghi chú</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td id="serviceDetailNotesLarge-{{ $service->id }}" class="text-start">
+                                                                                                    {{ $service->ghi_chu }}
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            @endif
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- Action Buttons -->
+                                                                <div class="action-buttons-container">
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        <div class="left-actions">
+                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="showDeleteServiceConfirmation({{ $service->id }}, '{{ $service->ma_dich_vu }}', '{{ $service->ten_dich_vu }}')">
+                                                                                <i class="fas fa-trash"></i> Xóa
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="right-actions">
+                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #1db46a; border-color: #1db46a; color: white;" onclick="openEditServiceModal({{ $service->id }})">
+                                                                                <i class="fas fa-edit"></i> Chỉnh sửa
+                                                                            </button>                             
+                                                                            <button type="button" class="btn btn-outline-secondary btn-sm">
+                                                                                <i class="fas fa-ellipsis-h"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -785,8 +1021,10 @@
 <!-- Include Modal Components -->
 @include('admin.products.Danhsachhanghoa.create.medicine')
 @include('admin.products.Danhsachhanghoa.create.goods')
+@include('admin.products.Danhsachhanghoa.create.service')
 @include('admin.products.Danhsachhanghoa.edit.medicine')
 @include('admin.products.Danhsachhanghoa.edit.goods')
+@include('admin.products.Danhsachhanghoa.edit.service')
 @include('admin.products.Danhsachhanghoa.formmodal.unit_modal')
 
 
@@ -798,6 +1036,7 @@
 @push('scripts')
 <script src="{{ asset('js/products/medicine-management.js') }}"></script>
 <script src="{{ asset('js/products/goods-management.js') }}"></script>
+<script src="{{ asset('js/products/service-management.js') }}"></script>
 <script src="{{ asset('js/forms.js') }}"></script>
 @endpush
 
@@ -838,4 +1077,112 @@
     @method('DELETE')
     <input type="hidden" id="deleteMedicineId" name="medicine_id">
 </form>
+
+<script>
+// toggleServiceDetail function is now in service-management.js
+
+/**
+ * Show delete service confirmation
+ */
+function showDeleteServiceConfirmation(serviceId, serviceCode, serviceName) {
+    // Update modal content
+    document.getElementById('deleteMedicineCode').textContent = serviceCode;
+    document.getElementById('deleteMedicineName').textContent = serviceName;
+    document.getElementById('deleteMedicineId').value = serviceId;
+    
+    // Update form action for service
+    const form = document.getElementById('deleteMedicineForm');
+    form.action = `/admin/services/${serviceId}`;
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+    modal.show();
+}
+
+/**
+ * View service detail in modal
+ */
+function viewServiceDetail(serviceId) {
+    // Use the function from service-management.js
+    if (typeof viewServiceDetail !== 'undefined') {
+        viewServiceDetail(serviceId);
+    } else {
+        alert('Chi tiết dịch vụ sẽ được hiển thị ở đây');
+    }
+}
+
+/**
+ * Filter products to include services
+ */
+function filterProducts() {
+    const categoryId = document.querySelector('select[name="category_id"]').value;
+    const manufacturerId = document.querySelector('select[name="manufacturer_id"]').value;
+    const positionId = document.querySelector('select[name="position_id"]').value;
+    const productType = document.querySelector('select[name="product_type"]').value;
+
+    const rows = document.querySelectorAll('.product-row');
+    
+    rows.forEach(row => {
+        let showRow = true;
+        
+        // Filter by category
+        if (categoryId && row.dataset.categoryId !== categoryId) {
+            showRow = false;
+        }
+        
+        // Filter by manufacturer (not applicable to services)
+        if (manufacturerId && !row.classList.contains('service-row') && row.dataset.manufacturerId !== manufacturerId) {
+            showRow = false;
+        }
+        
+        // Filter by position (not applicable to services)
+        if (positionId && !row.classList.contains('service-row') && row.dataset.positionId !== positionId) {
+            showRow = false;
+        }
+        
+        // Filter by product type
+        if (productType) {
+            if (productType === 'medicine' && !row.classList.contains('medicine-row')) {
+                showRow = false;
+            } else if (productType === 'goods' && !row.classList.contains('goods-row')) {
+                showRow = false;
+            } else if (productType === 'service' && !row.classList.contains('service-row')) {
+                showRow = false;
+            }
+        }
+        
+        // Show/hide row
+        row.style.display = showRow ? 'table-row' : 'none';
+        
+        // Also hide detail row if main row is hidden
+        const detailRow = document.getElementById(row.onclick?.toString().match(/detail-row-[^']+/)?.[0]);
+        if (detailRow) {
+            detailRow.style.display = showRow ? 'none' : 'none'; // Always hide detail when filtering
+        }
+    });
+}
+
+/**
+ * Search products to include services
+ */
+function searchProducts() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('.product-row');
+    
+    rows.forEach(row => {
+        const productCode = row.querySelector('.product-code')?.textContent.toLowerCase() || '';
+        const productName = row.querySelector('.product-name')?.textContent.toLowerCase() || '';
+        
+        const matches = productCode.includes(searchTerm) || productName.includes(searchTerm);
+        
+        row.style.display = matches ? 'table-row' : 'none';
+        
+        // Also hide detail row when searching
+        const detailRow = document.getElementById(row.onclick?.toString().match(/detail-row-[^']+/)?.[0]);
+        if (detailRow) {
+            detailRow.style.display = 'none';
+        }
+    });
+}
+</script>
 @endsection             

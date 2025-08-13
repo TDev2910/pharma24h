@@ -869,3 +869,220 @@ function openEditUnitModal() {
     const modal = new bootstrap.Modal(document.getElementById('unitModal'));
     modal.show();
 }
+
+
+/**
+ * Preview selected image for create service
+ */
+function previewCreateServiceImage(input) {
+    const file = input.files[0];
+    const preview = document.getElementById('createServiceImagePreview');
+    const placeholder = document.getElementById('createServiceImagePlaceholder');
+    
+    if (file) {
+        // Check file size (2MB = 2 * 1024 * 1024 bytes)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('File quá lớn! Vui lòng chọn ảnh nhỏ hơn 2MB.');
+            input.value = '';
+            return;
+        }
+        
+        // Check file type
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn file ảnh!');
+            input.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.style.display = 'none';
+        placeholder.style.display = 'block';
+    }
+}
+
+/**
+ * Preview selected image for edit service
+ */
+function previewEditServiceImage(input) {
+    const file = input.files[0];
+    const preview = document.getElementById('editServiceImagePreview');
+    const placeholder = document.getElementById('editServiceImagePlaceholder');
+    
+    if (file) {
+        // Check file size (2MB = 2 * 1024 * 1024 bytes)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('File quá lớn! Vui lòng chọn ảnh nhỏ hơn 2MB.');
+            input.value = '';
+            return;
+        }
+        
+        // Check file type
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn file ảnh!');
+            input.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            if (placeholder) placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'block';
+    }
+}
+
+/**
+ * Auto-generate service code based on service name
+ */
+function generateServiceCode() {
+    const serviceName = document.getElementById('ten_dich_vu');
+    const serviceCode = document.getElementById('ma_dich_vu');
+    
+    if (serviceName && serviceCode && serviceName.value && !serviceCode.value) {
+        // Simple code generation: take first letters and add random numbers
+        const words = serviceName.value.trim().split(' ');
+        let code = 'DV';
+        
+        words.forEach(word => {
+            if (word.length > 0) {
+                code += word.charAt(0).toUpperCase();
+            }
+        });
+        
+        // Add random 3-digit number
+        code += String(Math.floor(Math.random() * 900) + 100);
+        
+        serviceCode.value = code;
+    }
+}
+
+/**
+ * Calculate estimated completion time based on service type
+ */
+function updateEstimatedTime() {
+    const serviceType = document.getElementById('hinh_thuc');
+    const timeInput = document.getElementById('thoi_gian_thuc_hien');
+    
+    if (serviceType && timeInput) {
+        const type = serviceType.value;
+        
+        // Suggest default times based on service type
+        if (type === 'tai_nha_thuoc' && !timeInput.value) {
+            timeInput.placeholder = 'VD: 15-30 phút';
+        } else if (type === 'tai_nha_khach' && !timeInput.value) {
+            timeInput.placeholder = 'VD: 45-60 phút';
+        }
+    }
+}
+
+/**
+ * Validate service form before submission
+ */
+function validateServiceForm(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return false;
+    
+    const requiredFields = form.querySelectorAll('[required]');
+    let isValid = true;
+    let firstInvalidField = null;
+    
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            field.classList.add('is-invalid');
+            if (!firstInvalidField) {
+                firstInvalidField = field;
+            }
+            isValid = false;
+        } else {
+            field.classList.remove('is-invalid');
+        }
+    });
+    
+    // Validate price
+    const priceField = form.querySelector('[name="gia_ban"]');
+    if (priceField && parseFloat(priceField.value) < 0) {
+        priceField.classList.add('is-invalid');
+        isValid = false;
+        if (!firstInvalidField) {
+            firstInvalidField = priceField;
+        }
+    }
+    
+    // Focus on first invalid field
+    if (firstInvalidField) {
+        firstInvalidField.focus();
+        firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    
+    return isValid;
+}
+
+/**
+ * Reset service form
+ */
+function resetServiceForm(formId) {
+    const form = document.getElementById(formId);
+    if (form) {
+        form.reset();
+        
+        // Reset image preview
+        const preview = form.querySelector('img[id*="Preview"]');
+        const placeholder = form.querySelector('div[id*="Placeholder"]');
+        
+        if (preview) preview.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'block';
+        
+        // Remove validation classes
+        form.querySelectorAll('.is-invalid').forEach(field => {
+            field.classList.remove('is-invalid');
+        });
+    }
+}
+
+/**
+ * Format price input with thousand separators
+ */
+function formatServicePrice(input) {
+    let value = input.value.replace(/[^\d]/g, '');
+    if (value) {
+        value = parseInt(value).toLocaleString('vi-VN');
+        input.value = value;
+    }
+}
+
+/**
+ * Initialize service form event listeners
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-generate service code when service name changes
+    const serviceNameInput = document.getElementById('ten_dich_vu');
+    if (serviceNameInput) {
+        serviceNameInput.addEventListener('blur', generateServiceCode);
+    }
+    
+    // Update estimated time when service type changes
+    const serviceTypeSelect = document.getElementById('hinh_thuc');
+    if (serviceTypeSelect) {
+        serviceTypeSelect.addEventListener('change', updateEstimatedTime);
+    }
+    
+    // Format price inputs
+    const priceInputs = document.querySelectorAll('input[name="gia_ban"]');
+    priceInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            formatServicePrice(this);
+        });
+    });
+});
