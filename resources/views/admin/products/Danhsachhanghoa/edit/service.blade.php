@@ -13,26 +13,27 @@
                 @method('PUT')
                 <div class="modal-body">
                     <!-- Nav tabs -->
-                    <ul class="nav nav-tabs" id="editServiceTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="edit-basic-info-tab" data-bs-toggle="tab" 
-                                    data-bs-target="#edit-basic-info" type="button" role="tab">
-                                <p>Thông tin cơ bản</p>
+                    <ul class="nav nav-tabs border-0 mb-3" id="editServiceTabs" role="tablist">
+                        <li class="" role="presentation">
+                            <button class="nav-link active px-4 py-2 fw-bold" id="edit-basic-info-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#edit-basic-info" type="button" role="tab" style="margin-left:1px;margin-bottom:-2px">
+                                Thông tin cơ bản
                             </button>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="edit-service-details-tab" data-bs-toggle="tab" 
-                                    data-bs-target="#edit-service-details" type="button" role="tab">
-                                <p>Chi tiết dịch vụ</p>
+                        <li class="" role="presentation">
+                            <button class="nav-link px-4 py-2 fw-bold" id="edit-service-details-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#edit-service-details" type="button" role="tab" style="border-radius:8px;">
+                                Chi tiết dịch vụ
                             </button>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="edit-service-image-tab" data-bs-toggle="tab" 
-                                    data-bs-target="#edit-service-image" type="button" role="tab">
-                                <p>Hình ảnh & Ghi chú</p>
+                        <li class="" role="presentation">
+                            <button class="nav-link px-4 py-2 fw-bold" id="edit-service-image-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#edit-service-image" type="button" role="tab" style="border-radius:8px;">
+                                Hình ảnh & Ghi chú
                             </button>
                         </li>
                     </ul>
+                    <hr class="border-0 border-top border-secondary-subtle" style="background-color: black; height: 2px;margin-top:-14px">
 
                     <!-- Tab content -->
                     <div class="tab-content mt-3" id="editServiceTabContent">
@@ -263,7 +264,7 @@
                                     </div>
 
                                     <!-- Service Stats -->
-                                    <div class="alert alert-success">
+                                    {{-- <div class="alert alert-success">
                                         <h6 class="alert-heading">
                                             <i class="fas fa-chart-line me-1"></i>Thống kê dịch vụ:
                                         </h6>
@@ -285,7 +286,7 @@
                                             <i class="fas fa-info-circle me-1"></i>
                                             Thống kê sẽ được cập nhật khi có booking dịch vụ
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                         </div>

@@ -79,8 +79,8 @@
 }
 
 #unitModal .modal-header {
-    background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
-    color: white;
+    background: white;
+    color: black;
     border-radius: 12px 12px 0 0;
 }
 

@@ -55,7 +55,7 @@
                         <th>Nhóm hàng</th>
                         <th>Quy cách đóng gói</th>
                         <th>ĐVT</th>
-                        <th>Tồn kho</th>
+                        {{-- <th>Tồn kho</th> --}}
                         <th>Giá vốn</th>
                         <th>Giá bán</th>
                         <th>Trạng thái</th>
@@ -69,11 +69,11 @@
                             <td>{{ $good->category->name ?? 'N/A' }}</td>
                             <td>{{ $good->quy_cach_dong_goi ?? 'N/A' }}</td>
                             <td>{{ $good->don_vi_tinh ?? 'N/A' }}</td>
-                            <td>
+                            {{-- <td>
                                 <span class="badge {{ $good->ton_kho <= $good->ton_thap_nhat ? 'bg-danger' : ($good->ton_kho >= $good->ton_cao_nhat ? 'bg-warning' : 'bg-success') }}">
                                     {{ $good->ton_kho ?? 0 }}
                                 </span>
-                            </td>
+                            </td> --}}
                             <td>{{ number_format($good->gia_von) }} VNĐ</td>
                             <td>{{ number_format($good->gia_ban) }} VNĐ</td>
                             <td>

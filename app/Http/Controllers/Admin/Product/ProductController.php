@@ -87,9 +87,6 @@ class ProductController extends Controller
      */
     public function storeGoods(Request $request)
     {
-        // Log request data
-        \Log::info('StoreGoods Request Data:', $request->all());
-        
         try {
             $request->validate([
                 'ten_hang_hoa'      => 'required|string|max:255',
@@ -114,7 +111,6 @@ class ProductController extends Controller
                 'khach_dat'         => 'nullable|integer|min:0',
             ]);
             
-            \Log::info('Validation passed');
         } catch (\Illuminate\Validation\ValidationException $e) {
             \Log::error('Validation failed:', $e->errors());
             return redirect()->back()
@@ -126,17 +122,13 @@ class ProductController extends Controller
         $data['ban_truc_tiep'] = $request->has('ban_truc_tiep') ? 1 : 0;
         $data['quan_ly_theo_lo'] = $request->has('quan_ly_theo_lo') ? 1 : 0;
 
-        \Log::info('Processed data:', $data);
-
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('goods', 'public');
             $data['image'] = $imagePath;
-            \Log::info('Image uploaded:', ['path' => $imagePath]);
         }
 
         try {
             $goods = Goods::create($data);
-            \Log::info('Goods created successfully:', ['id' => $goods->id]);
             return redirect()->route('admin.products.index')->with('success', 'Thêm hàng hóa thành công!');
         } catch (\Exception $e) {
             \Log::error('Error creating goods:', [

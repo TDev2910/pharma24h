@@ -203,10 +203,6 @@ class GoodsController extends Controller
     public function show($id)
     {
         $goods = Goods::with(['category', 'manufacturer', 'position'])->findOrFail($id);
-        
-        // Debug log
-        \Log::info('🔍 Goods detail API called for ID: ' . $id);
-        \Log::info('📦 Goods data:', $goods->toArray());
 
         return response()->json([
             'success' => true,

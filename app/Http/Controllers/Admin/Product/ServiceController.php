@@ -19,7 +19,10 @@ class ServiceController extends Controller
     {
         $categories = ProductCategory::getCategoriesForSelect();
         $services = Service::with(['category'])->orderBy('created_at', 'desc')->get();
-        return view('admin.products.Danhsachhanghoa.index', compact('categories', 'services'));
+        $manufacturers = \App\Models\Manufacturer::all();
+        $positions = \App\Models\Position::all();
+        
+        return view('admin.products.Danhsachhanghoa.index', compact('categories', 'services', 'manufacturers', 'positions'));
     }
 
     /**
@@ -94,7 +97,7 @@ class ServiceController extends Controller
         try {
             $service = Service::create($data);
 
-            return redirect()->route('admin.services.index')
+            return redirect()->route('admin.products.index')
                 ->with('success', 'Dịch vụ đã được tạo thành công!');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -110,8 +113,10 @@ class ServiceController extends Controller
     {
         $service = Service::with(['category'])->findOrFail($id);
         $categories = ProductCategory::getCategoriesForSelect();
+        $manufacturers = \App\Models\Manufacturer::all();
+        $positions = \App\Models\Position::all();
         
-        return view('admin.products.Danhsachhanghoa.edit.service', compact('service', 'categories'));
+        return view('admin.products.Danhsachhanghoa.edit.service', compact('service', 'categories', 'manufacturers', 'positions'));
     }
 
     /**
@@ -157,9 +162,9 @@ class ServiceController extends Controller
         $data = $request->except(['image']);
         $data['updated_by'] = Auth::id();
 
-        // Handle image upload
+        // Xử lý ảnh mới
         if ($request->hasFile('image')) {
-            // Delete old image if exists
+            // Xóa ảnh cũ
             if ($service->image && Storage::disk('public')->exists($service->image)) {
                 Storage::disk('public')->delete($service->image);
             }
@@ -173,12 +178,12 @@ class ServiceController extends Controller
         try {
             $service->update($data);
 
-            return redirect()->route('admin.services.index')
-                           ->with('success', 'Dịch vụ đã được cập nhật thành công!');
+            return redirect()->route('admin.products.index')
+            ->with('success', 'Dịch vụ đã được cập nhật thành công!');
         } catch (\Exception $e) {
             return redirect()->back()
-                           ->withInput()
-                           ->with('error', 'Có lỗi xảy ra khi cập nhật dịch vụ: ' . $e->getMessage());
+            ->withInput()
+            ->with('error', 'Có lỗi xảy ra khi cập nhật dịch vụ: ' . $e->getMessage());
         }
     }
 

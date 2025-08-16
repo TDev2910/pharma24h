@@ -10,18 +10,17 @@ class Service extends Model
     use HasFactory;
 
     protected $fillable = [
-        'ma_dich_vu',           // Service code (auto-generated or manual)
-        'ten_dich_vu',          // Service name
-        'nhom_dich_vu_id',      // Service category ID (relationship to ProductCategory)
-        'gia_ban',              // Service price
-        'mo_ta',                // Service description
-        'hinh_thuc',            // Service type: 'tai_nha_thuoc' or 'tai_nha_khach'
-        'thoi_gian_thuc_hien',  // Estimated time to complete (in minutes)
-        'trang_thai',           // Status: 'kich_hoat', 'tam_ngung', 'luu_tam'
-        'image',                // Service illustration image
-        'ghi_chu',              // Additional notes
-        'created_by',           // User who created the service
-        'updated_by'            // User who last updated the service
+        'ma_dich_vu',    
+        'ten_dich_vu',          
+        'nhom_dich_vu_id',      
+        'mo_ta',               
+        'hinh_thuc',            
+        'thoi_gian_thuc_hien', 
+        'trang_thai',        // Status: 'kich_hoat', 'tam_ngung', 'luu_tam'
+        'image',             
+        'ghi_chu',           
+        'created_by',          
+        'updated_by'            
     ];
 
     protected $casts = [

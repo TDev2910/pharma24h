@@ -1,4 +1,3 @@
-<!-- Modal tạo hàng hóa -->
 <div class="modal fade create-modal" id="createGoodsModal" tabindex="-1" aria-labelledby="createGoodsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
       <div class="modal-content" style="border-radius:16px;">

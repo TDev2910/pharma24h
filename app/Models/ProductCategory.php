@@ -8,12 +8,12 @@ class ProductCategory extends Model
 {
     protected $fillable = ['name', 'parent_id'];
 
-    public function parent()  //mot danh muc co the thuoc ve mot danh muc cha
+    public function parent()  // danh muc cha
     {
         return $this->belongsTo(ProductCategory::class, 'parent_id');
     }
 
-    public function children() //mot danh muc co the co nhieu danh muc con
+    public function children() //danh muc con
     {
         return $this->hasMany(ProductCategory::class, 'parent_id');
     }
