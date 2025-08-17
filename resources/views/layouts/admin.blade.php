@@ -32,7 +32,7 @@
                     </div>
                     <div class="dropdown-col">
                         <div class="dropdown-title">Nhập hàng</div>
-                        <a href="#" class="dropdown-link">Nhà cung cấp</a>
+                        <a href="{{ route('admin.suppliers.index') }}" class="dropdown-link">Nhà cung cấp</a>
                         <a href="#" class="dropdown-link">Nhập hàng</a>
                         <a href="#" class="dropdown-link">Trả hàng nhập</a>
                     </div>

@@ -1034,9 +1034,9 @@
 @endpush
 
 @push('scripts')
-<script src="{{ asset('js/products/medicine-management.js') }}"></script>
-<script src="{{ asset('js/products/goods-management.js') }}"></script>
-<script src="{{ asset('js/products/service-management.js') }}"></script>
+    <script src="{{ asset('js/products/hanghoa/medicine-management.js') }}"></script>
+    <script src="{{ asset('js/products/hanghoa/goods-management.js') }}"></script>
+    <script src="{{ asset('js/products/hanghoa/service-management.js') }}"></script>
 <script src="{{ asset('js/forms.js') }}"></script>
 @endpush
 
