@@ -11,24 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('medicines', function (Blueprint $table) {
+        Schema::create('goods', function (Blueprint $table) {
             $table->id();
-            $table->string('ma_hang')->nullable();
-            $table->string('ma_vach')->nullable();
-            $table->string('ten_thuoc');
-            $table->string('ten_viet_tat')->nullable();
+            $table->string('ma_hang')->unique()->nullable(); // Unique mã hàng
+            $table->string('ma_vach')->unique()->nullable(); // Unique mã vạch
+            $table->string('ten_hang_hoa');
             $table->foreignId('nhom_hang_id')->nullable()->constrained('product_categories');
             $table->decimal('gia_von', 10, 2)->default(0);
             $table->decimal('gia_ban', 10, 2)->default(0);
-            $table->string('so_dang_ky')->nullable();
-            $table->string('hoat_chat')->nullable();
-            $table->string('ham_luong')->nullable();
-            $table->foreignId('drugusage_id')->nullable()->constrained('drug_routes');
-            $table->string('quy_cach_dong_goi')->nullable();
-            $table->foreignId('manufacturer')->nullable()->constrained('manufacturers');
-            $table->string('nuoc_san_xuat')->nullable();
+            $table->boolean('quan_ly_theo_lo')->default(false);
+            $table->integer('ton_kho')->default(0);
             $table->integer('ton_thap_nhat')->default(0);
             $table->integer('ton_cao_nhat')->default(999999999);
+            $table->string('quy_cach_dong_goi')->nullable();
+            $table->foreignId('manufacturer_id')->nullable()->constrained('manufacturers');
+            $table->string('nuoc_san_xuat')->nullable();
             $table->foreignId('position_id')->nullable()->constrained('positions');
             $table->decimal('trong_luong', 8, 2)->default(0);
             $table->string('don_vi_tinh')->nullable();
@@ -45,6 +42,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('medicines');
+        Schema::dropIfExists('goods');
     }
 };

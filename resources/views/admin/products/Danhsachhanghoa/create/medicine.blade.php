@@ -216,10 +216,10 @@
                                               <input type="text" class="form-control" id="createNewMedicinePositionName" placeholder="Nhập tên vị trí mới">
                                           </div>
                                           <div class="d-flex gap-2">
-                                              <button type="button" class="btn btn-success" onclick="createNewCreatePositionInline()">
+                                              <button type="button" class="btn btn-success" onclick="createNewMedicinePositionInline()">
                                                   <i class="fas fa-save"></i> Lưu
                                               </button>
-                                              <button type="button" class="btn btn-secondary" onclick="cancelCreatePositionForm()">
+                                              <button type="button" class="btn btn-secondary" onclick="cancelMedicinePositionForm()">
                                                   <i class="fas fa-times"></i> Hủy
                                               </button>
                                           </div>
@@ -350,9 +350,9 @@ function createNewCreateDrugRouteInline() {
         if (data.success) {
             // Thêm option mới vào select
             const select = document.getElementById('duong_dung_select');
-            const newOption = new Option(data.drugRoute.name, data.drugRoute.id);
+            const newOption = new Option(data.drug_route.name, data.drug_route.id);
             select.add(newOption);
-            select.value = data.drugRoute.id;
+            select.value = data.drug_route.id;
             
             // Ẩn form inline
             document.getElementById('createDrugRouteInlineForm').style.display = 'none';
@@ -449,7 +449,7 @@ function handleMedicinePositionChange(select) {
 }
 
 // Create new position inline - RIÊNG CHO THUỐC
-function createNewCreatePositionInline() {
+function createNewMedicinePositionInline() {
     const nameInput = document.getElementById('createNewMedicinePositionName');
     const name = nameInput.value.trim();
     
@@ -490,7 +490,7 @@ function createNewCreatePositionInline() {
 }
 
 // Cancel position form - RIÊNG CHO THUỐC
-function cancelCreatePositionForm() {
+function cancelMedicinePositionForm() {
     document.getElementById('createMedicinePositionInlineForm').style.display = 'none';
     document.getElementById('createNewMedicinePositionName').value = '';
     document.getElementById('medicine_position_select').value = '';

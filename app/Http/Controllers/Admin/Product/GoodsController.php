@@ -216,8 +216,8 @@ class GoodsController extends Controller
     protected function getFormData()
     {
         return [
-            'categories'       => ProductCategory::getCategoriesForSelect(),
-            'parentCategories' => ProductCategory::getParentCategories(),
+            'categories'       => ProductCategory::getAllCategoriesWithDepth(),
+            'parentCategories' => ProductCategory::getAllCategoriesWithDepth(),
             'manufacturers'    => Manufacturer::all(),
             'positions'        => Position::all(),
         ];

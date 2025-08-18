@@ -6,7 +6,7 @@ use App\Http\Controllers\Admin\Product\GoodsController;
 use App\Http\Controllers\Admin\Product\ServiceController;
 use App\Http\Controllers\Admin\Product\SupportingEntityController;
 use App\Http\Controllers\Admin\ProductCategoryController;
-use App\Http\Controllers\Admin\SupplierController;
+// use App\Http\Controllers\Admin\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () 
@@ -68,7 +68,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::delete('products/goods/{goods}', [ProductController::class,'deleteGoods'])->name('products.goods.delete');
     Route::get('products/goods/{goods}/detail', [ProductController::class,'showGoodsDetail'])->name('products.goods.detail');
     
-    Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
+    // Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
     // Supporting entities routes (using SupportingEntityController)
     Route::post('products/drugroute', [SupportingEntityController::class, 'storeDrugRoute'])->name('products.drugroute.store');
     Route::post('products/manufacturer', [SupportingEntityController::class, 'storeManufacturer'])->name('products.manufacturer.store');

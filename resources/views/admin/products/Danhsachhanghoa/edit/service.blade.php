@@ -42,12 +42,12 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="service_edit_ma_dich_vu" class="form-label">
+                                        <label for="service_edit_ma_hang" class="form-label">
                                             Mã dịch vụ <span class="text-danger">*</span>
                                         </label>
-                                        <input type="text" class="form-control" id="service_edit_ma_dich_vu" 
-                                               name="ma_dich_vu" required 
-                                               value="{{ $service->ma_dich_vu }}"
+                                        <input type="text" class="form-control" id="service_edit_ma_hang" 
+                                               name="ma_hang" required 
+                                               value=""
                                                placeholder="Nhập mã dịch vụ (VD: DV001)">
                                         <div class="form-text">Mã dịch vụ phải là duy nhất</div>
                                     </div>
@@ -59,7 +59,7 @@
                                         </label>
                                         <input type="text" class="form-control" id="service_edit_ten_dich_vu" 
                                                name="ten_dich_vu" required 
-                                               value="{{ $service->ten_dich_vu }}"
+                                               value=""
                                                placeholder="Nhập tên dịch vụ">
                                     </div>
                                 </div>
@@ -70,8 +70,8 @@
                                     <label class="form-label">Nhóm dịch vụ <span class="text-danger">*</span></label>
                                     <select class="form-select" name="nhom_dich_vu_id" id="nhom_dich_vu_id" required>
                                         <option value="">Chọn nhóm dịch vụ (Bắt buộc)</option>
-                                        @foreach($categories as $id => $name)
-                                            <option value="{{ $id }}" {{ ($service->nhom_dich_vu_id == $id) ? 'selected' : '' }}>{{ $name }}</option>
+                                        @foreach($categories ?? [] as $id => $name)
+                                            <option value="{{ $id }}">{{ $name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -81,10 +81,10 @@
                                             Chi phí thực hiện <span class="text-danger">*</span>
                                         </label>
                                         <div class="input-group">
-                                            <input type="number" class="form-control" id="service_edit_gia_ban" 
-                                                   name="gia_ban" min="0" step="1000" required 
-                                                   value="{{ $service->gia_ban }}"
-                                                   placeholder="0">
+                                            <input type="text" class="form-control" id="service_edit_gia_ban" 
+                                                   name="gia_ban" required 
+                                                   value=""
+                                                   placeholder="VD: 120,000 hoặc 120000">
                                             <span class="input-group-text">đ</span>
                                         </div>
                                     </div>
@@ -98,8 +98,8 @@
                                             Hình thức dịch vụ <span class="text-danger">*</span>
                                         </label>
                                         <select class="form-select" id="service_edit_hinh_thuc" name="hinh_thuc" required>
-                                            <option value="tai_nha_thuoc" {{ ($service->hinh_thuc == 'tai_nha_thuoc') ? 'selected' : '' }}>Tại nhà thuốc</option>
-                                            <option value="tai_nha_khach" {{ ($service->hinh_thuc == 'tai_nha_khach') ? 'selected' : '' }}>Tại nhà khách</option>
+                                            <option value="tai_nha_thuoc">Tại nhà thuốc</option>
+                                            <option value="tai_nha_khach">Tại nhà khách</option>
                                         </select>
                                         <div class="form-text">
                                             <i></i>
@@ -113,8 +113,8 @@
                                             Trạng thái <span class="text-danger">*</span>
                                         </label>
                                         <select class="form-select" id="service_edit_trang_thai" name="trang_thai" required>
-                                            <option value="kich_hoat" {{ ($service->trang_thai == 'kich_hoat') ? 'selected' : '' }}>Kích hoạt</option>
-                                            <option value="tam_ngung" {{ ($service->trang_thai == 'tam_ngung') ? 'selected' : '' }}>Tạm ngưng</option>
+                                            <option value="kich_hoat">Kích hoạt</option>
+                                            <option value="tam_ngung">Tạm ngưng</option>
                                         </select>
                                         <div class="form-text">
                                             <span class="badge bg-success me-1">Kích hoạt</span>
@@ -135,7 +135,7 @@
                                         </label>
                                         <input type="number" class="form-control" id="service_edit_thoi_gian_thuc_hien" 
                                             name="thoi_gian_thuc_hien" min="1" max="480" 
-                                            value="{{ $service->thoi_gian_thuc_hien }}"
+                                            value=""
                                             placeholder="VD: 30">
                                         <div class="form-text">Thời gian ước tính để hoàn thành dịch vụ</div>
                                     </div>
@@ -166,7 +166,7 @@
 - Quy trình thực hiện
 - Lợi ích cho khách hàng  
 - Điều kiện áp dụng
-- Lưu ý đặc biệt...">{{ $service->mo_ta }}</textarea>
+                                            - Lưu ý đặc biệt..."></textarea>
                                 <div class="form-text">Mô tả chi tiết giúp khách hàng hiểu rõ hơn về dịch vụ</div>
                             </div>
 
@@ -259,8 +259,7 @@
                                             - Điều kiện áp dụng
                                             - Khuyến mãi đặc biệt
                                             - Lưu ý quan trọng
-                                            - Thông tin liên hệ...">{{ $service->ghi_chu }}
-                                        </textarea>
+                                            - Thông tin liên hệ..."></textarea>
                                     </div>
 
                                     <!-- Service Stats -->
@@ -416,4 +415,43 @@ function populateEditServiceForm(service) {
     document.getElementById('edit_total_revenue').textContent = '0đ';
     document.getElementById('edit_avg_rating').textContent = '0';
 }
+
+// Format price input for edit form - allow comma and convert to number
+document.addEventListener('DOMContentLoaded', function() {
+    const priceInput = document.getElementById('service_edit_gia_ban');
+    
+    if (priceInput) {
+        // Format input as user types
+        priceInput.addEventListener('input', function(e) {
+            let value = e.target.value;
+            
+            // Remove all non-numeric characters except comma
+            value = value.replace(/[^\d,]/g, '');
+            
+            // Update the input value
+            e.target.value = value;
+        });
+        
+        // Convert price before form submission
+        const form = document.getElementById('editServiceForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                let price = priceInput.value;
+                
+                // Convert comma-separated number to plain number
+                price = price.replace(/,/g, '');
+                
+                // Validate it's a number
+                if (isNaN(price) || price === '') {
+                    e.preventDefault();
+                    alert('Vui lòng nhập giá hợp lệ (chỉ số và dấu phẩy)');
+                    return false;
+                }
+                
+                // Update the input value for submission
+                priceInput.value = price;
+            });
+        }
+    }
+});
 </script>

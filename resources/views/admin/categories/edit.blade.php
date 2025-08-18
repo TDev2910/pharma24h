@@ -14,10 +14,13 @@
             <label for="parent_id" class="form-label">Nhóm cha</label>
             <select name="parent_id" class="form-select">
                 <option value="">Chọn nhóm hàng</option>
-                @foreach($parents as $parent)
-                    <option value="{{ $parent->id }}" {{ $category->parent_id == $parent->id ? 'selected' : '' }}>
-                        {{ $parent->name }}
-                    </option>
+                @foreach($parents as $id => $name)
+                    {{-- Skip current category to prevent self-reference --}}
+                    @if($id != $category->id)
+                        <option value="{{ $id }}" {{ $category->parent_id == $id ? 'selected' : '' }}>
+                            {{ $name }}
+                        </option>
+                    @endif
                 @endforeach
             </select>
         </div>

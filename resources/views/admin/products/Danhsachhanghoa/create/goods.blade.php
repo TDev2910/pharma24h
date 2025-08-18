@@ -119,7 +119,7 @@
                                               <button type="button" class="btn btn-success" onclick="createNewCreateManufacturerInline()">
                                                   <i class="fas fa-save"></i> Lưu
                                               </button>
-                                              <button type="button" class="btn btn-secondary" onclick="cancelCreateManufacturerForm()">
+                                              <button type="button" class="btn btn-secondary" onclick="cancelGoodsManufacturerForm()">
                                                   <i class="fas fa-times"></i> Hủy
                                               </button>
                                           </div>
@@ -169,10 +169,10 @@
                                               <input type="text" class="form-control" id="createNewGoodsPositionName" placeholder="Nhập tên vị trí mới">
                                           </div>
                                           <div class="d-flex gap-2">
-                                              <button type="button" class="btn btn-success" onclick="createNewCreatePositionInline()">
+                                              <button type="button" class="btn btn-success" onclick="createNewGoodsPositionInline()">
                                                   <i class="fas fa-save"></i> Lưu
                                               </button>
-                                              <button type="button" class="btn btn-secondary" onclick="cancelCreatePositionForm()">
+                                              <button type="button" class="btn btn-secondary" onclick="cancelGoodsPositionForm()">
                                                   <i class="fas fa-times"></i> Hủy
                                               </button>
                                           </div>
@@ -256,6 +256,128 @@ function previewCreateGoodsImage(input) {
         preview.style.display = 'none';
         placeholder.style.display = 'block';
     }
+}
+
+// Handle Position Change - RIÊNG CHO GOODS
+function handleCreatePositionChange(select) {
+    const selectedOption = select.options[select.selectedIndex];
+    const inlineForm = document.getElementById('createGoodsPositionInlineForm');
+    
+    if (selectedOption.value === 'create_new') {
+        inlineForm.style.display = 'block';
+        select.value = '';
+    } else {
+        inlineForm.style.display = 'none';
+    }
+}
+
+// Create new position inline - RIÊNG CHO GOODS
+function createNewGoodsPositionInline() {
+    const nameInput = document.getElementById('createNewGoodsPositionName');
+    const name = nameInput.value.trim();
+    
+    if (!name) {
+        alert('Vui lòng nhập tên vị trí!');
+        return;
+    }
+    
+    // Gửi request tạo position mới
+    fetch('{{ route("admin.products.position.store") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ name: name })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Thêm option mới vào select
+            const select = document.getElementById('position_id');
+            const newOption = new Option(data.position.name, data.position.id);
+            select.add(newOption);
+            select.value = data.position.id;
+            
+            // Ẩn form inline
+            document.getElementById('createGoodsPositionInlineForm').style.display = 'none';
+            nameInput.value = '';
+        } else {
+            alert('Có lỗi xảy ra: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi tạo vị trí!');
+    });
+}
+
+// Cancel position form - RIÊNG CHO GOODS
+function cancelGoodsPositionForm() {
+    document.getElementById('createGoodsPositionInlineForm').style.display = 'none';
+    document.getElementById('createNewGoodsPositionName').value = '';
+    document.getElementById('position_id').value = '';
+}
+
+// Handle Manufacturer Change - RIÊNG CHO GOODS
+function handleCreateManufacturerChange(select) {
+    const selectedOption = select.options[select.selectedIndex];
+    const inlineForm = document.getElementById('createGoodsManufacturerInlineForm');
+    
+    if (selectedOption.value === 'create_new') {
+        inlineForm.style.display = 'block';
+        select.value = '';
+    } else {
+        inlineForm.style.display = 'none';
+    }
+}
+
+// Create new manufacturer inline - RIÊNG CHO GOODS
+function createNewCreateManufacturerInline() {
+    const nameInput = document.getElementById('createNewGoodsManufacturerName');
+    const name = nameInput.value.trim();
+    
+    if (!name) {
+        alert('Vui lòng nhập tên hãng sản xuất!');
+        return;
+    }
+    
+    // Gửi request tạo manufacturer mới
+    fetch('{{ route("admin.products.manufacturer.store") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ name: name })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Thêm option mới vào select
+            const select = document.getElementById('manufacturer_id');
+            const newOption = new Option(data.manufacturer.name, data.manufacturer.id);
+            select.add(newOption);
+            select.value = data.manufacturer.id;
+            
+            // Ẩn form inline
+            document.getElementById('createGoodsManufacturerInlineForm').style.display = 'none';
+            nameInput.value = '';
+        } else {
+            alert('Có lỗi xảy ra: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi tạo hãng sản xuất!');
+    });
+}
+
+// Cancel manufacturer form - RIÊNG CHO GOODS
+function cancelGoodsManufacturerForm() {
+    document.getElementById('createGoodsManufacturerInlineForm').style.display = 'none';
+    document.getElementById('createNewGoodsManufacturerName').value = '';
+    document.getElementById('manufacturer_id').value = '';
 }
 </script>
 @endpush 

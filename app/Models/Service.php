@@ -10,22 +10,18 @@ class Service extends Model
     use HasFactory;
 
     protected $fillable = [
-        'ma_dich_vu',    
+        'ma_hang',    
+        'ma_vach',
         'ten_dich_vu',          
-        'nhom_dich_vu_id',      
+        'nhom_hang_id',      
+        'gia_dich_vu',
         'mo_ta',               
-        'hinh_thuc',            
-        'thoi_gian_thuc_hien', 
-        'trang_thai',        // Status: 'kich_hoat', 'tam_ngung', 'luu_tam'
         'image',             
-        'ghi_chu',           
-        'created_by',          
-        'updated_by'            
+        'ban_truc_tiep'            
     ];
 
     protected $casts = [
-        'gia_ban' => 'decimal:2',
-        'thoi_gian_thuc_hien' => 'integer',
+        'gia_dich_vu' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
@@ -35,7 +31,7 @@ class Service extends Model
      */
     public function category()
     {
-        return $this->belongsTo(ProductCategory::class, 'nhom_dich_vu_id');
+        return $this->belongsTo(ProductCategory::class, 'nhom_hang_id');
     }
 
     /**
@@ -67,7 +63,7 @@ class Service extends Model
      */
     public function scopeByCategory($query, $categoryId)
     {
-        return $query->where('nhom_dich_vu_id', $categoryId);
+        return $query->where('nhom_hang_id', $categoryId);
     }
 
     /**
@@ -75,8 +71,16 @@ class Service extends Model
      */
     public function getFormattedPriceAttribute()
     {
-        return number_format($this->gia_ban, 0, ',', '.') . ' đ';
+        return number_format($this->gia_dich_vu, 0, ',', '.') . ' đ';
     }
+    
+    /**
+     * Accessor for backward compatibility - map gia_ban to gia_dich_vu
+     */
+    public function getGiaBanAttribute()
+    {
+        return $this->gia_dich_vu;
+    }   
 
     /**
      * Get status label

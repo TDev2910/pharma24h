@@ -31,7 +31,7 @@
                               <div class="row g-2">
                                   <div class="col-md-6">
                                       <label class="form-label">Mã dịch vụ</label>
-                                      <input type="text" class="form-control" name="ma_dich_vu" id="ma_dich_vu" placeholder="Tự động">
+                                      <input type="text" class="form-control" name="ma_hang" id="ma_hang" placeholder="Tự động">
                                   </div>
                                   <div class="col-md-6">
                                       <label class="form-label">Nhóm dịch vụ <span class="text-danger">*</span></label>
@@ -89,7 +89,7 @@
                               <div class="col-md-6">
                                   <label class="form-label">Chi phí thực hiện <span class="text-danger">*</span></label>
                                   <div class="input-group">
-                                      <input type="number" class="form-control" name="gia_ban" id="gia_ban" value="0" required>
+                                      <input type="text" class="form-control" name="gia_ban" id="gia_ban" value="0" required placeholder="VD: 120,000 hoặc 120000">
                                       <span class="input-group-text">đ</span>
                                   </div>
                               </div>
@@ -155,5 +155,35 @@ function previewCreateServiceImage(input) {
         placeholder.style.display = 'block';
     }
 }
+
+// Format price input - allow comma and convert to number
+document.getElementById('gia_ban').addEventListener('input', function(e) {
+    let value = e.target.value;
+    
+    // Remove all non-numeric characters except comma
+    value = value.replace(/[^\d,]/g, '');
+    
+    // Update the input value
+    e.target.value = value;
+});
+
+// Convert price before form submission
+document.querySelector('form').addEventListener('submit', function(e) {
+    const priceInput = document.getElementById('gia_ban');
+    let price = priceInput.value;
+    
+    // Convert comma-separated number to plain number
+    price = price.replace(/,/g, '');
+    
+    // Validate it's a number
+    if (isNaN(price) || price === '') {
+        e.preventDefault();
+        alert('Vui lòng nhập giá hợp lệ (chỉ số và dấu phẩy)');
+        return false;
+    }
+    
+    // Update the input value for submission
+    priceInput.value = price;
+});
 </script>
 @endpush

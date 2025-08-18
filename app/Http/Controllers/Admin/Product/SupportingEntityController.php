@@ -15,20 +15,34 @@ class SupportingEntityController extends Controller
      */
     public function storeDrugRoute(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:drug_routes,name'
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255|unique:drug_routes,name'
+            ]);
 
-        $route = DrugRoute::create([
-            'name'=> trim($validated['name']),
-            'description' => $request->description ? trim($request->description) : null
-        ]);
+            $route = DrugRoute::create([
+                'name'=> trim($validated['name'])
+            ]);
 
-        return response()->json([
-            'success'    => true,
-            'drug_route' => $route,
-            'message'    => 'Tạo đường dùng thành công!'
-        ], 201);
+            return response()->json([
+                'success'    => true,
+                'drug_route' => $route,
+                'message'    => 'Tạo đường dùng thành công!'
+            ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors'  => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Error creating drug route: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi tạo đường dùng: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -46,8 +60,7 @@ class SupportingEntityController extends Controller
             ]);
 
             $manufacturer = Manufacturer::create([
-                'name'        => trim($validated['name']),
-                'description' => $request->description ? trim($request->description) : null
+                'name'        => trim($validated['name'])
             ]);
 
             return response()->json([
@@ -79,20 +92,34 @@ class SupportingEntityController extends Controller
      */
     public function storePosition(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:positions,name'
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255|unique:positions,name'
+            ]);
 
-        $position = Position::create([
-            'name'=> trim($validated['name']),
-            'description' => $request->description ? trim($request->description) : null
-        ]);
+            $position = Position::create([
+                'name'=> trim($validated['name'])
+            ]);
 
-        return response()->json([
-            'success'  => true,
-            'position' => $position,
-            'message'  => 'Tạo vị trí thành công!'
-        ], 201);
+            return response()->json([
+                'success'  => true,
+                'position' => $position,
+                'message'  => 'Tạo vị trí thành công!'
+            ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors'  => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Error creating position: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi tạo vị trí: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

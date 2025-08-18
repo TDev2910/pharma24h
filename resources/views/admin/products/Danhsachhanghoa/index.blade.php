@@ -748,7 +748,7 @@
                                     @forelse($services ?? [] as $service)
                                         <tr class="product-row service-row" 
                                             data-product-id="service-{{ $service->id }}" 
-                                            data-category-id="{{ $service->nhom_dich_vu_id }}"
+                                            data-category-id="{{ $service->nhom_hang_id }}"
                                             style="cursor: pointer;" 
                                             onclick="toggleServiceDetail({{ $service->id }}, this)">
                                             <td>
@@ -762,14 +762,14 @@
                                                          style="width: 50px; height: 50px; object-fit: cover;">
                                                 </div>
                                             </td>
-                                            <td><span class="product-code">{{ $service->ma_dich_vu ?? 'N/A' }}</span></td>
+                                            <td><span class="product-code">{{ $service->ma_hang ?? 'N/A' }}</span></td>
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <span class="product-name">{{ $service->ten_dich_vu ?? 'N/A' }}</span>
                                                 </div>
                                             </td>
                                             <td><span class="product-abbreviation">{{ $service->hinh_thuc == 'tai_nha_thuoc' ? 'Tại NT' : 'Tại nhà' }}</span></td>
-                                            <td>{{ number_format($service->gia_ban ?? 0) }} VNĐ</td>
+                                            <td>{{ number_format($service->gia_dich_vu ?? 0) }} VNĐ</td>
                                             <td>-</td>
                                             <td>
                                                 <span class="badge {{ $service->trang_thai == 'kich_hoat' ? 'bg-success' : ($service->trang_thai == 'tam_ngung' ? 'bg-warning' : 'bg-secondary') }}">
@@ -840,11 +840,11 @@
                                                                                             <tbody>
                                                                                                 <tr>
                                                                                                     <td><strong>Mã dịch vụ</strong></td>
-                                                                                                    <td id="serviceDetailCodeLarge-{{ $service->id }}">{{ $service->ma_dich_vu ?? 'N/A' }}</td>
+                                                                                                    <td id="serviceDetailCodeLarge-{{ $service->id }}">{{ $service->ma_hang ?? 'N/A' }}</td>
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td><strong>Chi phí thực hiện</strong></td>
-                                                                                                    <td class="text-success" id="serviceDetailPriceLarge-{{ $service->id }}">{{ number_format($service->gia_ban ?? 0) }} VNĐ</td>
+                                                                                                    <td class="text-success" id="serviceDetailPriceLarge-{{ $service->id }}">{{ number_format($service->gia_dich_vu ?? 0) }} VNĐ</td>
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td><strong>Hình thức</strong></td>
@@ -936,7 +936,7 @@
                                                                 <div class="action-buttons-container">
                                                                     <div class="d-flex justify-content-between align-items-center">
                                                                         <div class="left-actions">
-                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="showDeleteServiceConfirmation({{ $service->id }}, '{{ $service->ma_dich_vu }}', '{{ $service->ten_dich_vu }}')">
+                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="showDeleteServiceConfirmation({{ $service->id }}, '{{ $service->ma_hang }}', '{{ $service->ten_dich_vu }}')">
                                                                                 <i class="fas fa-trash"></i> Xóa
                                                                             </button>
                                                                         </div>
@@ -1004,8 +1004,8 @@
                     <label for="parent-category" class="form-label">Nhóm cha (nếu có)</label>
                     <select class="form-select" id="parent-category" name="parent_id">
                         <option value="">Không có nhóm cha</option>
-                        @foreach($parentCategories ?? [] as $cat)
-                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                        @foreach($parentCategories ?? [] as $id => $name)
+                            <option value="{{ $id }}">{{ $name }} </option>
                         @endforeach
                     </select>
                 </div>
@@ -1037,7 +1037,8 @@
     <script src="{{ asset('js/products/hanghoa/medicine-management.js') }}"></script>
     <script src="{{ asset('js/products/hanghoa/goods-management.js') }}"></script>
     <script src="{{ asset('js/products/hanghoa/service-management.js') }}"></script>
-<script src="{{ asset('js/forms.js') }}"></script>
+    <script src="{{ asset('js/products/hanghoa/search-filter.js') }}"></script>
+    <script src="{{ asset('js/forms.js') }}"></script>
 @endpush
 
 <!-- Delete Confirmation Modal -->

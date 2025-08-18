@@ -29,7 +29,7 @@
                               <div class="row g-2">
                                   <div class="col-md-6">
                                       <label class="form-label">Mã hàng</label>
-                                      <input type="text" class="form-control" name="ma_hang" id="medicine_edit_ma_hang" placeholder="Tự động">
+                                      <input type="text" class="form-control" name="ma_hang" id="medicine_edit_ma_hang" placeholder="Nhập mã hàng">
                                   </div>
                                   <div class="col-md-6">
                                       <label class="form-label">Mã vạch</label>

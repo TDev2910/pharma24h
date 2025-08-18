@@ -186,10 +186,10 @@ function showFileName(input) {
     }
 }
 
-// Province/District/Ward API (giữ nguyên code cũ)
+// Province/District/Ward API using provinces.open-api.vn
 document.addEventListener('DOMContentLoaded', function() {
     // Load provinces
-    fetch('https://provinces.open-api.vn/api/p')  
+    fetch('https://provinces.open-api.vn/api/?depth=1')  
         .then(response => response.json())
         .then(data => {
             const provinceSelect = document.getElementById('province');
@@ -199,11 +199,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 provinceSelect.insertAdjacentHTML('beforeend',
                     `<option value="${province.code}">${province.name}</option>`);
             });
+        })
+        .catch(error => {
+            console.error('Lỗi tải danh sách tỉnh:', error);
+            document.getElementById('province').innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
         });
 
-    // Province change
+    // Province change - load districts
     document.getElementById('province').addEventListener('change', function(){
-        const code = this.value;
+        const provinceCode = this.value;
         const districtSelect = document.getElementById('district');
         const wardSelect = document.getElementById('ward');
 
@@ -212,12 +216,12 @@ document.addEventListener('DOMContentLoaded', function() {
         wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>'; 
         wardSelect.disabled = true;
 
-        if (!code) {
+        if (!provinceCode) {
             districtSelect.innerHTML = '<option value="">-- Chọn Quận/Huyện --</option>';
             return;
         }
 
-        fetch(`https://provinces.open-api.vn/api/p/${code}?depth=2`)
+        fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
             .then(response => response.json())
             .then(data => {
                 districtSelect.disabled = false;
@@ -227,23 +231,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     districtSelect.insertAdjacentHTML('beforeend',
                         `<option value="${district.code}">${district.name}</option>`);
                 });
+            })
+            .catch(error => {
+                console.error('Lỗi tải danh sách quận/huyện:', error);
+                districtSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+                districtSelect.disabled = false;
             });
     });
 
-    // District change
+    // District change - load wards
     document.getElementById('district').addEventListener('change', function(){
-        const code = this.value;
+        const districtCode = this.value;
         const wardSelect = document.getElementById('ward');
 
         wardSelect.innerHTML = '<option value="">Đang tải...</option>'; 
         wardSelect.disabled = true;
 
-        if (!code) {
+        if (!districtCode) {
             wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
             return;
         }
 
-        fetch(`https://provinces.open-api.vn/api/d/${code}?depth=2`)
+        fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
             .then(response => response.json())
             .then(data => {
                 wardSelect.disabled = false;
@@ -253,8 +262,32 @@ document.addEventListener('DOMContentLoaded', function() {
                     wardSelect.insertAdjacentHTML('beforeend',
                         `<option value="${ward.code}">${ward.name}</option>`);
                 });
+            })
+            .catch(error => {
+                console.error('Lỗi tải danh sách phường/xã:', error);
+                wardSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+                wardSelect.disabled = false;
             });
     });
+
+    // Password confirmation validation
+    const password = document.getElementById('password');
+    const passwordConfirmation = document.getElementById('password_confirmation');
+    
+    function validatePassword() {
+        if (password.value && passwordConfirmation.value) {
+            if (password.value !== passwordConfirmation.value) {
+                passwordConfirmation.setCustomValidity('Mật khẩu xác nhận không khớp');
+                passwordConfirmation.classList.add('is-invalid');
+            } else {
+                passwordConfirmation.setCustomValidity('');
+                passwordConfirmation.classList.remove('is-invalid');
+            }
+        }
+    }
+    
+    password.addEventListener('input', validatePassword);
+    passwordConfirmation.addEventListener('input', validatePassword);
 });
 </script>
 @endpush

@@ -22,8 +22,8 @@ class ProductController extends Controller
         $medicines        = Medicine::with(['category', 'manufacturer', 'drugRoute', 'position'])->latest()->paginate(10);
         $goods            = Goods::with(['category', 'manufacturer', 'position'])->latest()->paginate(10);
         $services         = Service::with(['category', 'creator', 'updater'])->latest()->paginate(10);
-        $categories       = ProductCategory::getCategoriesForSelect();
-        $parentCategories = ProductCategory::getParentCategories();
+        $categories       = ProductCategory::getAllCategoriesWithDepth();
+        $parentCategories = ProductCategory::getAllCategoriesWithDepth();
         $manufacturers    = Manufacturer::all();
         $drugRoutes       = DrugRoute::all();
         $positions        = Position::all();
@@ -232,8 +232,8 @@ class ProductController extends Controller
     protected function getFormData()
     {
         return [
-            'categories'       => ProductCategory::getCategoriesForSelect(),
-            'parentCategories' => ProductCategory::getParentCategories(),
+            'categories'       => ProductCategory::getAllCategoriesWithDepth(),
+            'parentCategories' => ProductCategory::getAllCategoriesWithDepth(),
             'manufacturers'    => Manufacturer::all(),
             'drugRoutes'       => DrugRoute::all(),
             'positions'        => Position::all(),

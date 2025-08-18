@@ -61,9 +61,9 @@ window.openEditServiceModal = function(serviceId) {
 function populateEditServiceForm(service) {
     // Populate basic fields
     const fields = {
-        'service_edit_ma_dich_vu': service.ma_dich_vu,
+        'service_edit_ma_hang': service.ma_hang,
         'service_edit_ten_dich_vu': service.ten_dich_vu,
-        'service_edit_gia_ban': service.gia_ban,
+        'service_edit_gia_ban': service.gia_dich_vu,
         'service_edit_thoi_gian_thuc_hien': service.thoi_gian_thuc_hien,
         'service_edit_mo_ta': service.mo_ta,
         'service_edit_ghi_chu': service.ghi_chu

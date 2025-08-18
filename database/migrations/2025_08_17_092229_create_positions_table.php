@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('positions', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique()->comment('Tên vị trí');
-            $table->text('description')->nullable()->comment('Mô tả vị trí');
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -26,4 +25,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('positions');
     }
-}; 
+};

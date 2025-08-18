@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('medicines', function (Blueprint $table) {
-            $table->renameColumn('manufacturer', 'manufacturer_id');
+        Schema::create('product_categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->foreignId('parent_id')->nullable()->constrained('product_categories')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('medicines', function (Blueprint $table) {
-            $table->renameColumn('manufacturer_id', 'manufacturer');
-        });
+        Schema::dropIfExists('product_categories');
     }
 };

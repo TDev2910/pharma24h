@@ -47,7 +47,7 @@ class ServiceController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('ten_dich_vu', 'LIKE', "%{$search}%")
-                ->orWhere('ma_dich_vu', 'LIKE', "%{$search}%");
+                ->orWhere('ma_hang', 'LIKE', "%{$search}%");
             });
         }
 
@@ -70,7 +70,7 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'ma_dich_vu' => 'required|string|max:255|unique:services,ma_dich_vu',
+            'ma_hang' => 'required|string|max:255|unique:services,ma_hang',
             'ten_dich_vu' => 'required|string|max:255',
             'nhom_dich_vu_id' => 'nullable|exists:product_categories,id',
             'gia_ban' => 'required|numeric|min:0',
@@ -83,8 +83,17 @@ class ServiceController extends Controller
         ]);
 
         $data = $request->except(['image']);
-        $data['created_by'] = Auth::id();
-        $data['updated_by'] = Auth::id();
+        
+        // Map form fields to database columns
+        if (isset($data['gia_ban'])) {
+            $data['gia_dich_vu'] = $data['gia_ban'];
+            unset($data['gia_ban']);
+        }
+        
+        if (isset($data['nhom_dich_vu_id'])) {
+            $data['nhom_hang_id'] = $data['nhom_dich_vu_id'];
+            unset($data['nhom_dich_vu_id']);
+        }
 
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -147,7 +156,7 @@ class ServiceController extends Controller
         $service = Service::findOrFail($id);
 
         $request->validate([
-            'ma_dich_vu' => 'required|string|max:255|unique:services,ma_dich_vu,' . $id,
+            'ma_hang' => 'required|string|max:255|unique:services,ma_hang,' . $id,
             'ten_dich_vu' => 'required|string|max:255',
             'nhom_dich_vu_id' => 'nullable|exists:product_categories,id',
             'gia_ban' => 'required|numeric|min:0',
@@ -160,7 +169,17 @@ class ServiceController extends Controller
         ]);
 
         $data = $request->except(['image']);
-        $data['updated_by'] = Auth::id();
+        
+        // Map form fields to database columns
+        if (isset($data['gia_ban'])) {
+            $data['gia_dich_vu'] = $data['gia_ban'];
+            unset($data['gia_ban']);
+        }
+        
+        if (isset($data['nhom_dich_vu_id'])) {
+            $data['nhom_hang_id'] = $data['nhom_dich_vu_id'];
+            unset($data['nhom_dich_vu_id']);
+        }
 
         // Xử lý ảnh mới
         if ($request->hasFile('image')) {
