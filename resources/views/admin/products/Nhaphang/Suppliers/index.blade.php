@@ -85,7 +85,7 @@
                         <div class="filter-section">
                             <label>
                                 Nhóm nhà cung cấp
-                                <a href="#" class="create-link" style="margin-left: 80px;">Tạo mới</a>
+                                <a href="#" class="create-link" style="margin-left: 52px;" data-bs-toggle="modal" data-bs-target="#createSupplierCategoryModal">Tạo mới</a>
                             </label>
                             <div>
                                 <select class="form-select form-select-sm" name="supplier_group_id" onchange="filterSuppliers()">
@@ -256,7 +256,74 @@
             </div>
         </div>
     </div>
+
+    
+    <!-- Success/Error Messages -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 </div>
+
+<!-- Modal Tạo Nhóm Nhà Cung Cấp -->
+<div class="modal fade" id="createSupplierCategoryModal" tabindex="-1" aria-labelledby="createSupplierCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createSupplierCategoryModalLabel">
+                    <i></i>Tạo nhóm nhà cung cấp mới
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="createSupplierCategoryForm" action="{{ route('admin.supplier-categories.store') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tên nhóm <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" id="category_name" required 
+                               placeholder="Ví dụ: Nhà cung cấp thuốc, Nhà cung cấp thiết bị y tế...">
+                        <div class="invalid-feedback" id="name-error"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" name="description" id="category_description" rows="3" 
+                                  placeholder="Mô tả chi tiết về nhóm nhà cung cấp này..."></textarea>
+                        <div class="invalid-feedback" id="description-error"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái</label>
+                        <select class="form-select" name="status" id="category_status">
+                            <option value="active">Kích hoạt</option>
+                            <option value="inactive">Tạm ngưng</option>
+                        </select>
+                        <div class="invalid-feedback" id="status-error"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Hủy
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="createCategoryBtn">
+                        <i class="fas fa-save me-2"></i>Tạo nhóm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 
 @push('styles')
 <style>
@@ -530,6 +597,32 @@ function updateSupplierCount(visibleCount) {
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
     updateSupplierCount(document.querySelectorAll('.supplier-row').length);
+});
+
+// Handle supplier category form submission
+// Simple loading state for form submission
+document.getElementById('createSupplierCategoryForm').addEventListener('submit', function(e) {
+    const submitBtn = document.getElementById('createCategoryBtn');
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tạo...';
+});
+
+// Clear form validation errors
+function clearFormErrors() {
+    const errorElements = document.querySelectorAll('.invalid-feedback');
+    const inputElements = document.querySelectorAll('.is-invalid');
+    
+    errorElements.forEach(el => el.textContent = '');
+    inputElements.forEach(el => el.classList.remove('is-invalid'));
+}
+
+// Reset form when modal is hidden
+document.getElementById('createSupplierCategoryModal').addEventListener('hidden.bs.modal', function () {
+    const form = document.getElementById('createSupplierCategoryForm');
+    form.reset();
+    clearFormErrors();
 });
 </script>
 @endpush

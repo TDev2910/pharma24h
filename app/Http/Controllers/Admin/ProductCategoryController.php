@@ -11,10 +11,9 @@ class ProductCategoryController extends Controller
 {
     public function index()
     {
-        // Fix: Use getAllCategoriesWithDepth for dropdown compatibility
+        // For categories index page: use hierarchical array format
         $categories = ProductCategory::getAllCategoriesWithDepth();
-        $parents = ProductCategory::getRootCategories(); 
-        return view('admin.products.DanhSachHangHoa.index', compact('categories', 'parents'));
+        return view('admin.categories.index', compact('categories'));
     }
 
     /**
@@ -61,9 +60,8 @@ class ProductCategoryController extends Controller
         ]);
 
         ProductCategory::create($request->only('name', 'parent_id', 'sort_order'));
-
-        return redirect()->route('admin.categories.index')
-                        ->with('success', 'Tạo nhóm hàng thành công!');
+        return redirect()->route('admin.products.index')
+            ->with('success', 'Tạo nhóm hàng thành công!');
     }
 
     /**
@@ -107,8 +105,8 @@ class ProductCategoryController extends Controller
 
         $category->update($request->only('name', 'parent_id', 'sort_order'));
 
-        return redirect()->route('admin.categories.index')
-                        ->with('success', 'Cập nhật nhóm hàng thành công!');
+        return redirect()->route('admin.products.index')
+            ->with('success', 'Cập nhật nhóm hàng thành công!');
     }
 
     /**
@@ -128,6 +126,6 @@ class ProductCategoryController extends Controller
         $category->delete(); // Will cascade delete children due to DB constraint
 
         return redirect()->route('admin.categories.index')
-                        ->with('success', "Đã xóa nhóm hàng '{$categoryName}' thành công!");
+    ->with('success', "Đã xóa nhóm hàng '{$categoryName}' thành công!");
     }
 }

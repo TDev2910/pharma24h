@@ -125,21 +125,7 @@
                                 <option>Sắp hết</option>
                             </select>
                         </div>
-                      
-                        {{-- <div class="filter-section">
-                            <label>Thời gian tạo</label>
-                            <div class="radio-group">
-                                <div class="radio-item">
-                                    <input type="radio" id="created_all" name="created_time" value="all" checked>
-                                    <label for="created_all">Toàn thời gian</label>
-                                </div>
-                                <div class="radio-item">
-                                    <input type="radio" id="created_custom" name="created_time" value="custom">
-                                    <label for="created_custom">Tùy chỉnh</label>
-                                </div>
-                            </div>
-                        </div> --}}
-                       
+                                         
                         <div class="filter-section">
                             <label>Nhà cung cấp</label>
                             <select class="form-select form-select-sm" name="manufacturer_id" onchange="filterProducts()">

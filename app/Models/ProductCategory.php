@@ -24,19 +24,15 @@ use Illuminate\Support\Facades\Cache;
 class ProductCategory extends Model
 {
     protected $fillable = [
-        'name', 
-        'parent_id', 
-        'sort_order'
+        'name',
+        'parent_id',
+        'sort_order',
     ];
 
     protected $casts = [
         'sort_order' => 'integer',
-        'parent_id' => 'integer',
+        'parent_id'  => 'integer',
     ];
-
-    // ===========================================
-    // RELATIONSHIPS
-    // ===========================================
 
     /**
      * Get the parent category
@@ -52,8 +48,8 @@ class ProductCategory extends Model
     public function children(): HasMany
     {
         return $this->hasMany(ProductCategory::class, 'parent_id')
-                    ->orderBy('sort_order')
-                    ->orderBy('name');
+            ->orderBy('sort_order')
+            ->orderBy('name');
     }
 
     // ===========================================
@@ -88,13 +84,16 @@ class ProductCategory extends Model
             return self::whereNull('parent_id')
                 ->with([
                     'children' => function ($query) {
-                        $query->orderBy('sort_order')->orderBy('name')
+                        $query->orderBy('sort_order')
+                              ->orderBy('name')
                               ->with([
                                   'children' => function ($subQuery) {
-                                      $subQuery->orderBy('sort_order')->orderBy('name')
+                                      $subQuery->orderBy('sort_order')
+                                               ->orderBy('name')
                                                ->with([
                                                    'children' => function ($subSubQuery) {
-                                                       $subSubQuery->orderBy('sort_order')->orderBy('name');
+                                                       $subSubQuery->orderBy('sort_order')
+                                                                   ->orderBy('name');
                                                    }
                                                ]);
                                   }
@@ -121,11 +120,11 @@ class ProductCategory extends Model
                 ->orderBy('sort_order')
                 ->orderBy('name')
                 ->get();
-            
+
             foreach ($rootCategories as $root) {
                 self::addCategoryWithChildren($root, $result, 0);
             }
-            
+
             return $result;
         });
     }
@@ -141,7 +140,7 @@ class ProductCategory extends Model
     {
         $prefix = str_repeat(' - ', $depth);
         $result[$category->id] = $prefix . $category->name;
-        
+
         $children = $category->children()->orderBy('sort_order')->orderBy('name')->get();
         foreach ($children as $child) {
             self::addCategoryWithChildren($child, $result, $depth + 1);
@@ -175,12 +174,12 @@ class ProductCategory extends Model
     {
         $path = [$this->name];
         $parent = $this->parent;
-        
+
         while ($parent) {
             array_unshift($path, $parent->name);
             $parent = $parent->parent;
         }
-        
+
         return implode(' > ', $path);
     }
 
@@ -190,12 +189,12 @@ class ProductCategory extends Model
     public function getAllDescendants(): Collection
     {
         $descendants = collect();
-        
+
         foreach ($this->children as $child) {
             $descendants->push($child);
             $descendants = $descendants->merge($child->getAllDescendants());
         }
-        
+
         return $descendants;
     }
 
@@ -206,12 +205,12 @@ class ProductCategory extends Model
     {
         $depth = 0;
         $parent = $this->parent;
-        
+
         while ($parent) {
             $depth++;
             $parent = $parent->parent;
         }
-        
+
         return $depth;
     }
 
