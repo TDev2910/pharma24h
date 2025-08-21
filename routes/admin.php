@@ -70,6 +70,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::get('products/goods/{goods}/detail', [ProductController::class,'showGoodsDetail'])->name('products.goods.detail');
     
     Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
+    Route::post('suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
     
     // Supplier Categories routes
     Route::prefix('supplier-categories')->name('supplier-categories.')->group(function () {

@@ -41,8 +41,10 @@ class SupplierController extends Controller
             'dien_thoai' => 'required|string|max:20',
             'email' => 'nullable|email|max:100|unique:suppliers',
             'dia_chi' => 'required|string',
-            'khu_vuc' => 'nullable|string|max:100',
-            'phuong_xa' => 'nullable|string|max:100',
+            'khu_vuc_name' => 'required|string|max:100',        // Tên tỉnh/thành
+            'phuong_xa_name' => 'required|string|max:100',      // Tên phường/xã
+            'khu_vuc' => 'required|string|max:10',              // Mã tỉnh/thành (để backup)
+            'phuong_xa' => 'required|string|max:10', 
             'nhom_nha_cung_cap_id' => 'required|exists:supplier_categories,id',
             'ghi_chu' => 'nullable|string',
             'ten_cong_ty' => 'nullable|string|max:255|unique:suppliers',
@@ -63,7 +65,21 @@ class SupplierController extends Controller
                 session()->flash('warning', 'Đã có nhà cung cấp cùng tên: ' . $existingName->ma_nha_cung_cap);
             }
 
-            Supplier::create($validated);
+            // Xử lý dữ liệu từ API tỉnh/thành
+            $supplierData = $validated;
+            if (isset($validated['khu_vuc_name'])) {
+                $supplierData['khu_vuc'] = $validated['khu_vuc_name'];
+            }
+            if (isset($validated['phuong_xa_name'])) {
+                $supplierData['phuong_xa'] = $validated['phuong_xa_name'];
+            }
+            
+            // Set default status nếu không có
+            if (!isset($supplierData['trang_thai'])) {
+                $supplierData['trang_thai'] = 'active';
+            }
+
+            Supplier::create($supplierData);
 
             return redirect()->route('admin.suppliers.index')->with('success', 'Tạo nhà cung cấp thành công!');
     }
