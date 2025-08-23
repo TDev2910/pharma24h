@@ -14,12 +14,19 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        $suppliers = collect([]); 
+        // Lấy suppliers từ database với relationship
+        $suppliers = Supplier::with('category')
+                ->latest()
+                ->paginate(15);
+        
+        // Lấy supplier groups cho filter
         $supplierGroups = SupplierCategory::active()->ordered()->get();
-        $provinces = collect([]); 
-        $businessTypes = collect([]); 
-
-        return view('admin.products.Nhaphang.Suppliers.index', compact('suppliers', 'supplierGroups', 'provinces', 'businessTypes'));
+        
+        // Tạo empty collections cho các biến cần thiết trong view
+        $provinces = collect([]);
+        $businessTypes = collect([]);
+        
+        return view('admin.products.Nhaphang.Suppliers.index',compact('suppliers', 'supplierGroups', 'provinces', 'businessTypes'));
     }
 
     /**

@@ -115,26 +115,6 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="filter-section">
-                            <label>Loại hình</label>
-                            <select class="form-select form-select-sm" name="business_type" onchange="filterSuppliers()">
-                                <option value="">Chọn loại hình</option>
-                                @foreach($businessTypes as $type)
-                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="filter-section">
-                            <label>Đánh giá</label>
-                            <select class="form-select form-select-sm" name="rating" onchange="filterSuppliers()">
-                                <option value="">Tất cả</option>
-                                <option value="5">5 sao</option>
-                                <option value="4">4 sao trở lên</option>
-                                <option value="3">3 sao trở lên</option>
-                                <option value="2">2 sao trở lên</option>
-                                <option value="1">1 sao trở lên</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -150,13 +130,11 @@
                                         <th>
                                             <input type="checkbox" class="form-check-input">
                                         </th>
-                                        <th>Logo</th>
                                         <th style="min-width: 100px;">Mã NCC</th>
                                         <th style="min-width: 200px;">Tên nhà cung cấp</th>
-                                        <th>Liên hệ</th>
+                                        <th>Số điện thoại</th>
                                         <th>Địa chỉ</th>
                                         <th>Trạng thái</th>
-                                        <th>Đánh giá</th>
                                         <th>Thời gian tạo</th>
                                     </tr>
                                 </thead>
@@ -164,62 +142,47 @@
                                     @forelse($suppliers as $supplier)
                                     <tr class="supplier-row" 
                                         data-supplier-id="{{ $supplier->id }}" 
-                                        data-group-id="{{ $supplier->group_id }}" 
-                                        data-status="{{ $supplier->status }}" 
-                                        data-province="{{ $supplier->province }}" 
-                                        data-business-type="{{ $supplier->business_type }}" 
-                                        data-rating="{{ $supplier->rating }}">
+                                        data-group-id="{{ $supplier->nhom_nha_cung_cap_id }}" 
+                                        data-status="{{ $supplier->trang_thai }}" 
+                                        data-province="{{ $supplier->khu_vuc }}">
                                         <td>
                                             <input type="checkbox" class="form-check-input">
                                         </td>
-                                        <td>
-                                            <div class="supplier-logo-container">
-                                                <img src="{{ $supplier->logo }}"
-                                                    alt="{{ $supplier->name }}"
-                                                    class="img-thumbnail supplier-logo"
-                                                    style="width: 50px; height: 50px; object-fit: cover;">
-                                            </div>
-                                        </td>
-                                        <td><span class="supplier-code">{{ $supplier->code }}</span></td>
+                                        <td><span class="supplier-code">{{ $supplier->ma_nha_cung_cap }}</span></td>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <span class="supplier-name">{{ $supplier->name }}</span>
+                                                <span class="supplier-name">{{ $supplier->ten_nha_cung_cap }}</span>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="contact-info">
-                                                <div><i class="fas fa-phone me-1"></i> {{ $supplier->phone }}</div>
-                                                <div><i class="fas fa-envelope me-1"></i> {{ $supplier->email }}</div>
+                                                <div><i class=""></i> {{ $supplier->dien_thoai }}</div>
+                                                @if($supplier->email)
+                                                    <div><i class=""></i> {{ $supplier->email }}</div>
+                                                @endif
                                             </div>
                                         </td>
-                                        <td>{{ $supplier->address }}</td>
                                         <td>
-                                            @if($supplier->status == 'active')
+                                            <div class="text-truncate" style="max-width: 200px;">
+                                                {{ $supplier->dia_chi }}
+                                                @if($supplier->khu_vuc)
+                                                    <br><small class="text-muted">{{ $supplier->khu_vuc }}</small>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if($supplier->trang_thai == 'active')
                                                 <span class="badge bg-success">Đang hoạt động</span>
-                                            @elseif($supplier->status == 'inactive')
-                                                <span class="badge bg-secondary">Tạm ngưng</span>
                                             @else
-                                                <span class="badge bg-warning">Chờ duyệt</span>
+                                                <span class="badge bg-secondary">Không hoạt động</span>
                                             @endif
                                         </td>
-                                        <td>
-                                            <div class="rating">
-                                                @for($i = 1; $i <= 5; $i++)
-                                                    @if($i <= $supplier->rating)
-                                                        <i class="fas fa-star text-warning"></i>
-                                                    @else
-                                                        <i class="far fa-star text-warning"></i>
-                                                    @endif
-                                                @endfor
-                                                <span class="ms-1">({{ $supplier->rating }}.0)</span>
-                                            </div>
-                                        </td>
-                                        <td>{{ \Carbon\Carbon::parse($supplier->created_at)->format('d/m/Y H:i') }}</td>
+                                        <td>{{ $supplier->created_at->format('d/m/Y H:i') }}</td>
                                     </tr>
                                     @empty
                                     <tr>
                                         <td colspan="9" class="text-center text-muted py-4">
-                                            <i class="fas fa-inbox fa-2x mb-2"></i>
+                                            <i></i>
                                             <br>Không có nhà cung cấp nào
                                         </td>
                                     </tr>
@@ -233,24 +196,19 @@
                         <div class="row">
                             <div class="col-md-6">
                                  <small class="text-muted">
-                                     Tổng cộng: <strong>{{ $suppliers->count() }}</strong> nhà cung cấp | Hiển thị: <strong>1</strong> - <strong>{{ $suppliers->count() }}</strong>
+                                     @if($suppliers->total() > 0)
+                                         Tổng cộng: <strong>{{ $suppliers->total() }}</strong> nhà cung cấp | 
+                                         Hiển thị: <strong>{{ $suppliers->firstItem() }}</strong> - <strong>{{ $suppliers->lastItem() }}</strong>
+                                     @else
+                                         Không có nhà cung cấp nào
+                                     @endif
                                  </small>
                              </div>
-                            <div class="col-md-6 text-md-end">
-                                <nav aria-label="Page navigation">
-                                    <ul class="pagination pagination-sm mb-0">
-                                        <li class="page-item disabled">
-                                            <a class="page-link" href="#" tabindex="-1">Trước</a>
-                                        </li>
-                                        <li class="page-item active">
-                                            <a class="page-link" href="#">1</a>
-                                        </li>
-                                        <li class="page-item disabled">
-                                            <a class="page-link" href="#">Sau</a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div>
+                             <div class="col-md-6 d-flex justify-content-end">
+                                 @if($suppliers->hasPages())
+                                     {{ $suppliers->links() }}
+                                 @endif
+                             </div>
                         </div>
                     </div>
                 </div>
