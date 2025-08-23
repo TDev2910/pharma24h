@@ -18,7 +18,7 @@
                             <!-- Tên nhà cung cấp -->
                             <div class="mb-3">
                                 <label for="ten_nha_cung_cap" class="form-label">
-                                    <i class="fas fa-building text-primary me-1"></i>Tên nhà cung cấp <span class="text-danger">*</span>
+                                    <i></i>Tên nhà cung cấp <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" class="form-control" id="ten_nha_cung_cap" name="ten_nha_cung_cap" required maxlength="255">
                                 <div class="invalid-feedback"></div>
@@ -27,7 +27,7 @@
                             <!-- Mã nhà cung cấp -->
                             <div class="mb-3">
                                 <label for="ma_nha_cung_cap" class="form-label">
-                                    <i class="fas fa-barcode text-primary me-1"></i>Mã nhà cung cấp <span class="text-danger">*</span>
+                                    <i></i>Mã nhà cung cấp <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" class="form-control" id="ma_nha_cung_cap" name="ma_nha_cung_cap" required maxlength="50" placeholder="VD: NCC001">
                                 <div class="form-text">Mã định danh duy nhất trong hệ thống</div>
@@ -37,7 +37,7 @@
                             <!-- Điện thoại -->
                             <div class="mb-3">
                                 <label for="dien_thoai" class="form-label">
-                                    <i class="fas fa-phone text-primary me-1"></i>Điện thoại <span class="text-danger">*</span>
+                                    <i></i>Điện thoại <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" class="form-control" id="dien_thoai" name="dien_thoai" required maxlength="20" placeholder="0123 456 789">
                                 <div class="invalid-feedback"></div>
@@ -46,7 +46,7 @@
                             <!-- Email -->
                             <div class="mb-3">
                                 <label for="email" class="form-label">
-                                    <i class="fas fa-envelope text-primary me-1"></i>Email
+                                    <i></i>Email
                                 </label>
                                 <input type="email" class="form-control" id="email" name="email" maxlength="100" placeholder="supplier@example.com">
                                 <div class="invalid-feedback"></div>
@@ -72,7 +72,7 @@
                             <!-- Địa chỉ -->
                             <div class="mb-3">
                                 <label for="dia_chi" class="form-label">
-                                    <i class="fas fa-map-marker-alt text-primary me-1"></i>Địa chỉ chi tiết <span class="text-danger">*</span>
+                                    <i></i>Địa chỉ chi tiết <span class="text-danger">*</span>
                                 </label>
                                 <textarea class="form-control" id="dia_chi" name="dia_chi" rows="2" required placeholder="Số nhà, đường, phố..."></textarea>
                                 <div class="invalid-feedback"></div>
@@ -81,7 +81,7 @@
                             <!-- Khu vực -->
                             <div class="mb-3">
                                 <label for="khu_vuc" class="form-label">
-                                    <i class="fas fa-map text-primary me-1"></i>Tỉnh/Thành phố <span class="text-danger">*</span>
+                                    <i></i>Tỉnh/Thành phố <span class="text-danger">*</span>
                                 </label>
                                 <select class="form-select" id="khu_vuc" name="khu_vuc" required>
                                     <option value="">-- Chọn tỉnh/thành --</option>
@@ -92,7 +92,7 @@
                             <!-- Phường/Xã -->
                             <div class="mb-3">  
                                 <label for="phuong_xa" class="form-label">
-                                    <i class="fas fa-location-arrow text-primary me-1"></i>Phường/Xã <span class="text-danger">*</span>
+                                    <i></i>Phường/Xã <span class="text-danger">*</span>
                                 </label>
                                 <select class="form-select" id="phuong_xa" name="phuong_xa" required disabled>
                                     <option value="">-- Chọn tỉnh/thành trước --</option>
@@ -103,7 +103,7 @@
                             <!-- Tên công ty (xuất hóa đơn) -->
                             <div class="mb-3">
                                 <label for="ten_cong_ty" class="form-label">
-                                    <i class="fas fa-industry text-primary me-1"></i>Tên công ty (xuất hóa đơn)
+                                    <i></i>Tên công ty (xuất hóa đơn)
                                 </label>
                                 <input type="text" class="form-control" id="ten_cong_ty" name="ten_cong_ty" maxlength="255" placeholder="Công ty TNHH ABC">
                                 <div class="form-text">Tên chính thức cho việc xuất hóa đơn</div>
@@ -113,7 +113,7 @@
                             <!-- Mã số thuế -->
                             <div class="mb-3">
                                 <label for="ma_so_thue" class="form-label">
-                                    <i class="fas fa-file-invoice text-primary me-1"></i>Mã số thuế
+                                    <i></i>Mã số thuế
                                 </label>
                                 <input type="text" class="form-control" id="ma_so_thue" name="ma_so_thue" maxlength="20" placeholder="0123456789">
                                 <div class="form-text">MST duy nhất theo pháp luật</div>
@@ -127,7 +127,7 @@
                         <div class="col-12">
                             <div class="mb-3">
                                 <label for="ghi_chu" class="form-label">
-                                    <i class="fas fa-sticky-note text-primary me-1"></i>Ghi chú
+                                    <i></i>Ghi chú
                                 </label>
                                 <textarea class="form-control" id="ghi_chu" name="ghi_chu" rows="3" placeholder="Ghi chú bổ sung về nhà cung cấp..."></textarea>
                             </div>
@@ -140,7 +140,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="trang_thai" name="trang_thai" value="active" checked>
                                 <label class="form-check-label" for="trang_thai">
-                                    <i class="fas fa-check-circle text-success me-1"></i>Kích hoạt ngay
+                                    <i></i>Kích hoạt ngay
                                 </label>
                             </div>
                         </div>

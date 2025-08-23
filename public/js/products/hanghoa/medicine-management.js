@@ -22,9 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const categoryForm = document.querySelector('#createCategoryModal form');
     if (categoryForm) {
         categoryForm.addEventListener('submit', function(e) {
-            // Form submitted
             const formData = new FormData(this);
-            // Process form data
         });
     }
     

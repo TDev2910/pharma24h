@@ -144,7 +144,9 @@
                                         data-supplier-id="{{ $supplier->id }}" 
                                         data-group-id="{{ $supplier->nhom_nha_cung_cap_id }}" 
                                         data-status="{{ $supplier->trang_thai }}" 
-                                        data-province="{{ $supplier->khu_vuc }}">
+                                        data-province="{{ $supplier->khu_vuc }}"
+                                        onclick="toggleSupplierDetail({{ $supplier->id }}, this)"
+                                        style="cursor: pointer;">
                                         <td>
                                             <input type="checkbox" class="form-check-input">
                                         </td>
@@ -178,6 +180,114 @@
                                             @endif
                                         </td>
                                         <td>{{ $supplier->created_at->format('d/m/Y H:i') }}</td>
+                                    </tr>
+                                    
+                                    <!-- Chi tiết supplier (ẩn mặc định) -->
+                                    <tr id="detail-row-{{ $supplier->id }}" class="detail-row" style="display: none;">
+                                        <td colspan="7" class="p-0">
+                                            <div class="supplier-detail-container bg-light border-top">
+                                                <div class="row p-4">
+                                                    <!-- Thông tin chung -->
+                                                    <div class="col-md-6">
+                                                        <h6 class="text-primary mb-3">
+                                                            <i></i>Thông tin chung
+                                                        </h6>
+                                                        <table class="table table-sm table-borderless">
+                                                            <tr>
+                                                                <td class="fw-bold" style="width: 140px;">Mã NCC:</td>
+                                                                <td>{{ $supplier->ma_nha_cung_cap }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bold">Tên NCC:</td>
+                                                                <td>{{ $supplier->ten_nha_cung_cap }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bold">Điện thoại:</td>
+                                                                <td>{{ $supplier->dien_thoai }}</td>
+                                                            </tr>
+                                                            @if($supplier->email)
+                                                            <tr>
+                                                                <td class="fw-bold">Email:</td>
+                                                                <td>{{ $supplier->email }}</td>
+                                                            </tr>
+                                                            @endif
+                                                            <tr>
+                                                                <td class="fw-bold">Nhóm NCC:</td>
+                                                                <td>
+                                                                    @if($supplier->category)
+                                                                        <span class="badge bg-info">{{ $supplier->category->name }}</span>
+                                                                    @else
+                                                                        <span class="text-muted">Chưa phân nhóm</span>
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bold">Trạng thái:</td>
+                                                                <td>
+                                                                    @if($supplier->trang_thai == 'active')
+                                                                        <span class="badge bg-success">Đang hoạt động</span>
+                                                                    @else
+                                                                        <span class="badge bg-secondary">Không hoạt động</span>
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                    
+                                                    <!-- Thông tin liên hệ -->
+                                                    <div class="col-md-6">
+                                                        <h6 class="text-primary mb-3">
+                                                            <i></i>Thông tin liên hệ
+                                                        </h6>
+                                                        <table class="table table-sm table-borderless">
+                                                            <tr>
+                                                                <td class="fw-bold" style="width: 140px;">Địa chỉ:</td>
+                                                                <td>{{ $supplier->dia_chi }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bold">Tỉnh/Thành:</td>
+                                                                <td>{{ $supplier->khu_vuc }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bold">Phường/Xã:</td>
+                                                                <td>{{ $supplier->phuong_xa }}</td>
+                                                            </tr>
+                                                            @if($supplier->ten_cong_ty)
+                                                            <tr>
+                                                                <td class="fw-bold">Tên công ty:</td>
+                                                                <td>{{ $supplier->ten_cong_ty }}</td>
+                                                            </tr>
+                                                            @endif
+                                                            @if($supplier->ma_so_thue)
+                                                            <tr>
+                                                                <td class="fw-bold">Mã số thuế:</td>
+                                                                <td>{{ $supplier->ma_so_thue }}</td>
+                                                            </tr>
+                                                            @endif
+                                                            @if($supplier->ghi_chu)
+                                                            <tr>
+                                                                <td class="fw-bold">Ghi chú:</td>
+                                                                <td>{{ $supplier->ghi_chu }}</td>
+                                                            </tr>
+                                                            @endif
+                                                        </table>
+                                                        
+                                                        <!-- Action buttons -->
+                                                        <div class="mt-3">
+                                                            <button type="button" class="btn btn-success btn-sm me-2">
+                                                                <i class="fas fa-edit me-1"></i>Chỉnh sửa
+                                                            </button>
+                                                            <button type="button" class="btn btn-primary btn-sm me-2">
+                                                                <i class="fas fa-print me-1"></i>In thông tin
+                                                            </button>
+                                                            <button type="button" class="btn btn-danger btn-sm">
+                                                                <i class="fas fa-trash me-1"></i>Xóa
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
                                     </tr>
                                     @empty
                                     <tr>
@@ -586,6 +696,69 @@ document.getElementById('createSupplierCategoryModal').addEventListener('hidden.
     clearFormErrors();
 });
 </script>
+
+<!-- Supplier Detail Styles -->
+<style>
+    .supplier-row:hover {
+        background-color: #f8f9fa !important;
+    }
+    
+    .supplier-row.selected-row {
+        background-color: #e3f2fd !important;
+    }
+    
+    .supplier-detail-container {
+        background-color: #f8f9fa;
+    }
+    
+    .detail-row td {
+        border-top: none !important;
+    }
+    
+    /* Table styling giống danh sách hàng hóa */
+    .supplier-detail-container .table {
+        background-color: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 0;
+    }
+    
+    .supplier-detail-container .table td {
+        border: 1px solid #e9ecef;
+        padding: 8px 12px;
+        vertical-align: middle;
+    }
+    
+    .supplier-detail-container .table td:first-child {
+        background-color: #f1f3f4;
+        font-weight: 600;
+        color: #495057;
+        width: 140px;
+    }
+    
+    .supplier-detail-container .table td:last-child {
+        background-color: white;
+    }
+    
+    /* Header styling */
+    .supplier-detail-container h6 {
+        background-color: #e3f2fd;
+        padding: 10px 15px;
+        margin: 0 0 15px 0;
+        border-radius: 6px;
+    }
+    
+    /* Action buttons styling */
+    .supplier-detail-container .btn {
+        border-radius: 6px;
+        font-size: 13px;
+        padding: 6px 12px;
+    }
+</style>
+
+<!-- Load supplier management JS -->
+<script src="{{ asset('js/products/supplier/supplier-management.js') }}"></script>
 @endpush
 
 @endsection

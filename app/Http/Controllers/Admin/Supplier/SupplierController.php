@@ -96,7 +96,14 @@ class SupplierController extends Controller
      */
     public function show($id)
     {
-
+        $supplier ->load('category');
+        $supplierStats = [
+            'total_orders' => 0, // Tổng đơn hàng
+            'total_products' => 0, // Tổng sản phẩm cung cấp
+            'last_order_date' => null, // Đơn hàng gần nhất
+        ];
+        
+        return view('admin.products.Nhaphang.Suppliers.show', compact('supplier', 'supplierStats'));
     }
 
     /**

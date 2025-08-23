@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () 
 {
-    // MAIN PRODUCT DASHBOARD
+    //main dashboard
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
     
     //medicine route (MedicineController)
