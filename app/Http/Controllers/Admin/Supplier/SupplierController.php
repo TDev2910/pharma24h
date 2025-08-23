@@ -16,9 +16,8 @@ class SupplierController extends Controller
     {
         // Lấy suppliers từ database với relationship
         $suppliers = Supplier::with('category')
-                ->latest()
-                ->paginate(15);
-        
+            ->latest()
+            ->paginate(15);      
         // Lấy supplier groups cho filter
         $supplierGroups = SupplierCategory::active()->ordered()->get();
         
@@ -30,11 +29,20 @@ class SupplierController extends Controller
     }
 
     /**
-     * Show the form for creating a new supplier
+     * Show the form for creating a new supplier (AJAX support for modal)
      */
     public function create()
     {
-                             
+        // Lấy supplier groups cho dropdown
+        $supplierGroups = SupplierCategory::active()->ordered()->get();
+        
+        if (request()->ajax()) {
+            return response()->json([
+                'supplierGroups' => $supplierGroups,
+                'status' => 'success'
+            ]);
+        }
+        return redirect()->route('admin.suppliers.index');
     }
 
     /**
@@ -42,7 +50,8 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        try {
+            $validated = $request->validate([
             'ten_nha_cung_cap' => 'required|string|max:255',
             'ma_nha_cung_cap' => 'required|string|max:50|unique:suppliers',
             'dien_thoai' => 'required|string|max:20',
@@ -86,9 +95,40 @@ class SupplierController extends Controller
                 $supplierData['trang_thai'] = 'active';
             }
 
-            Supplier::create($supplierData);
+            $supplier = Supplier::create($supplierData);
+
+            // Nếu là AJAX request, trả về JSON response
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Tạo nhà cung cấp thành công!',
+                    'supplier' => $supplier->load('category'),
+                    'redirect' => route('admin.suppliers.index')
+                ]);
+            }
 
             return redirect()->route('admin.suppliers.index')->with('success', 'Tạo nhà cung cấp thành công!');
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // AJAX validation error response
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Dữ liệu không hợp lệ',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            throw $e;
+        } catch (\Exception $e) {
+            // General error handling
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -111,7 +151,10 @@ class SupplierController extends Controller
      */
     public function edit($id)
     {
-
+        $supplier = Supplier::findOrFail($id);
+        $data = $this->getFormData();
+        
+        return view('admin.products.Nhaphang.Suppliers.edit',compact('supplier', 'data'));
     }
 
     /**

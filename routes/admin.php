@@ -69,8 +69,8 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::delete('products/goods/{goods}', [ProductController::class,'deleteGoods'])->name('products.goods.delete');
     Route::get('products/goods/{goods}/detail', [ProductController::class,'showGoodsDetail'])->name('products.goods.detail');
     
-    Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
-    Route::post('suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
+    // Suppliers RESTful routes
+    Route::resource('suppliers', SupplierController::class)->names('suppliers');
     
     // Supplier Categories routes
     Route::prefix('supplier-categories')->name('supplier-categories.')->group(function () {

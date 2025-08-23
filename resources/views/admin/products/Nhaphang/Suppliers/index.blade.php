@@ -275,13 +275,13 @@
                                                         <!-- Action buttons -->
                                                         <div class="mt-3">
                                                             <button type="button" class="btn btn-success btn-sm me-2">
-                                                                <i class="fas fa-edit me-1"></i>Chỉnh sửa
+                                                                <i></i>Chỉnh sửa
                                                             </button>
                                                             <button type="button" class="btn btn-primary btn-sm me-2">
-                                                                <i class="fas fa-print me-1"></i>In thông tin
+                                                                <i></i>In thông tin
                                                             </button>
                                                             <button type="button" class="btn btn-danger btn-sm">
-                                                                <i class="fas fa-trash me-1"></i>Xóa
+                                                                <i></i>Xóa
                                                             </button>
                                                         </div>
                                                     </div>
@@ -393,7 +393,7 @@
 </div>
 
 <!-- Include modal create supplier -->
-@include('admin.products.Nhaphang.Suppliers.create')
+@include('admin.products.Nhaphang.Suppliers.create.suppliers')
 
 
 @push('styles')

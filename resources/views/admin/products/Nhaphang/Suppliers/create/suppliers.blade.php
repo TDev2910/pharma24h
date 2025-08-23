@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const field = form.querySelector(`[name="${fieldName}"]`);
             if (!field.value.trim()) {
                 field.classList.add('is-invalid');
-                field.nextElementSibling.textContent = 'Trường này là bắt buộc';
+                field.nextElementSibling.textContent = 'Thuộc tính này là bắt buộc';
                 isValid = false;
             }
         });
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const phonePattern = /^[0-9+\-\s\(\)\.]{10,20}$/;
         if (phone.value && !phonePattern.test(phone.value)) {
             phone.classList.add('is-invalid');
-            phone.nextElementSibling.textContent = 'Định dạng điện thoại không hợp lệ';
+            phone.nextElementSibling.textContent = 'Định dạng không hợp lệ';
             isValid = false;
         }
         
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailPattern.test(email.value)) {
                 email.classList.add('is-invalid');
-                email.nextElementSibling.textContent = 'Định dạng email không hợp lệ';
+                email.nextElementSibling.textContent = 'Định dạng không hợp lệ';
                 isValid = false;
             }
         }
@@ -222,6 +222,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('DOMContentLoaded', function() {
         const provinceSelect = document.getElementById('khu_vuc');
         const wardSelect = document.getElementById('phuong_xa');
+        
+        // Load provinces when modal opens
+        const modal = document.getElementById('createSupplierModal');
+        modal.addEventListener('shown.bs.modal', function() {
+            if (provinceSelect.options.length <= 1) { // Chỉ load nếu chưa có data
+                loadProvinces();
+            }
+        });
             //danh sach tinh thành - sử dụng API provinces.open-api.vn
         async function loadProvinces() {
             try {               
@@ -249,7 +257,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     option.dataset.name = province.name; // Lưu tên để gửi lên server
                     provinceSelect.appendChild(option);
                 });                               
-            } 
+            } catch (error) {
+                console.error('Lỗi load tỉnh/thành:', error);
+                provinceSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+                alert('Không thể tải danh sách tỉnh/thành. Vui lòng thử lại!\nLỗi: ' + error.message);
+            }
         }
         //tải danh sách phường xã - sử dụng API provinces.open-api.vn
         async function loadWards(provinceCode) {
@@ -361,6 +373,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 hiddenWardInput.value = selectedWard.dataset.name;
             }
         });
-        loadProvinces();
     });
 </script>
