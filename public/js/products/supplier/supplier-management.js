@@ -1,93 +1,173 @@
+/**
+ * SUPPLIER MANAGEMENT JAVASCRIPT
+ * Functions for supplier table interactions
+ */
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize supplier management functionality
-    console.log('Supplier management JS loaded');
+    // Initialize supplier count
+    updateSupplierCount(document.querySelectorAll('.supplier-row').length);
 });
 
-// Toggle hiển thị thông tin chi tiết supplier
-window.toggleSupplierDetail = function(supplierId, element) {
+/**
+ * Toggle supplier detail row
+ */
+function toggleSupplierDetail(supplierId, rowElement) {
     const detailRow = document.getElementById(`detail-row-${supplierId}`);
-    if (!detailRow) return;
+    const allDetailRows = document.querySelectorAll('.detail-row');
+    const allSupplierRows = document.querySelectorAll('.supplier-row');
     
-    const isVisible = detailRow.style.display !== 'none';
-    
-    // Đóng tất cả các detail rows khác
-    document.querySelectorAll('.detail-row').forEach(row => {
-        row.style.display = 'none';
+    // Close all other detail rows
+    allDetailRows.forEach(row => {
+        if (row.id !== `detail-row-${supplierId}`) {
+            row.style.display = 'none';
+        }
     });
     
-    // Xóa highlight từ tất cả các hàng
-    document.querySelectorAll('.supplier-row').forEach(row => {
+    // Remove selected class from all rows
+    allSupplierRows.forEach(row => {
         row.classList.remove('selected-row');
     });
     
-    if (!isVisible) {
-        // Mở detail row
+    // Toggle current detail row
+    if (detailRow.style.display === 'none' || detailRow.style.display === '') {
         detailRow.style.display = 'table-row';
+        rowElement.classList.add('selected-row');
+    } else {
+        detailRow.style.display = 'none';
+        rowElement.classList.remove('selected-row');
+    }
+}
+
+/**
+ * Filter suppliers function
+ */
+function filterSuppliers() {
+    const groupId = document.querySelector('select[name="supplier_group_id"]').value;
+    const status = document.querySelector('select[name="status"]').value;
+    const province = document.querySelector('select[name="province"]').value;
+    const businessType = document.querySelector('select[name="business_type"]').value;
+    const rating = document.querySelector('select[name="rating"]').value;
+    const searchTerm = document.getElementById('searchInput')?.value.toLowerCase().trim() || '';
+    
+    const supplierRows = document.querySelectorAll('.supplier-row');
+    let visibleCount = 0;
+    
+    supplierRows.forEach(row => {
+        let showRow = true;
         
-        // Highlight hàng được chọn
-        const selectedRow = element.closest('tr');
-        if (selectedRow) {
-            selectedRow.classList.add('selected-row');
+        // Filter by group
+        if (groupId && row.getAttribute('data-group-id') !== groupId) {
+            showRow = false;
         }
         
-        // Scroll đến detail row
-        detailRow.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest'
-        });
+        // Filter by status
+        if (status && row.getAttribute('data-status') !== status) {
+            showRow = false;
+        }
+        
+        // Filter by province
+        if (province && row.getAttribute('data-province') !== province) {
+            showRow = false;
+        }
+        
+        // Filter by business type
+        if (businessType && row.getAttribute('data-business-type') !== businessType) {
+            showRow = false;
+        }
+        
+        // Filter by rating
+        if (rating && parseInt(row.getAttribute('data-rating')) < parseInt(rating)) {
+            showRow = false;
+        }
+        
+        // Filter by search term
+        if (searchTerm && showRow) {
+            const supplierName = row.querySelector('.supplier-name')?.textContent.toLowerCase() || '';
+            const supplierCode = row.querySelector('.supplier-code')?.textContent.toLowerCase() || '';
+            
+            const isMatch = supplierName.includes(searchTerm) || supplierCode.includes(searchTerm);
+            
+            if (!isMatch) {
+                showRow = false;
+            }
+        }
+        
+        // Show/hide row
+        if (showRow) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Update summary
+    updateSupplierCount(visibleCount);
+}
+
+/**
+ * Search suppliers function
+ */
+function searchSuppliers() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    const supplierRows = document.querySelectorAll('.supplier-row');
+    let visibleCount = 0;
+    
+    supplierRows.forEach(row => {
+        const supplierName = row.querySelector('.supplier-name')?.textContent.toLowerCase() || '';
+        const supplierCode = row.querySelector('.supplier-code')?.textContent.toLowerCase() || '';
+        
+        const isMatch = supplierName.includes(searchTerm) || supplierCode.includes(searchTerm);
+        
+        if (isMatch) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    updateSupplierCount(visibleCount);
+}
+
+/**
+ * Update supplier count
+ */
+function updateSupplierCount(visibleCount) {
+    const totalSuppliers = document.querySelectorAll('.supplier-row').length;
+    const summaryElement = document.querySelector('.summary-section small');
+    if (summaryElement) {
+        summaryElement.innerHTML = `Tổng cộng: <strong>${totalSuppliers}</strong> nhà cung cấp | Hiển thị: <strong>${visibleCount}</strong>`;
     }
 }
 
-// Xử lý click vào checkbox (không trigger detail)
-document.addEventListener('click', function(e) {
-    if (e.target.type === 'checkbox' && e.target.classList.contains('form-check-input')) {
-        e.stopPropagation();
-    }
+/**
+ * Handle supplier category form submission
+ */
+document.getElementById('createSupplierCategoryForm').addEventListener('submit', function(e) {
+    const submitBtn = document.getElementById('createCategoryBtn');
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tạo...';
 });
 
-// Xử lý các action buttons trong detail
-document.addEventListener('click', function(e) {
-    // Chỉnh sửa supplier
-    if (e.target.closest('.btn-success') && e.target.closest('.supplier-detail-container')) {
-        e.stopPropagation();
-        const supplierId = e.target.closest('.detail-row').id.replace('detail-row-', '');
-        editSupplier(supplierId);
-    }
+/**
+ * Clear form validation errors
+ */
+function clearFormErrors() {
+    const errorElements = document.querySelectorAll('.invalid-feedback');
+    const inputElements = document.querySelectorAll('.is-invalid');
     
-    // In thông tin supplier
-    if (e.target.closest('.btn-primary') && e.target.closest('.supplier-detail-container')) {
-        e.stopPropagation();
-        const supplierId = e.target.closest('.detail-row').id.replace('detail-row-', '');
-        printSupplier(supplierId);
-    }
-    
-    // Xóa supplier
-    if (e.target.closest('.btn-danger') && e.target.closest('.supplier-detail-container')) {
-        e.stopPropagation();
-        const supplierId = e.target.closest('.detail-row').id.replace('detail-row-', '');
-        deleteSupplier(supplierId);
-    }
+    errorElements.forEach(el => el.textContent = '');
+    inputElements.forEach(el => el.classList.remove('is-invalid'));
+}
+
+/**
+ * Reset form when modal is hidden
+ */
+document.getElementById('createSupplierCategoryModal').addEventListener('hidden.bs.modal', function () {
+    const form = document.getElementById('createSupplierCategoryForm');
+    form.reset();
+    clearFormErrors();
 });
-
-// Function chỉnh sửa supplier
-function editSupplier(supplierId) {
-    // TODO: Implement edit functionality
-    console.log('Edit supplier:', supplierId);
-    alert('Chức năng chỉnh sửa sẽ được phát triển sau!');
-}
-
-// Function in thông tin supplier
-function printSupplier(supplierId) {
-    // TODO: Implement print functionality
-    console.log('Print supplier:', supplierId);
-    alert('Chức năng in thông tin sẽ được phát triển sau!');
-}
-
-// Function xóa supplier
-function deleteSupplier(supplierId) {
-    if (confirm('Bạn có chắc chắn muốn xóa nhà cung cấp này?')) {
-        // TODO: Implement delete functionality
-        console.log('Delete supplier:', supplierId);
-        alert('Chức năng xóa sẽ được phát triển sau!');
-    }
-}

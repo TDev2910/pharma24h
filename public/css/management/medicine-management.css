@@ -1,0 +1,465 @@
+/* ===========================================
+   MEDICINE/PRODUCT MANAGEMENT STYLES
+   =========================================== */
+
+/* Layout Structure */
+.container-fluid {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header Control Bar */
+.header-control-bar {
+    background: white;
+    border-radius: 0;
+    border-bottom: 1px solid #e9ecef;
+    padding: 16px 0;
+    margin-bottom: 0;
+}
+
+.header-title {
+    color: #333;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Search Container */
+.search-container {
+    position: relative;
+}
+
+.search-container .input-group-text {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* Action Buttons */
+.action-buttons .btn {
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+/* Content Area Layout */
+.content-area {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 20px;
+    height: fit-content;
+}
+
+.sidebar-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.filter-section {
+    margin-bottom: 20px;
+}
+
+.filter-section label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 14px;
+}
+
+.filter-section .form-select {
+    border-radius: 6px;
+    border-color: #dee2e6;
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+.create-link {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.875rem;
+    margin-left: 10px;
+}
+
+.create-link:hover {
+    text-decoration: underline;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+/* Table Styles */
+.table-section {
+    padding: 0;
+}
+
+.product-table {
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.product-table thead th {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    font-weight: 600;
+    border: none;
+    padding: 12px 16px;
+    font-size: 14px;
+    text-align: center;
+    vertical-align: middle;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.product-table thead th:first-child {
+    border-top-left-radius: 0;
+}
+
+.product-table thead th:last-child {
+    border-top-right-radius: 0;
+}
+
+.product-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 14px;
+}
+
+.product-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.product-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Product Image */
+.product-image-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image {
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+/* Product Info */
+.product-code {
+    font-weight: 500;
+    color: #495057;
+}
+
+.product-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.product-abbreviation {
+    color: #6c757d;
+    font-size: 13px;
+}
+
+/* Detail Rows */
+.detail-row {
+    background-color: #f8f9fa;
+}
+
+.detail-row td {
+    border-top: none !important;
+    padding: 0 !important;
+}
+
+.detail-content {
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-top: 3px solid #007bff;
+}
+
+/* Product Detail Styles */
+.product-image-detail-large img {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.product-header {
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 15px;
+}
+
+.product-title {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.product-category {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.product-tags .badge {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* Tabs */
+.nav-tabs {
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 20px;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link.active {
+    color: #007bff;
+    border-bottom: 3px solid #007bff;
+    background: none;
+    font-weight: 600;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #007bff;
+    border-color: transparent;
+}
+
+/* Info Groups */
+.info-group {
+    margin-bottom: 20px;
+}
+
+.info-group h6 {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.info-group .table {
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.info-group .table td {
+    border: 1px solid #e9ecef;
+    padding: 10px 15px;
+    vertical-align: middle;
+}
+
+.info-group .table td:first-child {
+    background-color: #f1f3f4;
+    font-weight: 600;
+    color: #495057;
+    width: 140px;
+}
+
+.info-group .table td:last-child {
+    background-color: white;
+}
+
+/* Action Buttons in Detail */
+.action-section {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.action-section .btn {
+    border-radius: 6px;
+    font-size: 13px;
+    padding: 6px 12px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
+/* Summary Section */
+.summary-section {
+    background: white;
+    border-radius: 6px;
+    padding: 15px 20px;
+    margin-top: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-section small {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* Pagination */
+.pagination {
+    margin: 0;
+}
+
+.pagination .page-link {
+    border-color: #dee2e6;
+    color: #007bff;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 0;
+}
+
+.pagination .page-item:first-child .page-link {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+.pagination .page-item:last-child .page-link {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #ffffff;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .content-area {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-control-bar .controls-section {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .search-container {
+        width: 100%;
+    }
+    
+    .action-buttons {
+        justify-content: center;
+    }
+    
+    .product-table {
+        font-size: 12px;
+    }
+    
+    .product-table thead th,
+    .product-table tbody td {
+        padding: 8px 12px;
+    }
+    
+    .detail-content {
+        padding: 15px;
+    }
+    
+    .info-group .table td {
+        padding: 8px 12px;
+    }
+    
+    .summary-section {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
+
+/* Loading States */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success/Error Messages */
+.alert {
+    border-radius: 6px;
+    border: none;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Utility Classes */
+.text-truncate-custom {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.badge-custom {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}

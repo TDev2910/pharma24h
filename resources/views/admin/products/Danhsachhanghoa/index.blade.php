@@ -1015,7 +1015,7 @@
 
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/medicine-management.css') }}">
+<link rel="stylesheet" href="{{ asset('css/management/medicine-management.css') }}">
 <link rel="stylesheet" href="{{ asset('css/reponsive.css') }}">
 @endpush
 
