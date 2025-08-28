@@ -12,7 +12,7 @@
             <form id="createSupplierForm" action="{{ route('admin.suppliers.store') }}" method="POST">
                 @csrf
                 <div class="modal-body">
-                    @include('admin.products.Nhaphang.Suppliers.partials.supplier-create-form')
+                    @include('admin.products.Nhaphang.Suppliers.partials.supplier-form')
                 </div>
 
                 <div class="modal-footer">

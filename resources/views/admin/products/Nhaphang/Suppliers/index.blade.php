@@ -274,8 +274,8 @@
                                                         
                                                         <!-- Action buttons -->
                                                         <div class="mt-3">
-                                                            <button type="button" class="btn btn-success btn-sm me-2">
-                                                                <i></i>Chỉnh sửa
+                                                            <button type="button" class="btn btn-success btn-sm me-2" onclick="editSupplier({{ $supplier->id }})">
+                                                                <i class="fas fa-edit"></i>Chỉnh sửa
                                                             </button>
                                                             <button type="button" class="btn btn-primary btn-sm me-2">
                                                                 <i></i>In thông tin
@@ -392,9 +392,10 @@
     </div>
 </div>
 
-<!-- Include modal create supplier -->
-@include('admin.products.Nhaphang.Suppliers.partials.supplier-modal')
-
+{{-- include modal --}}
+@include('admin.products.Nhaphang.Suppliers.partials.supplier-create-modal')
+@include('admin.products.Nhaphang.Suppliers.partials.supplier-edit-modal')
+    
 
 @push('styles')
 <link href="{{ asset('css/management/supplier-management.css') }}" rel="stylesheet">

@@ -28,20 +28,19 @@ class SupplierController extends Controller
         return view('admin.products.Nhaphang.Suppliers.index',compact('suppliers', 'supplierGroups', 'provinces', 'businessTypes'));
     }
 
-    /**
-     * Show the form for creating a new supplier (AJAX support for modal)
-     */
     public function create()
     {
-        // Lấy supplier groups cho dropdown
-        $supplierGroups = SupplierCategory::active()->ordered()->get();
-        
         if (request()->ajax()) {
+            // Lấy supplier groups cho dropdown
+            $supplierGroups = SupplierCategory::active()->ordered()->get();
+            
+            $html = view('admin.products.Nhaphang.Suppliers.partials.supplier-form', compact('supplierGroups'))->render();
             return response()->json([
-                'supplierGroups' => $supplierGroups,
-                'status' => 'success'
+                'status' => 'success',
+                'html' => $html
             ]);
         }
+        
         return redirect()->route('admin.suppliers.index');
     }
 
@@ -57,15 +56,12 @@ class SupplierController extends Controller
             'dien_thoai' => 'required|string|max:20',
             'email' => 'nullable|email|max:100|unique:suppliers',
             'dia_chi' => 'required|string',
-            'khu_vuc_name' => 'required|string|max:100',        // Tên tỉnh/thành
-            'phuong_xa_name' => 'required|string|max:100',      // Tên phường/xã
-            'khu_vuc' => 'required|string|max:10',              // Mã tỉnh/thành (để backup)
-            'phuong_xa' => 'required|string|max:10', 
+            'khu_vuc' => 'required|string|max:100',             // Tỉnh/Thành phố
+            'phuong_xa' => 'required|string|max:100',           // Quận/Huyện
             'nhom_nha_cung_cap_id' => 'required|exists:supplier_categories,id',
             'ghi_chu' => 'nullable|string',
             'ten_cong_ty' => 'nullable|string|max:255|unique:suppliers',
             'ma_so_thue' => 'nullable|string|max:20|unique:suppliers',   
-            
             'trang_thai' => 'nullable|in:active,inactive'], 
             [
                 //thông báo lỗi 
@@ -81,14 +77,8 @@ class SupplierController extends Controller
                 session()->flash('warning', 'Đã có nhà cung cấp cùng tên: ' . $existingName->ma_nha_cung_cap);
             }
 
-            // Xử lý dữ liệu từ API tỉnh/thành
+            // Sử dụng dữ liệu đã validate trực tiếp
             $supplierData = $validated;
-            if (isset($validated['khu_vuc_name'])) {
-                $supplierData['khu_vuc'] = $validated['khu_vuc_name'];
-            }
-            if (isset($validated['phuong_xa_name'])) {
-                $supplierData['phuong_xa'] = $validated['phuong_xa_name'];
-            }
             
             // Set default status nếu không có
             if (!isset($supplierData['trang_thai'])) {
@@ -136,33 +126,52 @@ class SupplierController extends Controller
      */
     public function show($id)
     {
-        $supplier ->load('category');
+        $supplier = Supplier::with('category')->findOrFail($id);
         $supplierStats = [
             'total_orders' => 0, // Tổng đơn hàng
             'total_products' => 0, // Tổng sản phẩm cung cấp
             'last_order_date' => null, // Đơn hàng gần nhất
         ];
         
+        if (request()->ajax()) {
+            $html = view('admin.products.Nhaphang.Suppliers.partials.supplier-view', compact('supplier', 'supplierStats'))->render();
+            return response()->json([
+                'status' => 'success',
+                'html' => $html,
+                'supplier' => $supplier
+            ]);
+        }
+        
         return view('admin.products.Nhaphang.Suppliers.show', compact('supplier', 'supplierStats'));
     }
 
     /**
-     * Show the form for editing the specified supplier
+     * Show edit 
      */
     public function edit($id)
     {
         $supplier = Supplier::findOrFail($id);
-        $data = $this->getFormData();
+        $supplierGroups = SupplierCategory::active()->ordered()->get();
         
-        return view('admin.products.Nhaphang.Suppliers.edit',compact('supplier', 'data'));
+        return response()->json([
+            'success' => true,
+            'supplier' => $supplier,
+            'supplierGroups' => $supplierGroups
+        ]);
     }
 
     /**
-     * Update the specified supplier
+     * Update supplier
      */
     public function update(Request $request, $id)
     {
+        $supplier = Supplier::findOrFail($id);
+        $supplier->update($request->all());
 
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Cập nhật thành công!'
+        ]);
     }
 
     /**

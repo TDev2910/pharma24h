@@ -12,8 +12,8 @@ class Supplier extends Model
         'dien_thoai',
         'email',
         'dia_chi',
-        'khu_vuc',
-        'phuong_xa',
+        'khu_vuc',         // Tỉnh/Thành phố
+        'phuong_xa',       // Quận/Huyện  
         'nhom_nha_cung_cap_id',
         'ghi_chu',
         'ten_cong_ty',

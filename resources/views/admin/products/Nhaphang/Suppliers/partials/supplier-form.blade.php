@@ -7,7 +7,7 @@
                 <i></i>Tên nhà cung cấp <span class="text-danger">*</span>
             </label>
             <input type="text" class="form-control" id="ten_nha_cung_cap" name="ten_nha_cung_cap" 
-                   value="{{ old('ten_nha_cung_cap', $supplier->ten_nha_cung_cap ?? '') }}" 
+                   value="{{ old('ten_nha_cung_cap') }}" 
                    required maxlength="255">
             <div class="invalid-feedback"></div>
         </div>
@@ -18,7 +18,7 @@
                 <i></i>Mã nhà cung cấp <span class="text-danger">*</span>
             </label>
             <input type="text" class="form-control" id="ma_nha_cung_cap" name="ma_nha_cung_cap" 
-                   value="{{ old('ma_nha_cung_cap', $supplier->ma_nha_cung_cap ?? '') }}" 
+                   value="{{ old('ma_nha_cung_cap') }}" 
                    required maxlength="50" placeholder="VD: NCC001">
             <div class="form-text">Mã định danh duy nhất trong hệ thống</div>
             <div class="invalid-feedback"></div>
@@ -30,7 +30,7 @@
                 <i></i>Điện thoại <span class="text-danger">*</span>
             </label>
             <input type="text" class="form-control" id="dien_thoai" name="dien_thoai" 
-                   value="{{ old('dien_thoai', $supplier->dien_thoai ?? '') }}" 
+                   value="{{ old('dien_thoai') }}" 
                    required maxlength="20" placeholder="0123 456 789">
             <div class="invalid-feedback"></div>
         </div>
@@ -41,7 +41,7 @@
                 <i></i>Email
             </label>
             <input type="email" class="form-control" id="email" name="email" 
-                   value="{{ old('email', $supplier->email ?? '') }}" 
+                   value="{{ old('email') }}" 
                    maxlength="100" placeholder="supplier@example.com">
             <div class="invalid-feedback"></div>
         </div>
@@ -55,7 +55,7 @@
                 <option value="">-- Chọn nhóm --</option>
                 @foreach($supplierGroups as $group)
                     <option value="{{ $group->id }}" 
-                            {{ old('nhom_nha_cung_cap_id', $supplier->nhom_nha_cung_cap_id ?? '') == $group->id ? 'selected' : '' }}>
+                            {{ old('nhom_nha_cung_cap_id') == $group->id ? 'selected' : '' }}>
                         {{ $group->name }}
                     </option>
                 @endforeach
@@ -72,7 +72,7 @@
                 <i></i>Địa chỉ chi tiết <span class="text-danger">*</span>
             </label>
             <textarea class="form-control" id="dia_chi" name="dia_chi" rows="2" required 
-                      placeholder="Số nhà, đường, phố...">{{ old('dia_chi', $supplier->dia_chi ?? '') }}</textarea>
+                placeholder="Số nhà, đường, phố...">{{ old('dia_chi') }}</textarea>
             <div class="invalid-feedback"></div>
         </div>
 
@@ -87,10 +87,10 @@
             <div class="invalid-feedback"></div>
         </div>
         
-        <!-- Phường/Xã -->
+        <!-- Quận/Huyện -->
         <div class="mb-3">  
             <label for="phuong_xa" class="form-label">
-                <i></i>Phường/Xã <span class="text-danger">*</span>
+                <i></i>Quận/Huyện <span class="text-danger">*</span>
             </label>
             <select class="form-select" id="phuong_xa" name="phuong_xa" required disabled>
                 <option value="">-- Chọn tỉnh/thành trước --</option>
@@ -104,7 +104,7 @@
                 <i></i>Tên công ty (xuất hóa đơn)
             </label>
             <input type="text" class="form-control" id="ten_cong_ty" name="ten_cong_ty" 
-                   value="{{ old('ten_cong_ty', $supplier->ten_cong_ty ?? '') }}" 
+                   value="{{ old('ten_cong_ty') }}" 
                    maxlength="255" placeholder="Công ty TNHH ABC">
             <div class="form-text">Tên chính thức cho việc xuất hóa đơn</div>
             <div class="invalid-feedback"></div>
@@ -116,7 +116,7 @@
                 <i></i>Mã số thuế
             </label>
             <input type="text" class="form-control" id="ma_so_thue" name="ma_so_thue" 
-                   value="{{ old('ma_so_thue', $supplier->ma_so_thue ?? '') }}" 
+                   value="{{ old('ma_so_thue') }}" 
                    maxlength="20" placeholder="0123456789">
             <div class="form-text">MST duy nhất theo pháp luật</div>
             <div class="invalid-feedback"></div>
@@ -132,7 +132,7 @@
                 <i></i>Ghi chú
             </label>
             <textarea class="form-control" id="ghi_chu" name="ghi_chu" rows="3" 
-                      placeholder="Ghi chú bổ sung về nhà cung cấp...">{{ old('ghi_chu', $supplier->ghi_chu ?? '') }}</textarea>
+            placeholder="Ghi chú bổ sung về nhà cung cấp...">{{ old('ghi_chu') }}</textarea>
         </div>
     </div>
 </div>
@@ -142,7 +142,7 @@
     <div class="col-12">
         <div class="form-check">
             <input class="form-check-input" type="checkbox" id="trang_thai" name="trang_thai" value="active" 
-                   {{ old('trang_thai', $supplier->trang_thai ?? 'active') == 'active' ? 'checked' : '' }}>
+                   {{ old('trang_thai', 'active') == 'active' ? 'checked' : '' }}>
             <label class="form-check-label" for="trang_thai">
                 <i></i>Kích hoạt ngay
             </label>
