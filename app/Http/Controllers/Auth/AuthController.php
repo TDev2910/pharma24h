@@ -25,6 +25,12 @@ class AuthController extends Controller
         $validated = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'min:8'],
+        ], [
+            // Custom messages tiếng Việt cho đăng nhập
+            'email.required' => 'Trường email là bắt buộc.',
+            'email.email' => 'Trường email phải là một địa chỉ email hợp lệ.',
+            'password.required' => 'Trường mật khẩu là bắt buộc.',
+            'password.min' => 'Trường mật khẩu phải có ít nhất 8 ký tự.',
         ]);
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->boolean('remember'))) {
@@ -57,12 +63,27 @@ class AuthController extends Controller
     {      
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'], 
-            'email' => ['required', 'email', 'unique:users,email'],
+            'email' => ['required', 'email', 'unique:users,email'], 
             'password' => ['required','string','confirmed','min:8'],
             'address' => ['required','string','max:255'],
             'province' => ['required','string'],
             'district' => ['required','string'],
             'ward' => ['required','string'],
+        ], 
+        
+        //thông báo lỗi xác thực
+        [
+            'name.required' => 'Trường họ và tên là bắt buộc.',
+            'email.required' => 'Trường email là bắt buộc.',
+            'email.email' => 'Trường email phải là một địa chỉ email hợp lệ.',
+            'email.unique' => 'Email đã được sử dụng.',
+            'password.required' => 'Trường mật khẩu là bắt buộc.',
+            'password.min' => 'Trường mật khẩu phải có ít nhất 8 ký tự.',
+            'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
+            'address.required' => 'Trường địa chỉ là bắt buộc.',
+            'province.required' => 'Trường tỉnh/thành phố là bắt buộc.',
+            'district.required' => 'Trường quận/huyện là bắt buộc.',
+            'ward.required' => 'Trường xã/phường là bắt buộc.',
         ]);
 
         // Tạo user mới với role mặc định là 'user'

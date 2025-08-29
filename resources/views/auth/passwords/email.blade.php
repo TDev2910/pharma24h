@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Đăng nhập')
+@section('title', 'Quên Mật Khẩu')
 
 @section('content')
 <div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="login-container">
+    <div class="forgot-password-container">
         <!-- Logo Section -->
         <div class="text-center mb-4">
             <div class="logo-circle">
@@ -13,10 +13,7 @@
         </div>
 
         <!-- Title -->
-        <h2 class="login-title">Đăng nhập vào tài khoản</h2>
-        <p class="login-subtitle">
-            Chào mừng bạn quay trở lại! Vui lòng nhập thông tin của bạn
-        </p>
+        <h2 class="forgot-title">Quên mật khẩu?</h2>
 
         <!-- Error Messages -->
         @if ($errors->any())
@@ -27,59 +24,37 @@
             </div>
         @endif
 
-        <!-- Login Form -->
-        <form method="POST" action="{{ route('login') }}" id="loginForm">
+        <!-- Success Messages -->
+        @if (session('success'))
+            <div class="alert alert-success mb-3">
+                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+            </div>
+        @endif
+
+        <!-- Form -->
+        <form method="POST" action="{{ route('password.email') }}" id="forgotPasswordForm">
             @csrf
             
-            <div class="form-group mb-3">
+            <div class="form-group mb-4">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" 
-                       class="form-control @error('email') is-invalid @enderror" 
-                       id="email" 
-                       name="email" 
-                       value="{{ old('email') }}" 
-                       placeholder="Nhập email"
-                       required 
-                       autocomplete="email"
-                       autofocus>
+                <input 
+                    id="email" 
+                    type="email" 
+                    class="form-control @error('email') is-invalid @enderror" 
+                    name="email" 
+                    value="{{ old('email') }}" 
+                    required 
+                    autocomplete="email" 
+                    autofocus
+                    placeholder=""
+                >
                 @error('email')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
 
-            <div class="form-group mb-3">
-                <label for="password" class="form-label">Mật khẩu</label>
-                <input type="password" 
-                       class="form-control @error('password') is-invalid @enderror" 
-                       id="password" 
-                       name="password" 
-                       placeholder="Nhập mật khẩu"
-                       required 
-                       autocomplete="current-password">
-                @error('password')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <!-- Remember Me & Forgot Password -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="form-check">
-                    <input type="checkbox" 
-                           class="form-check-input" 
-                           id="remember" 
-                           name="remember"
-                           {{ old('remember') ? 'checked' : '' }}>
-                    <label class="form-check-label" for="remember">
-                        Ghi nhớ tôi
-                    </label>
-                </div>
-                <a href="{{ route('password.request') }}" class="forgot-password-link">
-                    Quên mật khẩu?
-                </a>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100 mb-4" id="loginBtn">
-                Đăng nhập
+            <button type="submit" class="btn btn-primary w-100 mb-4">
+                Quên mật khẩu
             </button>
         </form>
 
@@ -89,12 +64,16 @@
                 Không có tài khoản? 
                 <a href="{{ route('register') }}" class="footer-link">Đăng ký</a>
             </p>
+            <p class="footer-text">
+                Đã có tài khoản? 
+                <a href="{{ route('login') }}" class="footer-link">Đăng nhập</a>
+            </p>
         </div>
     </div>
 </div>
 
 <style>
-.login-container {
+.forgot-password-container {
     width: 400px;
     max-width: 90vw;
     padding: 40px;
@@ -123,21 +102,13 @@
 }
 
 /* Title */
-.login-title {
+.forgot-title {
     font-size: 28px;
     font-weight: 600;
     color: #1a1a1a;
     text-align: center;
-    margin-bottom: 16px;
-    letter-spacing: -0.5px;
-}
-
-.login-subtitle {
-    font-size: 14px;
-    color: #6b7280;
-    text-align: center;
     margin-bottom: 32px;
-    line-height: 1.5;
+    letter-spacing: -0.5px;
 }
 
 /* Form Styling */
@@ -175,37 +146,6 @@
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
-/* Remember Me & Forgot Password */
-.form-check {
-    display: flex;
-    align-items: center;
-}
-
-.form-check-input {
-    margin-right: 8px;
-    width: 16px;
-    height: 16px;
-}
-
-.form-check-label {
-    font-size: 14px;
-    color: #374151;
-    cursor: pointer;
-}
-
-.forgot-password-link {
-    font-size: 14px;
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s ease;
-}
-
-.forgot-password-link:hover {
-    color: #5a67d8;
-    text-decoration: none;
-}
-
 /* Button */
 .btn-primary {
     height: 48px;
@@ -225,10 +165,12 @@
     box-shadow: 0 8px 25px rgba(74, 85, 104, 0.3);
 }
 
-.btn-primary:disabled {
-    background: #9ca3af;
-    cursor: not-allowed;
-    transform: none;
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-primary:focus {
+    box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.2);
 }
 
 /* Footer Links */
@@ -264,21 +206,34 @@
     border-left: 4px solid #dc2626;
 }
 
+.alert-success {
+    background: #f0fdf4;
+    color: #16a34a;
+    border-left: 4px solid #16a34a;
+}
+
 .invalid-feedback {
     font-size: 12px;
     color: #ef4444;
     margin-top: 4px;
 }
 
+/* Loading State */
+.btn-primary:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
-    .login-container {
+    .forgot-password-container {
         padding: 24px;
         width: 100%;
         margin: 20px;
     }
     
-    .login-title {
+    .forgot-title {
         font-size: 24px;
         margin-bottom: 24px;
     }
@@ -287,15 +242,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('loginForm');
+    const form = document.getElementById('forgotPasswordForm');
     const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const loginBtn = document.getElementById('loginBtn');
+    const submitBtn = form.querySelector('button[type="submit"]');
     
-    // Auto-focus email input
-    emailInput.focus();
-    
-    // Enhanced email validation
+    // Enhanced form validation
     emailInput.addEventListener('input', function() {
         const email = this.value;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -311,25 +262,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Password validation
-    passwordInput.addEventListener('input', function() {
-        const password = this.value;
-        
-        if (password.length >= 1) {
-            this.classList.remove('is-invalid');
-            this.classList.add('is-valid');
-        } else {
-            this.classList.remove('is-valid', 'is-invalid');
-        }
-    });
-    
     // Form submission with loading state
     form.addEventListener('submit', function(e) {
         const email = emailInput.value.trim();
-        const password = passwordInput.value.trim();
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         
-        // Validation
         if (!email || !emailRegex.test(email)) {
             e.preventDefault();
             emailInput.focus();
@@ -337,24 +274,13 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        if (!password) {
-            e.preventDefault();
-            passwordInput.focus();
-            passwordInput.classList.add('is-invalid');
-            return;
-        }
-        
         // Loading state
-        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang đăng nhập...';
-        loginBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+        submitBtn.disabled = true;
     });
     
-    // Clear validation errors on focus
-    [emailInput, passwordInput].forEach(input => {
-        input.addEventListener('focus', function() {
-            this.classList.remove('is-invalid');
-        });
-    });
+    // Auto-focus and smooth animations
+    emailInput.focus();
 });
 </script>
 @endsection
