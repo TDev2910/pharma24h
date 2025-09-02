@@ -1,6 +1,6 @@
-@extends('layouts.user')
+@extends('layouts.home')
 
-@section('title', 'MediAid - Nhà thuốc trực tuyến')
+@section('title', 'Sức Khỏe 24h - Nhà thuốc trực tuyến')
 
 @section('content')
     {{-- Banner Carousel --}}

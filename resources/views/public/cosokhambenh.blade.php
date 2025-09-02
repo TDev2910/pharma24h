@@ -1,4 +1,4 @@
-@extends('layouts.user')  <!-- Kế thừa từ layout chung, bao gồm header và footer -->
+@extends('layouts.home')  
 
 @section('title', 'Cơ sở khám bệnh')
 
