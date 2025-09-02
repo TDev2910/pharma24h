@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Dashboard - Sức Khỏe 24h</title>
+    <title>Profile Settings - Sức Khỏe 24h</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
@@ -142,134 +142,12 @@
             margin: 0;
         }
 
-        /* Dashboard Content */
-        .dashboard-content {
+        /* Settings Content */
+        .settings-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 40px;
             max-width: 1200px;
-        }
-
-        /* Welcome Section */
-        .welcome-section {
-            margin-bottom: 40px;
-        }
-
-        .welcome-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 16px;
-            padding: 40px;
-            color: white;
-            text-align: center;
-        }
-
-        .welcome-text h2 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .welcome-text p {
-            font-size: 16px;
-            opacity: 0.9;
-            margin: 0;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            transition: all 0.2s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            background: #f1f5f9;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #3b82f6;
-            font-size: 20px;
-        }
-
-        .stat-info h3 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1e293b;
-            margin: 0 0 4px 0;
-        }
-
-        .stat-info p {
-            font-size: 14px;
-            color: #64748b;
-            margin: 0;
-        }
-
-        /* Quick Actions */
-        .quick-actions {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .quick-actions h3 {
-            color: #1e293b;
-            font-weight: 600;
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-
-        .action-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-
-        .action-btn {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            text-decoration: none;
-            color: #374151;
-            transition: all 0.2s ease;
-        }
-
-        .action-btn:hover {
-            background: #f1f5f9;
-            color: #3b82f6;
-            text-decoration: none;
-            transform: translateY(-1px);
-        }
-
-        .action-btn i {
-            font-size: 18px;
-            width: 20px;
-        }
-
-        .action-btn span {
-            font-weight: 500;
-            font-size: 14px;
         }
 
         /* Profile Section */
@@ -499,7 +377,11 @@
             
             <div class="user-info">
                 <div class="user-avatar">
-                    <i class="fas fa-user"></i>
+                    @if($user->avatar ?? false)
+                        <img src="{{ asset('storage/avatars/' . $user->avatar) }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                    @else
+                        <i class="fas fa-user"></i>
+                    @endif
                 </div>
                 <div class="user-details">
                     <h5>{{ $user->name ?? 'User' }}</h5>
@@ -508,13 +390,13 @@
             </div>
 
             <ul class="sidebar-menu">
-                <!-- Dashboard Overview - Active -->
-                <li><a href="{{ route('user.dashboard') }}" class="active">
+                <!-- Dashboard Overview -->
+                <li><a href="{{ route('user.dashboard') }}">
                     <i class="fas fa-tachometer-alt"></i>Dashboard
                 </a></li>
                 
-                <!-- Account Settings -->
-                <li><a href="{{ route('user.profile.settings') }}">
+                <!-- Account Settings - Active -->
+                <li><a href="{{ route('user.profile.settings') }}" class="active">
                     <i class="fas fa-user-cog"></i>Account Settings
                 </a></li>
                 
@@ -556,72 +438,115 @@
         <div class="main-content">
             <!-- Header -->
             <div class="settings-header">
-                <h1>Dashboard</h1>
-                <p>Welcome back! Here's your account overview</p>
+                <h1>Profile Settings</h1>
+                <p>Manage your personal information and account preferences</p>
             </div>
 
-            <!-- Dashboard Content -->
-            <div class="dashboard-content">
-                <!-- Welcome Section -->
-                <div class="welcome-section">
-                    <div class="welcome-card">
-                        <div class="welcome-text">
-                            <h2>Xin chào, {{ $user->name }}! 👋</h2>
-                            <p>Chào mừng bạn quay trở lại với Sức Khỏe 24h</p>
+            <!-- Settings Content -->
+            <div class="settings-content">
+                <!-- Profile Photo Section -->
+                <div class="profile-section">
+                    <div class="profile-photo">
+                        <div class="profile-avatar" id="profileAvatar">
+                            @if($user->avatar ?? false)
+                                <img src="{{ asset('storage/avatars/' . $user->avatar) }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">
+                            @else
+                                <i class="fas fa-user"></i>
+                            @endif
                         </div>
+                        <h5>Your Photo</h5>
+                        <p>This will be displayed on your profile</p>
+                        <div class="photo-buttons">
+                            <button class="btn-upload" onclick="document.getElementById('avatarInput').click()">
+                                <i class="fas fa-camera me-1"></i>Upload New
+                            </button>
+                            <button class="btn-remove" onclick="removeAvatar()">Remove</button>
+                        </div>
+                        <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="handleFileSelect(this)">
                     </div>
                 </div>
 
-                <!-- Quick Stats -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-clipboard-list"></i>
+                <!-- Form Section -->
+                <div class="form-section">
+                    @if(session('success'))
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
                         </div>
-                        <div class="stat-info">
-                            <h3>0</h3>
-                            <p>Đơn hàng</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>0</h3>
-                            <p>Thông báo</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-file-medical"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>1</h3>
-                            <p>Hồ sơ sức khỏe</p>
-                        </div>
-                    </div>
-                </div>
+                    @endif
 
-                <!-- Quick Actions -->
-                <div class="quick-actions">
-                    <h3>Thao tác nhanh</h3>
-                    <div class="action-buttons">
-                        <a href="{{ route('user.profile.settings') }}" class="action-btn">
-                            <i class="fas fa-user-cog"></i>
-                            <span>Cài đặt tài khoản</span>
-                        </a>
-                        <a href="{{ route('user.orders') }}" class="action-btn">
-                            <i class="fas fa-clipboard-list"></i>
-                            <span>Xem đơn hàng</span>
-                        </a>
-                        <a href="{{ route('user.health.profile') }}" class="action-btn">
-                            <i class="fas fa-file-medical"></i>
-                            <span>Hồ sơ sức khỏe</span>
-                        </a>
-                    </div>
+                    @if($errors->any())
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <ul class="mb-0">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <h3 class="section-title">Personal Information</h3>                   
+                    <form method="POST" action="{{ route('user.profile.settings.update') }}">
+                        @csrf
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" name="name" class="form-control" 
+                                   value="{{ old('name', $user->name) }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" name="email" class="form-control" 
+                                   value="{{ old('email', $user->email) }}" required>
+                        </div>
+                        
+                        <div class="form-row">
+                           <div class="form-group">
+                               <label class="form-label">Mobile Number</label>
+                               <input type="text" name="phone" class="form-control" 
+                                      value="{{ old('phone', $user->phone ?? '') }}" placeholder="+84 xxx xxx xxx">
+                           </div>
+                           <div class="form-group">
+                               <label class="form-label">Role</label>
+                               <input type="text" class="form-control" value="{{ ucfirst($user->role ?? 'user') }}" readonly>
+                           </div>
+                       </div>
+
+                       <div class="form-group">
+                           <label class="form-label">Address</label>
+                           <input type="text" name="address" class="form-control" 
+                                  value="{{ old('address', $user->address ?? '') }}" placeholder="Địa chỉ của bạn">
+                       </div>
+
+                        <div style="margin-top: 32px;">
+                            <h3 class="section-title">Change Password</h3>
+                            
+                            <div class="form-row">
+                               <div class="form-group">
+                                   <label class="form-label">Current Password</label>
+                                   <input type="password" name="current_password" class="form-control" placeholder="Nhập mật khẩu hiện tại">
+                               </div>
+                               <div class="form-group">
+                                   <label class="form-label">New Password</label>
+                                   <input type="password" name="new_password" class="form-control" placeholder="Nhập mật khẩu mới">
+                               </div>
+                           </div>
+                           
+                           <div class="form-group">
+                               <label class="form-label">Confirm New Password</label>
+                               <input type="password" name="new_password_confirmation" class="form-control" placeholder="Nhập lại mật khẩu mới">
+                           </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-3 mt-4">
+                            <a href="{{ route('user.dashboard') }}" class="btn-secondary">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn-primary">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -651,6 +576,96 @@
                     link.classList.add('active');
                 }
             });
+        }
+
+        // ===== AVATAR UPLOAD MANAGEMENT =====
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            if (file) {
+                if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                    showAlert('Kích thước file phải nhỏ hơn 10MB', 'error');
+                    return;
+                }
+                
+                if (!file.type.startsWith('image/')) {
+                    showAlert('Vui lòng chọn file hình ảnh', 'error');
+                    return;
+                }
+                
+                uploadAvatar(file);
+            }
+        }
+
+        function uploadAvatar(file) {
+            const formData = new FormData();
+            formData.append('avatar', file);
+            formData.append('_token', '{{ csrf_token() }}');
+            
+            const avatar = document.getElementById('profileAvatar');
+            avatar.classList.add('uploading');
+            
+            fetch('{{ route("user.upload.avatar") }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update avatar display
+                    avatar.innerHTML = `<img src="${data.avatar_url}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">`;
+                    showAlert('Cập nhật ảnh đại diện thành công!', 'success');
+                } else {
+                    showAlert(data.message || 'Tải ảnh lên thất bại', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('Tải ảnh lên thất bại', 'error');
+            })
+            .finally(() => {
+                avatar.classList.remove('uploading');
+            });
+        }
+
+        function removeAvatar() {
+            if (!confirm('Bạn có chắc chắn muốn xóa ảnh đại diện?')) {
+                return;
+            }
+            
+            fetch('{{ route("user.remove.avatar") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('profileAvatar').innerHTML = '<i class="fas fa-user"></i>';
+                    showAlert('Xóa ảnh đại diện thành công!', 'success');
+                } else {
+                    showAlert(data.message || 'Xóa ảnh thất bại', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('Xóa ảnh thất bại', 'error');
+            });
+        }
+
+        // Alert function
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
+            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}`;
+            
+            const formSection = document.querySelector('.form-section');
+            formSection.insertBefore(alertDiv, formSection.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
         }
     </script>
 </body>

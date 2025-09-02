@@ -51,7 +51,7 @@
                                     <div class="text-muted" style="font-size: 13px;">{{ Auth::user()->email }}</div>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{ route('user.dashboard') }}">
+                                    <a class="dropdown-item" href="{{ route('user.profile.settings') }}">
                                         <i class="fas fa-cog me-2"></i>Account Settings
                                     </a>
                                 </li>
@@ -68,7 +68,7 @@
                     @else
                         <!-- Nếu chưa đăng nhập -->
                         <a href="{{ route('login') }}" class="action-link me-3">
-                            <i class="fas fa-user"></i>
+                            <i class="fas fa-user"></i> 
                         </a>
                     @endauth
 

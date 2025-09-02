@@ -13,13 +13,25 @@ class DashboardController extends Controller
     /**
      * Hiển thị dashboard chính của user
      */
+     
     public function index(Request $request)
+    {      
+        $user = Auth::user();
+        return view('user.dashboard.index', compact('user'));
+    }
+
+    public function profileSettings()
+    {
+        $user = Auth::user();
+        return view('user.profile.profile-settings', compact('user'));
+    }
+
+    public function updateProfileSettings(Request $request)
     {
         $user = Auth::user();
         
         // Xử lý cập nhật thông tin cá nhân
-        if ($request->isMethod('post')) {
-            $validatedData = $request->validate([
+        $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $user->id,
                 'phone' => 'nullable|string|max:20',
@@ -33,44 +45,33 @@ class DashboardController extends Controller
                 'email.unique' => 'Email này đã được sử dụng',
                 'new_password.min' => 'Mật khẩu mới phải có ít nhất 6 ký tự',
                 'new_password.confirmed' => 'Xác nhận mật khẩu không khớp',
+        ]);
+
+        try {
+            // Cập nhật thông tin cơ bản
+            $user->update([
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'phone' => $validatedData['phone'],
+                'address' => $validatedData['address'],
             ]);
 
-            try {
-                // Cập nhật thông tin cơ bản
-                $user->update([
-                    'name' => $validatedData['name'],
-                    'email' => $validatedData['email'],
-                    'phone' => $validatedData['phone'],
-                    'address' => $validatedData['address'],
-                ]);
-
-                // Cập nhật mật khẩu nếu có
-                if ($request->filled('current_password') && $request->filled('new_password')) {
-                    if (!\Hash::check($request->current_password, $user->password)) {
-                        return back()->withErrors(['current_password' => 'Mật khẩu hiện tại không đúng']);
-                    }
-                    
-                    $user->update(['password' => \Hash::make($request->new_password)]);
+            // Cập nhật mật khẩu nếu có
+            if ($request->filled('current_password') && $request->filled('new_password')) {
+                if (!\Hash::check($request->current_password, $user->password)) {
+                    return back()->withErrors(['current_password' => 'Mật khẩu hiện tại không đúng']);
                 }
-
-                return back()->with('success', 'Cập nhật thông tin thành công!');
                 
-            } catch (\Exception $e) {
-                return back()->withErrors(['error' => 'Có lỗi xảy ra: ' . $e->getMessage()]);
+                $user->update(['password' => \Hash::make($request->new_password)]);
             }
+
+            return back()->with('success', 'Cập nhật thông tin thành công!');
+            
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Có lỗi xảy ra: ' . $e->getMessage()]);
         }
-        
-        return view('user.dashboard.index', compact('user'));
     }
 
-    /**
-     * Hiển thị trang giỏ hàng của user
-     */
-    public function cart()
-    {
-        $user = Auth::user();
-        return view('user.cart.index', compact('user'));
-    }
 
     /**
      * Hiển thị trang đơn hàng của user
@@ -78,7 +79,30 @@ class DashboardController extends Controller
     public function orders()
     {
         $user = Auth::user();
-        return view('user.orders.index', compact('user'));
+        // TODO: Lấy danh sách đơn hàng của user
+        // $orders = $user->orders()->latest()->get();
+        return view('user.dashboard.orders', compact('user'));
+    }
+
+    /**
+     * Hiển thị hồ sơ sức khỏe của user
+     */
+    public function healthProfile()
+    {
+        $user = Auth::user();
+        // TODO: Lấy thông tin sức khỏe của user
+        return view('user.dashboard.health-profile', compact('user'));
+    }
+
+    /**
+     * Hiển thị thông báo của users
+     */
+    public function notifications()
+    {
+        $user = Auth::user();
+        // TODO: Lấy danh sách thông báo của user
+        // $notifications = $user->notifications()->latest()->get();
+        return view('user.dashboard.notifications', compact('user'));
     }
 
     /**
@@ -123,7 +147,7 @@ class DashboardController extends Controller
 
 
     /**
-     * Remove avatar
+     * xóa ảnh
      */
     public function removeAvatar()
     {
