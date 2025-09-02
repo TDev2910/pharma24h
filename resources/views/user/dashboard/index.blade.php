@@ -1,657 +1,206 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Dashboard - Sức Khỏe 24h</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@extends('layouts.user')
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc;
-            min-height: 100vh;
-        }
+@section('title', 'Dashboard')
+@section('page-title', 'Dashboard')
+@section('page-description', 'Welcome back! Here\'s your account overview')
 
-        .settings-container {
-            display: flex;
-            min-height: 100vh;
-        }
+@push('styles')
+<style>
+    /* Dashboard Content */
+    .dashboard-content {
+        max-width: 1200px;
+    }
 
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            background: white;
-            border-right: 1px solid #e2e8f0;
-            padding: 30px 0;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
+    /* Welcome Section */
+    .welcome-section {
+        margin-bottom: 40px;
+    }
 
-        .sidebar-header {
-            padding: 0 30px 30px;
-            border-bottom: 1px solid #e2e8f0;
-            margin-bottom: 30px;
-        }
+    .welcome-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 16px;
+        padding: 40px;
+        color: white;
+        text-align: center;
+    }
 
-        .sidebar-header h3 {
-            color: #1e293b;
-            font-weight: 700;
-            font-size: 24px;
-        }
+    .welcome-text h2 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            padding: 0 30px 20px;
-            margin-bottom: 20px;
-        }
+    .welcome-text p {
+        font-size: 16px;
+        opacity: 0.9;
+        margin: 0;
+    }
 
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-            margin-right: 15px;
-        }
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
 
-        .user-details h5 {
-            margin: 0;
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 14px;
-        }
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: all 0.2s ease;
+    }
 
-        .user-details small {
-            color: #64748b;
-            font-size: 12px;
-        }
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
 
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-        }
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        background: #f1f5f9;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #3b82f6;
+        font-size: 20px;
+    }
 
-        .sidebar-menu li {
-            margin-bottom: 2px;
-        }
+    .stat-info h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0 0 4px 0;
+    }
 
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            padding: 12px 30px;
-            color: #64748b;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            font-size: 14px;
-            font-weight: 500;
-        }
+    .stat-info p {
+        font-size: 14px;
+        color: #64748b;
+        margin: 0;
+    }
 
-        .sidebar-menu a:hover,
-        .sidebar-menu a.active {
-            background: #f1f5f9;
-            color: #3b82f6;
-        }
+    /* Quick Actions */
+    .quick-actions {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        border: 1px solid #e2e8f0;
+    }
 
-        .sidebar-menu a i {
-            width: 20px;
-            margin-right: 12px;
-            font-size: 16px;
-        }
+    .quick-actions h3 {
+        color: #1e293b;
+        font-weight: 600;
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
 
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
-            padding: 40px;
-        }
+    .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+    }
 
-        .settings-header {
-            margin-bottom: 40px;
-        }
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #374151;
+        transition: all 0.2s ease;
+    }
 
-        .settings-header h1 {
-            color: #1e293b;
-            font-weight: 700;
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
+    .action-btn:hover {
+        background: #f1f5f9;
+        color: #3b82f6;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
 
-        .settings-header p {
-            color: #64748b;
-            font-size: 16px;
-            margin: 0;
-        }
+    .action-btn i {
+        font-size: 18px;
+        width: 20px;
+    }
 
-        /* Dashboard Content */
-        .dashboard-content {
-            max-width: 1200px;
-        }
+    .action-btn span {
+        font-weight: 500;
+        font-size: 14px;
+    }
+</style>
+@endpush
 
-        /* Welcome Section */
-        .welcome-section {
-            margin-bottom: 40px;
-        }
-
-        .welcome-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 16px;
-            padding: 40px;
-            color: white;
-            text-align: center;
-        }
-
-        .welcome-text h2 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .welcome-text p {
-            font-size: 16px;
-            opacity: 0.9;
-            margin: 0;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            transition: all 0.2s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            background: #f1f5f9;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #3b82f6;
-            font-size: 20px;
-        }
-
-        .stat-info h3 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1e293b;
-            margin: 0 0 4px 0;
-        }
-
-        .stat-info p {
-            font-size: 14px;
-            color: #64748b;
-            margin: 0;
-        }
-
-        /* Quick Actions */
-        .quick-actions {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .quick-actions h3 {
-            color: #1e293b;
-            font-weight: 600;
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-
-        .action-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-
-        .action-btn {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            text-decoration: none;
-            color: #374151;
-            transition: all 0.2s ease;
-        }
-
-        .action-btn:hover {
-            background: #f1f5f9;
-            color: #3b82f6;
-            text-decoration: none;
-            transform: translateY(-1px);
-        }
-
-        .action-btn i {
-            font-size: 18px;
-            width: 20px;
-        }
-
-        .action-btn span {
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        /* Profile Section */
-        .profile-section {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid #e2e8f0;
-            height: fit-content;
-        }
-
-        .profile-photo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .profile-avatar {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            color: white;
-            position: relative;
-        }
-
-        .profile-photo h5 {
-            color: #1e293b;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .profile-photo p {
-            color: #64748b;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        .photo-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .btn-upload {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-upload:hover {
-            background: #2563eb;
-        }
-
-        .btn-remove {
-            background: transparent;
-            color: #ef4444;
-            border: none;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-remove:hover {
-            background: #fef2f2;
-            border-radius: 8px;
-        }
-
-        /* Loading states */
-        .uploading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-
-        /* Form Section */
-        .form-section {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .section-title {
-            color: #1e293b;
-            font-weight: 600;
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-label {
-            display: block;
-            color: #374151;
-            font-weight: 500;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.2s ease;
-            background: #ffffff;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary:hover {
-            background: #2563eb;
-        }
-
-        .btn-secondary {
-            background: #f8fafc;
-            color: #64748b;
-            border: 1px solid #e2e8f0;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-secondary:hover {
-            background: #f1f5f9;
-            color: #475569;
-            text-decoration: none;
-        }
-
-        .alert {
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            font-size: 14px;
-        }
-
-        .alert-success {
-            background: #f0fdf4;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-
-        .alert-danger {
-            background: #fef2f2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .settings-content {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-            
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-            
-            .settings-header h1 {
-                font-size: 24px;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="settings-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h3><i class="fas fa-heartbeat me-2"></i>Sức Khỏe 24h</h3>
-            </div>
-            
-            <div class="user-info">
-                <div class="user-avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="user-details">
-                    <h5>{{ $user->name ?? 'User' }}</h5>
-                    <small>{{ $user->email ?? 'user@example.com' }}</small>
+@section('content')
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="welcome-card">
+                <div class="welcome-text">
+                    <h2>Xin chào, {{ $user->name }}! 👋</h2>
+                    <p>Chào mừng bạn quay trở lại với Sức Khỏe 24h</p>
                 </div>
             </div>
-
-            <ul class="sidebar-menu">
-                <!-- Dashboard Overview - Active -->
-                <li><a href="{{ route('user.dashboard') }}" class="active">
-                    <i class="fas fa-tachometer-alt"></i>Dashboard
-                </a></li>
-                
-                <!-- Account Settings -->
-                <li><a href="{{ route('user.profile.settings') }}">
-                    <i class="fas fa-user-cog"></i>Account Settings
-                </a></li>
-                
-                <!-- Đơn hàng của tôi -->
-                <li><a href="{{ route('user.orders') }}">
-                    <i class="fas fa-clipboard-list"></i>Đơn hàng
-                </a></li>
-                
-                <!-- Hồ sơ sức khỏe -->
-                <li><a href="{{ route('user.health.profile') }}">
-                    <i class="fas fa-file-medical"></i>Hồ sơ sức khỏe
-                </a></li>
-                
-                <!-- Thông báo -->
-                <li><a href="{{ route('user.notifications') }}">
-                    <i class="fas fa-bell"></i>Thông báo
-                </a></li>
-                
-                <!-- Divider -->
-                <li style="margin: 20px 0; border-top: 1px solid #e2e8f0;"></li>
-                
-                <!-- Trang chủ -->
-                <li><a href="{{ route('home') }}">
-                    <i class="fas fa-home"></i>Trang chủ
-                </a></li>
-                
-                <!-- Đăng xuất -->
-                <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <i class="fas fa-sign-out-alt"></i>Đăng xuất
-                </a></li>
-            </ul>
-            
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-            </form>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Header -->
-            <div class="settings-header">
-                <h1>Dashboard</h1>
-                <p>Welcome back! Here's your account overview</p>
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>0</h3>
+                    <p>Đơn hàng</p>
+                </div>
             </div>
-
-            <!-- Dashboard Content -->
-            <div class="dashboard-content">
-                <!-- Welcome Section -->
-                <div class="welcome-section">
-                    <div class="welcome-card">
-                        <div class="welcome-text">
-                            <h2>Xin chào, {{ $user->name }}! 👋</h2>
-                            <p>Chào mừng bạn quay trở lại với Sức Khỏe 24h</p>
-                        </div>
-                    </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-bell"></i>
                 </div>
-
-                <!-- Quick Stats -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-clipboard-list"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>0</h3>
-                            <p>Đơn hàng</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>0</h3>
-                            <p>Thông báo</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-file-medical"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>1</h3>
-                            <p>Hồ sơ sức khỏe</p>
-                        </div>
-                    </div>
+                <div class="stat-info">
+                    <h3>0</h3>
+                    <p>Thông báo</p>
                 </div>
-
-                <!-- Quick Actions -->
-                <div class="quick-actions">
-                    <h3>Thao tác nhanh</h3>
-                    <div class="action-buttons">
-                        <a href="{{ route('user.profile.settings') }}" class="action-btn">
-                            <i class="fas fa-user-cog"></i>
-                            <span>Cài đặt tài khoản</span>
-                        </a>
-                        <a href="{{ route('user.orders') }}" class="action-btn">
-                            <i class="fas fa-clipboard-list"></i>
-                            <span>Xem đơn hàng</span>
-                        </a>
-                        <a href="{{ route('user.health.profile') }}" class="action-btn">
-                            <i class="fas fa-file-medical"></i>
-                            <span>Hồ sơ sức khỏe</span>
-                        </a>
-                    </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-file-medical"></i>
                 </div>
+                <div class="stat-info">
+                    <h3>1</h3>
+                    <p>Hồ sơ sức khỏe</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3>Thao tác nhanh</h3>
+            <div class="action-buttons">
+                <a href="{{ route('user.profile.settings') }}" class="action-btn">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Cài đặt tài khoản</span>
+                </a>
+                <a href="{{ route('user.orders') }}" class="action-btn">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Xem đơn hàng</span>
+                </a>
+                <a href="{{ route('user.health.profile') }}" class="action-btn">
+                    <i class="fas fa-file-medical"></i>
+                    <span>Hồ sơ sức khỏe</span>
+                </a>
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        // ===== SIDEBAR NAVIGATION MANAGEMENT =====
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set active navigation based on current URL
-            setActiveNavigation();
-        });
-
-        function setActiveNavigation() {
-            const currentPath = window.location.pathname;
-            const navLinks = document.querySelectorAll('.sidebar-menu a');
-            
-            // Remove all active classes
-            navLinks.forEach(link => link.classList.remove('active'));
-            
-            // Set active based on current path
-            navLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href && (currentPath === href || currentPath.includes(href))) {
-                    link.classList.add('active');
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+@endsection

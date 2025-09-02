@@ -12,8 +12,8 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- User CSS -->
-    <link href="{{ asset('css/user.css') }}" rel="stylesheet">
+    <!-- Home CSS -->
+    <link href="{{ asset('css/home.css') }}" rel="stylesheet">
     
     @stack('styles')
 </head>

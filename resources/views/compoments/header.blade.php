@@ -42,8 +42,8 @@
                     @auth
                         <!-- Dropdown User Icon -->
                         <div class="dropdown">
-                            <a href="#" class="action-link me-3 dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user"></i>
+                                        <a href="#" class="action-link me-3 dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-user"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li class="px-3 py-2 border-bottom">

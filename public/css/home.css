@@ -1,0 +1,493 @@
+/* HOME.CSS - CSS cho trang công khai (header, footer, public pages) */
+
+/* Header */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    padding-top: 80px; 
+}
+
+/* Header MediAid */
+.mediaid-header {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    z-index: 1050;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.mediaid-header .navbar {
+    padding: 1rem 0;
+    background: white !important;
+}
+
+.mediaid-header .navbar.sticky-top {
+    position: sticky !important;
+    top: 0;
+    z-index: 1030;
+    background: #fff;
+}
+
+/* Brand Logo */
+.brand-container {
+    display: flex;
+    align-items: center;
+}
+
+.brand-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1976d2;
+    margin: 0;
+}
+
+/* Navigation */
+.navbar-nav .nav-link {
+    color: #333 !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #1976d2 !important;
+}
+
+.navbar-nav .nav-link:hover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 1rem;
+    right: 1rem;
+    height: 2px;
+    background: #1976d2;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        width: 0;
+        left: 50%;
+        right: 50%;
+    }
+    to {
+        width: auto;
+        left: 1rem;
+        right: 1rem;
+    }
+}
+
+/* Search */
+.search-form {
+    width: 350px;
+}
+
+.search-container {
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    border: 2px solid #e0e6ed;
+    border-radius: 25px;
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    width: 100%;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #1976d2;
+    background: white;
+    box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.25);
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 0.9rem;
+    z-index: 10;
+}
+
+.user-actions {
+    gap: 0.5rem;
+}
+
+.action-link {
+    color: #333;
+    text-decoration: none;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.action-link:hover {
+    color: #1976d2;
+    background: rgba(25, 118, 210, 0.1);
+}
+
+.action-link i {
+    font-size: 1.1rem;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    border: 2px solid white;
+}
+
+/* Mobile */
+.navbar-toggler {
+    border: none !important;
+    padding: 0.25rem !important;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none !important;
+}
+
+/* Offcanvas Mobile Menu */
+.offcanvas-header {
+    border-bottom: 1px solid #e0e6ed;
+    padding: 1.5rem;
+}
+
+.offcanvas-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1976d2;
+}
+
+.offcanvas-body {
+    padding: 1.5rem;
+}
+
+.offcanvas .nav-link {
+    padding: 0.75rem 0 !important;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333 !important;
+    font-weight: 500;
+}
+
+.offcanvas .nav-link:hover {
+    color: #1976d2 !important;
+    background: rgba(25, 118, 210, 0.05);
+    padding-left: 0.5rem !important;
+}
+
+/* FOOTER */
+.footer-section {
+    margin-top: 0;
+    background: #fff;
+    border-top: 1px solid #e0e6ed;
+    width: 100vw;
+    overflow-x: hidden;
+}
+
+.footer-bottom {
+    border-top: 1px solid #e0e6ed;
+    padding: 0.75rem 0;
+    background: #f9fafd;
+    margin-top: 0;
+}
+
+.footer-brand .brand-text {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1976d2;
+}
+
+.contact-section, .map-container {
+    height: 100%;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.contact-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.contact-item, .store-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.4rem;
+    font-size: 1rem;
+}
+
+.contact-link {
+    color: #1976d2;
+    text-decoration: none;
+    margin-left: 0.5rem;
+    word-break: break-all;
+}
+
+.contact-link:hover {
+    text-decoration: underline;
+}
+
+.store-info {
+    margin-left: 0.5rem;
+}
+
+.footer-links a {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-right: 1.2rem;
+    transition: color 0.3s;
+}
+
+.footer-links a:last-child {
+    margin-right: 0;
+}
+
+.footer-links a:hover {
+    color: #1976d2;
+}
+
+/* Đảm bảo không bị kéo ngang */
+html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+/* Responsive cho footer */
+@media (max-width: 991.98px) {
+    .footer-section .container-fluid > .row > div {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    .contact-section, .map-container {
+        min-height: 180px;
+        padding: 1rem 0.5rem !important;
+    }
+    .map-container iframe {
+        width: 100% !important;
+        height: 180px !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .footer-brand .brand-text {
+        font-size: 1.2rem;
+    }
+    .footer-bottom {
+        text-align: center;
+    }
+    .footer-bottom .col-md-6 {
+        text-align: center !important;
+        margin-top: 0.5rem;
+    }
+    .footer-links a {
+        display: inline-block;
+        margin-bottom: 0.3rem;
+    }
+    .map-container iframe {
+        width: 100% !important;
+        height: 140px !important;
+    }
+    .map-container {
+        height: 140px !important;
+        min-height: 140px !important;
+    }
+    .contact-section {
+        padding: 1rem !important;
+    }
+}
+
+/* Đảm bảo footer luôn sát đáy nếu nội dung ít */
+html, body {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.main-content {
+    flex: 1 0 auto;
+}
+.footer-section {
+    flex-shrink: 0;
+}
+
+/* Responsive chỉnh lại footer cho mobile */
+@media (max-width: 767.98px) {
+    .footer-bottom {
+        text-align: center;
+    }
+    .footer-bottom .col-md-6:last-child {
+        margin-top: 0.5rem;
+    }
+}
+
+/* Floating Contacts - nhỏ hơn */
+.floating-contacts {
+    position: fixed;
+    right: 20px;
+    bottom: 80px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.floating-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.floating-zalo {
+    background: #0180c7;
+}
+
+.floating-facebook {
+    background: #1877f2;
+}
+
+.floating-btn:hover {
+    transform: scale(1.1);
+    color: #fff;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes pulse-phone {
+    0%, 100% {
+        box-shadow: 0 3px 15px rgba(40, 167, 69, 0.4);
+    }
+    50% {
+        box-shadow: 0 3px 20px rgba(40, 167, 69, 0.7);
+        transform: scale(1.05);
+    }
+}
+
+/* Back to Top - nhỏ hơn */
+.btn-back-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    font-size: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+
+.btn-back-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.btn-back-top:hover {
+    background: #1565c0;
+    transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 991.98px) {
+    .map-container {
+        height: 220px;
+        min-height: 220px;
+    }
+    
+    #googleMap {
+        min-height: 220px;
+    }
+    
+    .contact-section {
+        min-height: auto;
+        padding: 1.5rem 1rem !important;
+    }
+    
+    .floating-contacts {
+        right: 15px;
+        bottom: 70px;
+    }
+    
+    .floating-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .map-container {
+        height: 180px;
+        min-height: 180px;
+    }
+    
+    #googleMap {
+        min-height: 180px;
+    }
+    
+    .footer-brand .brand-text {
+        font-size: 1.2rem;
+    }
+    
+    .contact-section {
+        padding: 1rem !important;
+    }
+    
+    .store-item,
+    .contact-item {
+        margin-bottom: 0.4rem;
+    }
+    
+    .footer-bottom {
+        text-align: center;
+    }
+    
+    .footer-bottom .col-md-6:last-child {
+        margin-top: 0.5rem;
+    } 
+}
