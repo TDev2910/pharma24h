@@ -25,8 +25,10 @@ class AuthController extends Controller
         $validated = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'min:8'],
-        ], [
-            // Custom messages tiếng Việt cho đăng nhập
+        ], 
+
+        //thông báo lỗi xác thực
+        [
             'email.required' => 'Trường email là bắt buộc.',
             'email.email' => 'Trường email phải là một địa chỉ email hợp lệ.',
             'password.required' => 'Trường mật khẩu là bắt buộc.',
@@ -36,7 +38,7 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->boolean('remember'))) {
             $user = Auth::user();
             
-            // Sửa lại kiểm tra role trực tiếp
+            // kiểm tra role trực tiếp
             if ($user->role === 'admin') {
                 return redirect('/admin/admindashboard')->with('success', 'Chào mừng Admin!');
             }          

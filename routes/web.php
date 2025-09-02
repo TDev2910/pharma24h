@@ -3,13 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\HomeController;
 
-
-// Trang chủ
-Route::get('/', function () {
-    return view('user.home');
-})->name('home');
+// 🌐 PUBLIC ROUTES
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/co-so-kham-benh', [HomeController::class, 'cosokhambenh'])->name('cosokhambenh');
+Route::get('/products', [HomeController::class, 'products'])->name('products');
+Route::get('/about', [HomeController::class, 'about'])->name('about');
+Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
 // Auth routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -23,57 +24,20 @@ Route::get('/logout', [AuthController::class, 'logout']);
 
 // Forgot Password Routes
 Route::prefix('password')->name('password.')->group(function () {
-    // Hiển thị form nhập email
     Route::get('/reset', [ForgotPasswordController::class, 'showEmailForm'])->name('request');
-    
-    // Xử lý gửi OTP
     Route::post('/email', [ForgotPasswordController::class, 'sendOtp'])->name('email');
-    
-    // Hiển thị form nhập OTP
     Route::get('/verify', [ForgotPasswordController::class, 'showVerifyForm'])->name('verify');
-    
-    // Xác thực OTP
     Route::post('/verify', [ForgotPasswordController::class, 'verifyOtp'])->name('verify.post');
-    
-    // Hiển thị form đặt lại mật khẩu
     Route::get('/reset-password', [ForgotPasswordController::class, 'showResetForm'])->name('reset');
-    
-    // Xử lý đặt lại mật khẩu
     Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('reset.post');
 });
 
-// Các route khác cho user
-Route::get('co-so-kham-benh', function () {
-    return view('user.cosokhambenh');
-});
+// Include user routes
+require __DIR__.'/user.php';
 
-
-Route::get('/products', function () {
-    return view('user.products');
-})->name('products');
-
-Route::get('/cart', function () {
-    return view('user.cart');
-})->name('cart');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', function () {
-        return view('user.profile');
-    })->name('profile');
-    
-    Route::get('/orders', function () {
-        return view('user.orders');
-    })->name('orders');
-});
-
-// Route cho admin dashboard, dùng middleware kiểm tra admin
-Route::middleware(['auth', 'admin'])->group(function () {
+// Admin routes
+Route::middleware(['auth', 'admin'])->group(function () {   
     Route::get('/admin/admindashboard', function () {
         return view('admin.admindashboard');
     })->name('admin.dashboard');    
 });
-
-
-
-
-

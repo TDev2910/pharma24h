@@ -51,7 +51,7 @@
                                     <div class="text-muted" style="font-size: 13px;">{{ Auth::user()->email }}</div>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="/profile">
+                                    <a class="dropdown-item" href="{{ route('user.dashboard') }}">
                                         <i class="fas fa-cog me-2"></i>Account Settings
                                     </a>
                                 </li>
