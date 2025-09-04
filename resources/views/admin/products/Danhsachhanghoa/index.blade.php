@@ -207,8 +207,8 @@
                                                 </div>
                                             </td>
                                             <td><span class="product-abbreviation">{{ $medicine->ten_viet_tat ?? 'N/A' }}</span></td>
-                                            <td>{{ number_format($medicine->gia_ban ?? 0) }} VNĐ</td>
-                                            <td>{{ number_format($medicine->gia_von ?? 0) }} VNĐ</td>
+                                            <td>{{ $medicine->gia_ban_formatted ?? '0 VND' }}</td>
+                                            <td>{{ $medicine->gia_von_formatted ?? '0 VND' }}</td>
                                         <td>{{ $medicine->ton_thap_nhat ?? 0 }}</td>
                                         <td>{{ $medicine->created_at ? $medicine->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
                                         </tr>
@@ -280,11 +280,11 @@
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td><strong>Giá vốn</strong></td>
-                                                                                                    <td id="productDetailCostLarge-{{ $medicine->id }}">{{ number_format($medicine->gia_von ?? 0) }} VNĐ</td>
+                                                                                                    <td id="productDetailCostLarge-{{ $medicine->id }}">{{ $medicine->gia_von_formatted ?? '0 VND' }}</td>
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td><strong>Giá bán</strong></td>
-                                                                                                    <td class="text-success" id="productDetailPriceLarge-{{ $medicine->id }}">{{ number_format($medicine->gia_ban ?? 0) }} VNĐ</td>
+                                                                                                    <td class="text-success" id="productDetailPriceLarge-{{ $medicine->id }}">{{ $medicine->gia_ban_formatted ?? '0 VND' }}</td>
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td><strong>Tên viết tắt</strong></td>
@@ -486,8 +486,8 @@
                                                 </div>
                                             </td>
                                             <td><span class="product-abbreviation">{{ $good->don_vi_tinh ?? 'N/A' }}</span></td>
-                                            <td>{{ number_format($good->gia_ban ?? 0) }} VNĐ</td>
-                                            <td>{{ number_format($good->gia_von ?? 0) }} VNĐ</td>
+                                            <td>{{ $good->gia_ban_formatted ?? '0 VND' }}</td>
+                                            <td>{{ $good->gia_von_formatted ?? '0 VND' }}</td>
                                             <td>{{ $good->ton_kho ?? 0 }}</td>
                                             <td>{{ $good->created_at ? $good->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
                                         </tr>
@@ -559,11 +559,11 @@
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td><strong>Giá vốn</strong></td>
-                                                                                                    <td id="productDetailCostLarge-goods-{{ $good->id }}">{{ number_format($good->gia_von ?? 0) }} VNĐ</td>
+                                                                                                    <td id="productDetailCostLarge-goods-{{ $good->id }}">{{ $good->gia_von_formatted ?? '0 VND' }}</td>
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td><strong>Giá bán</strong></td>
-                                                                                                    <td class="text-success" id="productDetailPriceLarge-goods-{{ $good->id }}">{{ number_format($good->gia_ban ?? 0) }} VNĐ</td>
+                                                                                                    <td class="text-success" id="productDetailPriceLarge-goods-{{ $good->id }}">{{ $good->gia_ban_formatted ?? '0 VND' }}</td>
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td><strong>Đơn vị tính</strong></td>
@@ -755,7 +755,7 @@
                                                 </div>
                                             </td>
                                             <td><span class="product-abbreviation">{{ $service->hinh_thuc == 'tai_nha_thuoc' ? 'Tại NT' : 'Tại nhà' }}</span></td>
-                                            <td>{{ number_format($service->gia_dich_vu ?? 0) }} VNĐ</td>
+                                            <td>{{ $service->formatted_price ?? '0 VND' }}</td>
                                             <td>-</td>
                                             <td>
                                                 <span class="badge {{ $service->trang_thai == 'kich_hoat' ? 'bg-success' : ($service->trang_thai == 'tam_ngung' ? 'bg-warning' : 'bg-secondary') }}">
@@ -830,7 +830,7 @@
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td><strong>Chi phí thực hiện</strong></td>
-                                                                                                    <td class="text-success" id="serviceDetailPriceLarge-{{ $service->id }}">{{ number_format($service->gia_dich_vu ?? 0) }} VNĐ</td>
+                                                                                                    <td class="text-success" id="serviceDetailPriceLarge-{{ $service->id }}">{{ $service->formatted_price ?? '0 VND' }}</td>
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td><strong>Hình thức</strong></td>

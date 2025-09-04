@@ -42,12 +42,12 @@
             <ul class="sidebar-menu">
                 <!-- Dashboard Overview -->
                 <li><a href="{{ route('user.dashboard') }}" class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-tachometer-alt"></i>Dashboard
+                    <i class="fas fa-tachometer-alt"></i>Tổng quan
                 </a></li>
                 
                 <!-- Account Settings -->
                 <li><a href="{{ route('user.profile.settings') }}" class="{{ request()->routeIs('user.profile.settings') ? 'active' : '' }}">
-                    <i class="fas fa-user-cog"></i>Account Settings
+                    <i class="fas fa-user-cog"></i>Cài đặt hồ sơ
                 </a></li>
                 
                 <!-- Đơn hàng của tôi -->

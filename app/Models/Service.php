@@ -71,7 +71,7 @@ class Service extends Model
      */
     public function getFormattedPriceAttribute()
     {
-        return number_format($this->gia_dich_vu, 0, ',', '.') . ' đ';
+        return number_format($this->gia_dich_vu, 0, ',', '.') . ' VND';
     }
     
     /**

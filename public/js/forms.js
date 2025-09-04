@@ -1078,11 +1078,27 @@ document.addEventListener('DOMContentLoaded', function() {
         serviceTypeSelect.addEventListener('change', updateEstimatedTime);
     }
     
-    // Format price inputs
-    const priceInputs = document.querySelectorAll('input[name="gia_ban"]');
+    // Format price inputs - Apply to both gia_ban and gia_von for consistency
+    const priceInputs = document.querySelectorAll('input[name="gia_ban"], input[name="gia_von"]');
     priceInputs.forEach(input => {
+        // Format existing value on load (edit forms)
+        if (input.value && /\d/.test(input.value)) {
+            formatServicePrice(input);
+        }
+
+        // Format while typing
         input.addEventListener('input', function() {
             formatServicePrice(this);
+        });
+    });
+
+    // Before submitting any form, strip separators to store plain numbers in DB
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function() {
+            const scopedPriceInputs = form.querySelectorAll('input[name="gia_ban"], input[name="gia_von"]');
+            scopedPriceInputs.forEach(i => {
+                i.value = (i.value || '').replace(/[^\d]/g, '');
+            });
         });
     });
 });

@@ -74,8 +74,8 @@
                                     {{ $good->ton_kho ?? 0 }}
                                 </span>
                             </td> --}}
-                            <td>{{ number_format($good->gia_von) }} VNĐ</td>
-                            <td>{{ number_format($good->gia_ban) }} VNĐ</td>
+                            <td>{{ $good->gia_von_formatted ?? '0 VND' }}</td>
+                            <td>{{ $good->gia_ban_formatted ?? '0 VND' }}</td>
                             <td>
                                 @if($good->ban_truc_tiep)
                                     <span class="badge bg-success">Bán trực tiếp</span>

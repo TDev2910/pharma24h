@@ -59,12 +59,12 @@ class Goods extends Model
     // Accessors
     public function getGiaBanFormattedAttribute()
     {
-        return number_format($this->gia_ban) . ' VNĐ';
+        return number_format($this->gia_ban, 0, ',', '.') . ' VND';
     }
 
     public function getGiaVonFormattedAttribute()
     {
-        return number_format($this->gia_von) . ' VNĐ';
+        return number_format($this->gia_von, 0, ',', '.') . ' VND';
     }
 
     public function getTonKhoFormattedAttribute()

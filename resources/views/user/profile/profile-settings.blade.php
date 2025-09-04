@@ -372,7 +372,7 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <h3><i class="fas fa-heartbeat me-2"></i>Sức Khỏe 24h</h3>
+                <h3><i style="margin-right: 25px;"></i>Pharma24h</h3>
             </div>
             
             <div class="user-info">
@@ -438,8 +438,8 @@
         <div class="main-content">
             <!-- Header -->
             <div class="settings-header">
-                <h1>Profile Settings</h1>
-                <p>Manage your personal information and account preferences</p>
+                <h1>Cài đặt hồ sơ</h1>
+                <p>Quản lý thông tin cá nhân và tùy chọn tài khoản của bạn</p>
             </div>
 
             <!-- Settings Content -->
@@ -454,13 +454,13 @@
                                 <i class="fas fa-user"></i>
                             @endif
                         </div>
-                        <h5>Your Photo</h5>
-                        <p>This will be displayed on your profile</p>
+                        <h5>Ảnh đại diện</h5>
+                        <p>Ảnh đại diện sẽ được hiển thị trên hồ sơ của bạn</p>
                         <div class="photo-buttons">
                             <button class="btn-upload" onclick="document.getElementById('avatarInput').click()">
-                                <i class="fas fa-camera me-1"></i>Upload New
+                                <i class="fas fa-camera me-1"></i>Tải lên ảnh mới
                             </button>
-                            <button class="btn-remove" onclick="removeAvatar()">Remove</button>
+                            <button class="btn-remove" onclick="removeAvatar()">Xóa</button>
                         </div>
                         <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="handleFileSelect(this)">
                     </div>
@@ -485,65 +485,65 @@
                         </div>
                     @endif
 
-                    <h3 class="section-title">Personal Information</h3>                   
+                    <h3 class="section-title">Thông tin cá nhân</h3>                   
                     <form method="POST" action="{{ route('user.profile.settings.update') }}">
                         @csrf
                         <div class="form-group">
-                            <label class="form-label">Full Name</label>
+                            <label class="form-label">Họ và tên</label>
                             <input type="text" name="name" class="form-control" 
                                    value="{{ old('name', $user->name) }}" required>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Email Address</label>
+                            <label class="form-label">Email</label>
                             <input type="email" name="email" class="form-control" 
                                    value="{{ old('email', $user->email) }}" required>
                         </div>
                         
                         <div class="form-row">
                            <div class="form-group">
-                               <label class="form-label">Mobile Number</label>
+                               <label class="form-label">Số điện thoại</label>
                                <input type="text" name="phone" class="form-control" 
                                       value="{{ old('phone', $user->phone ?? '') }}" placeholder="+84 xxx xxx xxx">
                            </div>
                            <div class="form-group">
-                               <label class="form-label">Role</label>
+                               <label class="form-label">Vai trò</label>
                                <input type="text" class="form-control" value="{{ ucfirst($user->role ?? 'user') }}" readonly>
                            </div>
                        </div>
 
                        <div class="form-group">
-                           <label class="form-label">Address</label>
+                           <label class="form-label">Địa chỉ</label>
                            <input type="text" name="address" class="form-control" 
                                   value="{{ old('address', $user->address ?? '') }}" placeholder="Địa chỉ của bạn">
                        </div>
 
                         <div style="margin-top: 32px;">
-                            <h3 class="section-title">Change Password</h3>
+                            <h3 class="section-title">Thay đổi mật khẩu</h3>
                             
                             <div class="form-row">
                                <div class="form-group">
-                                   <label class="form-label">Current Password</label>
+                                   <label class="form-label">Mật khẩu hiện tại</label>
                                    <input type="password" name="current_password" class="form-control" placeholder="Nhập mật khẩu hiện tại">
                                </div>
                                <div class="form-group">
-                                   <label class="form-label">New Password</label>
+                                   <label class="form-label">Mật khẩu mới</label>
                                    <input type="password" name="new_password" class="form-control" placeholder="Nhập mật khẩu mới">
                                </div>
                            </div>
                            
                            <div class="form-group">
-                               <label class="form-label">Confirm New Password</label>
+                               <label class="form-label">Xác nhận mật khẩu mới</label>
                                <input type="password" name="new_password_confirmation" class="form-control" placeholder="Nhập lại mật khẩu mới">
                            </div>
                         </div>
 
                         <div class="d-flex justify-content-end gap-3 mt-4">
                             <a href="{{ route('user.dashboard') }}" class="btn-secondary">
-                                Cancel
+                                Hủy bỏ
                             </a>
                             <button type="submit" class="btn-primary">
-                                Save Changes
+                                Lưu thay đổi
                             </button>
                         </div>
                     </form>

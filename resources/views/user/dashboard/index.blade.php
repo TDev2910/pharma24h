@@ -145,7 +145,7 @@
         <div class="welcome-section">
             <div class="welcome-card">
                 <div class="welcome-text">
-                    <h2>Xin chào, {{ $user->name }}! 👋</h2>
+                    <h2>Xin chào, {{ $user->name }}!</h2>
                     <p>Chào mừng bạn quay trở lại với Sức Khỏe 24h</p>
                 </div>
             </div>

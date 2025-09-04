@@ -58,6 +58,161 @@
         </div>
     </div>
     
+    {{-- SẢN PHẨM MỚI NHẤT --}}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="section-header text-center mb-5">
+                    <h2 class="section-title">Sản phẩm mới nhất</h2>
+                    <p class="section-subtitle">Khám phá những sản phẩm chăm sóc sức khỏe mới nhất được cập nhật hàng ngày</p>
+                    <div class="title-divider"></div>
+                </div>
+            </div>
+        </div>
+        
+        {{-- hàng 1: lấy 4 sản phẩm thuộc danh mục thuốc  --}}
+        @if($medicines->count() > 0)
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="product-section-title">
+                        <i></i>
+                        Thuốc mới nhất
+                    </h4>
+                </div>
+            </div>
+            <div class="row g-4 mb-5">
+                @foreach($medicines as $medicine)
+                    <div class="col-6 col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-image-wrapper">
+                                <img src="{{ $medicine->image_url }}" 
+                                     alt="{{ $medicine->ten_thuoc }}" 
+                                     class="product-image">
+
+                                {{-- Badge: Thuốc --}}
+                                <div class="product-badge">
+                                    <span class="badge-text medicine-badge">Thuốc</span>
+                                </div>
+
+                                {{-- Button: Hover Overplay View --}}
+                                <div class="product-overlay">
+                                    <button class="btn-quick-view">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-add-cart">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="product-info">
+                                <div class="product-category">
+                                    {{ $medicine->category->name ?? 'Thuốc dị ứng' }}
+                                </div>
+                                <h5 class="product-name">
+                                    {{ Str::limit($medicine->ten_thuoc, 40) }}
+                                </h5>
+                                <div class="product-manufacturer">
+                                    <i class="fas fa-building"></i>
+                                    {{ $medicine->manufacturer->name ?? 'Chưa rõ' }}
+                                </div>
+                                <div class="product-pricing">
+                                    <span class="current-price">{{ $medicine->gia_ban_formatted ?? '0 VND' }}</span>
+                                </div>
+                                <div class="product-actions">
+                                    <button class="btn-primary-action">
+                                        <i class="fas fa-cart-plus me-1"></i>
+                                        Thêm vào giỏ
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+         {{-- hàng 1: lấy 4 sản phẩm thuộc danh mục hàng hóa  --}}
+        @if($goods->count() > 0)
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="product-section-title">
+                        <i></i>
+                        Hàng hóa mới nhất
+                    </h4>
+                </div>
+            </div>
+            <div class="row g-4">
+                @foreach($goods as $good)
+                    <div class="col-6 col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-image-wrapper">
+                                <img src="{{ $good->image_url }}" 
+                                     alt="{{ $good->ten_hang_hoa }}" 
+                                     class="product-image">
+                                <div class="product-badge">
+                                    <span class="badge-text goods-badge">Hàng hóa</span>
+                                </div>
+                                <div class="product-overlay">
+                                    <button class="btn-quick-view">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-add-cart">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="product-info">
+                                <div class="product-category">
+                                    {{ $good->category->name ?? 'Dưỡng da mặt' }}
+                                </div>
+                                <h5 class="product-name">
+                                    {{ Str::limit($good->ten_hang_hoa, 40) }}
+                                </h5>
+                                <div class="product-manufacturer">
+                                    <i class="fas fa-building"></i>
+                                    {{ $good->manufacturer->name ?? 'Chưa rõ' }}
+                                </div>
+                                <div class="product-pricing">
+                                    <span class="current-price">{{ $good->gia_ban_formatted ?? '0 VND' }}</span>
+                                </div>
+                                <div class="product-actions">
+                                    <button class="btn-primary-action">
+                                        <i class="fas fa-cart-plus me-1"></i>
+                                        Thêm vào giỏ
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        {{-- EMPTY STATE --}}
+        @if($medicines->count() == 0 && $goods->count() == 0)
+            <div class="row">
+                <div class="col-12">
+                    <div class="empty-products text-center py-5">
+                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">Chưa có sản phẩm nào</h4>
+                        <p class="text-muted">Các sản phẩm mới sẽ được cập nhật sớm</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+        
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <a href="{{ route('products') }}" class="btn-view-all">
+                    Xem tất cả sản phẩm
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
     {{-- DỊCH VỤ --}}
     <div class="container mt-4 mt-md-5">
         <div class="row justify-content-center">
@@ -326,5 +481,353 @@ html {
 .service-card:nth-child(2) { animation-delay: 0.2s; }
 .service-card:nth-child(3) { animation-delay: 0.3s; }
 .service-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* ===== PRODUCT SECTION STYLES (Tailwind-inspired) ===== */
+
+/* Section Header */
+.section-header {
+    position: relative;
+    padding-bottom: 2rem;
+}
+
+/* Product Section Titles */
+.product-section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid #f1f5f9;
+    position: relative;
+}
+
+.product-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    border-radius: 2px;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: #64748b;
+    max-width: 600px;
+    margin: 0 auto 1.5rem;
+    line-height: 1.6;
+}
+
+.title-divider {
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+/* Product Cards */
+.product-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #f1f5f9;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border-color: #e2e8f0;
+}
+
+/* Product Image */
+.product-image-wrapper {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+    background: #f8fafc;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+/* Product Badge */
+.product-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 10;
+}
+
+.badge-text {
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.medicine-badge {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.goods-badge {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+/* css hiệu ứng con mắt xem chi tiết sản phẩm */
+.product-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/*Khi hover vào card → hiển thị overlay */
+.product-card:hover .product-overlay {
+    opacity: 1;
+}
+
+/*Hover vào nút va đổi màu và phóng to */
+.btn-quick-view,
+.btn-add-cart {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    color: #3b82f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-quick-view:hover,
+.btn-add-cart:hover {
+    background: #3b82f6;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Product Info */
+.product-info {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-category {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #3b82f6;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.product-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    min-height: 2.8rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-manufacturer {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.product-manufacturer i {
+    color: #94a3b8;
+}
+
+/* Product Pricing */
+.product-pricing {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.current-price {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #dc2626;
+}
+
+.original-price {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #94a3b8;
+    text-decoration: line-through;
+}
+
+/* Product Actions */
+.product-actions {
+    margin-top: auto;
+}
+
+.btn-primary-action {
+    width: 100%;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-primary-action:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+}
+
+/* Empty State */
+.empty-products {
+    background: #f8fafc;
+    border-radius: 16px;
+    border: 2px dashed #cbd5e1;
+}
+
+/* View All Button */
+.btn-view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    color: #3b82f6;
+    text-decoration: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.btn-view-all:hover {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1rem;
+    }
+    
+    .product-image-wrapper {
+        height: 160px;
+    }
+    
+    .product-info {
+        padding: 1rem;
+    }
+    
+    .product-name {
+        font-size: 0.9rem;
+        min-height: 2.4rem;
+    }
+    
+    .current-price {
+        font-size: 1.1rem;
+    }
+    
+    .btn-primary-action {
+        padding: 10px 16px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .product-image-wrapper {
+        height: 140px;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+    }
+    
+    .btn-view-all {
+        padding: 12px 24px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Animation for products */
+.product-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.product-card:nth-child(1) { animation-delay: 0.1s; }
+.product-card:nth-child(2) { animation-delay: 0.2s; }
+.product-card:nth-child(3) { animation-delay: 0.3s; }
+.product-card:nth-child(4) { animation-delay: 0.4s; }
+.product-card:nth-child(5) { animation-delay: 0.5s; }
+.product-card:nth-child(6) { animation-delay: 0.6s; }
+.product-card:nth-child(7) { animation-delay: 0.7s; }
+.product-card:nth-child(8) { animation-delay: 0.8s; }
 </style>
 @endpush

@@ -116,7 +116,7 @@
                                 <div class="row g-3 mb-2">
                                     <div class="col-md-6">
                                         <label class="form-label">Giá vốn <span class="text-danger">*</span></label>
-                                        <input type="number"
+                                        <input type="text"
                                                class="form-control"
                                                name="gia_von"
                                                id="goods_edit_gia_von"
@@ -126,7 +126,7 @@
                                     <div class="col-md-6">
                                         <label class="form-label">Giá bán <span class="text-danger">*</span></label>
                                         <div class="input-group">
-                                            <input type="number"
+                                            <input type="text"
                                                 class="form-control"
                                                 name="gia_ban"
                                                 id="goods_edit_gia_ban"

@@ -64,4 +64,16 @@ class Medicine extends Model
     {
         return $this->belongsTo(Position::class, 'position_id');
     }
+
+    // Accessors for price formatting
+    public function getGiaBanFormattedAttribute()
+    {
+        return number_format($this->gia_ban, 0, ',', '.') . ' VND';
+    }
+
+    public function getGiaVonFormattedAttribute()
+    {
+        return number_format($this->gia_von, 0, ',', '.') . ' VND';
+    }
+
 }
