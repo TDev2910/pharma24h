@@ -41,6 +41,10 @@
                                       <input type="text" class="form-control" name="ten_hang_hoa" id="ten_hang_hoa" placeholder="Nhập tên hàng hóa" required>
                                   </div>
                                   <div class="col-md-6">
+                                      <label class="form-label">Tên viết tắt</label>
+                                      <input type="text" class="form-control" name="ten_viet_tat" id="ten_viet_tat" placeholder="Nhập tên viết tắt (tùy chọn)">
+                                  </div>
+                                  <div class="col-md-6">
                                       <label class="form-label">Nhóm hàng <span class="text-danger">*</span></label>
                                       <select class="form-select" name="nhom_hang_id" id="nhom_hang_id" required>
                                           <option value="">Chọn nhóm hàng (Bắt buộc)</option>

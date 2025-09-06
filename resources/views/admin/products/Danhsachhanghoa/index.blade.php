@@ -485,10 +485,10 @@
                                                     <span class="product-name">{{ $good->ten_hang_hoa ?? 'N/A' }}</span>
                                                 </div>
                                             </td>
-                                            <td><span class="product-abbreviation">{{ $good->don_vi_tinh ?? 'N/A' }}</span></td>
+                                            <td><span class="product-abbreviation">{{ $good->ten_viet_tat ?: '' }}</span></td>
                                             <td>{{ $good->gia_ban_formatted ?? '0 VND' }}</td>
                                             <td>{{ $good->gia_von_formatted ?? '0 VND' }}</td>
-                                            <td>{{ $good->ton_kho ?? 0 }}</td>
+                                            <td>{{ $good->ton_kho ?: $good->ton_thap_nhat ?: 0 }}</td>
                                             <td>{{ $good->created_at ? $good->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
                                         </tr>
                                         <!-- Expandable Detail Row cho hàng hóa -->
@@ -731,7 +731,7 @@
                                     @endforelse
 
                                     <!-- Hiển thị dịch vụ -->
-                                    @forelse($services ?? [] as $service)
+                                    {{-- @forelse($services ?? [] as $service)
                                         <tr class="product-row service-row" 
                                             data-product-id="service-{{ $service->id }}" 
                                             data-category-id="{{ $service->nhom_hang_id }}"
@@ -943,7 +943,7 @@
                                             </td>
                                         </tr>
                                     @empty
-                                    @endforelse
+                                    @endforelse --}}
                                 </tbody>
                             </table>
                         </div>

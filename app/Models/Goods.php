@@ -13,6 +13,7 @@ class Goods extends Model
         'ma_hang',
         'ma_vach',
         'ten_hang_hoa',
+        'ten_viet_tat',
         'nhom_hang_id',
         'gia_von',
         'gia_ban',
