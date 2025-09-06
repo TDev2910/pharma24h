@@ -20,6 +20,5 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         require base_path('routes/web.php');
-        require base_path('routes/admin.php'); 
     }
 }

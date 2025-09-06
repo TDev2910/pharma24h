@@ -207,8 +207,8 @@
                                                 </div>
                                             </td>
                                             <td><span class="product-abbreviation">{{ $medicine->ten_viet_tat ?? 'N/A' }}</span></td>
-                                            <td>{{ $medicine->gia_ban_formatted ?? '0 VND' }}</td>
-                                            <td>{{ $medicine->gia_von_formatted ?? '0 VND' }}</td>
+                                            <td>{{ $medicine->gia_ban_formatted }}</td>
+                                            <td>{{ $medicine->gia_von_formatted }}</td>
                                         <td>{{ $medicine->ton_thap_nhat ?? 0 }}</td>
                                         <td>{{ $medicine->created_at ? $medicine->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
                                         </tr>
@@ -1172,4 +1172,4 @@ function searchProducts() {
     });
 }
 </script>
-@endsection             
+@endsection

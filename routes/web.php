@@ -41,3 +41,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
         return view('admin.admindashboard');
     })->name('admin.dashboard');    
 });
+
+// Include admin routes
+require __DIR__.'/admin.php';

@@ -243,7 +243,7 @@ class ServiceController extends Controller
             
             return response()->json([
                 'success' => true,
-                'service' => $service
+                'product' => $service  // Changed from 'service' to 'product' for consistency
             ]);
         } catch (\Exception $e) {
             return response()->json([

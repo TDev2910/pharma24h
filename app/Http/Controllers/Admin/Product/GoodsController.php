@@ -24,7 +24,7 @@ class GoodsController extends Controller
         $data = $this->getFormData();
 
         return view(
-            'admin.products.Danhsachhanghoa.goods.index',
+            'admin.products.Danhsachhanghoa.index',
             compact('goods', 'data')
         );
     }
@@ -37,7 +37,7 @@ class GoodsController extends Controller
         $goods = Goods::with(['category', 'manufacturer', 'position'])->get();
         $data = $this->getFormData();
         
-        return view('admin.products.Danhsachhanghoa.goods.index', compact('goods', 'data'));
+        return view('admin.products.Danhsachhanghoa.index', compact('goods', 'data'));
     }
 
     /**
@@ -201,6 +201,19 @@ class GoodsController extends Controller
      * Show detail of a goods (API).
      */
     public function show($id)
+    {
+        $goods = Goods::with(['category', 'manufacturer', 'position'])->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'product' => $goods
+        ]);
+    }
+
+    /**
+     * Get goods detail for edit modal (API).
+     */
+    public function detail($id)
     {
         $goods = Goods::with(['category', 'manufacturer', 'position'])->findOrFail($id);
 

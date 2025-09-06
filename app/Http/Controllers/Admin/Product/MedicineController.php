@@ -77,7 +77,7 @@ class MedicineController extends Controller
     {
         $request->validate([
             'ten_thuoc'         => 'required|string|max:255',
-            'ma_hang'           => 'nullable|string|max:50',
+            'ma_hang'           => 'nullable|string|max:50|unique:medicines,ma_hang',
             'ten_viet_tat'      => 'nullable|string|max:100',
             'gia_ban'           => 'nullable|numeric|min:0',
             'gia_von'           => 'nullable|numeric|min:0',
@@ -89,8 +89,8 @@ class MedicineController extends Controller
             'manufacturer_id'   => 'nullable|exists:manufacturers,id',
             'drugusage_id'      => 'nullable|exists:drug_routes,id',
             'position_id'       => 'nullable|exists:positions,id',
-            'ma_vach'           => 'nullable|string',
-            'so_dang_ky'        => 'nullable|string',
+            'ma_vach'           => 'nullable|string|unique:medicines,ma_vach',
+            'so_dang_ky'        => 'nullable|string|unique:medicines,so_dang_ky',
             'hoat_chat'         => 'nullable|string',
             'ham_luong'         => 'nullable|string',
             'nuoc_san_xuat'     => 'nullable|string',
@@ -98,6 +98,11 @@ class MedicineController extends Controller
             'ton_cao_nhat'      => 'nullable|integer|min:0',
             'trong_luong'       => 'nullable|numeric|min:0',
             'don_vi_tinh'       => 'nullable|string',
+            'ban_truc_tiep'     => 'nullable',
+        ], [
+            'ma_hang.unique'    => 'Mã hàng bạn nhập đang trùng với một sản phẩm khác.',
+            'ma_vach.unique'    => 'Mã vạch bạn nhập đang trùng với một sản phẩm khác.',
+            'so_dang_ky.unique' => 'Số đăng ký bạn nhập đang trùng với một sản phẩm khác.',
         ]);
 
         $data = $request->all();
@@ -129,11 +134,9 @@ class MedicineController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $medicine = Medicine::findOrFail($id);
-
         $request->validate([
             'ten_thuoc'         => 'required|string|max:255',
-            'ma_hang'           => 'nullable|string|max:50',
+            'ma_hang'           => 'nullable|string|max:50|unique:medicines,ma_hang,' . $id,
             'ten_viet_tat'      => 'nullable|string|max:100',
             'gia_ban'           => 'nullable|numeric|min:0',
             'gia_von'           => 'nullable|numeric|min:0',
@@ -145,8 +148,8 @@ class MedicineController extends Controller
             'manufacturer_id'   => 'nullable|exists:manufacturers,id',
             'drugusage_id'      => 'nullable|exists:drug_routes,id',
             'position_id'       => 'nullable|exists:positions,id',
-            'ma_vach'           => 'nullable|string',
-            'so_dang_ky'        => 'nullable|string',
+            'ma_vach'           => 'nullable|string|unique:medicines,ma_vach,' . $id,
+            'so_dang_ky'        => 'nullable|string|unique:medicines,so_dang_ky,' . $id,
             'hoat_chat'         => 'nullable|string',
             'ham_luong'         => 'nullable|string',
             'nuoc_san_xuat'     => 'nullable|string',
@@ -154,23 +157,32 @@ class MedicineController extends Controller
             'ton_cao_nhat'      => 'nullable|integer|min:0',
             'trong_luong'       => 'nullable|numeric|min:0',
             'don_vi_tinh'       => 'nullable|string',
+            'ban_truc_tiep'     => 'nullable',
+        ], [
+            'ma_hang.unique'    => 'Mã hàng bạn nhập đang trùng với một sản phẩm khác.',
+            'ma_vach.unique'    => 'Mã vạch bạn nhập đang trùng với một sản phẩm khác.',
+            'so_dang_ky.unique' => 'Số đăng ký bạn nhập đang trùng với một sản phẩm khác.',
         ]);
 
+        $medicine = Medicine::findOrFail($id);
+        
+        // Sanitize giá trị
         $data = $request->all();
+        $data['gia_von'] = (int)preg_replace('/\D/', '', $request->gia_von);
+        $data['gia_ban'] = (int)preg_replace('/\D/', '', $request->gia_ban);
+        
+        // Xử lý checkbox ban_truc_tiep
         $data['ban_truc_tiep'] = $request->has('ban_truc_tiep') ? 1 : 0;
-
-        if ($request->hasFile('image')) {
-            // Xóa ảnh cũ nếu có
-            if ($medicine->image) {
-                Storage::disk('public')->delete($medicine->image);
-            }
-            $imagePath = $request->file('image')->store('products', 'public');
-            $data['image'] = $imagePath;
+        
+        // Xử lý trường bắt buộc khác (nếu có)
+        if (!isset($data['khach_dat'])) {
+            $data['khach_dat'] = $medicine->khach_dat ?? 0;
         }
-
+        
+        // Update
         $medicine->update($data);
-
-        return redirect()->route('admin.products.index')->with('success', 'Cập nhật thuốc thành công!');
+        
+        return redirect()->route('admin.products.index')->with('success', 'Cập nhật thuốc thành công');
     }
 
     /**

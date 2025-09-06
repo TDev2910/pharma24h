@@ -104,7 +104,9 @@ function createNewUnit() {
             
             // Show success message
             showSuccessMessage('Tạo đơn vị thành công!');
-        } else {
+        } 
+        else 
+        {
             alert(data.message || 'Có lỗi xảy ra khi tạo đơn vị!');
         }
     })

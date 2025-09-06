@@ -115,6 +115,16 @@ function openEditMedicineModal(medicineId) {
                     const element = modalEl.querySelector(selector);
                     if (element) {
                         element.value = value;
+                        
+                        // Format price fields immediately after setting value
+                        if (selector.includes('gia_ban') || selector.includes('gia_von')) {
+                            // Use setTimeout to ensure the value is set before formatting
+                            setTimeout(() => {
+                                if (window.formatPriceInput) {
+                                    window.formatPriceInput(element);
+                                }
+                            }, 10);
+                        }
                     }
                 });
                 
@@ -711,6 +721,16 @@ function openEditGoodsModal(goodsId) {
                     const element = modalEl.querySelector(selector);
                     if (element) {
                         element.value = value;
+                        
+                        // Format price fields immediately after setting value
+                        if (selector.includes('gia_ban') || selector.includes('gia_von')) {
+                            // Use setTimeout to ensure the value is set before formatting
+                            setTimeout(() => {
+                                if (window.formatPriceInput) {
+                                    window.formatPriceInput(element);
+                                }
+                            }, 10);
+                        }
                     }
                 });
                 
@@ -868,6 +888,88 @@ function cancelEditPositionForm() {
 function openEditUnitModal() {
     const modal = new bootstrap.Modal(document.getElementById('unitModal'));
     modal.show();
+}
+
+// Function to open edit service modal and populate data
+function openEditServiceModal(serviceId) {
+    // 1. Lấy modal element
+    const modalEl = document.getElementById('editServiceModal');
+    if (!modalEl) {
+        console.error('Edit Service Modal element not found!');
+        return;
+    }
+
+    // 2. Fetch dữ liệu dịch vụ từ API
+    fetch(`/admin/services/${serviceId}/detail`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const service = data.product;
+                
+                // 3. Map dữ liệu vào các field với CSS selector mới (service_edit_*)
+                const fields = [
+                    ['#service_edit_ma_hang', service.ma_hang || ''],
+                    ['#service_edit_ten_dich_vu', service.ten_dich_vu || ''],
+                    ['#service_edit_nhom_dich_vu_id', service.nhom_hang_id || ''],
+                    ['#service_edit_gia_ban', service.gia_dich_vu || 0],
+                    ['#service_edit_hinh_thuc', service.hinh_thuc || ''],
+                    ['#service_edit_thoi_gian_thuc_hien', service.thoi_gian_thuc_hien || ''],
+                    ['#service_edit_trang_thai', service.trang_thai || ''],
+                    ['#service_edit_mo_ta', service.mo_ta || ''],
+                    ['#service_edit_ghi_chu', service.ghi_chu || '']
+                ];
+                
+                // 4. Fill dữ liệu vào các input field
+                fields.forEach(([selector, value]) => {
+                    const element = modalEl.querySelector(selector);
+                    if (element) {
+                        element.value = value;
+                        
+                        // Format price fields immediately after setting value
+                        if (selector.includes('gia_ban')) {
+                            // Use setTimeout to ensure the value is set before formatting
+                            setTimeout(() => {
+                                if (window.formatPriceInput) {
+                                    window.formatPriceInput(element);
+                                }
+                            }, 10);
+                        }
+                    }
+                });
+                
+                // 5. Set form action URL
+                const form = modalEl.querySelector('#editServiceForm');
+                if (form) {
+                    form.action = `/admin/services/${serviceId}`;
+                }
+                
+                // 6. Xử lý hiển thị ảnh dịch vụ
+                if (service.image) {
+                    const preview = modalEl.querySelector('#edit-service-image-preview');
+                    const placeholder = modalEl.querySelector('#edit-service-image-placeholder');
+                    if (preview && placeholder) {
+                        preview.src = `/storage/${service.image}`;
+                        preview.style.display = 'block';
+                        placeholder.style.display = 'none';
+                    }
+                }
+                
+                // 7. Hiển thị modal
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            } else {
+                alert('Không thể tải dữ liệu dịch vụ');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading service data:', error);
+            alert('Lỗi khi tải dữ liệu dịch vụ');
+        });
 }
 
 
@@ -1078,27 +1180,68 @@ document.addEventListener('DOMContentLoaded', function() {
         serviceTypeSelect.addEventListener('change', updateEstimatedTime);
     }
     
-    // Format price inputs - Apply to both gia_ban and gia_von for consistency
-    const priceInputs = document.querySelectorAll('input[name="gia_ban"], input[name="gia_von"]');
+    // Format price inputs - Unified price formatting for all price inputs
+    const formatPrice = function(input) {
+        // Lấy giá trị hiện tại
+        let value = input.value;
+        
+        // Xử lý các trường hợp đặc biệt từ database
+        if (value && typeof value === 'string') {
+            // Loại bỏ .00 ở cuối nếu có (ví dụ: "230000.00" -> "230000")
+            value = value.replace(/\.00$/, '');
+            // Loại bỏ tất cả ký tự không phải số
+            value = value.replace(/\D/g, '');
+        } else if (typeof value === 'number') {
+            // Nếu là số, chuyển thành string và loại bỏ .00
+            value = value.toString().replace(/\.00$/, '');
+        }
+        
+        // Format với dấu phân cách hàng nghìn
+        if (value && value !== '0') {
+            input.value = new Intl.NumberFormat('vi-VN').format(parseInt(value));
+        } else if (value === '0') {
+            input.value = '0';
+        }
+    };
+    
+    // Global function to format price - can be called from anywhere
+    window.formatPriceInput = formatPrice;
+    
+    // Apply to all price inputs (both name selectors and class selectors)
+    const priceInputs = document.querySelectorAll('input[name="gia_ban"], input[name="gia_von"], .price-input');
     priceInputs.forEach(input => {
         // Format existing value on load (edit forms)
         if (input.value && /\d/.test(input.value)) {
-            formatServicePrice(input);
+            formatPrice(input);
         }
 
         // Format while typing
         input.addEventListener('input', function() {
-            formatServicePrice(this);
+            formatPrice(this);
+        });
+        
+        // Select all text when focus for easy editing
+        input.addEventListener('focus', function() {
+            this.select();
+        });
+        
+        // Format when blur (finish typing)
+        input.addEventListener('blur', function() {
+            if (this.value) {
+                formatPrice(this);
+            }
         });
     });
 
     // Before submitting any form, strip separators to store plain numbers in DB
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function() {
-            const scopedPriceInputs = form.querySelectorAll('input[name="gia_ban"], input[name="gia_von"]');
-            scopedPriceInputs.forEach(i => {
-                i.value = (i.value || '').replace(/[^\d]/g, '');
+            const scopedPriceInputs = form.querySelectorAll('input[name="gia_ban"], input[name="gia_von"], .price-input');
+            scopedPriceInputs.forEach(input => {
+                input.value = (input.value || '').replace(/\D/g, '');
             });
         });
     });
 });
+
+//# sourceMappingURL=forms.js.map

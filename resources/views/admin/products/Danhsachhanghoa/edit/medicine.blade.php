@@ -1,3 +1,4 @@
+<!-- Modal chỉnh sửa thuốc -->
 <div class="modal fade" id="editMedicineModal" tabindex="-1" aria-labelledby="editMedicineModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
       <div class="modal-content" style="border-radius:16px;">
@@ -84,12 +85,20 @@
                           <div class="row g-3 mb-2">
                               <div class="col-md-6">
                                   <label class="form-label">Giá vốn <span class="text-danger">*</span></label>
-                                  <input type="text" class="form-control" name="gia_von" id="medicine_edit_gia_von" value="0" required>
-                              </div>
-                              <div class="col-md-6">
+                                    <input type="text"
+                                        class="form-control price-input"
+                                        name="gia_von"
+                                        id="medicine_edit_gia_von"
+                                        required>                             
+                                </div>
+                            <div class="col-md-6">
                                   <label class="form-label">Giá bán <span class="text-danger">*</span></label>
                                   <div class="input-group">
-                                      <input type="text" class="form-control" name="gia_ban" id="medicine_edit_gia_ban" value="0" required>
+                                      <input type="text"
+                                            class="form-control price-input"
+                                            name="gia_ban"
+                                            id="medicine_edit_gia_ban"
+                                            required>
                                       <button class="btn btn-outline-secondary" type="button">Thiết lập giá</button>
                                   </div>
                               </div>
