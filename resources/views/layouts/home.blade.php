@@ -14,6 +14,9 @@
     
     <!-- Home CSS -->
     <link href="{{ asset('css/home.css') }}" rel="stylesheet">
+    <!-- Cart CSS -->
+    <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
+    
     
     @stack('styles')
 </head>
@@ -31,6 +34,8 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="{{ asset('js/cart.js') }}"></script>
     
     <!-- User JS -->
     <script src="{{ asset('js/user.js') }}"></script>

@@ -35,6 +35,9 @@ Route::prefix('password')->name('password.')->group(function () {
 // Include user routes
 require __DIR__.'/user.php';
 
+// Include store routes
+require __DIR__.'/store.php';
+
 // Admin routes
 Route::middleware(['auth', 'admin'])->group(function () {   
     Route::get('/admin/admindashboard', function () {

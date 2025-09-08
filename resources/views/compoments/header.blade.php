@@ -71,11 +71,46 @@
                         </a>
                     @endauth
 
-                    <!-- Shopping Cart chưa làm-->
-                    <a href="#" class="action-link position-relative">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="cart-badge">0</span>
-                    </a>
+                    <!-- Shopping Cart -->
+                    <div class="dropdown cart-dropdown">
+                        <button type="button" class="action-link position-relative dropdown-toggle border-0 bg-transparent" 
+                                id="cartDropdown" 
+                                data-bs-toggle="dropdown" 
+                                data-bs-auto-close="outside"
+                                aria-expanded="false">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                                 style="display: none;">0</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end cart-dropdown-menu" 
+                             aria-labelledby="cartDropdown" 
+                             style="width: 320px;">
+                            <div class="cart-loading text-center p-3 d-none">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <span class="ms-2">Đang tải giỏ hàng...</span>
+                            </div>
+                            <div class="cart-items p-2">
+                                <!-- Cart items will be loaded here via JavaScript -->
+                                <div class="empty-cart text-center py-3">
+                                    <p class="mb-0">Giỏ hàng trống</p>
+                                </div>
+                            </div>
+                            <div class="cart-footer p-3 border-top">
+                                <div class="cart-total d-flex justify-content-between mb-3">
+                                    <strong>Tổng cộng:</strong>
+                                    <span class="cart-total-amount text-danger fw-bold" 
+                                          aria-live="polite" 
+                                          aria-label="Tổng tiền giỏ hàng">0 VNĐ</span>
+                                </div>
+                                <div class="cart-actions d-flex">
+                                    <a href="{{ route('cart.index') }}" class="btn btn-outline-primary btn-sm me-2 flex-grow-1">Xem giỏ hàng</a>
+                                    <a href="/checkout" class="btn btn-primary btn-sm flex-grow-1">Thanh toán</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -84,10 +119,43 @@
                 <a href="#" class="action-link me-3">
                     <i class="fas fa-user"></i>
                 </a>
-                <a href="#" class="action-link position-relative">
+                <button type="button" class="action-link position-relative border-0 bg-transparent" 
+                        id="mobilecartDropdown"
+                        data-bs-toggle="dropdown" 
+                        data-bs-auto-close="outside"
+                        aria-expanded="false">
                     <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-badge">0</span>
-                </a>
+                    <span class="cart-count position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                         style="display: none;">0</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end cart-dropdown-menu" 
+                     aria-labelledby="mobilecartDropdown" 
+                     style="width: 320px;">
+                    <div class="cart-loading text-center p-3 d-none">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span class="ms-2">Đang tải giỏ hàng...</span>
+                    </div>
+                    <div class="cart-items p-2">
+                        <!-- Cart items will be loaded here via JavaScript -->
+                        <div class="empty-cart text-center py-3">
+                            <p class="mb-0">Giỏ hàng trống</p>
+                        </div>
+                    </div>
+                    <div class="cart-footer p-3 border-top">
+                        <div class="cart-total d-flex justify-content-between mb-3">
+                            <strong>Tổng cộng:</strong>
+                            <span class="cart-total-amount text-danger fw-bold" 
+                                  aria-live="polite" 
+                                  aria-label="Tổng tiền giỏ hàng">0 VNĐ</span>
+                        </div>
+                        <div class="cart-actions d-flex">
+                            <a href="{{ route('cart.index') }}" class="btn btn-outline-primary btn-sm me-2 flex-grow-1">Xem giỏ hàng</a>
+                            <a href="/checkout" class="btn btn-primary btn-sm flex-grow-1">Thanh toán</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>

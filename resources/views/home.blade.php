@@ -120,7 +120,9 @@
                                     <span class="current-price">{{ $medicine->gia_ban_formatted ?? '0 VND' }}</span>
                                 </div>
                                 <div class="product-actions">
-                                    <button class="btn-primary-action">
+                                    <button class="btn-primary-action add-to-cart" 
+                                            data-item-id="{{ $medicine->id }}" 
+                                            data-item-type="medicine">
                                         <i class="fas fa-cart-plus me-1"></i>
                                         Thêm vào giỏ
                                     </button>
@@ -178,7 +180,9 @@
                                     <span class="current-price">{{ $good->gia_ban_formatted ?? '0 VND' }}</span>
                                 </div>
                                 <div class="product-actions">
-                                    <button class="btn-primary-action">
+                                    <button class="btn-primary-action add-to-cart" 
+                                            data-item-id="{{ $good->id }}" 
+                                            data-item-type="goods">
                                         <i class="fas fa-cart-plus me-1"></i>
                                         Thêm vào giỏ
                                     </button>

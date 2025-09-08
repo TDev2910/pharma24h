@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
     @stack('styles')
     <link rel="stylesheet" href="{{ asset('css/reponsive.css') }}">
 </head>
@@ -21,6 +22,9 @@
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Cart JS -->
+    <script src="{{ asset('js/cart.js') }}"></script>
     
     @stack('scripts')
 </body>
