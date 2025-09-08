@@ -17,7 +17,7 @@
     <!-- Cart CSS -->
     <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
     
-    
+        
     @stack('styles')
 </head>
 <body>

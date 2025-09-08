@@ -24,10 +24,8 @@ class CartController extends Controller
     public function addToCart(Request $request)
     {
         try {
-            // Kiểm tra nếu là request AJAX
             $isAjax = $request->ajax() || $request->wantsJson();
             
-            // Validate đầu vào
             try {
                 $validated = $request->validate([
                     'item_id' => 'required|integer',
@@ -42,7 +40,7 @@ class CartController extends Controller
                         'errors' => $e->errors()
                     ], 422);
                 }
-                throw $e; // Rethrow nếu không phải AJAX
+                throw $e; 
             }
             
             $quantity = $validated['quantity'] ?? 1;
