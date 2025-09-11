@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -35,4 +34,8 @@ return [
         ],
     ],
 
+    'vnpay' => [
+        'tmn_code' => env('VNPAY_TMN_CODE', 'DEMO'),
+        'hash_secret' => env('VNPAY_HASH_SECRET', 'FVEHQVMRRZSUMIMZMGTVRBSMPTGNGPPO'),
+    ],
 ];

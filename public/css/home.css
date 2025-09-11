@@ -355,6 +355,75 @@ body {
     }
 }
 
+/* Mini Cart - Tokopackedi style */
+.cart-dropdown { position: relative; }
+.cart-dropdown .dropdown-menu.cart-dropdown-menu {
+    top: 42px; right: 0; padding: 0; border: 0; border-radius: 16px; overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,.15);
+}
+.cart-dropdown .cart-header { padding: 12px 16px; border-bottom: 1px solid #f1f2f5; display: flex; justify-content: space-between; align-items: center; }
+.cart-dropdown .cart-title { font-weight: 700; font-size: 14px; color: #0d0c22; }
+.cart-dropdown .cart-items { max-height: 56vh; overflow: auto; padding: 8px 12px; background: #fff; }
+.cart-dropdown .cart-item { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; padding: 10px 4px; }
+.cart-dropdown .cart-item + .cart-item { border-top: 1px dashed #eef0f3; }
+.cart-dropdown .cart-item-image { width: 56px; height: 56px; border-radius: 10px; overflow: hidden; background: #f6f7f9; }
+.cart-dropdown .cart-item-image img { width: 100%; height: 100%; object-fit: cover; }
+.cart-dropdown .cart-item-info { display: flex; flex-direction: column; gap: 4px; }
+.cart-dropdown .cart-item-title { font-weight: 600; color: #0d0c22; line-height: 1.25; font-size: 14px; }
+.cart-dropdown .cart-item-meta { font-size: 12px; color: #8e96a3; }
+.cart-dropdown .cart-item-quantity { display: inline-flex; align-items: center; gap: 12px; background: transparent !important; border: 0 !important; padding: 0 !important; border-radius: 0 !important; }
+.cart-dropdown .cart-item-quantity .btn-qty-decrease, .cart-dropdown .cart-item-quantity .btn-qty-increase { min-width: 20px; height: auto; border-radius: 4px; border: 0; background: transparent !important; box-shadow: none; cursor: pointer; font-size: 18px; line-height: 1; color: #8e96a3; padding: 2px 6px; }
+.cart-dropdown .cart-item-quantity .btn-qty-decrease:hover, .cart-dropdown .cart-item-quantity .btn-qty-increase:hover { background: #f3f4f6; color: #0d0c22; }
+.cart-dropdown .cart-item-quantity .item-quantity { width: 28px; text-align: center; border: 0 !important; background: transparent !important; box-shadow: none !important; font-weight: 700; padding: 0 !important; height: auto; border-radius: 0 !important; }
+.cart-dropdown .cart-item-quantity .item-quantity.form-control { border: 0 !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; height: auto; border-radius: 0 !important; }
+.cart-dropdown .cart-item-quantity .item-quantity::-webkit-outer-spin-button, .cart-dropdown .cart-item-quantity .item-quantity::-webkit-inner-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
+.cart-dropdown .cart-item-quantity .item-quantity[type=number] { -moz-appearance: textfield; appearance: textfield; }
+.cart-dropdown .cart-item-remove { background: transparent; border: 0; font-size: 18px; color: #b1b1b7; cursor: pointer; padding: 4px; }
+.cart-dropdown .cart-item-remove:hover { color: #ff4d4f; }
+.cart-dropdown .cart-footer { padding: 14px 16px; background: #fff; border-top: 1px solid #f1f2f5; }
+.cart-dropdown .cart-total { display: flex; justify-content: space-between; font-weight: 700; color: #0d0c22; margin-bottom: 12px; }
+.cart-dropdown .cart-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cart-dropdown .btn-view { background: #fff; border: 1px solid #e5e7eb; color: #0d0c22; border-radius: 10px; height: 40px; font-weight: 600; }
+.cart-dropdown .btn-view:hover { background: #f6f7f9; }
+.cart-dropdown .btn-checkout { background: #0d0c22; color: #fff; border: 0; border-radius: 10px; height: 40px; font-weight: 700; }
+.cart-dropdown .btn-checkout:hover { background: #2b2b31; }
+
+/* Mobile full width */
+@media (max-width: 576px) {
+    .cart-dropdown .dropdown-menu.cart-dropdown-menu { left: 8px; right: 8px; width: auto; }
+    .cart-dropdown .dropdown-menu.cart-dropdown-menu:before { right: 34px; }
+}
+
+/* Padding & layout của item trong dropdown */
+.cart-dropdown .cart-items .cart-item {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 0;              /* padding dọc gọn gàng */
+    border-bottom: 1px dashed #f0f0f0;
+}
+.cart-dropdown .cart-items .cart-item:last-child { border-bottom: 0; }
+.cart-dropdown .cart-item-image { width: 56px; height: 56px; border-radius: 8px; overflow: hidden; background: #fafafa; }
+.cart-dropdown .cart-item-image img { width: 100%; height: 100%; object-fit: cover; }
+.cart-dropdown .cart-item-info { display: flex; flex-direction: column; gap: 4px; }
+.cart-dropdown .cart-item-title { font-size: 14px; font-weight: 600; color: #0d0c22; line-height: 1.3; }
+.cart-dropdown .cart-item-price { font-weight: 700; color: #0d0c22; }
+.cart-dropdown .cart-item-quantity { display: inline-flex; align-items: center; gap: 6px; background: #f6f7f9; border-radius: 999px; padding: 4px 6px; border: 1px solid #eceef2; }
+.cart-dropdown .cart-item-quantity .btn-qty-decrease,
+.cart-dropdown .cart-item-quantity .btn-qty-increase { width: 26px; height: 26px; border-radius: 50%; border: 0; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.06); cursor: pointer; }
+.cart-dropdown .cart-item-quantity .item-quantity { width: 36px; text-align: center; border: 0; background: transparent; font-weight: 600; padding: 0; height: 26px; }
+/* Hide native spinners and add standard appearance for compatibility */
+.cart-dropdown .cart-item-quantity .item-quantity::-webkit-outer-spin-button,
+.cart-dropdown .cart-item-quantity .item-quantity::-webkit-inner-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
+.cart-dropdown .cart-item-quantity .item-quantity[type=number] { -moz-appearance: textfield; appearance: textfield; }
+.cart-dropdown .cart-item-remove { background: transparent; border: 0; font-size: 18px; color: #b1b1b7; cursor: pointer; padding: 4px; }
+.cart-dropdown .cart-item-remove:hover { color: #ff4d4f; }
+
+/* Header spacing trong dropdown */
+.cart-dropdown .dropdown-menu.cart-dropdown-menu .cart-header,
+.cart-dropdown .dropdown-menu.cart-dropdown-menu .mini-cart__header { padding: 10px 16px; }
+
 /* Floating Contacts - nhỏ hơn */
 .floating-contacts {
     position: fixed;

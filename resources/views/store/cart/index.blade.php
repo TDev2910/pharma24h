@@ -169,11 +169,11 @@
         
         .item-price {
             font-weight: 700;
-            color: #007bff;
+            color: #0d0c22;
             font-size: 18px;
         }
         
-        .item-controls {
+        .item-controls {    
             display: flex;
             flex-direction: column;
             align-items: flex-end;
@@ -219,6 +219,17 @@
             width: 40px;
             font-weight: 600;
             color: #333;
+        }
+        /* Hide native number spinners (we use custom +/- buttons) */
+        .qty-input::-webkit-outer-spin-button,
+        .qty-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+        .qty-input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
         }
         
         .qty-input:focus {
@@ -295,7 +306,7 @@
         }
         
         .apply-btn {
-            background: #007bff;
+            background: #0d0c22;
             color: white;
             border: none;
             border-radius: 12px;
@@ -340,14 +351,14 @@
         }
         
         .checkout-btn {
-            background: linear-gradient(135deg, #007bff, #0056b3);
+            background-color: #0D0C22;
             color: white;
             border: none;
             border-radius: 16px;
             padding: 16px 24px;
             font-weight: 700;
             font-size: 16px;
-            width: 100%;
+            width: 100%;    
             cursor: pointer;
             transition: all 0.3s;
             margin-top: 20px;
@@ -360,8 +371,8 @@
         
         .continue-shopping {
             background: none;
-            border: 2px solid #007bff;
-            color: #007bff;
+            border: 2px solid #0d0c22;
+            color: #0d0c22;
             border-radius: 12px;
             padding: 12px 24px;
             font-weight: 600;
@@ -370,7 +381,7 @@
         }
         
         .continue-shopping:hover {
-            background: #007bff;
+            background-color: #626264;
             color: white;
         }
         
@@ -510,7 +521,7 @@
                     
                     <div class="cart-footer p-3">
                         <button class="continue-shopping">
-                            <i class="fas fa-arrow-left me-2"></i> Tiếp tục mua sắm
+                            <i class="fas fa-arrow-left me-2"></i> <a href="{{ route('home') }}" style="color: #0d0c22;">Tiếp tục mua sắm</a>
                         </button>
                     </div>
                 </div>
@@ -549,7 +560,7 @@
                             <span class="total-amount" id="grandTotal">{{ number_format($cartData['total'] ?? 0) }} VNĐ</span>
                         </div>
                         <button class="checkout-btn">
-                            Tiến hành đặt hàng <i class="fas fa-arrow-right ms-2"></i>
+                            <a href="/checkout" class="btn btn-primary btn-sm flex-grow-1">Thanh toán</a>
                         </button>
                     </div>
                 </div>

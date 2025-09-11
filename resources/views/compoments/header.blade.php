@@ -84,7 +84,7 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end cart-dropdown-menu" 
                              aria-labelledby="cartDropdown" 
-                             style="width: 320px;">
+                             style="width: 360px;">
                             <div class="cart-loading text-center p-3 d-none">
                                 <div class="spinner-border spinner-border-sm text-primary" role="status">
                                     <span class="visually-hidden">Loading...</span>
@@ -130,7 +130,7 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-end cart-dropdown-menu" 
                      aria-labelledby="mobilecartDropdown" 
-                     style="width: 320px;">
+                     style="width: 360px;">
                     <div class="cart-loading text-center p-3 d-none">
                         <div class="spinner-border spinner-border-sm text-primary" role="status">
                             <span class="visually-hidden">Loading...</span>
