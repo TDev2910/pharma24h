@@ -53,8 +53,7 @@ class CheckoutController extends Controller
             $order = $this->checkoutService->createOrder($request->validated());
 
             if ($request->payment_method === 'vnpay') {
-                $vnpayUrl = $this->checkoutService->generateVnpayPaymentUrl($order);
-                return redirect($vnpayUrl);
+                return redirect()->route('payment.vnpay.checkout', ['order_id' => $order->id]);
             }
 
             return redirect()->route('checkout.success', ['order_id' => $order->id]);
@@ -63,7 +62,7 @@ class CheckoutController extends Controller
         }
     }
 
-    // Trang thành công
+    // View thành công
     public function success(Request $request)
     {
         $orderId = $request->order_id;
@@ -72,21 +71,9 @@ class CheckoutController extends Controller
         return view('store.checkout.success', compact('order'));
     }
 
-    // Trang thất bại
+    // View thất bại
     public function failed()
     {
         return view('store.checkout.failed');
-    }
-
-    // Xử lý callback từ VNPAY
-    public function vnpayReturn(Request $request)
-    {
-        $result = $this->checkoutService->processVnpayReturn($request->all());
-
-        if ($result['success']) {
-            return redirect()->route('checkout.success', ['order_id' => $result['order']->id]);
-        }
-
-        return redirect()->route('checkout.failed')->with('error', $result['message']);
     }
 }

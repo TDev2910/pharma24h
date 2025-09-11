@@ -119,10 +119,7 @@ class CheckoutService
             'vnp_CreateDate'=> $vnp_CreateDate,
             'vnp_ExpireDate'=> $vnp_ExpireDate,
             'vnp_IpAddr'    => $vnp_IpAddr,
-            // Không bắt buộc: nếu muốn ép phương thức, có thể thêm vnp_BankCode
         ];
-
-        // Loại bỏ tham số rỗng (nếu có) và sắp xếp theo key ASCII
         $filtered = [];
         foreach ($inputData as $k => $v) {
             if ($v !== null && $v !== '') {
@@ -141,17 +138,6 @@ class CheckoutService
 
         // URL chuyển hướng: encode bình thường
         $vnp_Url = $vnp_Url . '?' . http_build_query($filtered) . '&vnp_SecureHash=' . $vnpSecureHash;
-
-        // Ghi log để debug code=99
-        Log::info('VNPAY redirect prepared', [
-            'txn_ref' => $vnp_TxnRef,
-            'amount' => $vnp_Amount,
-            'params' => $inputData,
-            'raw_to_sign' => $rawToSign,
-            'secure_hash' => $vnpSecureHash,
-            'redirect_url' => $vnp_Url,
-        ]);
-
         // Lưu thông tin giao dịch vào đơn hàng
         $order->transaction_id = $vnp_TxnRef;
         $order->save();

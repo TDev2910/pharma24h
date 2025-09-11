@@ -350,20 +350,29 @@
             color: #dc3545 !important;
         }
         
-        .checkout-btn {
-            background-color: #0D0C22;
-            color: white;
-            border: none;
-            border-radius: 16px;
-            padding: 16px 24px;
-            font-weight: 700;
-            font-size: 16px;
-            width: 100%;    
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
-        }
-        
+        .checkout-btn{
+            display:inline-flex;              
+            align-items:center;
+            justify-content:center;
+            width:100%;
+            height:48px;                      
+            padding:0 24px;
+            background:#0D0C22;
+            color:#fff;
+            border-radius:16px;
+            font-weight:700;
+            font-size:16px;
+            text-decoration:none;           
+            border:0;
+            cursor:pointer;
+            transition:transform .2s, box-shadow .2s, opacity .2s;
+            margin-top:20px;
+            }
+            .checkout-btn:hover{
+            transform:translateY(-2px);
+            box-shadow:0 8px 25px rgba(0,123,255,.3);
+            }
+
         .checkout-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0,123,255,0.3);
@@ -559,9 +568,7 @@
                             <span>Tổng thanh toán</span>
                             <span class="total-amount" id="grandTotal">{{ number_format($cartData['total'] ?? 0) }} VNĐ</span>
                         </div>
-                        <button class="checkout-btn">
-                            <a href="/checkout" class="btn btn-primary btn-sm flex-grow-1">Thanh toán</a>
-                        </button>
+                        <a href="/checkout" class="checkout-btn">Thanh toán</a>
                     </div>
                 </div>
             </div>

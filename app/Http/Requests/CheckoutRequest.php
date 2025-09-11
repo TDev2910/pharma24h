@@ -33,16 +33,15 @@ class CheckoutRequest extends FormRequest
             $rules['province'] = 'required|string|max:100';
             $rules['district'] = 'required|string|max:100';
             $rules['ward'] = 'required|string|max:100';
-        } else {
+        } 
+        else 
+        {
             $rules['pickup_location'] = 'required|string|max:255';
         }
 
         return $rules;
     }
-
-    /**
-     * Get custom messages for validator errors.
-     */
+    //Hiển thị lỗi thông báo
     public function messages(): array
     {
         return [
