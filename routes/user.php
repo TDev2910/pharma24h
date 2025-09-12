@@ -13,6 +13,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     
     // Other Features
     Route::get('/orders', [DashboardController::class, 'orders'])->name('orders');
+    Route::get('/orders/{orderId}', [DashboardController::class, 'orderDetails'])->name('orders.details');
     Route::get('/notifications', [DashboardController::class, 'notifications'])->name('notifications');
     Route::get('/health-profile', [DashboardController::class, 'healthProfile'])->name('health.profile');
     

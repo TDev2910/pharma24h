@@ -29,7 +29,24 @@ class Order extends Model
         'order_status',
         'transaction_id',
         'note',
+        'order_code',
     ];
+    
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($order) {
+            if (!$order->order_code) {
+                do {
+                    $randomCode = sprintf('%04d', rand(1000, 9999));
+                    $exists = static::where('order_code', $randomCode)->exists();
+                } while ($exists);
+                
+                $order->order_code = $randomCode;
+            }
+        });
+    }
 
     public function user(): BelongsTo
     {

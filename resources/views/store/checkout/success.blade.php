@@ -22,7 +22,7 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <div class="small text-muted">Mã đơn hàng</div>
-                            <div class="fw-semibold">#{{ $order->id }}</div>
+                            <div class="fw-semibold">#{{ $order->order_code ?? sprintf('%04d', $order->id) }}</div>
                         </div>
                         <div class="col-md-6">
                             <div class="small text-muted">Ngày đặt</div>

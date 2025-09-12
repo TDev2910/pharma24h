@@ -79,9 +79,15 @@ class DashboardController extends Controller
     public function orders()
     {
         $user = Auth::user();
-        // TODO: Lấy danh sách đơn hàng của user
-        // $orders = $user->orders()->latest()->get();
-        return view('user.dashboard.orders', compact('user'));
+        $orders = $user->orders()->latest()->get();
+        return view('user.orders.index', compact('user','orders'));
+    }
+
+    public function orderDetails($orderId)
+    {
+        $user = Auth::user();
+        $order = $user->orders()->with('items')->where('id', $orderId)->firstOrFail();
+        return view('user.orders.details', compact('user', 'order'));
     }
 
     /**

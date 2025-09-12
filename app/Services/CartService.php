@@ -23,12 +23,12 @@ class CartService
     public function addToCart($itemId, $itemType, $quantity = 1)
     {
         // Xác định loại sản phẩm và lấy thông tin
-        if ($itemType === 'medicine') 
+        if ($itemType === 'medicine') // thuốc
         {
             $item = Medicine::find($itemId);
             $itemName = $item->ten_thuoc ?? '';
         } 
-        elseif ($itemType === 'goods') 
+        elseif ($itemType === 'goods') // hàng hóa
         {
             $item = Goods::find($itemId);
             $itemName = $item->ten_hang_hoa ?? '';
@@ -44,7 +44,7 @@ class CartService
         
         // Xác định giỏ hàng hiện tại
         $userId = Auth::id();
-        $sessionId = $userId ? null : $this->getSessionId();
+        $sessionId = $userId ? null : $this->getSessionId(); //sessionid nếu chưa đăng nhập
         
         // Kiểm tra sản phẩm đã có trong giỏ chưa
         $cartItem = Cart::where([
