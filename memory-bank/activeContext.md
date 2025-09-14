@@ -1,36 +1,57 @@
-# Active Context - Cart System Development
+# Active Context - Sidebar Categories Display Development
 
 ## Current Focus
-Đang phát triển chức năng **giỏ hàng (Cart System)** cho ứng dụng Suckhoe24h. Đây là tính năng quan trọng cho phép người dùng mua sắm các sản phẩm y tế.
+Đã hoàn thành việc phát triển **Hiển thị nhóm hàng trực tiếp trong sidebar** thay vì modal popup. Đây là cách tiếp cận mới phù hợp hơn với yêu cầu người dùng.
 
 ## Recent Changes
-- Header component đã có icon giỏ hàng với badge hiển thị số lượng (dòng 75-78)
-- Badge hiện tại hiển thị số 0 cố định
-- Cần tích hợp chức năng thực tế để cập nhật số lượng
+- ✅ **Thay đổi từ modal popup** sang hiển thị trực tiếp trong sidebar
+- ✅ **Xóa số lượng sản phẩm** khỏi hiển thị categories
+- ✅ **Thêm icon bút chì** để edit categories
+- ✅ **Click bút chì → mở modal edit** với thông tin đã điền sẵn
+- ✅ **Tích hợp filtering** khi click vào category
+- ✅ **Cập nhật API** để không trả về product counts
+- ✅ **Thêm chức năng edit** với AJAX submit
 
-## Next Steps
-1. **Thiết kế Database Schema** cho Cart và CartItem
-2. **Tạo Models** Cart và CartItem với relationships
-3. **Tạo CartController** với các API endpoints
-4. **Cập nhật Frontend** để xử lý AJAX requests
-5. **Tích hợp với Header** để cập nhật badge real-time
+## Completed Features
+1. **Sidebar Categories Display**:
+   - Hiển thị trực tiếp trong sidebar thay vì modal
+   - Expand/collapse cho các nhóm con
+   - Click vào tên category để filter sản phẩm
+   - Icon bút chì để edit (hiện khi hover)
+   - Không hiển thị số lượng sản phẩm
 
-## Active Decisions
-- Sử dụng **Session-based cart** cho guest users
-- Sử dụng **Database cart** cho authenticated users
-- **Hybrid approach**: Kết hợp cả hai để có trải nghiệm tốt nhất
-- **Real-time updates** sử dụng AJAX thay vì page reload
+2. **Edit Functionality**:
+   - Click bút chì → mở modal edit
+   - Form đã điền sẵn tên và nhóm cha
+   - AJAX submit để cập nhật
+   - Reload sidebar sau khi update thành công
 
-## Technical Considerations
-- **Performance**: Cart operations phải nhanh và responsive
-- **Data Integrity**: Đảm bảo số lượng sản phẩm không âm
-- **User Experience**: Smooth transitions và feedback
-- **Scalability**: Thiết kế để dễ mở rộng trong tương lai
+3. **API Backend**:
+   - Endpoint `/admin/categories/modal/data` (không có product counts)
+   - Route PUT `/admin/categories/{id}/update` cho edit
+   - Recursive category structure với parent_id
 
-## Current Cart Requirements
-- Thêm sản phẩm vào giỏ hàng
-- Cập nhật số lượng sản phẩm
-- Xóa sản phẩm khỏi giỏ hàng
-- Hiển thị tổng số lượng trong header badge
-- Lưu trữ giỏ hàng cho user đã đăng nhập
-- Giỏ hàng tạm thời cho guest users
+4. **Frontend Integration**:
+   - JavaScript xử lý sidebar categories
+   - Filtering sản phẩm theo category được chọn
+   - Modal edit với form validation
+   - Success/error handling
+
+## Technical Implementation
+- **Backend**: ProductCategoryController với method `getCategoriesForModal()` và `update()`
+- **Frontend**: Sidebar display + Edit modal + JavaScript handlers
+- **CSS**: Custom styles cho sidebar categories
+- **Routes**: API endpoint và update route
+
+## Current Status
+- ✅ **Sidebar categories display** hoạt động
+- ✅ **Edit functionality** hoàn chỉnh
+- ✅ **Filtering products** theo category
+- ✅ **Responsive design** cho mobile
+
+## Files Modified
+- `resources/views/admin/products/Danhsachhanghoa/index.blade.php` - Sidebar integration
+- `public/css/modals.css` - Sidebar categories styles
+- `public/js/modals.js` - Sidebar functionality + edit modal
+- `app/Http/Controllers/Admin/ProductCategoryController.php` - API updates
+- `routes/admin.php` - Update route

@@ -158,7 +158,7 @@
                     <i class="fas fa-clipboard-list"></i>
                 </div>
                 <div class="stat-info">
-                    <h3>0</h3>
+                    <h3>{{ $user->orders->count() }}</h3>
                     <p>Đơn hàng</p>
                 </div>
             </div>
@@ -178,7 +178,7 @@
                     <i class="fas fa-file-medical"></i>
                 </div>
                 <div class="stat-info">
-                    <h3>1</h3>
+                    <h3>0</h3>
                     <p>Hồ sơ sức khỏe</p>
                 </div>
             </div>

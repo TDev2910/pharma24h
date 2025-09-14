@@ -110,6 +110,70 @@ class ProductCategoryController extends Controller
     }
 
     /**
+     * Get categories for modal selection (with product counts)
+     */
+    public function getCategoriesForModal(Request $request)
+    {
+        $search = $request->get('search', '');
+        
+        $categories = ProductCategory::getCategoryTree();
+        
+        // Add product counts to each category
+        $categoriesWithCounts = $this->addProductCounts($categories, $search);
+        
+        return response()->json([
+            'success' => true,
+            'data' => $categoriesWithCounts
+        ]);
+    }
+    
+    /**
+     * Add product counts to categories recursively
+     */
+    private function addProductCounts($categories, $search = '')
+    {
+        $result = [];
+        
+        foreach ($categories as $category) {
+            // Filter by search term if provided
+            $matchesSearch = empty($search) || 
+                           stripos($category->name, $search) !== false ||
+                           $this->categoryMatchesSearch($category, $search);
+            
+            if ($matchesSearch || !empty($search)) {
+                $categoryData = [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'parent_id' => $category->parent_id,
+                    'children' => $this->addProductCounts($category->children, $search)
+                ];
+                
+                $result[] = $categoryData;
+            }
+        }
+        
+        return $result;
+    }
+    
+    /**
+     * Check if category or any of its children matches search term
+     */
+    private function categoryMatchesSearch($category, $search)
+    {
+        if (stripos($category->name, $search) !== false) {
+            return true;
+        }
+        
+        foreach ($category->children as $child) {
+            if ($this->categoryMatchesSearch($child, $search)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
      * Delete category with cascade handling
      */
     public function destroy($id)

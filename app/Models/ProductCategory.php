@@ -66,6 +66,12 @@ class ProductCategory extends Model
     {
         return Cache::remember('categories.roots', 3600, function () {
             return self::whereNull('parent_id')
+                ->orderByRaw("CASE 
+                    WHEN name = 'Thuốc' THEN 1 
+                    WHEN name = 'Hàng hóa' THEN 2 
+                    WHEN name = 'Dịch vụ' THEN 3 
+                    ELSE 4 
+                END")
                 ->orderBy('sort_order')
                 ->orderBy('name')
                 ->get();
@@ -100,6 +106,12 @@ class ProductCategory extends Model
                               ]);
                     }
                 ])
+                ->orderByRaw("CASE 
+                    WHEN name = 'Thuốc' THEN 1 
+                    WHEN name = 'Hàng hóa' THEN 2 
+                    WHEN name = 'Dịch vụ' THEN 3 
+                    ELSE 4 
+                END")
                 ->orderBy('sort_order')
                 ->orderBy('name')
                 ->get();
@@ -117,7 +129,13 @@ class ProductCategory extends Model
         return Cache::remember('categories.dropdown', 3600, function () {
             $result = [];
             $rootCategories = self::whereNull('parent_id')
-                ->orderBy('sort_order')
+                ->orderByRaw("CASE 
+                    WHEN name = 'Thuốc' THEN 1 
+                    WHEN name = 'Hàng hóa' THEN 2 
+                    WHEN name = 'Dịch vụ' THEN 3 
+                    ELSE 4 
+                END")
+                ->orderBy('sort_order') 
                 ->orderBy('name')
                 ->get();
 

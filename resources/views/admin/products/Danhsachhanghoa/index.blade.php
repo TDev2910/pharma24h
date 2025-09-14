@@ -107,13 +107,23 @@
                                 Nhóm hàng
                                 <a href="#" class="create-link" data-bs-toggle="modal" data-bs-target="#createCategoryModal" style="margin-left: 115px;">Tạo mới</a>
                             </label>
-                            <div>
-                                <select class="form-select form-select-sm" name="category_id" onchange="filterProducts()">
-                                    <option value="">Chọn nhóm hàng</option>
-                                    @foreach($categories as $id => $name)
-                                        <option value="{{ $id }}">{{ $name }}</option>
-                                    @endforeach
-                                </select>
+                            <div class="category-dropdown-container">
+                                <div class="category-dropdown-header" onclick="toggleCategoryDropdown()">
+                                    <span id="selectedCategoryText">Chọn nhóm hàng</span>
+                                    <div class="category-header-actions">
+                                        <button type="button" class="btn-reset-category" onclick="resetCategorySelection(event)" title="Xóa lựa chọn" style="display: none;">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        <i class="fas fa-chevron-down" id="categoryDropdownIcon"></i>
+                                    </div>
+                                </div>
+                                <div id="categoriesListContainer" class="category-dropdown-content" style="display: none;">
+                                    <!-- Categories sẽ hiển thị ở đây khi mở dropdown -->
+                                    <div class="category-loading text-center py-3">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <small class="text-muted">Đang tải...</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="filter-section">
@@ -1171,5 +1181,277 @@ function searchProducts() {
         }
     });
 }
+
+// Category dropdown functionality
+let categoriesData = [];
+let selectedCategoryId = null;
+
+// Load categories data
+function loadCategories() {
+    const container = document.getElementById('categoriesListContainer');
+    if (!container) return;
+    
+    // Show loading
+    container.innerHTML = `
+        <div class="category-loading text-center py-3">
+            <i class="fas fa-spinner fa-spin"></i>
+            <small class="text-muted">Đang tải...</small>
+        </div>
+    `;
+    
+    // Load categories from API to get proper tree structure
+    fetch('/admin/categories/modal/data')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                categoriesData = data.data;
+                renderCategories();
+            } else {
+                container.innerHTML = `
+                    <div class="text-center py-3 text-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <small>Lỗi tải danh mục</small>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading categories:', error);
+            container.innerHTML = `
+                <div class="text-center py-3 text-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <small>Lỗi tải danh mục</small>
+                </div>
+            `;
+        });
+}
+
+// Render categories in dropdown with proper hierarchy
+function renderCategories() {
+    const container = document.getElementById('categoriesListContainer');
+    if (!container) return;
+    
+    if (categoriesData.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-3 text-muted">
+                <i class="fas fa-folder-open"></i>
+                <small>Không có nhóm hàng nào</small>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = '';
+    
+    // Render each root category and its children
+    categoriesData.forEach(category => {
+        renderCategoryItem(category, container, 0);
+    });
+}
+
+// Render individual category item with hierarchy
+function renderCategoryItem(category, container, level) {
+    const item = document.createElement('div');
+    item.className = `category-tree-item level-${level}`;
+    item.dataset.categoryId = category.id;
+    
+    // Add proper indentation based on level
+    const prefix = level > 0 ? '- '.repeat(level) : '';
+    
+    item.innerHTML = `
+        <span class="category-tree-name">${prefix}${category.name}</span>
+        <button class="category-tree-edit" onclick="editCategory(${category.id}, '${category.name}', event)" title="Chỉnh sửa">
+            <i class="fas fa-pen"></i>
+        </button>
+    `;
+    
+    // Click to select category
+    item.addEventListener('click', (e) => {
+        if (!e.target.closest('.category-tree-edit')) {
+            selectCategory(category.id, category.name);
+            filterProducts();
+        }
+    });
+    
+    container.appendChild(item);
+    
+    // Render children recursively
+    if (category.children && category.children.length > 0) {
+        category.children.forEach(child => {
+            renderCategoryItem(child, container, level + 1);
+        });
+    }
+}
+
+// Toggle category dropdown
+function toggleCategoryDropdown() {
+    const container = document.getElementById('categoriesListContainer');
+    const icon = document.getElementById('categoryDropdownIcon');
+    const dropdown = document.querySelector('.category-dropdown-container');
+    
+    if (!container || !icon || !dropdown) return;
+    
+    const isOpen = container.style.display !== 'none';
+    
+    if (isOpen) {
+        container.style.display = 'none';
+        dropdown.classList.remove('open');
+    } else {
+        container.style.display = 'block';
+        dropdown.classList.add('open');
+        
+        // Load categories if not loaded yet
+        if (categoriesData.length === 0) {
+            loadCategories();
+        }
+    }
+}
+
+// Select category
+function selectCategory(categoryId, categoryName) {
+    selectedCategoryId = categoryId;
+    
+    // Update display
+    document.getElementById('selectedCategoryText').textContent = categoryName;
+    document.querySelector('.btn-reset-category').style.display = 'inline-block';
+    
+    // Close dropdown
+    const container = document.getElementById('categoriesListContainer');
+    const dropdown = document.querySelector('.category-dropdown-container');
+    if (container) container.style.display = 'none';
+    if (dropdown) dropdown.classList.remove('open');
+    
+    // Update visual state
+    document.querySelectorAll('.category-tree-item').forEach(item => {
+        item.classList.remove('selected');
+        if (parseInt(item.dataset.categoryId) === categoryId) {
+            item.classList.add('selected');
+        }
+    });
+    
+    // Trigger filter
+    filterProducts();
+}
+
+// Reset category selection
+function resetCategorySelection(event) {
+    event.stopPropagation();
+    
+    selectedCategoryId = null;
+    document.getElementById('selectedCategoryText').textContent = 'Chọn nhóm hàng';
+    document.querySelector('.btn-reset-category').style.display = 'none';
+    
+    // Remove selection visual state
+    document.querySelectorAll('.category-tree-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    
+    // Trigger filter
+    filterProducts();
+}
+
+// Edit category
+function editCategory(categoryId, categoryName, event) {
+    event.stopPropagation();
+    
+    const modal = document.getElementById('createCategoryModal');
+    if (!modal) return;
+    
+    // Set form data
+    const nameInput = modal.querySelector('#category-name');
+    const parentSelect = modal.querySelector('#parent-category');
+    const title = modal.querySelector('.modal-title');
+    
+    if (nameInput) nameInput.value = categoryName;
+    if (parentSelect) parentSelect.value = '';
+    if (title) title.textContent = 'Chỉnh sửa nhóm hàng';
+    
+    // Update form action for edit
+    const form = modal.querySelector('form');
+    if (form) {
+        form.action = `/admin/categories/${categoryId}`;
+        // Add method override for PUT
+        let methodInput = form.querySelector('input[name="_method"]');
+        if (!methodInput) {
+            methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            form.appendChild(methodInput);
+        }
+        methodInput.value = 'PUT';
+    }
+    
+    // Show modal
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.querySelector('.category-dropdown-container');
+    if (dropdown && !dropdown.contains(event.target)) {
+        const container = document.getElementById('categoriesListContainer');
+        if (container) container.style.display = 'none';
+        if (dropdown) dropdown.classList.remove('open');
+    }
+});
+
+// Filter products function (updated to work with sidebar categories)
+function filterProducts() {
+    // Get selected category
+    const categoryId = selectedCategoryId;
+    
+    // Get other filter values
+    const manufacturerId = document.querySelector('select[name="manufacturer_id"]')?.value || '';
+    const positionId = document.querySelector('select[name="position_id"]')?.value || '';
+    const productType = document.querySelector('select[name="product_type"]')?.value || '';
+    
+    // Filter table rows
+    const rows = document.querySelectorAll('.product-row');
+    
+    rows.forEach(row => {
+        let showRow = true;
+        
+        // Filter by category
+        if (categoryId && row.dataset.categoryId !== categoryId.toString()) {
+            showRow = false;
+        }
+        
+        // Filter by manufacturer
+        if (manufacturerId && row.dataset.manufacturerId !== manufacturerId) {
+            showRow = false;
+        }
+        
+        // Filter by position
+        if (positionId && row.dataset.positionId !== positionId) {
+            showRow = false;
+        }
+        
+        // Filter by product type
+        if (productType) {
+            if (productType === 'medicine' && !row.classList.contains('medicine-row')) {
+                showRow = false;
+            } else if (productType === 'goods' && !row.classList.contains('goods-row')) {
+                showRow = false;
+            } else if (productType === 'service' && !row.classList.contains('service-row')) {
+                showRow = false;
+            }
+        }
+        
+        // Show/hide row
+        row.style.display = showRow ? 'table-row' : 'none';
+        
+        // Hide detail rows when filtering
+        const detailRow = document.querySelector(`#detail-row-${row.dataset.productId}`);
+        if (detailRow) {
+            detailRow.style.display = 'none';
+        }
+    });
+    
+    console.log('Filtering products...', { categoryId, manufacturerId, positionId, productType });
+}
 </script>
+
+{{-- Categories are now displayed directly in sidebar --}}
+
 @endsection
