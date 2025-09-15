@@ -38,11 +38,20 @@
                     </div>
                 </div>
             </div>
-            <a href="#" class="nav-item">Đơn hàng</a>
+            <div class="nav-item dropdown">
+                <span class="nav-item">Đơn hàng</span>
+                <div class="nav-dropdown nav-dropdown-short">
+                    <div class="dropdown-col">
+                        <div class="dropdown-title">Tổng quan</div>
+                        <a href="{{ route('admin.orders.index') }}" class="dropdown-link">Quản lý đơn hàng</a>
+                    </div>
+                </div>
+            </div>
             <a href="#" class="nav-item">Khách hàng</a>
             <a href="#" class="nav-item">Bác sĩ</a>
             <a href="#" class="nav-item">Nhân viên</a>
             <a href="#" class="nav-item">Sổ quỹ</a>
+            <a href="" class="nav-item">Đăng xuất</a>
         </div>
         <button class="sell-btn">
             <i class="fas fa-cart-shopping cart-icon"></i> Bán hàng

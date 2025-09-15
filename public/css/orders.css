@@ -1,0 +1,115 @@
+/* Order Management Styles */
+
+/* Header Styles */
+.header-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Filter Section */
+.filter-section {
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.filter-section label {
+    color: #555;
+    font-size: 0.85rem;
+}
+
+/* Badge Styles */
+.badge.bg-warning {
+    background-color: #fff8e6 !important;
+    color: #ffa500 !important;
+    border: 1px solid #ffe0b2;
+}
+
+.badge.bg-primary {
+    background-color: #e6f1ff !important;
+    color: #1a73e8 !important;
+    border: 1px solid #c8ddff;
+}
+
+.badge.bg-success {
+    background-color: #e7f5ea !important;
+    color: #28a745 !important;
+    border: 1px solid #c3e6cb;
+}
+
+.badge.bg-danger {
+    background-color: #ffeaea !important;
+    color: #dc3545 !important;
+    border: 1px solid #f5c6cb;
+}
+
+.badge.bg-secondary {
+    background-color: #f0f0f0 !important;
+    color: #6c757d !important;
+    border: 1px solid #e4e4e4;
+}
+
+/* Table Styles */
+.table {
+    font-size: 0.95rem;
+}
+
+.table thead th {
+    font-weight: 600;
+    color: #444;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+.table tbody tr:hover {
+    background-color: #f5f9ff;
+}
+
+.table td, .table th {
+    padding: 0.75rem 0.5rem;
+    vertical-align: middle;
+}
+
+.fw-medium {
+    font-weight: 500;
+}
+
+/* Pagination Styling */
+.pagination .page-item.active .page-link {
+    background-color: #1a73e8;
+    border-color: #1a73e8;
+}
+
+.pagination .page-link {
+    color: #1a73e8;
+}
+
+/* Modal Styling */
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #eee;
+}
+
+/* Order Timeline */
+.list-group-item {
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 5px;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .controls-section {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+    
+    .controls-section button {
+        width: 100%;
+    }
+}

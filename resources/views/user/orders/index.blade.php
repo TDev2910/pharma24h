@@ -37,7 +37,7 @@
                                     <td>{{ $order->customer_phone }}</td>
                                     <td>{{ number_format($order->total_amount) }} đ</td>
                                     <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
-                                                                        <td>
+                                    <td>
                                         @if($order->order_status == 'new')
                                             <span class="badge bg-warning text-dark">Chờ xác nhận</span>
                                         @elseif($order->order_status == 'processing')

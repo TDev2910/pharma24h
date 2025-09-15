@@ -1,0 +1,131 @@
+<?php
+
+namespace App\Http\Controllers\Admin\Order;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use App\Models\Order;
+use Illuminate\Http\Request;
+
+class OrdersController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $orders = Order::with('user')->latest()->get(); 
+        return view('admin.orders.index', compact('orders'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $order)
+    {
+        $order = Order::findOrFail($order);
+        $items = $order->items;
+        return response()->json([
+            'success' => true,
+            'order' => $order,
+            'items' => $items,
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $order = Order::findOrFail($id);
+        $items = $order->items;
+        return response()->json([
+            'success' => true,
+            'order' => $order,
+            'items' => $items,
+        ]);
+    }
+
+    /**
+     * Update the specified resource status.
+     */
+    public function updateStatus(Request $request, string $order)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,processing,completed,cancelled',
+        ]);
+        $order = Order::findOrFail($order);
+        $order->order_status = $request->status;
+        $order->save();
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Trạng thái đơn hàng đã được cập nhật thành công!',
+            ]);
+        }
+        return redirect()->back()->with('success', 'Trạng thái đơn hàng đã được cập nhật thành công!');
+    }
+
+    /**
+     * Update resource (RESTful) – hiện chỉ hỗ trợ cập nhật order_status.
+     */
+    public function update(Request $request, string $id)
+    {
+        $order = Order::findOrFail($id);
+
+        // Validate các trường thông tin đơn hàng (trừ trạng thái đơn cập nhật qua endpoint riêng)
+        $validated = $request->validate([
+            'customer_name' => 'nullable|string|max:255',
+            'customer_email' => 'nullable|email|max:255',
+            'customer_phone' => 'nullable|string|max:50',
+            'shipping_address' => 'nullable|string|max:255',
+            'province' => 'nullable|string|max:255',
+            'district' => 'nullable|string|max:255',
+            'ward' => 'nullable|string|max:255',
+            'pickup_location' => 'nullable|string|max:255',
+            'note' => 'nullable|string|max:1000',
+            'delivery_method' => 'nullable|in:shipping,pickup',
+            'payment_method' => 'nullable|string|max:50',
+            // Không nhận order_status ở đây để tránh nhầm với dropdown cập nhật trạng thái
+        ]);
+
+        $order->fill($validated);
+        $order->save();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật thông tin đơn hàng thành công',
+                'order' => $order,
+            ]);
+        }
+        return redirect()->back()->with('success', 'Cập nhật thông tin đơn hàng thành công');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $order = Order::findOrFail($id);
+        $order->delete();
+        return redirect()->route('admin.orders.index')->with('success', 'Đơn hàng đã được xóa thành công!');
+    }
+}
