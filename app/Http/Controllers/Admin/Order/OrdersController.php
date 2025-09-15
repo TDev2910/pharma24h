@@ -13,9 +13,13 @@ class OrdersController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with('user')->latest()->get(); 
+        $query = Order::with('user')->latest();
+        if ($request->filled('order_code')) {
+            $query->where('order_code', $request->order_code);
+        }
+        $orders = $query->get();
         return view('admin.orders.index', compact('orders'));
     }
 

@@ -28,15 +28,16 @@
 
     <!-- Filter Section -->
     <div class="filter-section mb-4 bg-white p-3 rounded shadow-sm">
-        <div class="row g-3 align-items-end">
-            <!-- Order Number Filter -->
-            <div class="col-md-2">
-                <label class="form-label small fw-bold">Mã đơn hàng</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
-                    <input type="text" class="form-control" placeholder="Tìm theo mã">
+        <form method="GET" action="{{ route('admin.orders.index') }}">
+            <div class="row g-3 align-items-end">
+                <!-- Order Number Filter -->
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Mã đơn hàng</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
+                        <input type="text" name="order_code" class="form-control" placeholder="Tìm theo mã" value="{{ request('order_code') }}">
+                    </div>
                 </div>
-            </div>
             
             <!-- Date Range Filter -->
             <div class="col-md-3">
@@ -72,19 +73,20 @@
             </div>
             
             <!-- Filter Button -->
-            <div class="col-md-2">
-                <button class="btn btn-primary w-100">
-                    <i class="fas fa-filter me-2"></i> Lọc dữ liệu
-                </button>
-            </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i> Lọc dữ liệu
+                    </button>
+                </div>
             
             <!-- Reset Button -->
-            <div class="col-md-1">
-                <button class="btn btn-outline-secondary w-100">
-                    <i class="fas fa-redo"></i>
-                </button>
+                <div class="col-md-1">
+                    <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-redo"></i>
+                    </a>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <!-- Orders Table -->
