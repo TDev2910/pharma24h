@@ -110,6 +110,7 @@
             var statusText = 'Không xác định';
             switch(status) {
                 case 'pending':
+                case 'unpaid':
                     badgeClass = 'bg-warning text-dark';
                     statusText = 'Chưa thanh toán';
                     break;
@@ -124,6 +125,10 @@
                 case 'refunded':
                     badgeClass = 'bg-info';
                     statusText = 'Đã hoàn tiền';
+                    break;
+                case 'cancelled':
+                    badgeClass = 'bg-danger';
+                    statusText = 'Đơn hàng đã bị hủy';
                     break;
             }
             return '<span class="badge ' + badgeClass + '">' + statusText + '</span>';
@@ -166,8 +171,13 @@
             html += '<p class="mb-1"><strong>Ngày đặt:</strong> ' + formatDate(order.created_at) + '</p>';
             var statusBadge = getStatusBadge(order.order_status);
             html += '<p class="mb-1"><strong>Trạng thái:</strong> ' + statusBadge + '</p>';
-            var paymentStatusBadge = getPaymentStatusBadge(order.payment_status);
-            html += '<p class="mb-1"><strong>Trạng thái thanh toán:</strong> ' + paymentStatusBadge + '</p>';
+            // Nếu đơn hàng bị hủy thì hiển thị rõ, không hiển thị trạng thái thanh toán
+            if ((order.order_status || '').toLowerCase() === 'cancelled') {
+                html += '<p class="mb-1"><strong>Trạng thái thanh toán:</strong> <span class="badge bg-danger">Đơn hàng đã bị hủy</span></p>';
+            } else {
+                var paymentStatusBadge = getPaymentStatusBadge(order.payment_status);
+                html += '<p class="mb-1"><strong>Trạng thái thanh toán:</strong> ' + paymentStatusBadge + '</p>';
+            }
             html += '<p class="mb-0"><strong>Ghi chú:</strong> ' + (order.note || 'Không có') + '</p>';
             html += '</div>';
             html += '<div class="col-md-6">';
@@ -216,7 +226,11 @@
             html += '<div class="col-md-6">';
             html += '<h6 class="fw-bold">Thông tin thanh toán</h6>';
             html += '<p class="mb-1"><strong>Phương thức:</strong> ' + getPaymentMethodText(order.payment_method) + '</p>';
-            html += '<p class="mb-1"><strong>Trạng thái:</strong> ' + paymentStatusBadge + '</p>';
+            if ((order.order_status || '').toLowerCase() === 'cancelled') {
+                html += '<p class="mb-1"><strong>Trạng thái:</strong> <span class="badge bg-danger">Đơn hàng đã bị hủy</span></p>';
+            } else {
+                html += '<p class="mb-1"><strong>Trạng thái:</strong> ' + getPaymentStatusBadge(order.payment_status) + '</p>';
+            }
             if (order.transaction_id) html += '<p class="mb-0"><strong>Mã giao dịch:</strong> ' + order.transaction_id + '</p>';
             html += '</div>';
             html += '<div class="col-md-6">';

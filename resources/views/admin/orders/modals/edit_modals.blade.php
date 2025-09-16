@@ -164,10 +164,13 @@
         function getPaymentStatusBadge(status){
             let badgeClass = 'bg-secondary', text = 'Không xác định';
             switch(status){
-                case 'pending': badgeClass='bg-warning text-dark'; text='Chưa thanh toán'; break;
+                case 'pending':
+                case 'unpaid':
+                    badgeClass='bg-warning text-dark'; text='Chưa thanh toán'; break;
                 case 'paid': badgeClass='bg-success'; text='Đã thanh toán'; break;
                 case 'failed': badgeClass='bg-danger'; text='Thanh toán thất bại'; break;
                 case 'refunded': badgeClass='bg-info'; text='Đã hoàn tiền'; break;
+                case 'cancelled': badgeClass='bg-danger'; text='Đơn hàng đã bị hủy'; break;
             }
             return '<span class="badge ' + badgeClass + '">' + text + '</span>';
         }

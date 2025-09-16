@@ -81,7 +81,15 @@ class OrdersController extends Controller
             'status' => 'required|in:pending,processing,completed,cancelled',
         ]);
         $order = Order::findOrFail($order);
+        //cập nhật trang thái đơn hàng và trạng thái thanh toán 
         $order->order_status = $request->status;
+        if ($request->status === 'completed') {
+            $order->payment_status = 'paid';
+        } elseif (in_array($request->status, ['pending', 'processing'])) {
+            $order->payment_status = 'unpaid';
+        } elseif ($request->status === 'cancelled') {
+            $order->payment_status = 'cancelled';
+        }
         $order->save();
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
