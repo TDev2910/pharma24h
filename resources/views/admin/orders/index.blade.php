@@ -201,6 +201,12 @@
                 setTimeout(function(){ window.open(url, '_blank'); }, idx * 250);
             });
         });
+
+        // Auto submit filter form khi thay đổi input ngày hoặc mã đơn hàng
+        const filterForm = $('.filter-section form');
+        filterForm.find('input[name="from_date"], input[name="to_date"], input[name="order_code"]').on('change', function() {
+            filterForm.submit();
+        });
     });
 </script>
 @endpush
