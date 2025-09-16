@@ -11,7 +11,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>         
-                <button type="button" class="btn btn-success print-invoice-btn">In hóa đơn</button>
+                <a id="printInvoiceBtn" href="#" target="_blank" class="btn btn-success">In hóa đơn</a>
             </div>
         </div>
     </div>
@@ -38,6 +38,10 @@
             $('#orderDetailModal .modal-body').html('<div class="text-center my-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Đang tải dữ liệu...</p></div>');
             $('#orderDetailModal').modal('show');
             loadOrderDetails(currentOrderId);
+
+            // Cập nhật link in hóa đơn theo currentOrderId
+            var invoiceUrl = '{{ route("admin.orders.invoice", ["order" => ":id"]) }}'.replace(':id', currentOrderId);
+            $('#printInvoiceBtn').attr('href', invoiceUrl);
         });
 
         // Tải chi tiết đơn hàng

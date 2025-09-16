@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrdersController extends Controller
 {
@@ -132,4 +133,13 @@ class OrdersController extends Controller
         $order->delete();
         return redirect()->route('admin.orders.index')->with('success', 'Đơn hàng đã được xóa thành công!');
     }
+
+    //In hóa đơn file pdf
+    public function printInvoice($orderId)
+    {
+        $order = Order::with('items')->findOrFail($orderId);
+        $pdf = Pdf::loadView('admin.orders.invoice', compact('order'));
+        return $pdf->download('hoa-don-'.$order->order_code.'.pdf');
+    }
 }
+

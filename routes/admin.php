@@ -97,4 +97,5 @@ Route::prefix('admin')->name('admin.')->group(function ()
     // Orders routes
     Route::resource('orders',\App\Http\Controllers\Admin\Order\OrdersController::class)->names('orders');
     Route::post('orders/{order}/update-status', [\App\Http\Controllers\Admin\Order\OrdersController::class, 'updateStatus'])->name('orders.update-status');
+    Route::get('orders/{order}/invoice', [\App\Http\Controllers\Admin\Order\OrdersController::class, 'printInvoice'])->name('orders.invoice');
 });

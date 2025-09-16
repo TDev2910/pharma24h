@@ -22,6 +22,10 @@
                     <i class="fas fa-plus me-2"></i>
                     Tạo đơn hàng mới
                 </button>
+                <button id="printSelectedBtn" class="btn btn-success d-flex align-items-center">
+                    <i class="fas fa-print me-2"></i>
+                    In hóa đơn đã chọn
+                </button>
             </div>
         </div>
     </div>
@@ -43,9 +47,9 @@
             <div class="col-md-3">
                 <label class="form-label small fw-bold">Ngày đặt hàng</label>
                 <div class="input-group">
-                    <input type="date" class="form-control" placeholder="Từ ngày">
+                    <input type="date" name="from_date" class="form-control" placeholder="Từ ngày" value="{{ request('from_date') }}">
                     <span class="input-group-text">-</span>
-                    <input type="date" class="form-control" placeholder="Đến ngày">
+                    <input type="date" name="to_date" class="form-control" placeholder="Đến ngày" value="{{ request('to_date') }}">
                 </div>
             </div>
             
@@ -68,23 +72,8 @@
                     <option selected value="">Tất cả</option>
                     <option value="cash">Tiền mặt</option>
                     <option value="transfer">Chuyển khoản Vnpay</option>
-
                 </select>
-            </div>
-            
-            <!-- Filter Button -->
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-filter me-2"></i> Lọc dữ liệu
-                    </button>
-                </div>
-            
-            <!-- Reset Button -->
-                <div class="col-md-1">
-                    <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary w-100">
-                        <i class="fas fa-redo"></i>
-                    </a>
-                </div>
+            </div>          
             </div>
         </form>
     </div>
@@ -115,7 +104,7 @@
                         <tr data-order-id="{{ $order->id }}">
                             <td>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox">
+                                    <input class="form-check-input order-select" type="checkbox" value="{{ $order->id }}">
                                 </div>
                             </td>
                             <td><span class="fw-medium">{{ $order->order_code }}</span></td>
@@ -195,6 +184,22 @@
         // Select all checkbox (giữ tại index)
         $('#selectAll').change(function() {
             $('tbody input[type="checkbox"]').prop('checked', $(this).prop('checked'));
+        });
+
+        // In nhiều hóa đơn đã chọn
+        $('#printSelectedBtn').on('click', function(e) {
+            e.preventDefault();
+            const selectedIds = $('tbody input.order-select:checked').map(function(){ return $(this).val(); }).get();
+            if (selectedIds.length === 0) {
+                alert('Vui lòng chọn ít nhất một đơn hàng để in.');
+                return;
+            }
+            // Mở từng hóa đơn ở tab mới để trình duyệt xử lý in/ tải PDF
+            selectedIds.forEach(function(id, idx) {
+                const url = '{{ route("admin.orders.invoice", ["order" => ":id"]) }}'.replace(':id', id);
+                // Thêm độ trễ nhỏ để tránh chặn pop-up trên một số trình duyệt
+                setTimeout(function(){ window.open(url, '_blank'); }, idx * 250);
+            });
         });
     });
 </script>
