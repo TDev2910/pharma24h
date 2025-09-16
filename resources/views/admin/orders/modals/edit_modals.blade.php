@@ -161,6 +161,8 @@
             if(s==='cancelled') return '<span class="badge bg-danger">Đã hủy</span>';
             return '<span class="badge bg-secondary">Khác</span>';
         }
+
+        // Hiển thị trạng thái thanh toán
         function getPaymentStatusBadge(status){
             let badgeClass = 'bg-secondary', text = 'Không xác định';
             switch(status){
@@ -174,16 +176,7 @@
             }
             return '<span class="badge ' + badgeClass + '">' + text + '</span>';
         }
-        function getPaymentMethodText(method){
-            switch(method){
-                case 'cash': return 'Tiền mặt';
-                case 'transfer': return 'Chuyển khoản';
-                case 'vnpay': return 'VNPay';
-                case 'momo': return 'Ví MoMo';
-                case 'zalopay': return 'ZaloPay';
-                default: return method || 'Không xác định';
-            }
-        }
+        
         function getDeliveryMethodText(method){
             switch(method){
                 case 'shipping': return 'Giao hàng tận nơi';

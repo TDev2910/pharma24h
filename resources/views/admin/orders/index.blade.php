@@ -56,12 +56,12 @@
             <!-- Status Filter -->
             <div class="col-md-2">
                 <label class="form-label small fw-bold">Trạng thái</label>
-                <select class="form-select">
-                    <option selected value="">Tất cả</option>
-                    <option value="pending">Đang chờ xử lý</option>
-                    <option value="processing">Đang xử lý</option>
-                    <option value="completed">Hoàn thành</option>
-                    <option value="cancelled">Đã hủy</option>
+                <select class="order-status-filter form-select" name="status">
+                    <option value="" {{ request('status')==='' ? 'selected' : '' }}>Tất cả</option>
+                    <option value="pending" {{ request('status')==='pending' ? 'selected' : '' }}>Đang chờ xử lý</option>
+                    <option value="processing" {{ request('status')==='processing' ? 'selected' : '' }}>Đang xử lý</option>
+                    <option value="completed" {{ request('status')==='completed' ? 'selected' : '' }}>Hoàn thành</option>
+                    <option value="cancelled" {{ request('status')==='cancelled' ? 'selected' : '' }}>Đã hủy</option>
                 </select>
             </div>
             
@@ -205,6 +205,10 @@
         // Auto submit filter form khi thay đổi input ngày hoặc mã đơn hàng
         const filterForm = $('.filter-section form');
         filterForm.find('input[name="from_date"], input[name="to_date"], input[name="order_code"]').on('change', function() {
+            filterForm.submit();
+        });
+        // Auto submit khi đổi trạng thái
+        filterForm.find('select[name="status"]').on('change', function() {
             filterForm.submit();
         });
     });

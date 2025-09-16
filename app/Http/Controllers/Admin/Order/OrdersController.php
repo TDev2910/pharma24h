@@ -20,6 +20,10 @@ class OrdersController extends Controller
         if ($request->filled('order_code')) {
             $query->where('order_code', $request->order_code);
         }
+        // Lọc theo trạng thái nếu có
+        if ($request->filled('status')) {
+            $query->where('order_status', $request->status);
+        }
         // Lọc theo ngày đặt hàng nếu có
         $from = $request->input('from_date');
         $to = $request->input('to_date');

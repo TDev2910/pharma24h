@@ -104,7 +104,8 @@
             }
             return '<span class="badge ' + badgeClass + '">' + statusText + '</span>';
         }
-
+        
+        //hiển thị trạng thái thanh toán
         function getPaymentStatusBadge(status) {
             var badgeClass = 'bg-secondary';
             var statusText = 'Không xác định';
@@ -132,23 +133,6 @@
                     break;
             }
             return '<span class="badge ' + badgeClass + '">' + statusText + '</span>';
-        }
-
-        function getPaymentMethodText(method) {
-            switch(method) {
-                case 'cash':
-                    return 'Tiền mặt';
-                case 'transfer':
-                    return 'Chuyển khoản';
-                case 'vnpay':
-                    return 'VNPay';
-                case 'momo':
-                    return 'Ví MoMo';
-                case 'zalopay':
-                    return 'ZaloPay';
-                default:
-                    return method || 'Không xác định';
-            }
         }
 
         function getDeliveryMethodText(method) {

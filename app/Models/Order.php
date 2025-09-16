@@ -78,7 +78,7 @@ class Order extends Model
         if($from && $to)
         {
             return $query->whereDate('created_at','>=',$from)
-                         ->whereDate('created_at','<=',$to);
+                        ->whereDate('created_at','<=',$to);
             //Lọc tất cả đơn hàng ví dụ 13/09 đến 15/09 (bao gồm cả ngày 13 và 15).
         }
         elseif($from)
@@ -90,6 +90,15 @@ class Order extends Model
         {
             return $query->whereDate('created_at', '<=', $to);
             //lấy tất cả đơn hàng ví dụ từ ngày 15/09 trở về trước
+        }
+        return $query;
+    }
+
+    public function scopeFilterByStatus($query,$status)
+    {
+        if($status && in_array($status, ['new','processing','shipped','delivered','cancelled']))
+        {
+            return $query->where('order_status',$status);
         }
         return $query;
     }
