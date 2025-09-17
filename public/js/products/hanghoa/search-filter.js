@@ -101,12 +101,13 @@ window.clearSearch = function() {
 
 // Filter products 
 window.filterProducts = function() {
-    // Lấy giá trị của các filter
-    const categoryId = document.querySelector('select[name="category_id"]').value;
-    const manufacturerId = document.querySelector('select[name="manufacturer_id"]').value;
-    const positionId = document.querySelector('select[name="position_id"]').value;
-    const productType = document.querySelector('select[name="product_type"]').value;
+    // Lấy giá trị của các filter (sử dụng optional chaining để tránh lỗi null)
+    const categoryId = document.querySelector('select[name="category_id"]')?.value || '';
+    const manufacturerId = document.querySelector('select[name="manufacturer_id"]')?.value || '';
+    const positionId = document.querySelector('select[name="position_id"]')?.value || '';
+    const productType = document.querySelector('select[name="product_type"]')?.value || '';
     const searchTerm = document.getElementById('searchInput')?.value.toLowerCase().trim() || '';
+    
     
     // Lấy tất cả các hàng sản phẩm
     const productRows = document.querySelectorAll('.product-row');
@@ -144,7 +145,6 @@ window.filterProducts = function() {
             const rowManufacturerId = row.getAttribute('data-manufacturer-id');
             // Nếu là dịch vụ hoặc có manufacturer ID khác thì ẩn
             if (!rowManufacturerId || rowManufacturerId !== manufacturerId.toString()) {
-                console.log(rowManufacturerId, manufacturerId);
                 showRow = false;
             }
         }

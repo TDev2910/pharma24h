@@ -63,17 +63,7 @@
                     <option value="completed" {{ request('status')==='completed' ? 'selected' : '' }}>Hoàn thành</option>
                     <option value="cancelled" {{ request('status')==='cancelled' ? 'selected' : '' }}>Đã hủy</option>
                 </select>
-            </div>
-            
-            <!-- Payment Method Filter -->
-            <div class="col-md-2">
-                <label class="form-label small fw-bold">Phương thức thanh toán</label>
-                <select class="form-select">
-                    <option selected value="">Tất cả</option>
-                    <option value="cash">Tiền mặt</option>
-                    <option value="transfer">Chuyển khoản Vnpay</option>
-                </select>
-            </div>          
+            </div>      
             </div>
         </form>
     </div>

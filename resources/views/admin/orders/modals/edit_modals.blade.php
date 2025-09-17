@@ -176,6 +176,28 @@
             }
             return '<span class="badge ' + badgeClass + '">' + text + '</span>';
         }
+        // Hiển thị phương thức thanh toán
+        function getPaymentMethodText(method) {
+            switch(method) {
+                case 'cash': return 'Tiền mặt';
+                case 'transfer': return 'Chuyển khoản';
+                case 'vnpay': return 'VNPay';
+                case 'momo': return 'Ví MoMo';
+                case 'zalopay': return 'ZaloPay';
+                default: return method || 'Không xác định';
+            }
+        }
+
+        function getDeliveryMethodText(method) {
+            switch(method) {
+                case 'shipping':
+                    return 'Giao hàng tận nơi';
+                case 'pickup':
+                    return 'Nhận tại cửa hàng';
+                default:
+                    return method || 'Không xác định';
+            }
+        }
         
         function getDeliveryMethodText(method){
             switch(method){

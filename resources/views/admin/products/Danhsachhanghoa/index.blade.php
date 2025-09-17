@@ -1108,56 +1108,6 @@ function viewServiceDetail(serviceId) {
     }
 }
 
-/**
- * Filter products to include services
- */
-function filterProducts() {
-    const categoryId = document.querySelector('select[name="category_id"]').value;
-    const manufacturerId = document.querySelector('select[name="manufacturer_id"]').value;
-    const positionId = document.querySelector('select[name="position_id"]').value;
-    const productType = document.querySelector('select[name="product_type"]').value;
-
-    const rows = document.querySelectorAll('.product-row');
-    
-    rows.forEach(row => {
-        let showRow = true;
-        
-        // Filter by category
-        if (categoryId && row.dataset.categoryId !== categoryId) {
-            showRow = false;
-        }
-        
-        // Filter by manufacturer (not applicable to services)
-        if (manufacturerId && !row.classList.contains('service-row') && row.dataset.manufacturerId !== manufacturerId) {
-            showRow = false;
-        }
-        
-        // Filter by position (not applicable to services)
-        if (positionId && !row.classList.contains('service-row') && row.dataset.positionId !== positionId) {
-            showRow = false;
-        }
-        
-        // Filter by product type
-        if (productType) {
-            if (productType === 'medicine' && !row.classList.contains('medicine-row')) {
-                showRow = false;
-            } else if (productType === 'goods' && !row.classList.contains('goods-row')) {
-                showRow = false;
-            } else if (productType === 'service' && !row.classList.contains('service-row')) {
-                showRow = false;
-            }
-        }
-        
-        // Show/hide row
-        row.style.display = showRow ? 'table-row' : 'none';
-        
-        // Also hide detail row if main row is hidden
-        const detailRow = document.getElementById(row.onclick?.toString().match(/detail-row-[^']+/)?.[0]);
-        if (detailRow) {
-            detailRow.style.display = showRow ? 'none' : 'none'; // Always hide detail when filtering
-        }
-    });
-}
 
 /**
  * Search products to include services
@@ -1447,8 +1397,6 @@ function filterProducts() {
             detailRow.style.display = 'none';
         }
     });
-    
-    console.log('Filtering products...', { categoryId, manufacturerId, positionId, productType });
 }
 </script>
 
