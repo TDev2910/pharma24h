@@ -283,6 +283,25 @@
             gap: 20px;
         }
 
+        /* Address Details */
+        .address-details {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 8px;
+        }
+
+        .address-select {
+            background: white;
+        }
+
+        .address-select:disabled {
+            background: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
         .btn-primary {
             background: #3b82f6;
             color: white;
@@ -518,6 +537,33 @@
                                   value="{{ old('address', $user->address ?? '') }}" placeholder="Địa chỉ của bạn">
                        </div>
 
+                       <!-- Address Details Section -->
+                       <div class="form-group">
+                           <label class="form-label">Địa chỉ chi tiết (tùy chọn)</label>
+                           <div class="address-details">
+                               <div class="form-row">
+                                   <div class="form-group">
+                                       <label class="form-label">Tỉnh/Thành phố</label>
+                                       <select id="province" name="province" class="form-control address-select">
+                                           <option value="">-- Chọn tỉnh/thành phố --</option>
+                                       </select>
+                                   </div>
+                                   <div class="form-group">
+                                       <label class="form-label">Quận/Huyện</label>
+                                       <select id="district" name="district" class="form-control address-select" disabled>
+                                           <option value="">-- Chọn quận/huyện --</option>
+                                       </select>
+                                   </div>
+                               </div>
+                               <div class="form-group">
+                                   <label class="form-label">Xã/Phường</label>
+                                   <select id="ward" name="ward" class="form-control address-select" disabled>
+                                       <option value="">-- Chọn xã/phường --</option>
+                                   </select>
+                               </div>
+                           </div>
+                       </div>
+
                         <div style="margin-top: 32px;">
                             <h3 class="section-title">Thay đổi mật khẩu</h3>
                             
@@ -667,6 +713,135 @@
                 alertDiv.remove();
             }, 5000);
         }
+
+        // ===== ADDRESS API MANAGEMENT =====
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProvinces();
+            loadCurrentAddress();
+        });
+
+        function loadCurrentAddress() {
+            const provinceCode = '{{ old("province", $user->province ?? "") }}';
+            const districtCode = '{{ old("district", $user->district ?? "") }}';
+            const wardCode = '{{ old("ward", $user->ward ?? "") }}';
+
+            if (provinceCode) {
+                loadDistricts(provinceCode, districtCode);
+            }
+            if (districtCode) {
+                loadWards(districtCode, wardCode);
+            }
+        }
+
+        function loadProvinces() {
+            fetch('https://provinces.open-api.vn/api/?depth=1')
+                .then(response => response.json())
+                .then(data => {
+                    const provinceSelect = document.getElementById('province');
+                    provinceSelect.innerHTML = '<option value="">-- Chọn tỉnh/thành phố --</option>';
+                    
+                    data.forEach(province => {
+                        const option = document.createElement('option');
+                        option.value = province.code;
+                        option.textContent = province.name;
+                        provinceSelect.appendChild(option);
+                    });
+
+                    // Set current province if exists
+                    const currentProvince = '{{ old("province", $user->province ?? "") }}';
+                    if (currentProvince) {
+                        provinceSelect.value = currentProvince;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading provinces:', error);
+                    document.getElementById('province').innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+                });
+        }
+
+        function loadDistricts(provinceCode, selectedDistrict = '') {
+            const districtSelect = document.getElementById('district');
+            const wardSelect = document.getElementById('ward');
+
+            districtSelect.innerHTML = '<option value="">Đang tải...</option>';
+            districtSelect.disabled = true;
+            wardSelect.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
+            wardSelect.disabled = true;
+
+            if (!provinceCode) {
+                districtSelect.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+                return;
+            }
+
+            fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+                .then(response => response.json())
+                .then(data => {
+                    districtSelect.disabled = false;
+                    districtSelect.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+                    
+                    data.districts.forEach(district => {
+                        const option = document.createElement('option');
+                        option.value = district.code;
+                        option.textContent = district.name;
+                        districtSelect.appendChild(option);
+                    });
+
+                    // Set current district if exists
+                    if (selectedDistrict) {
+                        districtSelect.value = selectedDistrict;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading districts:', error);
+                    districtSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+                    districtSelect.disabled = false;
+                });
+        }
+
+        function loadWards(districtCode, selectedWard = '') {
+            const wardSelect = document.getElementById('ward');
+
+            wardSelect.innerHTML = '<option value="">Đang tải...</option>';
+            wardSelect.disabled = true;
+
+            if (!districtCode) {
+                wardSelect.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
+                return;
+            }
+
+            fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+                .then(response => response.json())
+                .then(data => {
+                    wardSelect.disabled = false;
+                    wardSelect.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
+                    
+                    data.wards.forEach(ward => {
+                        const option = document.createElement('option');
+                        option.value = ward.code;
+                        option.textContent = ward.name;
+                        wardSelect.appendChild(option);
+                    });
+
+                    // Set current ward if exists
+                    if (selectedWard) {
+                        wardSelect.value = selectedWard;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading wards:', error);
+                    wardSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+                    wardSelect.disabled = false;
+                });
+        }
+
+        // Event listeners for address selects
+        document.getElementById('province').addEventListener('change', function() {
+            loadDistricts(this.value);
+        });
+
+        document.getElementById('district').addEventListener('change', function() {
+            loadWards(this.value);
+        });
     </script>
 </body>
 </html>

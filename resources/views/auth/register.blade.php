@@ -92,61 +92,31 @@
                 </div>
             </div>
 
-            <!-- Address -->
+            <!-- Phone Input -->
             <div class="form-group mb-3">
-                <label for="address" class="form-label">Địa chỉ</label>
+                <label for="phone" class="form-label">Số điện thoại</label>
+                <input type="tel" 
+                       class="form-control @error('phone') is-invalid @enderror" 
+                       id="phone" 
+                       name="phone" 
+                       value="{{ old('phone') }}" 
+                       placeholder="Nhập số điện thoại"
+                       required>
+                @error('phone')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <!-- Address (Optional) -->
+            <div class="form-group mb-4">
+                <label for="address" class="form-label">Địa chỉ (tùy chọn)</label>
                 <input type="text" 
                        class="form-control @error('address') is-invalid @enderror" 
                        id="address" 
                        name="address" 
                        value="{{ old('address') }}" 
-                       placeholder="Nhập địa chỉ"
-                       required>
+                       placeholder="Nhập địa chỉ (có thể để trống)">
                 @error('address')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <!-- Province -->
-            <div class="form-group mb-3">
-                <label for="province" class="form-label">Tỉnh/Thành phố</label>
-                <select id="province" 
-                        name="province" 
-                        class="form-select @error('province') is-invalid @enderror" 
-                        required>
-                    <option value="">Đang tải tỉnh/thành phố...</option>
-                </select>
-                @error('province')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <!-- District -->
-            <div class="form-group mb-3">
-                <label for="district" class="form-label">Quận/Huyện</label>
-                <select id="district" 
-                        name="district" 
-                        class="form-select @error('district') is-invalid @enderror" 
-                        required 
-                        disabled>
-                    <option value="">-- Chọn quận/huyện --</option>
-                </select>
-                @error('district')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <!-- Ward -->
-            <div class="form-group mb-4">
-                <label for="ward" class="form-label">Xã/Phường</label>
-                <select id="ward" 
-                        name="ward" 
-                        class="form-select @error('ward') is-invalid @enderror" 
-                        required 
-                        disabled>
-                    <option value="">-- Chọn xã/phường --</option>
-                </select>
-                @error('ward')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
@@ -344,6 +314,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('registerForm');
     const nameInput = document.getElementById('name');
     const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('phone');
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('password_confirmation');
     const registerBtn = document.getElementById('registerBtn');
@@ -369,6 +340,21 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.remove('is-invalid');
             this.classList.add('is-valid');
         } else if (email) {
+            this.classList.remove('is-valid');
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-valid', 'is-invalid');
+        }
+    });
+    
+    phoneInput.addEventListener('input', function() {
+        const phone = this.value;
+        const phoneRegex = /^[0-9]{10,11}$/;
+        
+        if (phone && phoneRegex.test(phone)) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else if (phone) {
             this.classList.remove('is-valid');
             this.classList.add('is-invalid');
         } else {
@@ -409,95 +395,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     confirmPasswordInput.addEventListener('input', validatePasswordMatch);
     
-    // Load provinces
-    fetch('https://provinces.open-api.vn/api/?depth=1')  
-        .then(response => response.json())
-        .then(data => {
-            const provinceSelect = document.getElementById('province');
-            provinceSelect.innerHTML = '<option value="">-- Chọn tỉnh/thành phố --</option>';
-            
-            data.forEach(province => {
-                provinceSelect.insertAdjacentHTML('beforeend',
-                    `<option value="${province.code}">${province.name}</option>`);
-            });
-        })
-        .catch(error => {
-            console.error('Error loading provinces:', error);
-            document.getElementById('province').innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
-        });
-
-    // Province change - load districts
-    document.getElementById('province').addEventListener('change', function(){
-        const provinceCode = this.value;
-        const districtSelect = document.getElementById('district');
-        const wardSelect = document.getElementById('ward');
-
-        districtSelect.innerHTML = '<option value="">Đang tải...</option>'; 
-        districtSelect.disabled = true;
-        wardSelect.innerHTML = '<option value="">-- Chọn xã/phường --</option>'; 
-        wardSelect.disabled = true;
-
-        if (!provinceCode) {
-            districtSelect.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
-            return;
-        }
-
-        fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
-            .then(response => response.json())
-            .then(data => {
-                districtSelect.disabled = false;
-                districtSelect.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
-                
-                data.districts.forEach(district => {
-                    districtSelect.insertAdjacentHTML('beforeend',
-                        `<option value="${district.code}">${district.name}</option>`);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading districts:', error);
-                districtSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
-                districtSelect.disabled = false;
-            });
-    });
-
-    // District change - load wards
-    document.getElementById('district').addEventListener('change', function(){
-        const districtCode = this.value;
-        const wardSelect = document.getElementById('ward');
-
-        wardSelect.innerHTML = '<option value="">Đang tải...</option>'; 
-        wardSelect.disabled = true;
-
-        if (!districtCode) {
-            wardSelect.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
-            return;
-        }
-
-        fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
-            .then(response => response.json())
-            .then(data => {
-                wardSelect.disabled = false;
-                wardSelect.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
-                
-                data.wards.forEach(ward => {
-                    wardSelect.insertAdjacentHTML('beforeend',
-                        `<option value="${ward.code}">${ward.name}</option>`);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading wards:', error);
-                wardSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
-                wardSelect.disabled = false;
-            });
-    });
-    
     // Form submission
     form.addEventListener('submit', function(e) {
         const name = nameInput.value.trim();
         const email = emailInput.value.trim();
+        const phone = phoneInput.value.trim();
         const password = passwordInput.value;
         const confirmPassword = confirmPasswordInput.value;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^[0-9]{10,11}$/;
         
         // Basic validation
         if (!name || name.length < 2) {
@@ -511,6 +417,13 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             emailInput.focus();
             emailInput.classList.add('is-invalid');
+            return;
+        }
+        
+        if (!phone || !phoneRegex.test(phone)) {
+            e.preventDefault();
+            phoneInput.focus();
+            phoneInput.classList.add('is-invalid');
             return;
         }
         

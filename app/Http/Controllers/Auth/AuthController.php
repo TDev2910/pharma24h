@@ -67,10 +67,8 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'], 
             'email' => ['required', 'email', 'unique:users,email'], 
             'password' => ['required','string','confirmed','min:8'],
-            'address' => ['required','string','max:255'],
-            'province' => ['required','string'],
-            'district' => ['required','string'],
-            'ward' => ['required','string'],
+            'phone' => ['required','string','regex:/^[0-9]{10,11}$/'],
+            'address' => ['nullable','string','max:255'],
         ], 
         
         //thông báo lỗi xác thực
@@ -82,10 +80,10 @@ class AuthController extends Controller
             'password.required' => 'Trường mật khẩu là bắt buộc.',
             'password.min' => 'Trường mật khẩu phải có ít nhất 8 ký tự.',
             'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
-            'address.required' => 'Trường địa chỉ là bắt buộc.',
-            'province.required' => 'Trường tỉnh/thành phố là bắt buộc.',
-            'district.required' => 'Trường quận/huyện là bắt buộc.',
-            'ward.required' => 'Trường xã/phường là bắt buộc.',
+            'phone.required' => 'Trường số điện thoại là bắt buộc.',
+            'phone.regex' => 'Số điện thoại phải có 10-11 chữ số.',
+            'address.string' => 'Địa chỉ phải là chuỗi ký tự.',
+            'address.max' => 'Địa chỉ không được quá 255 ký tự.',
         ]);
 
         // Tạo user mới với role mặc định là 'user'
@@ -93,10 +91,8 @@ class AuthController extends Controller
             'name' => $request->name, 
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'address' => $request->address,
-            'province' => $request->province,
-            'district' => $request->district,
-            'ward' => $request->ward,
+            'phone' => $request->phone,
+            'address' => $request->address, // Có thể null
             'role' => 'user', // Luôn mặc định là user
         ];
         

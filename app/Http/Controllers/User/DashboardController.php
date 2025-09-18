@@ -36,6 +36,9 @@ class DashboardController extends Controller
                 'email' => 'required|email|unique:users,email,' . $user->id,
                 'phone' => 'nullable|string|max:20',
                 'address' => 'nullable|string|max:255',
+                'province' => 'nullable|string',
+                'district' => 'nullable|string',
+                'ward' => 'nullable|string',
                 'current_password' => 'nullable|string',
                 'new_password' => 'nullable|string|min:6|confirmed',
             ], [
@@ -54,6 +57,9 @@ class DashboardController extends Controller
                 'email' => $validatedData['email'],
                 'phone' => $validatedData['phone'],
                 'address' => $validatedData['address'],
+                'province' => $validatedData['province'],
+                'district' => $validatedData['district'],
+                'ward' => $validatedData['ward'],
             ]);
 
             // Cập nhật mật khẩu nếu có

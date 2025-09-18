@@ -62,10 +62,10 @@
                     <i class="fas fa-download"></i>
                     Export CSV
                 </button>
-                <a href="{{ route('admin.customers.create') }}" class="action-btn primary">
+                <button type="button" class="action-btn primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
                     <i class="fas fa-plus"></i>
                     Thêm khách hàng
-                </a>
+                </button>
             </div>
         </div>
 
@@ -143,9 +143,12 @@
                                     <a href="{{ route('admin.customers.show', $customer->id) }}" class="action-btn action-btn-sm btn-detail" title="Chi tiết">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('admin.customers.edit', $customer->id) }}" class="action-btn action-btn-sm btn-edit " title="Sửa">
+                                    <button type="button"
+                                        class="action-btn action-btn-sm btn-edit edit-user-btn"
+                                        title="Sửa"
+                                        data-user='{{ json_encode($customer) }}'>
                                         <i class="fas fa-edit"></i>
-                                    </a>
+                                    </button>
                                     <form action="{{ route('admin.customers.destroy', $customer->id) }}" method="POST" class="d-inline delete-form" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
@@ -172,6 +175,9 @@
     </div>
 </div>
 
+<!-- Include modal thêm khách hàng -->
+@include('admin.customer.modals.createUser')
+@include('admin.customer.modals.editUsers')
 <style>
 /* CRM Dashboard Styles */
 .crm-dashboard {
@@ -548,41 +554,231 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Xác nhận xóa
-    const deleteForms = document.querySelectorAll('.delete-form');
-    deleteForms.forEach(form => {
-        form.addEventListener('submit', function(event) {
-            if (!confirm('Bạn có chắc chắn muốn xóa khách hàng này?')) {
-                event.preventDefault();
-            }
-        });
-    });
+    // Xử lý form thêm khách hàng
+    const createForm = document.getElementById('createUserForm');
     
-    // Tìm kiếm khách hàng
-    const searchInput = document.getElementById('searchCustomer');
-    const tableRows = document.querySelectorAll('.customers-table tbody tr');
-    
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
+    if (createForm) {
+        createForm.addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            tableRows.forEach(row => {
-                const customerName = row.querySelector('.customer-name')?.textContent.toLowerCase() || '';
-                const customerEmail = row.cells[1]?.textContent.toLowerCase() || '';
-                const customerPhone = row.cells[2]?.textContent.toLowerCase() || '';
-                const customerAddress = row.cells[3]?.textContent.toLowerCase() || '';
-                
-                if (customerName.includes(searchTerm) || 
-                    customerEmail.includes(searchTerm) || 
-                    customerPhone.includes(searchTerm) ||
-                    customerAddress.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
+            // Reset validation errors
+            document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            
+            const formData = new FormData(this);
+            const submitBtn = document.getElementById('btnSaveUser');
+            
+            // Disable button while submitting
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang xử lý...';
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hiển thị thông báo thành công
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: data.message || 'Thêm khách hàng thành công!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        // Đóng modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('createUserModal'));
+                        modal.hide();
+                        
+                        // Reset form
+                        createForm.reset();
+                        
+                        // Tải lại trang để hiển thị khách hàng mới
+                        window.location.reload();
+                    });
+                } else if (data.errors) {
+                    // Hiển thị lỗi validation
+                    Object.keys(data.errors).forEach(key => {
+                        const errorMsg = data.errors[key][0];
+                        const inputField = document.getElementById(key);
+                        const errorDisplay = document.getElementById(key + '-error');
+                        
+                        if (inputField && errorDisplay) {
+                            inputField.classList.add('is-invalid');
+                            errorDisplay.textContent = errorMsg;
+                        }
+                    });
+                    
+                    // Thông báo lỗi chung
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Vui lòng kiểm tra lại thông tin đã nhập',
+                    });
+                } else if (data.error) {
+                    // Hiển thị lỗi hệ thống
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: data.error,
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi hệ thống!',
+                    text: 'Có lỗi xảy ra khi xử lý yêu cầu của bạn. Vui lòng thử lại sau.',
+                });
+            })
+            .finally(() => {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Lưu khách hàng';
             });
         });
     }
+    
+    // Hiển thị thông báo từ session flash
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Thành công!',
+            text: '{{ session("success") }}',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    @endif
+    
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
+            text: '{{ session("error") }}',
+        });
+    @endif
+    
+    document.getElementById('createUserModal').addEventListener('shown.bs.modal', function () {
+        loadAdminProvinces();
+    });
+
+    function loadAdminProvinces() {
+        fetch('https://provinces.open-api.vn/api/?depth=1')
+            .then(response => response.json())
+            .then(data => {
+                const provinceSelect = document.getElementById('admin-province');
+                provinceSelect.innerHTML = '<option value="">-- Chọn tỉnh/thành phố --</option>';
+                
+                data.forEach(province => {
+                    const option = document.createElement('option');
+                    option.value = province.code;
+                    option.textContent = province.name;
+                    provinceSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading provinces:', error);
+                document.getElementById('admin-province').innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+            });
+    }
+
+    function loadAdminDistricts(provinceCode) {
+        const districtSelect = document.getElementById('admin-district');
+        const wardSelect = document.getElementById('admin-ward');
+
+        districtSelect.innerHTML = '<option value="">Đang tải...</option>';
+        districtSelect.disabled = true;
+        wardSelect.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
+        wardSelect.disabled = true;
+
+        if (!provinceCode) {
+            districtSelect.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+            return;
+        }
+
+        fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+            .then(response => response.json())
+            .then(data => {
+                districtSelect.disabled = false;
+                districtSelect.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+                
+                data.districts.forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district.code;
+                    option.textContent = district.name;
+                    districtSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading districts:', error);
+                districtSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+                districtSelect.disabled = false;
+            });
+    }
+
+    function loadAdminWards(districtCode) {
+        const wardSelect = document.getElementById('admin-ward');
+
+        wardSelect.innerHTML = '<option value="">Đang tải...</option>';
+        wardSelect.disabled = true;
+
+        if (!districtCode) {
+            wardSelect.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
+            return;
+        }
+
+        fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+            .then(response => response.json())
+            .then(data => {
+                wardSelect.disabled = false;
+                wardSelect.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
+                
+                data.wards.forEach(ward => {
+                    const option = document.createElement('option');
+                    option.value = ward.code;
+                    option.textContent = ward.name;
+                    wardSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading wards:', error);
+                wardSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+                wardSelect.disabled = false;
+            });
+    }
+
+    // Event listeners for admin address selects
+    document.getElementById('admin-province').addEventListener('change', function() {
+        loadAdminDistricts(this.value);
+    });
+
+    document.getElementById('admin-district').addEventListener('change', function() {
+        loadAdminWards(this.value);
+    });
+
+    // Event listener for edit buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.edit-user-btn')) {
+            e.preventDefault();
+            const button = e.target.closest('.edit-user-btn');
+            const userData = JSON.parse(button.getAttribute('data-user'));
+            console.log('Edit button clicked, user data:', userData);
+            
+            if (typeof openEditUserModal === 'function') {
+                openEditUserModal(userData);
+            } else {
+                console.error('openEditUserModal function not found');
+                alert('Chức năng chỉnh sửa chưa sẵn sàng. Vui lòng tải lại trang.');
+            }
+        }
+    });
+
 });
 </script>
 @endsection

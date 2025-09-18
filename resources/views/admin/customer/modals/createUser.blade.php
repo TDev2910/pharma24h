@@ -47,15 +47,51 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="phone" class="form-label">Số điện thoại</label>
-                                <input type="text" class="form-control" id="phone" name="phone">
+                                <input type="text" class="form-control" id="phone" name="phone" placeholder="Nhập số điện thoại">
                                 <div class="invalid-feedback" id="phone-error"></div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="address" class="form-label">Địa chỉ</label>
-                                <input type="text" class="form-control" id="address" name="address">
+                                <input type="text" class="form-control" id="address" name="address" placeholder="Nhập địa chỉ">
                                 <div class="invalid-feedback" id="address-error"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Details Section -->
+                    <div class="mb-3">
+                        <label class="form-label">Địa chỉ chi tiết (tùy chọn)</label>
+                        <div class="address-details bg-light p-3 rounded">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Tỉnh/Thành phố</label>
+                                        <select id="admin-province" name="province" class="form-control address-select">
+                                            <option value="">-- Chọn tỉnh/thành phố --</option>
+                                        </select>
+                                        <div class="invalid-feedback" id="province-error"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Quận/Huyện</label>
+                                        <select id="admin-district" name="district" class="form-control address-select" disabled>
+                                            <option value="">-- Chọn quận/huyện --</option>
+                                        </select>
+                                        <div class="invalid-feedback" id="district-error"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Xã/Phường</label>
+                                        <select id="admin-ward" name="ward" class="form-control address-select" disabled>
+                                            <option value="">-- Chọn xã/phường --</option>
+                                        </select>
+                                        <div class="invalid-feedback" id="ward-error"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
