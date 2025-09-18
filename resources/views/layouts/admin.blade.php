@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ asset('css/modals.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    @stack('styles')
    
 </head>
 <body>
@@ -47,11 +48,19 @@
                     </div>
                 </div>
             </div>
-            <a href="#" class="nav-item">Khách hàng</a>
+            <div class="nav-item dropdown">
+                <span class="nav-item">Khách hàng</span>
+                <div class="nav-dropdown nav-dropdown-short">
+                    <div class="dropdown-col">
+                        <div class="dropdown-title">Tổng quan</div>
+                        <a href="{{ route('admin.customers.index') }}" class="dropdown-link">Quản lý khách hàng</a>
+                    </div>
+                </div>
+            </div>
             <a href="#" class="nav-item">Bác sĩ</a>
             <a href="#" class="nav-item">Nhân viên</a>
             <a href="#" class="nav-item">Sổ quỹ</a>
-            <a href="" class="nav-item">Đăng xuất</a>
+            <a href="{{ route('logout')}}" class="nav-item">Đăng xuất</a>
         </div>
         <button class="sell-btn">
             <i class="fas fa-cart-shopping cart-icon"></i> Bán hàng

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ProductCategoryController;
 use App\Http\Controllers\Admin\Supplier\SupplierController;
 use App\Http\Controllers\Admin\Supplier\SupplierCategoryController;
 use App\Http\Controllers\Admin\Order\OrdersController;  
+use App\Http\Controllers\Admin\Customer\CustomerController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () 
@@ -88,9 +89,6 @@ Route::prefix('admin')->name('admin.')->group(function ()
     // CATEGORY ROUTES
     Route::resource('categories', ProductCategoryController::class)->names('categories');
     Route::get('categories/modal/data', [ProductCategoryController::class, 'getCategoriesForModal'])->name('categories.modal.data');
-    Route::get('categories/demo', function() {
-        return view('admin.categories.demo');
-    })->name('categories.demo');
     Route::put('categories/{id}/update', [ProductCategoryController::class, 'update'])->name('categories.update');
     Route::resource('products', ProductController::class)->except(['index'])->names('products');
 
@@ -98,4 +96,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::resource('orders',\App\Http\Controllers\Admin\Order\OrdersController::class)->names('orders');
     Route::post('orders/{order}/update-status', [\App\Http\Controllers\Admin\Order\OrdersController::class, 'updateStatus'])->name('orders.update-status');
     Route::get('orders/{order}/invoice', [\App\Http\Controllers\Admin\Order\OrdersController::class, 'printInvoice'])->name('orders.invoice');
+
+    // Customers routes
+    Route::resource('customers', CustomerController::class)->names('customers');
 });
