@@ -86,7 +86,7 @@
                         <div class="filter-section">
                             <label>
                                 Nhóm nhà cung cấp
-                                <a href="#" class="create-link" style="margin-left: 52px;" data-bs-toggle="modal" data-bs-target="#createSupplierCategoryModal">Tạo mới</a>
+                                <a href="#" class="create-link" style="margin-left: 65px;" data-bs-toggle="modal" data-bs-target="#createSupplierCategoryModal">Tạo mới</a>
                             </label>
                             <div>
                                 <select class="form-select form-select-sm" name="supplier_group_id" onchange="filterSuppliers()">

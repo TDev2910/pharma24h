@@ -37,6 +37,16 @@
     padding: 0;
 }
 
+/* Giảm chiều rộng khung bao bọc filter */
+.col-xl-3.col-lg-3.col-md-4 {
+    max-width: 320px; /* Giới hạn chiều rộng tối đa */
+}
+
+/* Giảm padding của khung bao bọc */
+.col-xl-3.col-lg-3.col-md-4 .p-2 {
+    padding: 12px !important; /* Giảm padding từ 16px xuống 12px */
+}
+
 .filter-section {
     margin-bottom: 1.5rem;
 }
@@ -46,6 +56,23 @@
     color: #495057;
     margin-bottom: 0.5rem;
     display: block;
+}
+
+/* CSS cho form select - giảm chiều dài */
+.filter-section .form-select,
+.filter-section .form-select-sm {
+    max-width: 280px; /* Giới hạn chiều rộng tối đa */
+    width: 100%;
+}
+
+/* CSS cho form select thông thường */
+.form-select {
+    max-width: 300px; /* Giới hạn chiều rộng cho form select thông thường */
+}
+
+/* CSS cho form trong modal */
+.modal .form-select {
+    max-width: 100%; /* Trong modal cho phép full width */
 }
 
 .filter-section .form-select {

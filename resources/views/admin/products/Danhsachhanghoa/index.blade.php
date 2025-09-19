@@ -360,21 +360,17 @@
                                                                     <div class="tab-pane fade" id="description-{{ $medicine->id }}" role="tabpanel">
                                                                         <div class="description-content">
                                                                             <h6 class="text-muted mb-3">Mô tả sản phẩm</h6>
-                                                                            <div class="table-responsive">
-                                                                                <table class="table table-bordered table-striped align-middle text-center">
-                                                                                    <thead class="table-primary">
-                                                                                        <tr>
-                                                                                            <th scope="col">Nội dung</th>
-                                                                                        </tr>
-                                                                                    </thead>
-                                                                                    <tbody>
-                                                                                        <tr>
-                                                                                            <td id="productDetailDescriptionLarge-{{ $medicine->id }}" class="text-start">
-                                                                                                {{ $medicine->mo_ta ?? 'Chưa có mô tả' }}
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                </table>
+                                                                            <div class="description-box">
+                                                                                <div id="productDetailDescriptionLarge-{{ $medicine->id }}" class="description-text">
+                                                                                    {{ $medicine->mo_ta ?? 'Chưa có mô tả' }}
+                                                                                </div>
+                                                                            </div>
+                                                                            
+                                                                            <h6 class="text-muted mb-3 mt-4">Ghi chú</h6>
+                                                                            <div class="description-box">
+                                                                                <div id="productDetailNotesLarge-{{ $medicine->id }}" class="description-text">
+                                                                                    {{ $medicine->ghi_chu ?? 'Chưa có ghi chú' }}
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>

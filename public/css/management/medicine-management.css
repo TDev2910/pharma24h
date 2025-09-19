@@ -113,8 +113,8 @@
 }
 
 .product-table thead th {
-    background-color: #e3f2fd;
-    color: #1976d2;
+    background-color: #f8f9fa;
+    color: #222;
     font-weight: 500;
     border: none;
     padding: 12px 14px; /* giảm padding để tiết kiệm chiều ngang */
@@ -199,6 +199,30 @@
     border-radius: 12px; /* Tăng số để bo tròn nhiều hơn */
     overflow: hidden; /* Quan trọng: ẩn phần thừa khi bo tròn */
     width: 100%;
+}
+
+/* CSS cho phần mô tả và ghi chú */
+.description-box {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    min-height: 120px;
+}
+
+.description-text {
+    color: #495057;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap; /* Giữ nguyên xuống dòng */
+    word-wrap: break-word;
+}
+
+.description-text:empty::before {
+    content: "Chưa có nội dung";
+    color: #6c757d;
+    font-style: italic;
 }
 
 .product-table tbody tr {
