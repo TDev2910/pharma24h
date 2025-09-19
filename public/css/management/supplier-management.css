@@ -4,10 +4,11 @@
 
 /* Header Control Bar */
 .header-control-bar {
-    background: #ffffff;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-    padding: 1rem;
+    margin-top: 30px;
+    background: transparent; /* Bỏ background */
+    border-radius: 0; /* Bỏ bo góc */
+    border: none; /* Bỏ viền */
+    padding: 0; /* Bỏ padding */
     margin-bottom: 1rem;
 }
 
