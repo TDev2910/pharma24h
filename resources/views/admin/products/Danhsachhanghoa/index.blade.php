@@ -105,7 +105,7 @@
                         <div class="filter-section">
                             <label>
                                 Nhóm hàng
-                                <a href="#" class="create-link" data-bs-toggle="modal" data-bs-target="#createCategoryModal" style="margin-left: 115px;">Tạo mới</a>
+                                <a href="#" class="create-link" data-bs-toggle="modal" data-bs-target="#createCategoryModal" style="margin-left: 90px;">Tạo mới</a>
                             </label>
                             <div class="category-dropdown-container">
                                 <div class="category-dropdown-header" onclick="toggleCategoryDropdown()">
@@ -182,7 +182,6 @@
                                         <th>Ảnh</th>
                                         <th>Mã hàng</th>
                                         <th style="min-width: 200px;">Tên hàng</th>
-                                        <th>Tên viết tắt</th>
                                         <th>Giá bán</th>
                                         <th>Giá vốn</th>
                                         <th>Tồn kho</th>
@@ -216,7 +215,6 @@
                                                     <span class="product-name">{{ $medicine->ten_thuoc ?? 'N/A' }}</span>
                                                 </div>
                                             </td>
-                                            <td><span class="product-abbreviation">{{ $medicine->ten_viet_tat ?? 'N/A' }}</span></td>
                                             <td>{{ $medicine->gia_ban_formatted }}</td>
                                             <td>{{ $medicine->gia_von_formatted }}</td>
                                         <td>{{ $medicine->ton_thap_nhat ?? 0 }}</td>
@@ -272,13 +270,7 @@
                                                                                 <div class="info-group">
                                                                                     <h6 class="text-muted mb-3">Thông tin chung</h6>
                                                                                     <div class="table-responsive">
-                                                                                        <table class="table table-bordered table-striped align-middle text-center">
-                                                                                            <thead class="table-primary">
-                                                                                                <tr>
-                                                                                                    <th scope="col">Chỉ tiêu</th>
-                                                                                                    <th scope="col">Giá trị</th>
-                                                                                                </tr>
-                                                                                            </thead>
+                                                                                        <table class="table table-bordered">
                                                                                             <tbody>
                                                                                                 <tr>
                                                                                                     <td><strong>Mã hàng</strong></td>
@@ -321,18 +313,8 @@
                                                                                 <div class="info-group">
                                                                                     <h6 class="text-muted mb-3">Thông tin thuốc</h6>
                                                                                     <div class="table-responsive">
-                                                                                        <table class="table table-bordered table-striped align-middle text-center">
-                                                                                            <thead class="table-primary">
-                                                                                                <tr>
-                                                                                                    <th scope="col">Chỉ tiêu</th>
-                                                                                                    <th scope="col">Giá trị</th>
-                                                                                                </tr>
-                                                                                            </thead>
+                                                                                        <table class="table table-bordered">
                                                                                             <tbody>
-                                                                                                <tr>
-                                                                                                    <td><strong>Mã thuốc</strong></td>
-                                                                                                    <td id="productDetailDrugCode-{{ $medicine->id }}">{{ $medicine->ma_thuoc ?? 'Chưa có' }}</td>
-                                                                                                </tr>
                                                                                                 <tr>
                                                                                                     <td><strong>Hoạt chất</strong></td>
                                                                                                     <td id="productDetailActiveIngredient-{{ $medicine->id }}">{{ $medicine->hoat_chat ?? 'N/A' }}</td>
@@ -401,13 +383,7 @@
                                                                         <div class="inventory-content">
                                                                             <h6 class="text-muted mb-3">Thông tin tồn kho</h6>
                                                                             <div class="table-responsive" style="max-width: 500px;">
-                                                                                <table class="table table-bordered table-striped align-middle text-center">
-                                                                                    <thead class="table-primary">
-                                                                                        <tr>
-                                                                                            <th scope="col">Chỉ tiêu</th>
-                                                                                            <th scope="col">Giá trị</th>
-                                                                                        </tr>
-                                                                                    </thead>
+                                                                                <table class="table table-bordered table-striped align-middle text-center">                                                                                  
                                                                                     <tbody>
                                                                                         <tr>
                                                                                             <td><strong>Tồn kho hiện tại</strong></td>
@@ -551,13 +527,7 @@
                                                                                 <div class="info-group">
                                                                                     <h6 class="text-muted mb-3">Thông tin chung</h6>
                                                                                     <div class="table-responsive">
-                                                                                        <table class="table table-bordered table-striped align-middle text-center">
-                                                                                            <thead class="table-primary">
-                                                                                                <tr>
-                                                                                                    <th scope="col">Chỉ tiêu</th>
-                                                                                                    <th scope="col">Giá trị</th>
-                                                                                                </tr>
-                                                                                            </thead>
+                                                                                        <table class="table table-bordered table-striped align-middle text-center">                                                                                          
                                                                                             <tbody>
                                                                                                 <tr>
                                                                                                     <td><strong>Mã hàng</strong></td>
@@ -601,12 +571,7 @@
                                                                                     <h6 class="text-muted mb-3">Thông tin hàng hóa</h6>
                                                                                     <div class="table-responsive">
                                                                                         <table class="table table-bordered table-striped align-middle text-center">
-                                                                                            <thead class="table-primary">
-                                                                                                <tr>
-                                                                                                    <th scope="col">Chỉ tiêu</th>
-                                                                                                    <th scope="col">Giá trị</th>
-                                                                                                </tr>
-                                                                                            </thead>
+                                                                                           
                                                                                             <tbody>
                                                                                                 <tr>
                                                                                                     <td><strong>Quy cách đóng gói</strong></td>
@@ -673,12 +638,7 @@
                                                                             <h6 class="text-muted mb-3">Thông tin tồn kho</h6>
                                                                             <div class="table-responsive" style="max-width: 500px;">
                                                                                 <table class="table table-bordered table-striped align-middle text-center">
-                                                                                    <thead class="table-primary">
-                                                                                        <tr>
-                                                                                            <th scope="col">Chỉ tiêu</th>
-                                                                                            <th scope="col">Giá trị</th>
-                                                                                        </tr>
-                                                                                    </thead>
+                                                                                
                                                                                     <tbody>
                                                                                         <tr>
                                                                                             <td><strong>Tồn kho hiện tại</strong></td>

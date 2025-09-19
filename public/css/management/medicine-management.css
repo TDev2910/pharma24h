@@ -1,10 +1,6 @@
-/* ===========================================
-   MEDICINE/PRODUCT MANAGEMENT STYLES
-   =========================================== */
-
 /* Layout Structure */
 .container-fluid {
-    max-width: 1400px;
+    max-width: 1400px; /* khôi phục mặc định để bố cục ổn định */
     margin: 0 auto;
 }
 
@@ -101,9 +97,13 @@
     overflow: hidden;
 }
 
+/* Khung bọc bảng phẳng (nếu có dùng) */
+.card--flat{ padding:16px; }
+
 /* Table Styles */
 .table-section {
     padding: 0;
+    /* Removed overflow-x: auto để không có thanh kéo */
 }
 
 .product-table {
@@ -115,9 +115,9 @@
 .product-table thead th {
     background-color: #e3f2fd;
     color: #1976d2;
-    font-weight: 600;
+    font-weight: 500;
     border: none;
-    padding: 12px 16px;
+    padding: 12px 14px; /* giảm padding để tiết kiệm chiều ngang */
     font-size: 14px;
     text-align: center;
     vertical-align: middle;
@@ -135,11 +135,70 @@
 }
 
 .product-table tbody td {
-    padding: 12px 16px;
+    padding: 10px 12px; /* giảm padding để gọn hơn */
     border-bottom: 1px solid #f0f0f0;
     vertical-align: middle;
     text-align: center;
     font-size: 14px;
+}
+
+/* Không cho xuống dòng ở cột giá bán và giá vốn; nới rộng tối thiểu */
+.product-table tbody td:nth-child(5),
+.product-table tbody td:nth-child(6) {
+    white-space: nowrap;
+    min-width: 120px;
+}
+
+/* Không xuống dòng cho cột Mã hàng (3) */
+.product-table thead th:nth-child(3),
+.product-table tbody td:nth-child(3) {
+    white-space: nowrap;
+}
+.product-table tbody td:nth-child(3) { min-width: 160px; }
+
+/* Không xuống dòng cho cột Tồn kho (7) và Thời gian tạo (8) */
+.product-table thead th:nth-child(7),
+.product-table thead th:nth-child(8) {
+    white-space: nowrap;
+}
+.product-table tbody td:nth-child(7),
+.product-table tbody td:nth-child(8) {
+    white-space: nowrap;
+}
+/* Không cần min-width khi dùng table-layout: fixed */
+
+/* Phân bổ chiều rộng cột để vừa khung mà không cần kéo */
+.product-table {
+    width: 100%; /* Bảng chiếm toàn bộ chiều rộng container */
+    table-layout: fixed; /* Cố định layout để width có hiệu lực */
+}
+
+.product-table thead th:nth-child(1),
+.product-table tbody td:nth-child(1){ width: 4%; } /* Checkbox */
+.product-table thead th:nth-child(2),
+.product-table tbody td:nth-child(2){ width: 8%; } /* Ảnh */
+.product-table thead th:nth-child(3),
+.product-table tbody td:nth-child(3){ width: 18%; text-align: left; } /* Mã hàng */
+.product-table thead th:nth-child(4),
+.product-table tbody td:nth-child(4){ width: 18%; text-align: left; } /* Tên hàng - giảm để cân bằng */
+.product-table thead th:nth-child(5),
+.product-table tbody td:nth-child(5){ width: 12%; } /* Giá bán */
+.product-table thead th:nth-child(6),
+.product-table tbody td:nth-child(6){ width: 12%; } /* Giá vốn */
+.product-table thead th:nth-child(7),
+.product-table tbody td:nth-child(7){ width: 8%; } /* Tồn kho */
+.product-table thead th:nth-child(8),
+.product-table tbody td:nth-child(8){ width: 20%; } /* Thời gian tạo - tăng để cân đối */
+.product-table thead th:nth-child(9),
+.product-table tbody td:nth-child(9){ width: 4%; } /* Thao tác */
+
+/* Giữ dòng tổng kết ở 1 dòng trong summary */
+.summary-section small { white-space: nowrap; }
+
+.info-group .table {
+    border-radius: 12px; /* Tăng số để bo tròn nhiều hơn */
+    overflow: hidden; /* Quan trọng: ẩn phần thừa khi bo tròn */
+    width: 100%;
 }
 
 .product-table tbody tr {
@@ -211,6 +270,15 @@
     margin-bottom: 10px;
 }
 
+/* Force left alignment in detail header */
+/* Align detail header/content to the left regardless of outer wrapper */
+.detail-content .row{ align-items: flex-start; }
+.product-info-detail{ text-align: left !important; }
+.product-info-detail .product-header{ text-align: left !important; }
+.product-info-detail .product-category,
+.product-info-detail .product-tags{ text-align: left !important; }
+.product-tags .badge{ margin-right: 8px; }
+
 .product-category {
     color: #6c757d;
     font-size: 14px;
@@ -249,42 +317,7 @@
     border-color: transparent;
 }
 
-/* Info Groups */
-.info-group {
-    margin-bottom: 20px;
-}
 
-.info-group h6 {
-    color: #495057;
-    font-weight: 600;
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.info-group .table {
-    background: white;
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.info-group .table td {
-    border: 1px solid #e9ecef;
-    padding: 10px 15px;
-    vertical-align: middle;
-}
-
-.info-group .table td:first-child {
-    background-color: #f1f3f4;
-    font-weight: 600;
-    color: #495057;
-    width: 140px;
-}
-
-.info-group .table td:last-child {
-    background-color: white;
-}
 
 /* Action Buttons in Detail */
 .action-section {
@@ -463,3 +496,4 @@
     border-radius: 4px;
     font-weight: 500;
 }
+

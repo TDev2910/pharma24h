@@ -91,9 +91,10 @@
                     // Add provinces to select
                     data.forEach(province => {
                         const option = document.createElement('option');
-                        option.value = province.name;        
+                        // Dùng code làm value để truy vấn quận/huyện/px, lưu name để submit
+                        option.value = province.code;
                         option.textContent = province.name;
-                        option.dataset.code = province.code; 
+                        option.dataset.name = province.name;
                         provinceSelect.appendChild(option);
                     });                               
                 } catch (error) {
@@ -172,7 +173,7 @@
                    
             // Khi chọn tỉnh/thành
             provinceSelect.addEventListener('change', function() {
-                const provinceCode = this.value;
+                const provinceCode = this.value; // là code sau khi chỉnh ở trên
                 if (provinceCode) {
                     loadWards(provinceCode);
                 } else {
@@ -189,9 +190,7 @@
                 const selectedWard = wardSelect.options[wardSelect.selectedIndex];
                 
                 if (selectedProvince && selectedProvince.dataset.name) {
-                    document.querySelector('select[name="khu_vuc"]').value = selectedProvince.dataset.name;
-                    
-                    // Tạo hidden input để đảm bảo
+                    // Gửi tên tỉnh/thành
                     let hiddenProvinceInput = document.getElementById('hidden_province_name');
                     if (!hiddenProvinceInput) {
                         hiddenProvinceInput = document.createElement('input');
@@ -205,9 +204,6 @@
                 
                 if (selectedWard && selectedWard.dataset.name) {
                     // Ghi đè giá trị input chính với TEXT  
-                    document.querySelector('select[name="phuong_xa"]').value = selectedWard.dataset.name;
-                    
-                    // Tạo hidden input để đảm bảo
                     let hiddenWardInput = document.getElementById('hidden_ward_name');
                     if (!hiddenWardInput) {
                         hiddenWardInput = document.createElement('input');
