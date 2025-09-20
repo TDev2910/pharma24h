@@ -95,80 +95,8 @@ window.deleteMedicine = function(medicineId) {
 
 // Function để mở modal chỉnh sửa sản phẩm
 window.openEditMedicineModal = function(medicineId) {
-    // Gọi API để lấy thông tin sản phẩm
-    fetch(`/admin/medicines/${medicineId}/detail`)
-        .then(response => {
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                const medicine = data.product;
-                // Populate form fields
-                const fields = {
-                    'edit_ma_hang': medicine.ma_hang || '',
-                    'edit_ma_vach': medicine.ma_vach || '',
-                    'edit_ten_thuoc': medicine.ten_thuoc || '',
-                    'edit_ten_viet_tat': medicine.ten_viet_tat || '',
-                    'edit_nhom_hang_id': medicine.nhom_hang_id || '',
-                    'edit_gia_von': medicine.gia_von || 0,
-                    'edit_gia_ban': medicine.gia_ban || 0,
-                    'edit_so_dang_ky': medicine.so_dang_ky || '',
-                    'edit_hoat_chat': medicine.hoat_chat || '',
-                    'edit_ham_luong': medicine.ham_luong || '',
-                    'edit_duong_dung_select': medicine.drugusage_id || '',
-                    'edit_manufacturer_select': medicine.manufacturer_id || '',
-                    'edit_nuoc_san_xuat': medicine.nuoc_san_xuat || '',
-                    'edit_quy_cach_dong_goi': medicine.quy_cach_dong_goi || '',
-                    'edit_ton_thap_nhat': medicine.ton_thap_nhat || 0,
-                    'edit_ton_cao_nhat': medicine.ton_cao_nhat || 999999999,
-                    'edit_position_select': medicine.position_id || '',
-                    'edit_trong_luong': medicine.trong_luong || 0,
-                    'edit_don_vi_tinh_input': medicine.don_vi_tinh || '',
-                    'edit_mo_ta': medicine.mo_ta || ''
-                };
-                // Set form values
-                Object.keys(fields).forEach(fieldId => {
-                    const element = document.getElementById(fieldId);
-                    if (element) {
-                        element.value = fields[fieldId];
-                    }
-                });
-                // Set checkbox
-                const banTrucTiep = document.getElementById('edit_ban_truc_tiep');
-                if (banTrucTiep) {
-                    banTrucTiep.checked = medicine.ban_truc_tiep == 1;
-                }
-                // Set form action
-                const form = document.getElementById('editMedicineForm');
-                if (form) {
-                    form.action = `/admin/medicines/${medicineId}`;
-                }
-                // Show current image if exists
-                if (medicine.image) {
-                    const preview = document.getElementById('edit-image-preview');
-                    const placeholder = document.getElementById('edit-image-placeholder');
-                    if (preview && placeholder) {
-                        preview.src = `/storage/${medicine.image}`;
-                        preview.style.display = 'block';
-                        placeholder.style.display = 'none';
-                    }
-                }
-                // Open modal
-                const modalElement = document.getElementById('editMedicineModal');
-                if (modalElement) {
-                    const modal = new bootstrap.Modal(modalElement);
-                    modal.show();
-                } else {
-                    alert('Không tìm thấy modal chỉnh sửa!');
-                }
-            } else {
-                alert('Không thể tải thông tin thuốc!');
-            }
-        })
-        .catch(error => {
-            // Error loading medicine data
-            alert('Đã xảy ra lỗi khi tải thông tin thuốc!');
-        });
+    // Redirect to edit page thay vì sử dụng modal
+    window.location.href = `/admin/medicines/${medicineId}/edit`;
 }
 
 // Delete confirmation modal functions
@@ -184,6 +112,35 @@ window.showDeleteConfirmation = function(medicineId, medicineCode, medicineName)
     // Show modal
     const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
     deleteModal.show();
+}
+
+// Function cho nút xóa trong detail row
+window.showDeleteMedicineConfirmation = function(medicineId, medicineCode, medicineName) {
+    if (confirm(`Bạn có chắc chắn muốn xóa thuốc "${medicineName}" (${medicineCode})?`)) {
+        // Tạo form để gửi request DELETE đến controller
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/medicines/${medicineId}`;
+        
+        // Thêm CSRF token
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        // Thêm method override cho DELETE
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        
+        form.appendChild(csrfToken);
+        form.appendChild(methodField);
+        document.body.appendChild(form);
+        
+        // Submit form
+        form.submit();
+    }
 }
 
 // Confirm delete function for medicines
@@ -215,6 +172,14 @@ window.openUnitModal = function(medicineId) {
     } else {
         alert('Modal đơn vị tính không tìm thấy!');
     }
+}
+
+// Print label function
+window.printLabel = function(medicineId) {
+    // Tạm thời hiển thị thông báo, có thể implement sau
+    alert('Chức năng in tem mã sẽ được triển khai sau!');
+    // Hoặc có thể redirect đến trang in tem nếu có
+    // window.open(`/admin/medicines/${medicineId}/print-label`, '_blank');
 } 
 
 //tim kiem san pham
@@ -323,4 +288,25 @@ function debounce(func, wait) {
 }
 
 // Áp dụng debounce cho search function
-window.searchProducts = debounce(window.searchProducts, 300); 
+window.searchProducts = debounce(window.searchProducts, 300);
+
+// Tab functionality for product detail
+window.switchTab = function(medicineId, tabName) {
+    // Remove active class from all tabs
+    const tabs = document.querySelectorAll(`#detail-row-${medicineId} .pd-tabs .tab`);
+    tabs.forEach(tab => tab.classList.remove('active'));
+    
+    // Add active class to clicked tab
+    const activeTab = event.target;
+    activeTab.classList.add('active');
+    
+    // Hide all tab content
+    const tabContents = document.querySelectorAll(`#detail-row-${medicineId} .tab-content`);
+    tabContents.forEach(content => content.style.display = 'none');
+    
+    // Show selected tab content
+    const targetContent = document.getElementById(`${tabName}-${medicineId}`);
+    if (targetContent) {
+        targetContent.style.display = 'block';
+    }
+} 

@@ -220,213 +220,148 @@
                                         <td>{{ $medicine->ton_thap_nhat ?? 0 }}</td>
                                         <td>{{ $medicine->created_at ? $medicine->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
                                         </tr>
-                                        <!-- Expandable Detail Row -->
+                                        <!-- Expandable Detail Row cho thuốc với layout mới -->
                                         <tr class="detail-row" id="detail-row-{{ $medicine->id }}" style="display: none;">
                                             <td colspan="10" class="p-0">
-                                                <div class="detail-content">
-                                                    <div class="row">
-                                                        <!-- Ảnh sản phẩm -->
-                                                        <div class="col-md-3">
-                                                            <div class="product-image-detail-large">
-                                                                <img id="productDetailImageLarge-{{ $medicine->id }}" src="{{ $medicine->image_url }}"
-                                                                    alt="Product Image"
-                                                                    class="img-fluid rounded"
-                                                                    style="width: 100%; height: 200px; object-fit: cover;">
+                                                <div class="product-detail">
+                                                    <!-- Header -->
+                                                    <div class="pd-header">
+                                                        <div class="pd-thumb">
+                                                            <img src="{{ $medicine->image_url }}" alt="{{ $medicine->ten_thuoc }}">
+                                                            <div class="pd-thumb-fallback">Ảnh</div>
+                                                        </div>
+                                                        <div class="pd-meta">
+                                                            <h2 class="pd-title">{{ $medicine->ten_thuoc ?? 'N/A' }}</h2>
+                                                            <div class="pd-subtitle">Nhóm hàng: {{ $medicine->category->name ?? 'N/A' }}</div>
+
+                                                            <div class="pd-badges">
+                                                                <span class="badge badge-blue">Thuốc</span>
+                                                                <span class="badge badge-green">Bán trực tiếp</span>
+                                                                <span class="badge badge-orange">Không tích điểm</span>
+                                                            </div>
+
+                                                            <div class="pd-tabs">
+                                                                <button class="tab active" onclick="switchTab({{ $medicine->id }}, 'info')">Thông tin</button>
+                                                                <button class="tab" onclick="switchTab({{ $medicine->id }}, 'description')">Mô tả, ghi chú</button>
+                                                                <button class="tab" onclick="switchTab({{ $medicine->id }}, 'inventory')">Tồn kho</button>
                                                             </div>
                                                         </div>
-                                                        <!-- Thông tin sản phẩm -->
-                                                        <div class="col-md-9">
-                                                            <div class="product-info-detail">
-                                                                <!-- Product Header -->
-                                                                <div class="product-header mb-4">
-                                                                    <h4 class="product-title mb-2">{{ $medicine->ten_thuoc ?? 'N/A' }}</h4>
-                                                                    <div class="product-category mb-2">
-                                                                        <small class="text-muted">Nhóm hàng: {{ $medicine->category->name ?? 'N/A' }}</small>
-                                                                    </div>
-                                                                    <div class="product-tags">
-                                                                        <span class="badge bg-primary me-2">Thuốc</span>
-                                                                        <span class="badge bg-light text-dark me-2">Bán trực tiếp</span>
-                                                                        <span class="badge bg-warning">Không tích điểm</span>
+                                                    </div>
+
+                                                    <!-- Tab Content -->
+                                                    <!-- Tab Thông tin -->
+                                                    <div class="tab-content" id="info-{{ $medicine->id }}" style="display: block;">
+                                                        <div class="pd-body">
+                                                            <section class="info-card">
+                                                                <header class="card-header">Thông tin chung</header>
+                                                                <div class="card-body">
+                                                                    <table class="product-table">
+                                                                        <tbody>
+                                                                            <tr><td class="label">Mã hàng</td><td class="value">{{ $medicine->ma_hang ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Mã vạch</td><td class="value">{{ $medicine->ma_vach ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Giá vốn</td><td class="value">{{ $medicine->gia_von_formatted ?? '0 VND' }}</td></tr>
+                                                                            <tr><td class="label">Giá bán</td><td class="value price">{{ $medicine->gia_ban_formatted ?? '0 VND' }}</td></tr>
+                                                                            <tr><td class="label">Tên viết tắt</td><td class="value">{{ $medicine->ten_viet_tat ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Vị trí</td><td class="value">{{ $medicine->position->name ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Định mức tồn</td><td class="value">{{ $medicine->ton_thap_nhat ?? 0 }} - {{ $medicine->ton_cao_nhat ?? '999,999,999' }}</td></tr>
+                                                                            <tr><td class="label">Trọng lượng</td><td class="value">{{ $medicine->trong_luong ? $medicine->trong_luong . ' g' : 'N/A' }}</td></tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </section>
+
+                                                            <section class="info-card">
+                                                                <header class="card-header">Thông tin thuốc</header>
+                                                                <div class="card-body">
+                                                                    <table class="product-table">
+                                                                        <tbody>
+                                                                            <tr><td class="label">Hoạt chất</td><td class="value">{{ $medicine->hoat_chat ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Đường dùng</td><td class="value">{{ $medicine->drugRoute->name ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Số đăng ký</td><td class="value">{{ $medicine->so_dang_ky ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Hàm lượng</td><td class="value">{{ $medicine->ham_luong ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Quy cách đóng gói</td><td class="value">{{ $medicine->quy_cach_dong_goi ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Hãng sản xuất</td><td class="value">{{ $medicine->manufacturer->name ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Nước sản xuất</td><td class="value">{{ $medicine->nuoc_san_xuat ?? 'Việt Nam' }}</td></tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </section>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Tab Mô tả, ghi chú -->
+                                                    <div class="tab-content" id="description-{{ $medicine->id }}" style="display: none;">
+                                                        <div class="description-content">
+                                                            <section class="info-card">
+                                                                <header class="card-header">Mô tả sản phẩm</header>
+                                                                <div class="card-body">
+                                                                    <div class="description-text p-3">
+                                                                        {{ $medicine->mo_ta ?? 'Chưa có mô tả' }}
                                                                     </div>
                                                                 </div>
-                                                                <!-- Tabs -->
-                                                                <ul class="nav nav-tabs" id="productDetailTabs-{{ $medicine->id }}" role="tablist">
-                                                                    <li class="" role="presentation">
-                                                                        <button class="nav-link active" id="info-tab-{{ $medicine->id }}" data-bs-toggle="tab" data-bs-target="#info-{{ $medicine->id }}" type="button" role="tab" style="margin-left:-15px;">Thông tin</button>
-                                                                    </li>
-                                                                    <li class="" role="presentation">
-                                                                        <button class="nav-link" id="description-tab-{{ $medicine->id }}" data-bs-toggle="tab" data-bs-target="#description-{{ $medicine->id }}" type="button" role="tab">Mô tả, ghi chú</button>
-                                                                    </li>
-                                                                    <li class="" role="presentation">
-                                                                        <button class="nav-link" id="inventory-tab-{{ $medicine->id }}" data-bs-toggle="tab" data-bs-target="#inventory-{{ $medicine->id }}" type="button" role="tab">Tồn kho</button>
-                                                                    </li>
-                                                                </ul>
-                                                                <!-- Tab content -->
-                                                                <div class="tab-content mt-3" id="productDetailTabContent-{{ $medicine->id }}">
-                                                                    <!-- Tab Thông tin -->
-                                                                    <div class="tab-pane fade show active" id="info-{{ $medicine->id }}" role="tabpanel">
-                                                                        <div class="row">
-                                                                            <div class="col-md-6">
-                                                                                <div class="info-group">
-                                                                                    <h6 class="text-muted mb-3">Thông tin chung</h6>
-                                                                                    <div class="table-responsive">
-                                                                                        <table class="table table-bordered">
-                                                                                            <tbody>
-                                                                                                <tr>
-                                                                                                    <td><strong>Mã hàng</strong></td>
-                                                                                                    <td id="productDetailCodeLarge-{{ $medicine->id }}">{{ $medicine->ma_hang ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Mã vạch</strong></td>
-                                                                                                    <td id="productDetailBarcode-{{ $medicine->id }}">{{ $medicine->ma_vach ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Giá vốn</strong></td>
-                                                                                                    <td id="productDetailCostLarge-{{ $medicine->id }}">{{ $medicine->gia_von_formatted ?? '0 VND' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Giá bán</strong></td>
-                                                                                                    <td class="text-success" id="productDetailPriceLarge-{{ $medicine->id }}">{{ $medicine->gia_ban_formatted ?? '0 VND' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Tên viết tắt</strong></td>
-                                                                                                    <td id="productDetailAbbreviation-{{ $medicine->id }}">{{ $medicine->ten_viet_tat ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Vị trí</strong></td>
-                                                                                                    <td id="productDetailPositionLarge-{{ $medicine->id }}">{{ $medicine->position->name ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Định mức tồn</strong></td>
-                                                                                                    <td id="productDetailStockRange-{{ $medicine->id }}">{{ $medicine->ton_thap_nhat ?? 0 }} - {{ $medicine->ton_cao_nhat ?? '999,999,999' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Trọng lượng</strong></td>
-                                                                                                    <td id="productDetailWeight-{{ $medicine->id }}">{{ $medicine->trong_luong ? $medicine->trong_luong . ' g' : 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                            </tbody>
-                                                                                        </table>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-6">
-                                                                                <div class="info-group">
-                                                                                    <h6 class="text-muted mb-3">Thông tin thuốc</h6>
-                                                                                    <div class="table-responsive">
-                                                                                        <table class="table table-bordered">
-                                                                                            <tbody>
-                                                                                                <tr>
-                                                                                                    <td><strong>Hoạt chất</strong></td>
-                                                                                                    <td id="productDetailActiveIngredient-{{ $medicine->id }}">{{ $medicine->hoat_chat ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Đường dùng</strong></td>
-                                                                                                    <td id="productDetailDrugRouteLarge-{{ $medicine->id }}">{{ $medicine->drugRoute->name ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Số đăng ký</strong></td>
-                                                                                                    <td id="productDetailRegistration-{{ $medicine->id }}">{{ $medicine->so_dang_ky ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Hàm lượng</strong></td>
-                                                                                                    <td id="productDetailDosage-{{ $medicine->id }}">{{ $medicine->ham_luong ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Quy cách đóng gói</strong></td>
-                                                                                                    <td id="productDetailPackaging-{{ $medicine->id }}">{{ $medicine->quy_cach_dong_goi ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Hãng sản xuất</strong></td>
-                                                                                                    <td id="productDetailManufacturerLarge-{{ $medicine->id }}">
-                                                                                                        @if($medicine->manufacturer)
-                                                                                                            {{ $medicine->manufacturer->name }}
-                                                                                                        @else
-                                                                                                            N/A (manufacturer_id: {{ $medicine->manufacturer_id }})
-                                                                                                        @endif
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Nước sản xuất</strong></td>
-                                                                                                    <td id="productDetailCountry-{{ $medicine->id }}">{{ $medicine->nuoc_san_xuat ?? 'Việt Nam' }}</td>
-                                                                                                </tr>
-                                                                                            </tbody>
-                                                                                        </table>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <!-- Tab Mô tả -->
-                                                                    <div class="tab-pane fade" id="description-{{ $medicine->id }}" role="tabpanel">
-                                                                        <div class="description-content">
-                                                                            <h6 class="text-muted mb-3">Mô tả sản phẩm</h6>
-                                                                            <div class="description-box">
-                                                                                <div id="productDetailDescriptionLarge-{{ $medicine->id }}" class="description-text">
-                                                                                    {{ $medicine->mo_ta ?? 'Chưa có mô tả' }}
-                                                                                </div>
-                                                                            </div>
-                                                                            
-                                                                            <h6 class="text-muted mb-3 mt-4">Ghi chú</h6>
-                                                                            <div class="description-box">
-                                                                                <div id="productDetailNotesLarge-{{ $medicine->id }}" class="description-text">
-                                                                                    {{ $medicine->ghi_chu ?? 'Chưa có ghi chú' }}
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <!-- Tab Tồn kho trong detail -->
-                                                                    <div class="tab-pane fade" id="inventory-{{ $medicine->id }}" role="tabpanel">
-                                                                        <div class="inventory-content">
-                                                                            <h6 class="text-muted mb-3">Thông tin tồn kho</h6>
-                                                                            <div class="table-responsive" style="max-width: 500px;">
-                                                                                <table class="table table-bordered table-striped align-middle text-center">                                                                                  
-                                                                                    <tbody>
-                                                                                        <tr>
-                                                                                            <td><strong>Tồn kho hiện tại</strong></td>
-                                                                                            <td id="productDetailCurrentStock-{{ $medicine->id }}">{{ $medicine->ton_thap_nhat ?? 0 }}</td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td><strong>Tồn kho tối đa</strong></td>
-                                                                                            <td id="productDetailMaxStock-{{ $medicine->id }}">{{ $medicine->ton_cao_nhat ?? '999,999,999' }}</td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td><strong>Tồn kho tối thiểu</strong></td>
-                                                                                            <td id="productDetailMinStock-{{ $medicine->id }}">{{ $medicine->ton_thap_nhat ?? 0 }}</td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td><strong>Định mức tồn</strong></td>
-                                                                                            <td id="productDetailStockRange-{{ $medicine->id }}">{{ $medicine->ton_thap_nhat ?? 0 }} - {{ $medicine->ton_cao_nhat ?? '999,999,999' }}</td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </div>
-                                                                        </div>
+                                                            </section>
+                                                            @if($medicine->ghi_chu)
+                                                            <section class="info-card mt-3">
+                                                                <header class="card-header">Ghi chú</header>
+                                                                <div class="card-body">
+                                                                    <div class="description-text p-3">
+                                                                        {{ $medicine->ghi_chu }}
                                                                     </div>
                                                                 </div>
-                                                                <!-- Action Buttons -->
-                                                                <div class="action-buttons-container">
-                                                                    <div class="d-flex justify-content-between align-items-center">
-                                                                        <div class="left-actions">
-                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="showDeleteConfirmation({{ $medicine->id }}, '{{ $medicine->ma_hang }}', '{{ $medicine->ten_thuoc }}')">
-                                                                                <i class="fas fa-trash"></i> Xóa
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="right-actions">
-                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #1db46a; border-color: #1db46a; color: white;" onclick="openEditMedicineModal({{ $medicine->id }})">
-                                                                                <i class="fas fa-edit"></i> Chỉnh sửa
-                                                                            </button>
-                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="printLabel({{ $medicine->id }})">
-                                                                                <i class="fas fa-print"></i> In tem mã
-                                                                            </button>
-                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="openUnitModal({{ $medicine->id }})">
-                                                                                <i class="fas fa-cog"></i> Thiết lập đơn vị tính
-                                                                            </button>
-                                                                            <button type="button" class="btn btn-outline-secondary btn-sm">
-                                                                                <i class="fas fa-ellipsis-h"></i>
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
+                                                            </section>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Tab Tồn kho -->
+                                                    <div class="tab-content" id="inventory-{{ $medicine->id }}" style="display: none;">
+                                                        <div class="inventory-content">
+                                                            <section class="info-card">
+                                                                <header class="card-header">Thông tin tồn kho</header>
+                                                                <div class="card-body">
+                                                                    <table class="product-table">
+                                                                        <tbody>
+                                                                            <tr><td class="label">Tồn kho hiện tại</td><td class="value">{{ $medicine->ton_kho ?? 0 }}</td></tr>
+                                                                            <tr><td class="label">Tồn kho tối đa</td><td class="value">{{ $medicine->ton_cao_nhat ?? '999,999,999' }}</td></tr>
+                                                                            <tr><td class="label">Tồn kho tối thiểu</td><td class="value">{{ $medicine->ton_thap_nhat ?? 0 }}</td></tr>
+                                                                            <tr><td class="label">Định mức tồn</td><td class="value">{{ $medicine->ton_thap_nhat ?? 0 }} - {{ $medicine->ton_cao_nhat ?? '999,999,999' }}</td></tr>
+                                                                            <tr><td class="label">Trạng thái tồn kho</td><td class="value">
+                                                                                @if(($medicine->ton_kho ?? 0) <= ($medicine->ton_thap_nhat ?? 0))
+                                                                                    <span class="text-danger">Sắp hết hàng</span>
+                                                                                @elseif(($medicine->ton_kho ?? 0) >= ($medicine->ton_cao_nhat ?? 999999999))
+                                                                                    <span class="text-warning">Tồn kho cao</span>
+                                                                                @else
+                                                                                    <span class="text-success">Bình thường</span>
+                                                                                @endif
+                                                                            </td></tr>
+                                                                        </tbody>
+                                                                    </table>
                                                                 </div>
+                                                            </section>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Action Buttons -->
+                                                    <div class="action-buttons-container mt-4">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div class="left-actions">
+                                                                <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="showDeleteMedicineConfirmation({{ $medicine->id }}, '{{ $medicine->ma_hang }}', '{{ $medicine->ten_thuoc }}')">
+                                                                    <i class="fas fa-trash"></i> Xóa
+                                                                </button>
+                                                            </div>
+                                                            <div class="right-actions">
+                                                                <button type="button" class="btn btn-sm me-2" style="background-color: #1db46a; border-color: #1db46a; color: white;" onclick="openEditMedicineModal({{ $medicine->id }})">
+                                                                    <i class="fas fa-edit"></i> Chỉnh sửa
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="printLabel({{ $medicine->id }})">
+                                                                    <i class="fas fa-print"></i> In tem mã
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="openUnitModal({{ $medicine->id }})">
+                                                                    <i class="fas fa-cog"></i> Thiết lập đơn vị tính
+                                                                </button>
+                                                                <button type="button" class="btn btn-outline-secondary btn-sm">
+                                                                    <i class="fas fa-ellipsis-h"></i>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>

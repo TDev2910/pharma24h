@@ -103,7 +103,6 @@
 /* Table Styles */
 .table-section {
     padding: 0;
-    /* Removed overflow-x: auto để không có thanh kéo */
 }
 
 .product-table {
@@ -117,7 +116,7 @@
     color: #222;
     font-weight: 500;
     border: none;
-    padding: 12px 14px; /* giảm padding để tiết kiệm chiều ngang */
+    padding: 12px 14px; 
     font-size: 14px;
     text-align: center;
     vertical-align: middle;
@@ -135,11 +134,17 @@
 }
 
 .product-table tbody td {
-    padding: 10px 12px; /* giảm padding để gọn hơn */
+    padding: 10px 12px; 
     border-bottom: 1px solid #f0f0f0;
+    height: 35px;
     vertical-align: middle;
     text-align: center;
     font-size: 14px;
+    white-space: normal;
+    word-break: break-word;
+    word-wrap: break-word;
+    table-layout: fixed;
+    width: 100%;
 }
 
 /* Không cho xuống dòng ở cột giá bán và giá vốn; nới rộng tối thiểu */
@@ -176,7 +181,7 @@
 .product-table thead th:nth-child(1),
 .product-table tbody td:nth-child(1){ width: 4%; } /* Checkbox */
 .product-table thead th:nth-child(2),
-.product-table tbody td:nth-child(2){ width: 8%; } /* Ảnh */
+.product-table tbody td:nth-child(2){ width: 8%; text-align: center; } /* Ảnh */
 .product-table thead th:nth-child(3),
 .product-table tbody td:nth-child(3){ width: 18%; text-align: left; } /* Mã hàng */
 .product-table thead th:nth-child(4),
@@ -199,6 +204,22 @@
     border-radius: 12px; /* Tăng số để bo tròn nhiều hơn */
     overflow: hidden; /* Quan trọng: ẩn phần thừa khi bo tròn */
     width: 100%;
+}
+
+/* Không cho nội dung bảng chi tiết xuống dòng */
+/* .info-group .table td, .info-group .table th {
+    white-space: normal;
+} */
+.info-group .table th {
+    white-space: nowrap;
+}
+.info-group .table td {
+    white-space: normal;
+    word-break: break-all;
+}
+.info-group .table {
+    table-layout: auto !important;
+    width: 100% !important;
 }
 
 /* CSS cho phần mô tả và ghi chú */
@@ -519,5 +540,195 @@
     padding: 4px 8px;
     border-radius: 4px;
     font-weight: 500;
+}
+
+/* ========== CSS MỚI CHO LAYOUT LIGHT THEME ========== */
+/* ========== Container tổng ========== */
+.product-detail { 
+  color:#333; 
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; 
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+.product-detail * { box-sizing:border-box; }
+
+/* Header */
+.pd-header { 
+  display:grid; 
+  grid-template-columns:140px 1fr; 
+  gap:20px; 
+  align-items:center; 
+  margin-bottom:22px; 
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.pd-thumb { 
+  width:140px; 
+  height:140px; 
+  border-radius:12px; 
+  background:#f8f9fa; 
+  border:1px solid #dee2e6; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  overflow:hidden; 
+}
+.pd-thumb img { width:100%; height:100%; object-fit:cover; }
+.pd-thumb-fallback { color:#6c757d; font-weight:600; }
+
+.pd-title { margin:0 0 6px; font-size:28px; font-weight:700; letter-spacing:.2px; color: #333; text-align:left}
+.pd-subtitle { color:#6c757d; font-size:14px; margin-bottom:10px; text-align:left}
+.pd-badges { display:flex; gap:8px; margin-bottom:14px; text-align:left}
+.badge { padding:6px 10px; border-radius:999px; font-size:12px; font-weight:600; display:inline-block; }
+.badge-blue { background:rgba(13,110,253,.15); color:#0d6efd; border:1px solid rgba(13,110,253,.35); }
+.badge-green{ background:rgba(25,135,84,.15); color:#198754; border:1px solid rgba(25,135,84,.35);}
+.badge-orange{ background:rgba(255,193,7,.15); color:#ffc107; border:1px solid rgba(255,193,7,.35);}
+
+.pd-tabs { display:flex; gap:18px; border-bottom:1px solid #dee2e6; }
+.pd-tabs .tab { background:none; border:none; color:#6c757d; padding:10px 0; cursor:pointer; font-weight:600; }
+.pd-tabs .tab.active { color:#0d6efd; border-bottom:2px solid #0d6efd; }
+
+/* ========== Thân 2 cột – KHÔNG fixed width ========== */
+.pd-body {
+  display:grid;
+  grid-template-columns: minmax(350px, 0.8fr) minmax(450px, 1.2fr);
+  gap:26px;
+  margin-top: 20px;
+}
+
+/* Card */
+.info-card { 
+  background:#fff; 
+  border:1px solid #dee2e6; 
+  border-radius:14px; 
+  overflow:hidden; 
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.info-card .card-header { 
+  padding:14px 16px; 
+  font-weight:700; 
+  border-bottom:1px solid #dee2e6; 
+  background: #f8f9fa; 
+  color: #495057; 
+}
+.info-card .card-body { padding:0; }
+
+/* Bảng thông tin */
+.product-table { 
+  width:100%; 
+  table-layout:fixed; 
+  border-collapse:collapse; 
+  border-radius: 0 0 14px 14px;
+  overflow: hidden;
+}
+.product-table td { 
+  padding:12px 14px; 
+  border-bottom:1px solid #f1f3f4; 
+  height:40px; 
+  vertical-align:middle; 
+  font-size:14px; 
+}
+
+.product-table td.label { 
+  width:42%; 
+  min-width:170px; 
+  white-space:nowrap; 
+  font-weight:700; 
+  text-align:center; 
+  color: #6c757d; 
+}
+.product-table td.value { 
+  width:58%; 
+  white-space:normal; 
+  word-break:break-word; 
+  overflow-wrap:break-word; 
+  text-align:left; 
+  color: #495057; 
+  max-width: 0;
+}
+.product-table td.value.price { color:#28a745; font-weight:700; }
+
+.product-table tbody tr:last-child td { border-bottom:0; }
+
+/* ========== Action Buttons ========== */
+.action-buttons-container {
+  background: transparent;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+  box-shadow: none;
+  border: none;
+}
+
+.action-buttons-container .btn {
+  border-radius: 6px;
+  font-size: 13px;
+  padding: 6px 12px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+}
+
+.action-buttons-container .left-actions .btn {
+  background-color: #f8f9fa !important;
+  border-color: #dee2e6 !important;
+  color: #6c757d !important;
+}
+
+.action-buttons-container .right-actions .btn:first-child {
+  background-color: #1db46a !important;
+  border-color: #1db46a !important;
+  color: white !important;
+}
+
+.action-buttons-container .right-actions .btn:not(:first-child) {
+  background-color: #f8f9fa !important;
+  border-color: #dee2e6 !important;
+  color: #6c757d !important;
+}
+
+.action-buttons-container .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ========== Tab Content ========== */
+.tab-content {
+  margin-top: 20px;
+}
+
+.description-content .info-card {
+  margin-bottom: 0;
+}
+
+.description-text {
+  color: #495057;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  min-height: 100px;
+}
+
+.description-text:empty::before {
+  content: "Chưa có nội dung";
+  color: #6c757d;
+  font-style: italic;
+}
+
+.inventory-content .info-card {
+  margin-bottom: 0;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 1200px) {
+  .pd-body { grid-template-columns: 1fr 1fr; gap:20px; }
+}
+@media (max-width: 992px) {
+  .pd-header { grid-template-columns:100px 1fr; }
+  .pd-body { grid-template-columns: 1fr; }
 }
 
