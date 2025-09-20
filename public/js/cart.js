@@ -4,8 +4,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Cart.js loaded');
     
-    // Cập nhật số lượng ban đầu
-    updateCartCount();
+    // Cập nhật số lượng ban đầu với error handling
+    try {
+        updateCartCount();
+    } catch (error) {
+        console.warn('Error updating cart count:', error);
+    }
     
     // Load giỏ hàng khi click vào icon
     const cartDropdown = document.querySelector('.cart-dropdown');

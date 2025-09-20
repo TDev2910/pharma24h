@@ -58,7 +58,8 @@
                                         <label for="customer_name" class="form-label">Họ và tên <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control @error('customer_name') is-invalid @enderror" 
                                             id="customer_name" name="customer_name" 
-                                            value="{{ old('customer_name', auth()->user()->name ?? '') }}" required>
+                                            value="{{ old('customer_name', auth()->user()->name ?? '') }}" 
+                                            {{ old('delivery_method', 'shipping') === 'shipping' ? 'required' : '' }}>
                                         @error('customer_name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -68,7 +69,8 @@
                                         <label for="customer_phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control @error('customer_phone') is-invalid @enderror" 
                                             id="customer_phone" name="customer_phone" 
-                                            value="{{ old('customer_phone', auth()->user()->phone ?? '') }}" required>
+                                            value="{{ old('customer_phone', auth()->user()->phone ?? '') }}" 
+                                            {{ old('delivery_method', 'shipping') === 'shipping' ? 'required' : '' }}>
                                         @error('customer_phone')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -240,6 +242,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 shippingInfo.classList.remove('d-none');
                 pickupInfo.classList.add('d-none');
                 
+                // Thêm required cho các trường shipping
+                document.getElementById('customer_name').setAttribute('required', 'required');
+                document.getElementById('customer_phone').setAttribute('required', 'required');
+                document.getElementById('province').setAttribute('required', 'required');
+                document.getElementById('district').setAttribute('required', 'required');
+                document.getElementById('ward').setAttribute('required', 'required');
+                document.getElementById('shipping_address').setAttribute('required', 'required');
+                
+                // Xóa required cho các trường pickup
+                document.getElementById('pickup_location').removeAttribute('required');
+                
                 // Copy dữ liệu
                 const customerNamePickup = document.getElementById('customer_name_pickup').value;
                 const customerPhonePickup = document.getElementById('customer_phone_pickup').value;
@@ -254,6 +267,17 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 shippingInfo.classList.add('d-none');
                 pickupInfo.classList.remove('d-none');
+                
+                // Xóa required cho các trường shipping
+                document.getElementById('customer_name').removeAttribute('required');
+                document.getElementById('customer_phone').removeAttribute('required');
+                document.getElementById('province').removeAttribute('required');
+                document.getElementById('district').removeAttribute('required');
+                document.getElementById('ward').removeAttribute('required');
+                document.getElementById('shipping_address').removeAttribute('required');
+                
+                // Thêm required cho các trường pickup
+                document.getElementById('pickup_location').setAttribute('required', 'required');
                 
                 // Copy dữ liệu
                 const customerName = document.getElementById('customer_name').value;
@@ -400,11 +424,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form Validation
     document.getElementById('checkoutForm').addEventListener('submit', function(e) {
         const deliveryMethod = document.querySelector('input[name="delivery_method"]:checked').value;
+        let isValid = true;
         
         if (deliveryMethod === 'shipping') {
-            // Chỉ xử lý khi giao hàng tận nơi
+            // Xử lý khi giao hàng tận nơi
             const requiredFields = ['customer_name', 'customer_phone', 'province', 'district', 'ward', 'shipping_address'];
-            let isValid = true;
             
             requiredFields.forEach(field => {
                 const input = document.getElementById(field);
@@ -419,6 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!isValid) {
                 e.preventDefault();
                 alert('Vui lòng điền đầy đủ thông tin giao hàng');
+                return;
             }
         } else {
             // Xử lý khi nhận tại nhà thuốc
@@ -428,7 +453,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Kiểm tra thông tin nhận hàng tại nhà thuốc
             const pickupFields = ['customer_name_pickup', 'customer_phone_pickup', 'pickup_location'];
-            let isValid = true;
             
             pickupFields.forEach(field => {
                 const input = document.getElementById(field);
@@ -452,6 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!isValid) {
                 e.preventDefault();
                 alert('Vui lòng điền đầy đủ thông tin nhận hàng tại nhà thuốc');
+                return;
             }
         }
         
@@ -459,6 +484,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!document.getElementById('agree_terms').checked) {
             e.preventDefault();
             alert('Vui lòng đồng ý với điều khoản & điều kiện');
+            return;
         }
     });
 });

@@ -20,8 +20,6 @@ class CheckoutRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'customer_name' => 'required|string|max:255',
-            'customer_phone' => 'required|string|max:20',
             'delivery_method' => 'required|in:shipping,pickup',
             'payment_method' => 'required|in:cod,vnpay',
             'note' => 'nullable|string',
@@ -29,6 +27,8 @@ class CheckoutRequest extends FormRequest
 
         // Thêm rules tùy thuộc vào phương thức giao hàng
         if ($this->input('delivery_method') === 'shipping') {
+            $rules['customer_name'] = 'required|string|max:255';
+            $rules['customer_phone'] = 'required|string|max:20';
             $rules['shipping_address'] = 'required|string|max:255';
             $rules['province'] = 'required|string|max:100';
             $rules['district'] = 'required|string|max:100';
@@ -36,6 +36,8 @@ class CheckoutRequest extends FormRequest
         } 
         else 
         {
+            $rules['customer_name'] = 'required|string|max:255';
+            $rules['customer_phone'] = 'required|string|max:20';
             $rules['pickup_location'] = 'required|string|max:255';
         }
 
