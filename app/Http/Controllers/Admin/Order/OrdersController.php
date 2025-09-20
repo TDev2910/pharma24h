@@ -51,15 +51,21 @@ class OrdersController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $order)
+    public function show(Request $request, string $order)
     {
         $order = Order::findOrFail($order);
         $items = $order->items;
-        return response()->json([
-            'success' => true,
-            'order' => $order,
-            'items' => $items,
-        ]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'order' => $order,
+                'items' => $items,
+            ]);
+        }
+
+        // Redirect về trang danh sách thay vì render view show
+        return redirect()->route('admin.orders.index');
     }
 
     /**
@@ -143,10 +149,18 @@ class OrdersController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
         $order = Order::findOrFail($id);
         $order->delete();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đơn hàng đã được xóa thành công!',
+            ]);
+        }
+
         return redirect()->route('admin.orders.index')->with('success', 'Đơn hàng đã được xóa thành công!');
     }
 

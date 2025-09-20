@@ -124,7 +124,13 @@
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li><a class="dropdown-item view-order-detail" href="#" data-id="{{ $order->id }}"><i class="fas fa-eye me-2"></i>Xem chi tiết</a></li>
                                         <li><a class="dropdown-item edit-order" href="#" data-id="{{ $order->id }}"><i class="fas fa-pencil-alt me-2"></i>Chỉnh sửa</a></li>
-                                        <li><a class="dropdown-item text-danger" href="{{ route('admin.orders.destroy', $order->id) }}"><i class="fas fa-trash-alt me-2"></i>Xóa</a></li>
+                                        <li>
+                                            <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" class="d-inline delete-order-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="dropdown-item text-danger delete-order-btn"><i class="fas fa-trash-alt me-2"></i>Xóa</button>
+                                            </form>
+                                        </li>
                                     </ul>
                                 </div>
                             </td>
@@ -201,6 +207,38 @@
         filterForm.find('select[name="status"]').on('change', function() {
             filterForm.submit();
         });
+        
+        // Thêm xác nhận xóa đơn hàng
+        $('.delete-order-form').on('submit', function(e) {
+            e.preventDefault();
+            var form = $(this);
+            
+            Swal.fire({
+                title: 'Xác nhận xóa?',
+                text: "Bạn có chắc chắn muốn xóa đơn hàng này?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.off('submit').submit();
+                }
+            });
+        });
+        
+        // Kiểm tra thông báo và hiển thị popup
+        @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Thành công!',
+            text: '{{ session('success') }}',
+            showConfirmButton: false,
+            timer: 1500
+        });
+        @endif
     });
 </script>
 @endpush
