@@ -232,19 +232,27 @@ function showSuccessMessage(message) {
 // GOODS MANAGEMENT FUNCTIONS
 // ========================================
 
+// Ẩn tất cả detail rows
+function hideAllDetailRows() {
+    document.querySelectorAll('.detail-row').forEach(row => {
+        row.style.display = 'none';
+    });
+    
+    // Xóa highlight từ tất cả các hàng
+    document.querySelectorAll('.product-table tbody tr').forEach(row => {
+        row.classList.remove('selected-row');
+    });
+}
+
 // Toggle hiển thị thông tin chi tiết hàng hóa
 window.toggleGoodsDetail = function(goodsId, element) {
     const detailRow = document.getElementById(`detail-row-goods-${goodsId}`);
     if (!detailRow) return;
     const isVisible = detailRow.style.display !== 'none';
+    
     // Đóng tất cả các detail rows khác
-    document.querySelectorAll('.detail-row').forEach(row => {
-        row.style.display = 'none';
-    });
-    // Xóa highlight từ tất cả các hàng
-    document.querySelectorAll('.product-table tbody tr').forEach(row => {
-        row.classList.remove('selected-row');
-    });
+    hideAllDetailRows();
+    
     if (!isVisible) {
         // Mở detail row
         detailRow.style.display = 'table-row';
@@ -263,36 +271,32 @@ window.toggleGoodsDetail = function(goodsId, element) {
 
 // Delete goods confirmation
 window.showDeleteGoodsConfirmation = function(goodsId, goodsCode, goodsName) {
-    // Set modal content
-    document.getElementById('deleteMedicineId').value = goodsId;
-    document.getElementById('deleteMedicineCode').textContent = goodsCode;
-    document.getElementById('deleteMedicineName').textContent = goodsName;
-    
-    // Đánh dấu đây là hàng hóa để confirmDelete biết
-    window.isDeletingGoods = true;
-    
-    // Show modal
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-    deleteModal.show();
-}
-
-// Confirm delete function for goods
-window.confirmDelete = function() {
-    const goodsId = document.getElementById('deleteMedicineId').value;
-    const form = document.getElementById('deleteMedicineForm');
-    
-    // Kiểm tra xem đây là thuốc hay hàng hóa dựa vào biến global
-    if (window.isDeletingGoods === true) {
-        // Đây là hàng hóa
+    if (confirm(`Bạn có chắc chắn muốn xóa hàng hóa "${goodsName}" (${goodsCode})?`)) {
+        // Tạo form để submit delete request
+        const form = document.createElement('form');
+        form.method = 'POST';
         form.action = `/admin/goods/${goodsId}`;
-
-    } else {
-        // Đây là thuốc
-        form.action = `/admin/medicines/${goodsId}`;
-
+        
+        // Thêm CSRF token
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+        
+        // Thêm method DELETE
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        form.appendChild(methodField);
+        
+        // Submit form
+        document.body.appendChild(form);
+        form.submit();
     }
-    form.submit();
 }
+
 
 
 
@@ -432,6 +436,9 @@ window.updateProductCount = function() {
 
 // Initialize filters when page loads
 document.addEventListener('DOMContentLoaded', function() {
+    // Ẩn tất cả detail rows khi trang load
+    hideAllDetailRows();
+    
     // Cập nhật số lượng sản phẩm ban đầu
     updateProductCount();
     
@@ -587,4 +594,36 @@ function debounce(func, wait) {
 }
 
 // Áp dụng debounce cho search function
-window.searchProducts = debounce(window.searchProducts, 300); 
+window.searchProducts = debounce(window.searchProducts, 300);
+
+// Switch tab function for product details
+window.switchTab = function(tabId, buttonElement) {
+    // Get the product ID from the tab ID
+    const productId = tabId.split('-').pop();
+    const productType = tabId.includes('goods') ? 'goods' : 'medicine';
+    
+    // Hide all tab contents for this product
+    const allTabContents = document.querySelectorAll(`[id*="${productType}-${productId}"]`);
+    allTabContents.forEach(content => {
+        if (content.classList.contains('tab-content')) {
+            content.style.display = 'none';
+        }
+    });
+    
+    // Remove active class from all tabs for this product
+    const allTabs = document.querySelectorAll(`[onclick*="${productType}-${productId}"]`);
+    allTabs.forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    const selectedTabContent = document.getElementById(tabId);
+    if (selectedTabContent) {
+        selectedTabContent.style.display = 'block';
+    }
+    
+    // Add active class to clicked tab
+    if (buttonElement) {
+        buttonElement.classList.add('active');
+    }
+}; 

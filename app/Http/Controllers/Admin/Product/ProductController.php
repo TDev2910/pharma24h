@@ -181,7 +181,7 @@ class ProductController extends Controller
             'parent_id' => 'nullable|exists:product_categories,id'
         ]);
         $category->update($request->only('name', 'parent_id'));
-        return redirect()->route('admin.categories.index')->with('success', 'Cập nhật thành công!');
+        return redirect()->route('admin.products.index')->with('success', 'Cập nhật thành công!');
     }
 
     /**

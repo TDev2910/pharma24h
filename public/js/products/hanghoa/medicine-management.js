@@ -101,17 +101,30 @@ window.openEditMedicineModal = function(medicineId) {
 
 // Delete confirmation modal functions
 window.showDeleteConfirmation = function(medicineId, medicineCode, medicineName) {
-    // Set modal content
-    document.getElementById('deleteMedicineId').value = medicineId;
-    document.getElementById('deleteMedicineCode').textContent = medicineCode;
-    document.getElementById('deleteMedicineName').textContent = medicineName;
-    
-    // Đánh dấu đây là thuốc để confirmDelete biết
-    window.isDeletingGoods = false;
-    
-    // Show modal
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-    deleteModal.show();
+    if (confirm(`Bạn có chắc chắn muốn xóa thuốc "${medicineName}" (${medicineCode})?`)) {
+        // Tạo form để submit delete request
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/medicines/${medicineId}`;
+        
+        // Thêm CSRF token
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+        
+        // Thêm method DELETE
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        form.appendChild(methodField);
+        
+        // Submit form
+        document.body.appendChild(form);
+        form.submit();
+    }
 }
 
 // Function cho nút xóa trong detail row

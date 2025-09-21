@@ -374,26 +374,25 @@
                                                 <br>Chưa có thuốc nào
                                             </td>
                                         </tr>
-                                    @endforelse
-                                    
+                                    @endforelse                                   
                                     <!-- Hiển thị hàng hóa -->
-                                    @forelse($goods as $good)
+                                    @forelse($goods ?? [] as $good)
                                         <tr class="product-row goods-row" 
-                                            data-product-id="goods-{{ $good->id }}" 
+                                            data-product-id="{{ $good->id }}" 
                                             data-category-id="{{ $good->nhom_hang_id }}"
                                             data-manufacturer-id="{{ $good->manufacturer_id }}"
                                             data-position-id="{{ $good->position_id }}"
                                             style="cursor: pointer;" 
-                                            onclick="toggleGoodsDetail({{ $good->id }}, this)">
+                                            onclick="toggleProductDetail({{ $good->id }}, this)">
                                             <td>
                                                 <input type="checkbox" class="form-check-input" onclick="event.stopPropagation()">
                                             </td>
                                             <td>
                                                 <div class="product-image-container">
                                                     <img src="{{ $good->image_url }}"
-                                                    alt="{{ $good->ten_hang_hoa }}"
-                                                    class="img-thumbnail product-image"
-                                                    style="width: 50px; height: 50px; object-fit: cover;">
+                                                        alt="{{ $good->ten_hang_hoa }}"
+                                                        class="img-thumbnail product-image"
+                                                        style="width: 50px; height: 50px; object-fit: cover;">
                                                 </div>
                                             </td>
                                             <td><span class="product-code">{{ $good->ma_hang ?? 'N/A' }}</span></td>
@@ -402,221 +401,143 @@
                                                     <span class="product-name">{{ $good->ten_hang_hoa ?? 'N/A' }}</span>
                                                 </div>
                                             </td>
-                                            <td><span class="product-abbreviation">{{ $good->ten_viet_tat ?: '' }}</span></td>
-                                            <td>{{ $good->gia_ban_formatted ?? '0 VND' }}</td>
-                                            <td>{{ $good->gia_von_formatted ?? '0 VND' }}</td>
-                                            <td>{{ $good->ton_kho ?: $good->ton_thap_nhat ?: 0 }}</td>
-                                            <td>{{ $good->created_at ? $good->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
+                                            <td>{{ $good->gia_ban_formatted }}</td>
+                                            <td>{{ $good->gia_von_formatted }}</td>
+                                        <td>{{ $good->ton_thap_nhat ?? 0 }}</td>
+                                        <td>{{ $good->created_at ? $good->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
                                         </tr>
-                                        <!-- Expandable Detail Row cho hàng hóa -->
-                                        <tr class="detail-row" id="detail-row-goods-{{ $good->id }}" style="display: none;">
+                                        <!-- Expandable Detail Row cho hàng hóa với layout mới -->
+                                        <tr class="detail-row" id="detail-row-{{ $good->id }}" style="display: none;">
                                             <td colspan="10" class="p-0">
-                                                <div class="detail-content">
-                                                    <div class="row">
-                                                        <!-- Ảnh sản phẩm -->
-                                                        <div class="col-md-3">
-                                                            <div class="product-image-detail-large">
-                                                                <img id="productDetailImageLarge-goods-{{ $good->id }}" src="{{ $good->image_url }}"
-                                                                    alt="Product Image"
-                                                                    class="img-fluid rounded"
-                                                                    style="width: 100%; height: 200px; object-fit: cover;">
+                                                <div class="product-detail">
+                                                    <!-- Header -->
+                                                    <div class="pd-header">
+                                                        <div class="pd-thumb">
+                                                            <img src="{{ $good->image_url }}" alt="{{ $good->ten_hang_hoa }}">
+                                                            <div class="pd-thumb-fallback">Ảnh</div>
+                                                        </div>
+                                                        <div class="pd-meta">
+                                                            <h2 class="pd-title">{{ $good->ten_hang_hoa ?? 'N/A' }}</h2>
+                                                            <div class="pd-subtitle">Nhóm hàng: {{ $good->category->name ?? 'N/A' }}</div>
+
+                                                            <div class="pd-badges">
+                                                                <span class="badge badge-blue">Hàng hóa</span>
+                                                                <span class="badge badge-green">{{ $good->ban_truc_tiep ? 'Bán trực tiếp' : 'Không bán trực tiếp' }}</span>
+                                                                <span class="badge badge-orange">Không tích điểm</span>
+                                                            </div>
+
+                                                            <div class="pd-tabs">
+                                                                <button class="tab active" onclick="switchTab({{ $good->id }}, 'info')">Thông tin</button>
+                                                                <button class="tab" onclick="switchTab({{ $good->id }}, 'description')">Mô tả, ghi chú</button>
+                                                                <button class="tab" onclick="switchTab({{ $good->id }}, 'inventory')">Tồn kho</button>
                                                             </div>
                                                         </div>
-                                                        <!-- Thông tin sản phẩm -->
-                                                        <div class="col-md-9">
-                                                            <div class="product-info-detail">
-                                                                <!-- Product Header -->
-                                                                <div class="product-header mb-4">
-                                                                    <h4 class="product-title mb-2">{{ $good->ten_hang_hoa ?? 'N/A' }}</h4>
-                                                                    <div class="product-category mb-2">
-                                                                        <small class="text-muted">Nhóm hàng: {{ $good->category->name ?? 'N/A' }}</small>
-                                                                    </div>
-                                                                    <div class="product-tags">
-                                                                        <span class="badge bg-success me-2">Hàng hóa</span>
-                                                                        <span class="badge bg-light text-dark me-2">Bán trực tiếp</span>
-                                                                        <span class="badge bg-warning">Không tích điểm</span>
+                                                    </div>
+
+                                                    <!-- Tab Content -->
+                                                    <!-- Tab Thông tin -->
+                                                    <div class="tab-content" id="info-{{ $good->id }}" style="display: block;">
+                                                        <div class="pd-body">
+                                                            <section class="info-card">
+                                                                <header class="card-header">Thông tin chung</header>
+                                                                <div class="card-body">
+                                                                    <table class="product-table">
+                                                                        <tbody>
+                                                                            <tr><td class="label">Mã hàng</td><td class="value">{{ $good->ma_hang ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Mã vạch</td><td class="value">{{ $good->ma_vach ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Giá vốn</td><td class="value">{{ $good->gia_von_formatted ?? '0 VND' }}</td></tr>
+                                                                            <tr><td class="label">Giá bán</td><td class="value price">{{ $good->gia_ban_formatted ?? '0 VND' }}</td></tr>
+                                                                            <tr><td class="label">Tên viết tắt</td><td class="value">{{ $good->ten_viet_tat ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Vị trí</td><td class="value">{{ $good->position->name ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Định mức tồn</td><td class="value">{{ $good->ton_thap_nhat ?? 0 }} - {{ $good->ton_cao_nhat ?? '999,999,999' }}</td></tr>
+                                                                            <tr><td class="label">Trọng lượng</td><td class="value">{{ $good->trong_luong ? $good->trong_luong . ' g' : 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Đơn vị tính</td><td class="value">{{ $good->don_vi_tinh ?? 'N/A' }}</td></tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </section>
+
+                                                            <section class="info-card">
+                                                                <header class="card-header">Thông tin hàng hóa</header>
+                                                                <div class="card-body">
+                                                                    <table class="product-table">
+                                                                        <tbody>
+                                                                            <tr><td class="label">Quản lý theo lô</td><td class="value">{{ $good->quan_ly_theo_lo ? 'Có' : 'Không' }}</td></tr>
+                                                                            <tr><td class="label">Quy cách đóng gói</td><td class="value">{{ $good->quy_cach_dong_goi ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Hãng sản xuất</td><td class="value">{{ $good->manufacturer->name ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Nước sản xuất</td><td class="value">{{ $good->nuoc_san_xuat ?? 'Việt Nam' }}</td></tr>
+                                                                            <tr><td class="label">Bán trực tiếp</td><td class="value">{{ $good->ban_truc_tiep ? 'Có' : 'Không' }}</td></tr>
+                                                                            <tr><td class="label">Khách đặt</td><td class="value">{{ $good->khach_dat ? 'Có' : 'Không' }}</td></tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </section>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Tab Mô tả, ghi chú -->
+                                                    <div class="tab-content" id="description-{{ $good->id }}" style="display: none;">
+                                                        <div class="description-content">
+                                                            <section class="info-card">
+                                                                <header class="card-header">Mô tả sản phẩm</header>
+                                                                <div class="card-body">
+                                                                    <div class="description-text p-3">
+                                                                        {{ $good->mo_ta ?? 'Chưa có mô tả' }}
                                                                     </div>
                                                                 </div>
-                                                                <!-- Tabs -->
-                                                                <ul class="nav nav-tabs" id="productDetailTabs-goods-{{ $good->id }}" role="tablist">
-                                                                    <li class="" role="presentation">
-                                                                        <button class="nav-link active" id="info-tab-goods-{{ $good->id }}" data-bs-toggle="tab" data-bs-target="#info-goods-{{ $good->id }}" type="button" role="tab" style="margin-left:-15px;">Thông tin</button>
-                                                                    </li>
-                                                                    <li class="" role="presentation">
-                                                                        <button class="nav-link" id="description-tab-goods-{{ $good->id }}" data-bs-toggle="tab" data-bs-target="#description-goods-{{ $good->id }}" type="button" role="tab">Mô tả, ghi chú</button>
-                                                                    </li>
-                                                                    <li class="" role="presentation">
-                                                                        <button class="nav-link" id="inventory-tab-goods-{{ $good->id }}" data-bs-toggle="tab" data-bs-target="#inventory-goods-{{ $good->id }}" type="button" role="tab">Tồn kho</button>
-                                                                    </li>
-                                                                </ul>
-                                                                <!-- Tab content -->
-                                                                <div class="tab-content mt-3" id="productDetailTabContent-goods-{{ $good->id }}">
-                                                                    <!-- Tab Thông tin -->
-                                                                    <div class="tab-pane fade show active" id="info-goods-{{ $good->id }}" role="tabpanel">
-                                                                        <div class="row">
-                                                                            <div class="col-md-6">
-                                                                                <div class="info-group">
-                                                                                    <h6 class="text-muted mb-3">Thông tin chung</h6>
-                                                                                    <div class="table-responsive">
-                                                                                        <table class="table table-bordered table-striped align-middle text-center">                                                                                          
-                                                                                            <tbody>
-                                                                                                <tr>
-                                                                                                    <td><strong>Mã hàng</strong></td>
-                                                                                                    <td id="productDetailCodeLarge-goods-{{ $good->id }}">{{ $good->ma_hang ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Mã vạch</strong></td>
-                                                                                                    <td id="productDetailBarcode-goods-{{ $good->id }}">{{ $good->ma_vach ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Giá vốn</strong></td>
-                                                                                                    <td id="productDetailCostLarge-goods-{{ $good->id }}">{{ $good->gia_von_formatted ?? '0 VND' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Giá bán</strong></td>
-                                                                                                    <td class="text-success" id="productDetailPriceLarge-goods-{{ $good->id }}">{{ $good->gia_ban_formatted ?? '0 VND' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Đơn vị tính</strong></td>
-                                                                                                    <td id="productDetailUnit-goods-{{ $good->id }}">{{ $good->don_vi_tinh ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Vị trí</strong></td>
-                                                                                                    <td id="productDetailPositionLarge-goods-{{ $good->id }}">{{ $good->position->name ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Định mức tồn</strong></td>
-                                                                                                    <td id="productDetailStockRange-goods-{{ $good->id }}">{{ $good->ton_thap_nhat ?? 0 }} - {{ $good->ton_cao_nhat ?? '999,999,999' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Trọng lượng</strong></td>
-                                                                                                    <td id="productDetailWeight-goods-{{ $good->id }}">{{ $good->trong_luong ? $good->trong_luong . ' g' : 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                            </tbody>
-                                                                                        </table>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-6">
-                                                                                <div class="info-group">
-                                                                                    <h6 class="text-muted mb-3">Thông tin hàng hóa</h6>
-                                                                                    <div class="table-responsive">
-                                                                                        <table class="table table-bordered table-striped align-middle text-center">
-                                                                                           
-                                                                                            <tbody>
-                                                                                                <tr>
-                                                                                                    <td><strong>Quy cách đóng gói</strong></td>
-                                                                                                    <td id="productDetailPackaging-goods-{{ $good->id }}">{{ $good->quy_cach_dong_goi ?? 'N/A' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Hãng sản xuất</strong></td>
-                                                                                                    <td id="productDetailManufacturerLarge-goods-{{ $good->id }}">
-                                                                                                        @if($good->manufacturer)
-                                                                                                            {{ $good->manufacturer->name }}
-                                                                                                        @else
-                                                                                                            N/A (manufacturer_id: {{ $good->manufacturer_id }})
-                                                                                                        @endif
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Nước sản xuất</strong></td>
-                                                                                                    <td id="productDetailCountry-goods-{{ $good->id }}">{{ $good->nuoc_san_xuat ?? 'Việt Nam' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Quản lý theo lô</strong></td>
-                                                                                                    <td id="productDetailBatchManagement-goods-{{ $good->id }}">{{ $good->quan_ly_theo_lo ? 'Có' : 'Không' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Bán trực tiếp</strong></td>
-                                                                                                    <td id="productDetailDirectSale-goods-{{ $good->id }}">{{ $good->ban_truc_tiep ? 'Có' : 'Không' }}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td><strong>Khách đặt</strong></td>
-                                                                                                    <td id="productDetailCustomerOrder-goods-{{ $good->id }}">{{ $good->khach_dat ? 'Có' : 'Không' }}</td>
-                                                                                                </tr>
-                                                                                            </tbody>
-                                                                                        </table>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <!-- Tab Mô tả -->
-                                                                    <div class="tab-pane fade" id="description-goods-{{ $good->id }}" role="tabpanel">
-                                                                        <div class="description-content">
-                                                                            <h6 class="text-muted mb-3">Mô tả sản phẩm</h6>
-                                                                            <div class="table-responsive">
-                                                                                <table class="table table-bordered table-striped align-middle text-center">
-                                                                                    <thead class="table-primary">
-                                                                                        <tr>
-                                                                                            <th scope="col">Nội dung</th>
-                                                                                        </tr>
-                                                                                    </thead>
-                                                                                    <tbody>
-                                                                                        <tr>
-                                                                                            <td id="productDetailDescriptionLarge-goods-{{ $good->id }}" class="text-start">
-                                                                                                {{ $good->mo_ta ?? 'Chưa có mô tả' }}
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <!-- Tab Tồn kho trong detail -->
-                                                                    <div class="tab-pane fade" id="inventory-goods-{{ $good->id }}" role="tabpanel">
-                                                                        <div class="inventory-content">
-                                                                            <h6 class="text-muted mb-3">Thông tin tồn kho</h6>
-                                                                            <div class="table-responsive" style="max-width: 500px;">
-                                                                                <table class="table table-bordered table-striped align-middle text-center">
-                                                                                
-                                                                                    <tbody>
-                                                                                        <tr>
-                                                                                            <td><strong>Tồn kho hiện tại</strong></td>
-                                                                                            <td id="productDetailCurrentStock-goods-{{ $good->id }}">{{ $good->ton_kho ?? 0 }}</td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td><strong>Tồn kho tối đa</strong></td>
-                                                                                            <td id="productDetailMaxStock-goods-{{ $good->id }}">{{ $good->ton_cao_nhat ?? '999,999,999' }}</td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td><strong>Tồn kho tối thiểu</strong></td>
-                                                                                            <td id="productDetailMinStock-goods-{{ $good->id }}">{{ $good->ton_thap_nhat ?? 0 }}</td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td><strong>Định mức tồn</strong></td>
-                                                                                            <td id="productDetailStockRange-goods-{{ $good->id }}">{{ $good->ton_thap_nhat ?? 0 }} - {{ $good->ton_cao_nhat ?? '999,999,999' }}</td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                            </section>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Tab Tồn kho -->
+                                                    <div class="tab-content" id="inventory-{{ $good->id }}" style="display: none;">
+                                                        <div class="inventory-content">
+                                                            <section class="info-card">
+                                                                <header class="card-header">Thông tin tồn kho</header>
+                                                                <div class="card-body">
+                                                                    <table class="product-table">
+                                                                        <tbody>
+                                                                            <tr><td class="label">Tồn kho hiện tại</td><td class="value">{{ $good->ton_kho ?? 0 }}</td></tr>
+                                                                            <tr><td class="label">Tồn kho tối đa</td><td class="value">{{ $good->ton_cao_nhat ?? '999,999,999' }}</td></tr>
+                                                                            <tr><td class="label">Tồn kho tối thiểu</td><td class="value">{{ $good->ton_thap_nhat ?? 0 }}</td></tr>
+                                                                            <tr><td class="label">Định mức tồn</td><td class="value">{{ $good->ton_thap_nhat ?? 0 }} - {{ $good->ton_cao_nhat ?? '999,999,999' }}</td></tr>
+                                                                            <tr><td class="label">Trạng thái tồn kho</td><td class="value">
+                                                                                @if(($good->ton_kho ?? 0) <= ($good->ton_thap_nhat ?? 0))
+                                                                                    <span class="text-danger">Sắp hết hàng</span>
+                                                                                @elseif(($good->ton_kho ?? 0) >= ($good->ton_cao_nhat ?? 999999999))
+                                                                                    <span class="text-warning">Tồn kho cao</span>
+                                                                                @else
+                                                                                    <span class="text-success">Bình thường</span>
+                                                                                @endif
+                                                                            </td></tr>
+                                                                        </tbody>
+                                                                    </table>
                                                                 </div>
-                                                                <!-- Action Buttons -->
-                                                                <div class="action-buttons-container">
-                                                                    <div class="d-flex justify-content-between align-items-center">
-                                                                        <div class="left-actions">
-                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="showDeleteGoodsConfirmation({{ $good->id }}, '{{ $good->ma_hang }}', '{{ $good->ten_hang_hoa }}')">
-                                                                                <i class="fas fa-trash"></i> Xóa
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="right-actions">
-                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #1db46a; border-color: #1db46a; color: white;" onclick="openEditGoodsModal({{ $good->id }})">
-                                                                                <i class="fas fa-edit"></i> Chỉnh sửa
-                                                                            </button>
-                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="printLabel({{ $good->id }})">
-                                                                                <i class="fas fa-print"></i> In tem mã
-                                                                            </button>
-                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="openUnitModal({{ $good->id }})">
-                                                                                <i class="fas fa-cog"></i> Thiết lập đơn vị tính
-                                                                            </button>
-                                                                            <button type="button" class="btn btn-outline-secondary btn-sm">
-                                                                                <i class="fas fa-ellipsis-h"></i>
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+                                                            </section>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Action Buttons -->
+                                                    <div class="action-buttons-container mt-4">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div class="left-actions">
+                                                                <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="showDeleteGoodsConfirmation({{ $good->id }}, '{{ $good->ma_hang }}', '{{ $good->ten_hang_hoa }}')">
+                                                                    <i class="fas fa-trash"></i> Xóa
+                                                                </button>
+                                                            </div>
+                                                            <div class="right-actions">
+                                                                <button type="button" class="btn btn-sm me-2" style="background-color: #1db46a; border-color: #1db46a; color: white;" onclick="openEditGoodsModal({{ $good->id }})">
+                                                                    <i class="fas fa-edit"></i> Chỉnh sửa
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="printLabel({{ $good->id }})">
+                                                                    <i class="fas fa-print"></i> In tem mã
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="openUnitModal({{ $good->id }})">
+                                                                    <i class="fas fa-cog"></i> Thiết lập đơn vị tính
+                                                                </button>
+                                                                <button type="button" class="btn btn-outline-secondary btn-sm">
+                                                                    <i class="fas fa-ellipsis-h"></i>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -823,9 +744,6 @@
                                                                 <div class="action-buttons-container">
                                                                     <div class="d-flex justify-content-between align-items-center">
                                                                         <div class="left-actions">
-                                                                            <button type="button" class="btn btn-sm me-2" style="background-color: #f8f9fa; border-color: #dee2e6; color: #6c757d;" onclick="showDeleteServiceConfirmation({{ $service->id }}, '{{ $service->ma_hang }}', '{{ $service->ten_dich_vu }}')">
-                                                                                <i class="fas fa-trash"></i> Xóa
-                                                                            </button>
                                                                         </div>
                                                                         <div class="right-actions">
                                                                             <button type="button" class="btn btn-sm me-2" style="background-color: #1db46a; border-color: #1db46a; color: white;" onclick="openEditServiceModal({{ $service->id }})">
@@ -905,6 +823,41 @@
     </div>
 </div>
 
+<!-- Modal chỉnh sửa nhóm hàng -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="editCategoryForm" method="POST" class="modal-content">
+            @csrf
+            @method('PUT')
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">Chỉnh sửa nhóm hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="edit-category-name" class="form-label">Tên nhóm hàng</label>
+                    <input type="text" class="form-control" id="edit-category-name" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="edit-parent-category" class="form-label">Nhóm cha (nếu có)</label>
+                    <select class="form-select" id="edit-parent-category" name="parent_id">
+                        <option value="">Không có nhóm cha</option>
+                        @foreach($parentCategories ?? [] as $id => $name)
+                            <option value="{{ $id }}">{{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="showDeleteConfirm()" style="margin-right: 260px;">Xóa</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bỏ qua</button>
+                <button type="submit" class="btn btn-success">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <!-- Include Modal Components -->
 @include('admin.products.Danhsachhanghoa.create.medicine')
 @include('admin.products.Danhsachhanghoa.create.goods')
@@ -915,9 +868,10 @@
 @include('admin.products.Danhsachhanghoa.formmodal.unit_modal')
 
 
+{{-- thêm file css --}}
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/management/medicine-management.css') }}">
 <link rel="stylesheet" href="{{ asset('css/reponsive.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Hanghoa/Danhsachhanghoa/medicine.css') }}">
 @endpush
 
 @push('scripts')
@@ -928,64 +882,10 @@
     <script src="{{ asset('js/forms.js') }}"></script>
 @endpush
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 16px;">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold mb-3" id="deleteConfirmationModalLabel">
-                    Xóa hàng hóa
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body pt-0">
-                <p class="text-muted mb-0">
-                    Hệ thống sẽ xóa hoàn toàn hàng hóa
-                    <span id="deleteMedicineCode" class="fw-bold text-dark" style="color: #000000 !important;"></span>
-                    (<span id="deleteMedicineName" class="fw-bold"></span>)
-                    trên toàn bộ chi nhánh nhưng vẫn giữ thông tin hàng hóa trong các giao dịch lịch sử nếu có.
-                    Bạn có chắc chắn muốn xóa?
-                </p>
-            </div>
-            <div class="modal-footer border-0 pt-1">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    Bỏ qua
-                </button>
-                <button type="button" class="btn" style="background-color: #1db46a; border-color: #1db46a; color: white;" onclick="confirmDelete()">
-                    Đồng ý
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Hidden form for delete -->
-<form id="deleteMedicineForm" method="POST" style="display: none;">
-    @csrf
-    @method('DELETE')
-    <input type="hidden" id="deleteMedicineId" name="medicine_id">
-</form>
 
 <script>
 // toggleServiceDetail function is now in service-management.js
 
-/**
- * Show delete service confirmation
- */
-function showDeleteServiceConfirmation(serviceId, serviceCode, serviceName) {
-    // Update modal content
-    document.getElementById('deleteMedicineCode').textContent = serviceCode;
-    document.getElementById('deleteMedicineName').textContent = serviceName;
-    document.getElementById('deleteMedicineId').value = serviceId;
-    
-    // Update form action for service
-    const form = document.getElementById('deleteMedicineForm');
-    form.action = `/admin/services/${serviceId}`;
-    
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-    modal.show();
-}
 
 /**
  * View service detail in modal
@@ -1195,36 +1095,63 @@ function resetCategorySelection(event) {
 function editCategory(categoryId, categoryName, event) {
     event.stopPropagation();
     
-    const modal = document.getElementById('createCategoryModal');
+    const modal = document.getElementById('editCategoryModal');
     if (!modal) return;
     
     // Set form data
-    const nameInput = modal.querySelector('#category-name');
-    const parentSelect = modal.querySelector('#parent-category');
-    const title = modal.querySelector('.modal-title');
+    const nameInput = modal.querySelector('#edit-category-name');
+    const parentSelect = modal.querySelector('#edit-parent-category');
     
     if (nameInput) nameInput.value = categoryName;
     if (parentSelect) parentSelect.value = '';
-    if (title) title.textContent = 'Chỉnh sửa nhóm hàng';
     
     // Update form action for edit
-    const form = modal.querySelector('form');
+    const form = modal.querySelector('#editCategoryForm');
     if (form) {
         form.action = `/admin/categories/${categoryId}`;
-        // Add method override for PUT
-        let methodInput = form.querySelector('input[name="_method"]');
-        if (!methodInput) {
-            methodInput = document.createElement('input');
-            methodInput.type = 'hidden';
-            methodInput.name = '_method';
-            form.appendChild(methodInput);
-        }
-        methodInput.value = 'PUT';
+        form.setAttribute('data-category-id', categoryId);
     }
     
     // Show modal
     const bsModal = new bootstrap.Modal(modal);
     bsModal.show();
+}
+
+// Show delete confirmation from edit modal
+function showDeleteConfirm() {
+    const editModal = document.getElementById('editCategoryModal');
+    const categoryName = document.getElementById('edit-category-name').value;
+    const categoryId = document.getElementById('editCategoryForm').getAttribute('data-category-id');
+    
+    if (!categoryName) {
+        alert('Vui lòng nhập tên nhóm hàng!');
+        return;
+    }
+    
+    if (confirm(`Bạn có chắc chắn muốn xóa nhóm hàng "${categoryName}"?`)) {
+        // Tạo form để submit delete request
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/categories/${categoryId}`;
+        
+        // Thêm CSRF token
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+        
+        // Thêm method DELETE
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        form.appendChild(methodField);
+        
+        // Submit form
+        document.body.appendChild(form);
+        form.submit();
+    }
 }
 
 // Close dropdown when clicking outside

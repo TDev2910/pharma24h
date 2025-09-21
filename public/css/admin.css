@@ -289,85 +289,12 @@ body {
     min-width: 140px;
 }
 
-/* Table */
+/* Table - Removed product-table styles to avoid conflicts with medicine.css */
 .table-responsive {
     margin-top: 8px;
 }
 
-.product-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    font-size: 15px;
-    background: #fff;
-}
-
-.product-table thead tr {
-    background: #eafaf2;
-}
-
-.product-table th, .product-table td {
-    padding: 12px 8px;
-    text-align: left;
-    border-bottom: 1px solid #f0f0f0;
-    vertical-align: middle;
-}
-
-.product-table th {
-    font-weight: 700;
-    color: #222;
-    background: #eafaf2;
-    border-top: none;
-}
-
-.product-table tr:hover {
-    background: #f6fcf8;
-}
-
-.product-table img {
-    border-radius: 6px;
-    width: 32px;
-    height: 32px;
-    object-fit: cover;
-    background: #f3f7f5;
-}
-
-.product-table .stock-badge {
-    background: #d1ecf1;
-    color: #0c5460;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    display: inline-block;
-}
-
-.product-table .product-code {
-    color: #6c757d;
-    font-weight: 500;
-}
-
-.product-table .product-name {
-    color: #222;
-    font-weight: 500;
-}
-
-.product-table .time-stamp {
-    color: #6c757d;
-    font-size: 0.95rem;
-}
-
-/* Checkbox và icon */
-.product-table input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: #1db46a;
-}
-
-.product-table .fa-star,
-.product-table .fa-image {
-    font-size: 18px;
-}
+/* Checkbox và icon - Removed product-table specific styles */
 
 /* Pagination */
 .pagination .page-link {

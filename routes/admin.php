@@ -87,9 +87,8 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::post('products/position', [SupportingEntityController::class, 'storePosition'])->name('products.position.store');
 
     // CATEGORY ROUTES
-    Route::resource('categories', ProductCategoryController::class)->names('categories');
+    Route::resource('categories', ProductCategoryController::class)->except(['index', 'create', 'edit'])->names('categories');
     Route::get('categories/modal/data', [ProductCategoryController::class, 'getCategoriesForModal'])->name('categories.modal.data');
-    Route::put('categories/{id}/update', [ProductCategoryController::class, 'update'])->name('categories.update');
     Route::resource('products', ProductController::class)->except(['index'])->names('products');
 
     // Orders routes

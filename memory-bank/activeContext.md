@@ -1,7 +1,7 @@
-# Active Context - Sidebar Categories Display Development
+# Active Context - Product Display Enhancement
 
 ## Current Focus
-Đã hoàn thành việc phát triển **Hiển thị nhóm hàng trực tiếp trong sidebar** thay vì modal popup. Đây là cách tiếp cận mới phù hợp hơn với yêu cầu người dùng.
+Đã hoàn thành việc **tách CSS riêng cho medicine** và **cập nhật hiển thị hàng hóa** với layout chi tiết tương tự như thuốc. Tất cả sản phẩm giờ đây có giao diện đồng bộ và nhất quán với CSS riêng biệt cho từng loại sản phẩm.
 
 ## Recent Changes
 - ✅ **Thay đổi từ modal popup** sang hiển thị trực tiếp trong sidebar
@@ -11,6 +11,10 @@
 - ✅ **Tích hợp filtering** khi click vào category
 - ✅ **Cập nhật API** để không trả về product counts
 - ✅ **Thêm chức năng edit** với AJAX submit
+- ✅ **Cập nhật hiển thị hàng hóa** với layout chi tiết expandable
+- ✅ **Đồng bộ CSS** cho tất cả loại sản phẩm (thuốc, hàng hóa, dịch vụ)
+- ✅ **Tạo file CSS riêng** cho hàng hóa kế thừa từ medicine-management.css
+- ✅ **Đảm bảo khung detail row** hàng hóa giống hệt thuốc
 
 ## Completed Features
 1. **Sidebar Categories Display**:
@@ -26,16 +30,24 @@
    - AJAX submit để cập nhật
    - Reload sidebar sau khi update thành công
 
-3. **API Backend**:
+3. **Goods Display Enhancement**:
+   - Layout chi tiết expandable tương tự như thuốc
+   - 3 tabs: Thông tin, Mô tả ghi chú, Tồn kho
+   - Thông tin hàng hóa đầy đủ: mã hàng, giá, vị trí, nhà sản xuất
+   - Action buttons: Xóa, Chỉnh sửa, In tem mã, Thiết lập đơn vị tính
+   - Sử dụng chung CSS với thuốc để đồng bộ giao diện
+
+4. **API Backend**:
    - Endpoint `/admin/categories/modal/data` (không có product counts)
    - Route PUT `/admin/categories/{id}/update` cho edit
    - Recursive category structure với parent_id
 
-4. **Frontend Integration**:
+5. **Frontend Integration**:
    - JavaScript xử lý sidebar categories
    - Filtering sản phẩm theo category được chọn
    - Modal edit với form validation
    - Success/error handling
+   - Toggle product detail cho hàng hóa
 
 ## Technical Implementation
 - **Backend**: ProductCategoryController với method `getCategoriesForModal()` và `update()`
@@ -50,7 +62,8 @@
 - ✅ **Responsive design** cho mobile
 
 ## Files Modified
-- `resources/views/admin/products/Danhsachhanghoa/index.blade.php` - Sidebar integration
+- `resources/views/admin/products/Danhsachhanghoa/index.blade.php` - Sidebar integration + Goods display enhancement
+- `public/css/management/goods-style.css` - CSS riêng cho hàng hóa kế thừa từ medicine-management.css
 - `public/css/modals.css` - Sidebar categories styles
 - `public/js/modals.js` - Sidebar functionality + edit modal
 - `app/Http/Controllers/Admin/ProductCategoryController.php` - API updates

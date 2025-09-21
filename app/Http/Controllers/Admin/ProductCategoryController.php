@@ -9,33 +9,6 @@ use App\Models\ProductCategory;
 
 class ProductCategoryController extends Controller
 {
-    public function index()
-    {
-        // For categories index page: use hierarchical array format
-        $categories = ProductCategory::getAllCategoriesWithDepth();
-        return view('admin.categories.index', compact('categories'));
-    }
-
-    /**
-     * Show form to create new category
-     */
-    public function create()
-    {               
-        $parents = ProductCategory::getAllCategoriesWithDepth();  
-        return view('admin.categories.create', compact('parents'));
-    }
-
-    /**
-     * Show form to edit category
-     */
-    public function edit($id)
-    {
-        $category = ProductCategory::findOrFail($id);
-        // Use hierarchical dropdown for parent selection
-        $parents = ProductCategory::getAllCategoriesWithDepth();
-        return view('admin.categories.edit', compact('category', 'parents'));
-    }
-
     /**
      * Store new category with enhanced validation
      */
@@ -189,7 +162,7 @@ class ProductCategoryController extends Controller
         $categoryName = $category->name;
         $category->delete(); // Will cascade delete children due to DB constraint
 
-        return redirect()->route('admin.categories.index')
-    ->with('success', "Đã xóa nhóm hàng '{$categoryName}' thành công!");
+        return redirect()->route('admin.products.index')
+            ->with('success', "Đã xóa nhóm hàng '{$categoryName}' thành công!");
     }
 }

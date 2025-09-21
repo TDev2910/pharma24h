@@ -50,14 +50,64 @@ function showDeleteConfirmation(productId, productCode, productName, type = 'med
         form.action = `/admin/${type}s/${productId}`;
     }
     
-    // Open modal
-    openModal('deleteConfirmationModal');
+    if (confirm(`Bạn có chắc chắn muốn xóa ${type} "${productName}" (${productCode})?`)) {
+        // Tạo form để submit delete request
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/${type}s/${productId}`;
+        
+        // Thêm CSRF token
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+        
+        // Thêm method DELETE
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        form.appendChild(methodField);
+        
+        // Submit form
+        document.body.appendChild(form);
+        form.submit();
+    }
 }
 
 // Confirm delete function
 function confirmDelete() {
     const form = document.getElementById('deleteMedicineForm');
     if (form) {
+        form.submit();
+    }
+}
+
+// Delete category confirmation
+window.showDeleteCategoryConfirmation = function(categoryId, categoryName) {
+    if (confirm(`Bạn có chắc chắn muốn xóa nhóm hàng "${categoryName}"?`)) {
+        // Tạo form để submit delete request
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/categories/${categoryId}`;
+        
+        // Thêm CSRF token
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+        
+        // Thêm method DELETE
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        form.appendChild(methodField);
+        
+        // Submit form
+        document.body.appendChild(form);
         form.submit();
     }
 }

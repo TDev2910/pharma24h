@@ -1,0 +1,1235 @@
+/* Goods Management Styles - CSS riêng cho hàng hóa */
+
+/* Layout Structure */
+.goods-container-fluid {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header Control Bar */
+.goods-header-control-bar {
+    background: white;
+    border-radius: 0;
+    border-bottom: 1px solid #e9ecef;
+    padding: 16px 0;
+    margin-bottom: 0;
+}
+
+.goods-header-title {
+    color: #333;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Search Container */
+.goods-search-container {
+    position: relative;
+}
+
+.goods-search-container .input-group-text {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* Action Buttons */
+.goods-action-buttons .btn {
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+/* Content Area Layout */
+.goods-content-area {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Sidebar Styles */
+.goods-sidebar {
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 20px;
+    height: fit-content;
+}
+
+.goods-sidebar-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.goods-filter-section {
+    margin-bottom: 20px;
+}
+
+.goods-filter-section label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 14px;
+}
+
+.goods-filter-section .form-select {
+    border-radius: 6px;
+    border-color: #dee2e6;
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+.goods-create-link {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.875rem;
+    margin-left: 10px;
+}
+
+.goods-create-link:hover {
+    text-decoration: underline;
+}
+
+/* Main Content */
+.goods-main-content {
+    flex: 1;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+/* Table Styles */
+.goods-table-section {
+    padding: 0;
+}
+
+.goods-product-table {
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.goods-product-table thead th {
+    background-color: #f8f9fa;
+    color: #222;
+    font-weight: 500;
+    border: none;
+    padding: 12px 14px; 
+    font-size: 14px;
+    text-align: center;
+    vertical-align: middle;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.goods-product-table thead th:first-child {
+    border-top-left-radius: 0;
+}
+
+.goods-product-table thead th:last-child {
+    border-top-right-radius: 0;
+}
+
+.goods-product-table tbody td {
+    padding: 10px 12px; 
+    border-bottom: 1px solid #f0f0f0;
+    height: 35px;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 14px;
+    white-space: normal;
+    word-break: break-word;
+    word-wrap: break-word;
+    table-layout: fixed;
+    width: 100%;
+}
+
+/* Không cho xuống dòng ở cột giá bán và giá vốn */
+.goods-product-table tbody td:nth-child(5),
+.goods-product-table tbody td:nth-child(6) {
+    white-space: nowrap;
+    min-width: 120px;
+}
+
+/* Không xuống dòng cho cột Mã hàng */
+.goods-product-table thead th:nth-child(3),
+.goods-product-table tbody td:nth-child(3) {
+    white-space: nowrap;
+}
+.goods-product-table tbody td:nth-child(3) { 
+    min-width: 160px; 
+}
+
+/* Không xuống dòng cho cột Tồn kho và Thời gian tạo */
+.goods-product-table thead th:nth-child(7),
+.goods-product-table thead th:nth-child(8) {
+    white-space: nowrap;
+}
+.goods-product-table tbody td:nth-child(7),
+.goods-product-table tbody td:nth-child(8) {
+    white-space: nowrap;
+}
+
+/* Phân bổ chiều rộng cột */
+.goods-product-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.goods-product-table thead th:nth-child(1),
+.goods-product-table tbody td:nth-child(1){ width: 4%; }
+.goods-product-table thead th:nth-child(2),
+.goods-product-table tbody td:nth-child(2){ width: 8%; text-align: center; }
+.goods-product-table thead th:nth-child(3),
+.goods-product-table tbody td:nth-child(3){ width: 18%; text-align: left; }
+.goods-product-table thead th:nth-child(4),
+.goods-product-table tbody td:nth-child(4){ width: 18%; text-align: left; }
+.goods-product-table thead th:nth-child(5),
+.goods-product-table tbody td:nth-child(5){ width: 12%; }
+.goods-product-table thead th:nth-child(6),
+.goods-product-table tbody td:nth-child(6){ width: 12%; }
+.goods-product-table thead th:nth-child(7),
+.goods-product-table tbody td:nth-child(7){ width: 8%; }
+.goods-product-table thead th:nth-child(8),
+.goods-product-table tbody td:nth-child(8){ width: 20%; }
+.goods-product-table thead th:nth-child(9),
+.goods-product-table tbody td:nth-child(9){ width: 4%; }
+
+/* Product Image */
+.goods-product-image-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.goods-product-image {
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+/* Product Info */
+.goods-product-code {
+    font-weight: 500;
+    color: #495057;
+}
+
+.goods-product-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.goods-product-abbreviation {
+    color: #6c757d;
+    font-size: 13px;
+}
+
+/* Detail Rows */
+.goods-detail-row {
+    background-color: #f8f9fa;
+}
+
+.goods-detail-row td {
+    border-top: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.goods-detail-content {
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-top: 3px solid #007bff;
+    margin: 0 !important;
+}
+
+/* Product Detail Styles */
+.goods-product-image-detail-large img {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.goods-product-header {
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 15px;
+}
+
+.goods-product-title {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* Force left alignment in detail header */
+.goods-detail-content .row{ 
+    align-items: flex-start; 
+}
+.goods-product-info-detail{ 
+    text-align: left !important; 
+}
+.goods-product-info-detail .goods-product-header{ 
+    text-align: left !important; 
+}
+.goods-product-info-detail .goods-product-category,
+.goods-product-info-detail .goods-product-tags{ 
+    text-align: left !important; 
+}
+.goods-product-tags .badge{ 
+    margin-right: 8px; 
+}
+
+.goods-product-category {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.goods-product-tags .badge {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* Tabs */
+.goods-nav-tabs {
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 20px;
+}
+
+.goods-nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.goods-nav-tabs .nav-link.active {
+    color: #007bff;
+    border-bottom: 3px solid #007bff;
+    background: none;
+    font-weight: 600;
+}
+
+.goods-nav-tabs .nav-link:hover {
+    color: #007bff;
+    border-color: transparent;
+}
+
+/* Action Buttons in Detail */
+.goods-action-section {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.goods-action-section .btn {
+    border-radius: 6px;
+    font-size: 13px;
+    padding: 6px 12px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
+/* Summary Section */
+.goods-summary-section {
+    background: white;
+    border-radius: 6px;
+    padding: 15px 20px;
+    margin-top: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.goods-summary-section small {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* Pagination */
+.goods-pagination {
+    margin: 0;
+}
+
+.goods-pagination .page-link {
+    border-color: #dee2e6;
+    color: #007bff;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 0;
+}
+
+.goods-pagination .page-item:first-child .page-link {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+.goods-pagination .page-item:last-child .page-link {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.goods-pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.goods-pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #ffffff;
+}
+
+/* Hover Effects */
+.goods-product-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.goods-product-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* CSS cho phần mô tả và ghi chú */
+.goods-description-box {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    min-height: 120px;
+}
+
+.goods-description-text {
+    color: #495057;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.goods-description-text:empty::before {
+    content: "Chưa có nội dung";
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* ========== CSS MỚI CHO LAYOUT LIGHT THEME CHO GOODS ========== */
+.goods-product-detail { 
+    color: #333; 
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; 
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+.goods-product-detail * { 
+    box-sizing: border-box; 
+}
+
+/* Header */
+.goods-pd-header { 
+    display: grid; 
+    grid-template-columns: 140px 1fr; 
+    gap: 20px; 
+    align-items: center; 
+    margin-bottom: 22px; 
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.goods-pd-thumb { 
+    width: 140px; 
+    height: 140px; 
+    border-radius: 12px; 
+    background: #f8f9fa; 
+    border: 1px solid #dee2e6; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden; 
+}
+.goods-pd-thumb img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+}
+.goods-pd-thumb-fallback { 
+    color: #6c757d; 
+    font-weight: 600; 
+}
+
+.goods-pd-title { 
+    margin: 0 0 6px; 
+    font-size: 28px; 
+    font-weight: 700; 
+    letter-spacing: .2px; 
+    color: #333; 
+    text-align: left;
+}
+.goods-pd-subtitle { 
+    color: #6c757d; 
+    font-size: 14px; 
+    margin-bottom: 10px; 
+    text-align: left;
+}
+.goods-pd-badges { 
+    display: flex; 
+    gap: 8px; 
+    margin-bottom: 14px; 
+    text-align: left;
+}
+.goods-badge { 
+    padding: 6px 10px; 
+    border-radius: 999px; 
+    font-size: 12px; 
+    font-weight: 600; 
+    display: inline-block; 
+}
+.goods-badge-blue { 
+    background: rgba(13, 110, 253, .15); 
+    color: #0d6efd; 
+    border: 1px solid rgba(13, 110, 253, .35); 
+}
+.goods-badge-green { 
+    background: rgba(25, 135, 84, .15); 
+    color: #198754; 
+    border: 1px solid rgba(25, 135, 84, .35);
+}
+.goods-badge-orange { 
+    background: rgba(255, 193, 7, .15); 
+    color: #ffc107; 
+    border: 1px solid rgba(255, 193, 7, .35);
+}
+
+.goods-pd-tabs { 
+    display: flex; 
+    gap: 18px; 
+    border-bottom: 1px solid #dee2e6; 
+}
+.goods-pd-tabs .tab { 
+    background: none; 
+    border: none; 
+    color: #6c757d; 
+    padding: 10px 0; 
+    cursor: pointer; 
+    font-weight: 600; 
+}
+.goods-pd-tabs .tab.active { 
+    color: #0d6efd; 
+    border-bottom: 2px solid #0d6efd; 
+}
+
+/* Thân 2 cột */
+.goods-pd-body {
+    display: grid;
+    grid-template-columns: minmax(350px, 0.8fr) minmax(450px, 1.2fr);
+    gap: 26px;
+    margin-top: 20px;
+}
+
+/* Card */
+.goods-info-card { 
+    background: #fff; 
+    border: 1px solid #dee2e6; 
+    border-radius: 14px; 
+    overflow: hidden; 
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.goods-info-card .card-header { 
+    padding: 14px 16px; 
+    font-weight: 700; 
+    border-bottom: 1px solid #dee2e6; 
+    background: #f8f9fa; 
+    color: #495057; 
+}
+.goods-info-card .card-body { 
+    padding: 0; 
+}
+
+/* Bảng thông tin */
+.goods-product-table { 
+    width: 100%; 
+    table-layout: fixed; 
+    border-collapse: collapse; 
+    border-radius: 0 0 14px 14px;
+    overflow: hidden;
+}
+.goods-product-table td { 
+    padding: 12px 14px; 
+    border-bottom: 1px solid #f1f3f4; 
+    height: 40px; 
+    vertical-align: middle; 
+    font-size: 14px; 
+}
+
+.goods-product-table td.label { 
+    width: 42%; 
+    min-width: 170px; 
+    white-space: nowrap; 
+    font-weight: 700; 
+    text-align: center; 
+    color: #6c757d; 
+}
+.goods-product-table td.value { 
+    width: 58%; 
+    white-space: normal; 
+    word-break: break-word; 
+    overflow-wrap: break-word; 
+    text-align: left; 
+    color: #495057; 
+    max-width: 0;
+}
+.goods-product-table td.value.price { 
+    color: #28a745; 
+    font-weight: 700; 
+}
+
+.goods-product-table tbody tr:last-child td { 
+    border-bottom: 0; 
+}
+
+/* Action Buttons */
+.goods-action-buttons-container {
+    background: transparent;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    box-shadow: none;
+    border: none;
+}
+
+.goods-action-buttons-container .btn {
+    border-radius: 6px;
+    font-size: 13px;
+    padding: 6px 12px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.goods-action-buttons-container .left-actions .btn {
+    background-color: #f8f9fa !important;
+    border-color: #dee2e6 !important;
+    color: #6c757d !important;
+}
+
+.goods-action-buttons-container .right-actions .btn:first-child {
+    background-color: #1db46a !important;
+    border-color: #1db46a !important;
+    color: white !important;
+}
+
+.goods-action-buttons-container .right-actions .btn:not(:first-child) {
+    background-color: #f8f9fa !important;
+    border-color: #dee2e6 !important;
+    color: #6c757d !important;
+}
+
+.goods-action-buttons-container .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Tab Content */
+.goods-tab-content {
+    margin-top: 20px;
+}
+
+.goods-description-content .goods-info-card {
+    margin-bottom: 0;
+}
+
+.goods-description-text {
+    color: #495057;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    min-height: 100px;
+}
+
+.goods-description-text:empty::before {
+    content: "Chưa có nội dung";
+    color: #6c757d;
+    font-style: italic;
+}
+
+.goods-inventory-content .goods-info-card {
+    margin-bottom: 0;
+}
+
+/* Actions */
+.goods-pd-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+}
+
+.goods-pd-actions .left-actions,
+.goods-pd-actions .right-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Override styles để đảm bảo hàng hóa có border rõ ràng */
+.goods-row .product-table {
+    border: 1px solid #dee2e6 !important;
+}
+
+.goods-row .product-table td {
+    border-right: 1px solid #f1f3f4 !important;
+}
+
+.goods-row .product-table td:last-child {
+    border-right: none !important;
+}
+
+/* Tùy chỉnh riêng cho hàng hóa */
+.goods-row .badge-blue {
+    background: rgba(13, 110, 253, 0.15);
+    color: #0d6efd;
+    border: 1px solid rgba(13, 110, 253, 0.35);
+}
+
+/* Đảm bảo hàng hóa có cùng layout với thuốc */
+.goods-row .product-detail {
+    color: #333;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Đảm bảo header hàng hóa giống thuốc */
+.goods-row .pd-header {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 22px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Đảm bảo tabs hàng hóa giống thuốc */
+.goods-row .pd-tabs {
+    display: flex;
+    gap: 18px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.goods-row .pd-tabs .tab {
+    background: none;
+    border: none;
+    color: #6c757d;
+    padding: 10px 0;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.goods-row .pd-tabs .tab.active {
+    color: #0d6efd;
+    border-bottom: 2px solid #0d6efd;
+}
+
+/* Đảm bảo body hàng hóa giống thuốc */
+.goods-row .pd-body {
+    display: grid;
+    grid-template-columns: minmax(350px, 0.8fr) minmax(450px, 1.2fr);
+    gap: 26px;
+    margin-top: 20px;
+}
+
+/* Đảm bảo info-card hàng hóa giống thuốc */
+.goods-row .info-card {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.goods-row .info-card .card-header {
+    padding: 14px 16px;
+    font-weight: 700;
+    border-bottom: 1px solid #dee2e6;
+    background: #f8f9fa;
+    color: #495057;
+}
+
+.goods-row .info-card .card-body {
+    padding: 0;
+}
+
+/* Đảm bảo product-table hàng hóa giống thuốc */
+.goods-row .product-table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    border-radius: 0 0 14px 14px !important;
+    overflow: hidden !important;
+}
+
+.goods-row .product-table td {
+    padding: 12px 14px !important;
+    border-bottom: 1px solid #f1f3f4 !important;
+    height: 40px !important;
+    vertical-align: middle !important;
+    font-size: 14px !important;
+}
+
+.goods-row .product-table td.label {
+    width: 42% !important;
+    min-width: 170px !important;
+    white-space: nowrap !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    color: #6c757d !important;
+}
+
+.goods-row .product-table td.value {
+    width: 58% !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    text-align: left !important;
+    color: #495057 !important;
+    max-width: 0 !important;
+}
+
+.goods-row .product-table td.value.price {
+    color: #28a745 !important;
+    font-weight: 700 !important;
+}
+
+.goods-row .product-table tbody tr:last-child td {
+    border-bottom: 0 !important;
+}
+
+/* Đảm bảo border hiển thị rõ ràng cho hàng hóa */
+.goods-row .product-table tbody tr {
+    border-bottom: 1px solid #f1f3f4 !important;
+}
+
+.goods-row .product-table tbody tr:last-child {
+    border-bottom: none !important;
+}
+
+/* Đảm bảo border cho tất cả các dòng trong bảng hàng hóa */
+.goods-row .product-table tr td {
+    border-bottom: 1px solid #f1f3f4 !important;
+}
+
+.goods-row .product-table tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Đảm bảo action buttons hàng hóa giống thuốc */
+.goods-row .action-buttons-container {
+    background: transparent;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    box-shadow: none;
+    border: none;
+}
+
+.goods-row .action-buttons-container .btn {
+    border-radius: 6px;
+    font-size: 13px;
+    padding: 6px 12px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.goods-row .action-buttons-container .left-actions .btn {
+    background-color: #f8f9fa !important;
+    border-color: #dee2e6 !important;
+    color: #6c757d !important;
+}
+
+.goods-row .action-buttons-container .right-actions .btn:first-child {
+    background-color: #1db46a !important;
+    border-color: #1db46a !important;
+    color: white !important;
+}
+
+.goods-row .action-buttons-container .right-actions .btn:not(:first-child) {
+    background-color: #f8f9fa !important;
+    border-color: #dee2e6 !important;
+    color: #6c757d !important;
+}
+
+.goods-row .action-buttons-container .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive cho hàng hóa */
+@media (max-width: 1200px) {
+    .goods-content-area {
+        flex-direction: column;
+    }
+    
+    .goods-sidebar {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .goods-pd-body { 
+        grid-template-columns: 1fr 1fr; 
+        gap: 20px; 
+    }
+    
+    .goods-row .pd-body {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 992px) {
+    .goods-pd-header { 
+        grid-template-columns: 100px 1fr; 
+    }
+    .goods-pd-body { 
+        grid-template-columns: 1fr; 
+    }
+    .goods-pd-actions {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    .goods-pd-actions .left-actions,
+    .goods-pd-actions .right-actions {
+        justify-content: center;
+    }
+    
+    .goods-row .pd-header {
+        grid-template-columns: 100px 1fr;
+    }
+    
+    .goods-row .pd-body {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .goods-header-control-bar .controls-section {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .goods-search-container {
+        width: 100%;
+    }
+    
+    .goods-action-buttons {
+        justify-content: center;
+    }
+    
+    .goods-product-table {
+        font-size: 12px;
+    }
+    
+    .goods-product-table thead th,
+    .goods-product-table tbody td {
+        padding: 8px 12px;
+    }
+    
+    .goods-detail-content {
+        padding: 15px;
+    }
+    
+    .goods-info-card .table td {
+        padding: 8px 12px;
+    }
+    
+    .goods-summary-section {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
+
+/* Loading States */
+.goods-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.goods-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: goods-spin 1s linear infinite;
+}
+
+@keyframes goods-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success/Error Messages */
+.goods-alert {
+    border-radius: 6px;
+    border: none;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+}
+
+.goods-alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.goods-alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Utility Classes */
+.goods-text-truncate-custom {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.goods-badge-custom {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.goods-row .product-table td {
+    border-right: 1px solid #f1f3f4 !important;
+}
+
+.goods-row .product-table td:last-child {
+    border-right: none !important;
+}
+
+/* Có thể thêm các style riêng cho hàng hóa ở đây nếu cần */
+/* Ví dụ: màu sắc khác biệt, layout đặc biệt, etc. */
+
+/* Tùy chỉnh riêng cho hàng hóa (nếu cần) */
+.goods-row .badge-blue {
+    background: rgba(13, 110, 253, 0.15);
+    color: #0d6efd;
+    border: 1px solid rgba(13, 110, 253, 0.35);
+}
+
+/* Đảm bảo hàng hóa có cùng layout với thuốc */
+.goods-row .product-detail {
+    color: #333;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Đảm bảo header hàng hóa giống thuốc */
+.goods-row .pd-header {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 22px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Đảm bảo tabs hàng hóa giống thuốc */
+.goods-row .pd-tabs {
+    display: flex;
+    gap: 18px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.goods-row .pd-tabs .tab {
+    background: none;
+    border: none;
+    color: #6c757d;
+    padding: 10px 0;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.goods-row .pd-tabs .tab.active {
+    color: #0d6efd;
+    border-bottom: 2px solid #0d6efd;
+}
+
+/* Đảm bảo body hàng hóa giống thuốc */
+.goods-row .pd-body {
+    display: grid;
+    grid-template-columns: minmax(350px, 0.8fr) minmax(450px, 1.2fr);
+    gap: 26px;
+    margin-top: 20px;
+}
+
+/* Đảm bảo info-card hàng hóa giống thuốc */
+.goods-row .info-card {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.goods-row .info-card .card-header {
+    padding: 14px 16px;
+    font-weight: 700;
+    border-bottom: 1px solid #dee2e6;
+    background: #f8f9fa;
+    color: #495057;
+}
+
+.goods-row .info-card .card-body {
+    padding: 0;
+}
+
+/* Đảm bảo product-table hàng hóa giống thuốc */
+.goods-row .product-table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    border-radius: 0 0 14px 14px !important;
+    overflow: hidden !important;
+}
+
+.goods-row .product-table td {
+    padding: 12px 14px !important;
+    border-bottom: 1px solid #f1f3f4 !important;
+    height: 40px !important;
+    vertical-align: middle !important;
+    font-size: 14px !important;
+}
+
+.goods-row .product-table td.label {
+    width: 42% !important;
+    min-width: 170px !important;
+    white-space: nowrap !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    color: #6c757d !important;
+}
+
+.goods-row .product-table td.value {
+    width: 58% !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    text-align: left !important;
+    color: #495057 !important;
+    max-width: 0 !important;
+}
+
+.goods-row .product-table td.value.price {
+    color: #28a745 !important;
+    font-weight: 700 !important;
+}
+
+.goods-row .product-table tbody tr:last-child td {
+    border-bottom: 0 !important;
+}
+
+/* Đảm bảo border hiển thị rõ ràng cho hàng hóa */
+.goods-row .product-table tbody tr {
+    border-bottom: 1px solid #f1f3f4 !important;
+}
+
+.goods-row .product-table tbody tr:last-child {
+    border-bottom: none !important;
+}
+
+/* Đảm bảo border cho tất cả các dòng trong bảng hàng hóa */
+.goods-row .product-table tr td {
+    border-bottom: 1px solid #f1f3f4 !important;
+}
+
+.goods-row .product-table tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Đảm bảo action buttons hàng hóa giống thuốc */
+.goods-row .action-buttons-container {
+    background: transparent;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    box-shadow: none;
+    border: none;
+}
+
+.goods-row .action-buttons-container .btn {
+    border-radius: 6px;
+    font-size: 13px;
+    padding: 6px 12px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.goods-row .action-buttons-container .left-actions .btn {
+    background-color: #f8f9fa !important;
+    border-color: #dee2e6 !important;
+    color: #6c757d !important;
+}
+
+.goods-row .action-buttons-container .right-actions .btn:first-child {
+    background-color: #1db46a !important;
+    border-color: #1db46a !important;
+    color: white !important;
+}
+
+.goods-row .action-buttons-container .right-actions .btn:not(:first-child) {
+    background-color: #f8f9fa !important;
+    border-color: #dee2e6 !important;
+    color: #6c757d !important;
+}
+
+.goods-row .action-buttons-container .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive cho hàng hóa */
+@media (max-width: 1200px) {
+    .goods-row .pd-body {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 992px) {
+    .goods-row .pd-header {
+        grid-template-columns: 100px 1fr;
+    }
+    
+    .goods-row .pd-body {
+        grid-template-columns: 1fr;
+    }
+}
