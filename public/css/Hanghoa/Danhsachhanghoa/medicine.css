@@ -144,7 +144,7 @@
 
 /* Phân bổ chiều rộng cột để vừa khung mà không cần kéo */
 .product-table thead th:nth-child(1),
-.product-table tbody td:nth-child(1){ width: 4%; } /* Checkbox */
+.product-table tbody td:nth-child(1){ width: 4%; font-weight: 500; } /* Checkbox */
 .product-table thead th:nth-child(2),
 .product-table tbody td:nth-child(2){ width: 8%; text-align: center; } /* Ảnh */
 .product-table thead th:nth-child(3),
@@ -489,15 +489,15 @@
 }
 .medicine-row .info-card .card-body { padding:0; }  
 
-/* Bảng thông tin */
-.product-table { 
+/* Bảng thông tin - CHỈ CHO MEDICINE ROW DETAILS */
+.medicine-row .product-table { 
   width:100%; 
   table-layout:fixed; 
   border-collapse:collapse; 
   border-radius: 0 0 14px 14px;
   overflow: hidden;
 }
-.product-table td { 
+.medicine-row .product-table td { 
   padding:12px 14px; 
   border-bottom:1px solid #f1f3f4; 
   height:40px; 
@@ -505,7 +505,7 @@
   font-size:14px; 
 }
 
-.product-table td.label { 
+.medicine-row .product-table td.label { 
   width:42%; 
   min-width:170px; 
   white-space:nowrap; 
@@ -513,7 +513,7 @@
   text-align:center; 
   color: #6c757d; 
 }
-.product-table td.value { 
+.medicine-row .product-table td.value { 
   width:58%; 
   white-space:normal; 
   word-break:break-word; 
@@ -522,9 +522,83 @@
   color: #495057; 
   max-width: 0;
 }
-.product-table td.value.price { color:#28a745; font-weight:700; }
+.medicine-row .product-table td.value.price { color:#28a745; font-weight:700; }
 
-.product-table tbody tr:last-child td { border-bottom:0; }
+.medicine-row .product-table tbody tr:last-child td { border-bottom:0; }
+
+/* CSS cho unprefixed classes (chỉ cho medicine) */
+.medicine-row .product-table { 
+  width:100%; 
+  table-layout:fixed; 
+  border-collapse:collapse; 
+  border-radius: 0 0 14px 14px;
+  overflow: hidden;
+}
+.medicine-row .product-table td { 
+  padding:12px 14px; 
+  border-bottom:1px solid #f1f3f4; 
+  height:40px; 
+  vertical-align:middle; 
+  font-size:14px; 
+}
+
+.medicine-row .product-table td.label { 
+  width:42%; 
+  min-width:170px; 
+  white-space:nowrap; 
+  font-weight:700; 
+  text-align:center; 
+  color: #6c757d; 
+}
+.medicine-row .product-table td.value { 
+  width:58%; 
+  white-space:normal; 
+  word-break:break-word; 
+  overflow-wrap:break-word; 
+  text-align:left; 
+  color: #495057; 
+  max-width: 0;
+}
+.medicine-row .product-table td.value.price { color:#28a745; font-weight:700; }
+
+.medicine-row .product-table tbody tr:last-child td { border-bottom:0; }
+
+/* CSS cho unprefixed classes (chỉ áp dụng trong medicine rows) */
+.medicine-row .product-table { 
+  width:100%; 
+  table-layout:fixed; 
+  border-collapse:collapse; 
+  border-radius: 0 0 14px 14px;
+  overflow: hidden;
+}
+.medicine-row .product-table td { 
+  padding:12px 14px; 
+  border-bottom:1px solid #f1f3f4; 
+  height:40px; 
+  vertical-align:middle; 
+  font-size:14px; 
+}
+
+.medicine-row .product-table td.label { 
+  width:42%; 
+  min-width:170px; 
+  white-space:nowrap; 
+  font-weight:700; 
+  text-align:center; 
+  color: #6c757d; 
+}
+.medicine-row .product-table td.value { 
+  width:58%; 
+  white-space:normal; 
+  word-break:break-word; 
+  overflow-wrap:break-word; 
+  text-align:left; 
+  color: #495057; 
+  max-width: 0;
+}
+.medicine-row .product-table td.value.price { color:#28a745; font-weight:700; }
+
+.medicine-row .product-table tbody tr:last-child td { border-bottom:0; }
 
 /* ========== Action Buttons ========== */
 .action-buttons-container {

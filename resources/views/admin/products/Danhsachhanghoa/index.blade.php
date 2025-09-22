@@ -275,6 +275,7 @@
                                                                 <div class="card-body">
                                                                     <table class="product-table">
                                                                         <tbody>
+                                                                            <tr><td class="label">Mã hàng</td><td class="value">{{ $medicine->ma_hang ?? 'N/A' }}</td></tr>
                                                                             <tr><td class="label">Hoạt chất</td><td class="value">{{ $medicine->hoat_chat ?? 'N/A' }}</td></tr>
                                                                             <tr><td class="label">Đường dùng</td><td class="value">{{ $medicine->drugRoute->name ?? 'N/A' }}</td></tr>
                                                                             <tr><td class="label">Số đăng ký</td><td class="value">{{ $medicine->so_dang_ky ?? 'N/A' }}</td></tr>
@@ -284,7 +285,7 @@
                                                                             <tr><td class="label">Nước sản xuất</td><td class="value">{{ $medicine->nuoc_san_xuat ?? 'Việt Nam' }}</td></tr>
                                                                         </tbody>
                                                                     </table>
-                                                                </div>
+                                                                </div>  
                                                             </section>
                                                         </div>
                                                     </div>
@@ -462,12 +463,15 @@
                                                                 <div class="card-body">
                                                                     <table class="product-table">
                                                                         <tbody>
+                                                                            <tr><td class="label">Mã hàng</td><td class="value">{{ $good->ma_hang ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Mã vạch</td><td class="value">{{ $good->ma_vach ?? 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Trọng lượng</td><td class="value">{{ $good->trong_luong ? $good->trong_luong . ' g' : 'N/A' }}</td></tr>
+                                                                            <tr><td class="label">Đơn vị tính</td><td class="value">{{ $good->don_vi_tinh ?? 'N/A' }}</td></tr>
                                                                             <tr><td class="label">Quản lý theo lô</td><td class="value">{{ $good->quan_ly_theo_lo ? 'Có' : 'Không' }}</td></tr>
                                                                             <tr><td class="label">Quy cách đóng gói</td><td class="value">{{ $good->quy_cach_dong_goi ?? 'N/A' }}</td></tr>
                                                                             <tr><td class="label">Hãng sản xuất</td><td class="value">{{ $good->manufacturer->name ?? 'N/A' }}</td></tr>
                                                                             <tr><td class="label">Nước sản xuất</td><td class="value">{{ $good->nuoc_san_xuat ?? 'Việt Nam' }}</td></tr>
                                                                             <tr><td class="label">Bán trực tiếp</td><td class="value">{{ $good->ban_truc_tiep ? 'Có' : 'Không' }}</td></tr>
-                                                                            <tr><td class="label">Khách đặt</td><td class="value">{{ $good->khach_dat ? 'Có' : 'Không' }}</td></tr>
                                                                         </tbody>
                                                                     </table>
                                                                 </div>
@@ -872,6 +876,7 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/reponsive.css') }}">
 <link rel="stylesheet" href="{{ asset('css/Hanghoa/Danhsachhanghoa/medicine.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Hanghoa/Danhsachhanghoa/goods.css') }}">
 @endpush
 
 @push('scripts')
