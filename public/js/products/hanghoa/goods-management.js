@@ -595,35 +595,3 @@ function debounce(func, wait) {
 
 // Áp dụng debounce cho search function
 window.searchProducts = debounce(window.searchProducts, 300);
-
-// Switch tab function for product details
-window.switchTab = function(tabId, buttonElement) {
-    // Get the product ID from the tab ID
-    const productId = tabId.split('-').pop();
-    const productType = tabId.includes('goods') ? 'goods' : 'medicine';
-    
-    // Hide all tab contents for this product
-    const allTabContents = document.querySelectorAll(`[id*="${productType}-${productId}"]`);
-    allTabContents.forEach(content => {
-        if (content.classList.contains('tab-content')) {
-            content.style.display = 'none';
-        }
-    });
-    
-    // Remove active class from all tabs for this product
-    const allTabs = document.querySelectorAll(`[onclick*="${productType}-${productId}"]`);
-    allTabs.forEach(tab => {
-        tab.classList.remove('active');
-    });
-    
-    // Show selected tab content
-    const selectedTabContent = document.getElementById(tabId);
-    if (selectedTabContent) {
-        selectedTabContent.style.display = 'block';
-    }
-    
-    // Add active class to clicked tab
-    if (buttonElement) {
-        buttonElement.classList.add('active');
-    }
-}; 

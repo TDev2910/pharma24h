@@ -300,26 +300,4 @@ function debounce(func, wait) {
     };
 }
 
-// Áp dụng debounce cho search function
 window.searchProducts = debounce(window.searchProducts, 300);
-
-// Tab functionality for product detail
-window.switchTab = function(medicineId, tabName) {
-    // Remove active class from all tabs
-    const tabs = document.querySelectorAll(`#detail-row-${medicineId} .pd-tabs .tab`);
-    tabs.forEach(tab => tab.classList.remove('active'));
-    
-    // Add active class to clicked tab
-    const activeTab = event.target;
-    activeTab.classList.add('active');
-    
-    // Hide all tab content
-    const tabContents = document.querySelectorAll(`#detail-row-${medicineId} .tab-content`);
-    tabContents.forEach(content => content.style.display = 'none');
-    
-    // Show selected tab content
-    const targetContent = document.getElementById(`${tabName}-${medicineId}`);
-    if (targetContent) {
-        targetContent.style.display = 'block';
-    }
-} 

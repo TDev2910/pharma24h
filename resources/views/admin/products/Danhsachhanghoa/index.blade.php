@@ -239,11 +239,10 @@
                                                                 <span class="badge badge-green">Bán trực tiếp</span>
                                                                 <span class="badge badge-orange">Không tích điểm</span>
                                                             </div>
-
                                                             <div class="pd-tabs">
-                                                                <button class="tab active" onclick="switchTab({{ $medicine->id }}, 'info')">Thông tin</button>
-                                                                <button class="tab" onclick="switchTab({{ $medicine->id }}, 'description')">Mô tả, ghi chú</button>
-                                                                <button class="tab" onclick="switchTab({{ $medicine->id }}, 'inventory')">Tồn kho</button>
+                                                                <button class="tab active" onclick="switchProductTab({{ $medicine->id }}, 'info', this)">Thông tin</button>
+                                                                <button class="tab" onclick="switchProductTab({{ $medicine->id }}, 'description', this)">Mô tả, ghi chú</button>
+                                                                <button class="tab" onclick="switchProductTab({{ $medicine->id }}, 'inventory', this)">Tồn kho</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -426,11 +425,10 @@
                                                                 <span class="badge badge-green">{{ $good->ban_truc_tiep ? 'Bán trực tiếp' : 'Không bán trực tiếp' }}</span>
                                                                 <span class="badge badge-orange">Không tích điểm</span>
                                                             </div>
-
                                                             <div class="pd-tabs">
-                                                                <button class="tab active" onclick="switchTab({{ $good->id }}, 'info')">Thông tin</button>
-                                                                <button class="tab" onclick="switchTab({{ $good->id }}, 'description')">Mô tả, ghi chú</button>
-                                                                <button class="tab" onclick="switchTab({{ $good->id }}, 'inventory')">Tồn kho</button>
+                                                                <button class="tab active" onclick="switchProductTab({{ $good->id }}, 'info', this)">Thông tin</button>
+                                                                <button class="tab" onclick="switchProductTab({{ $good->id }}, 'description', this)">Mô tả, ghi chú</button>
+                                                                <button class="tab" onclick="switchProductTab({{ $good->id }}, 'inventory', this)">Tồn kho</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1221,8 +1219,26 @@ function filterProducts() {
         }
     });
 }
+
+// Chuyển tab trong chi tiết sản phẩm dùng chung cho(thuốc/hàng hóa)
+function switchProductTab(itemId, tabKey, btnEl) {
+    const keys = ['info', 'description', 'inventory'];
+
+    keys.forEach(function(key){
+        var panel = document.getElementById(key + '-' + itemId);
+        if (panel) {
+            panel.style.display = (key === tabKey) ? 'block' : 'none';
+        }
+    });
+
+    if (btnEl) {
+        var wrapper = btnEl.parentElement; // .pd-tabs
+        if (wrapper) {
+            var buttons = wrapper.querySelectorAll('button.tab');
+            buttons.forEach(function(b){ b.classList.remove('active'); });
+        }
+        btnEl.classList.add('active');
+    }
+}
 </script>
-
-{{-- Categories are now displayed directly in sidebar --}}
-
 @endsection
