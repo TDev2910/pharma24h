@@ -271,8 +271,8 @@
                   <!-- Tab Mô tả -->
                   <div class="tab-pane fade" id="edit-desc" role="tabpanel">
                       <div class="mb-3">
-                          <label for="medicine_edit_mo_ta" class="form-label">Mô tả sản phẩm</label>
-                          <textarea class="form-control" id="medicine_edit_mo_ta" name="mo_ta" rows="5" placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
+                          <label for="mo_ta" class="form-label">Mô tả sản phẩm</label>
+                          <textarea name="mo_ta" data-rte="true" data-rte-height="300"></textarea>
                       </div>
                   </div>
               </div>

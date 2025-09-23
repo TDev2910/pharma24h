@@ -11,6 +11,20 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
+/* Summernote Insert Image modal - khung gọn như ví dụ */
+.note-modal .modal-dialog {
+    max-width: 520px;
+}
+
+.note-modal .modal-content {
+    border-radius: 12px;
+}
+
+/* Khung soạn thảo Summernote gọn hơn */
+.note-editor .note-editable {
+    min-height: 220px;
+}
+
 /* Modal Header */
 .modal-header {
     border-bottom: 1px solid #dee2e6;
@@ -155,6 +169,13 @@
 
 .modal-xl .modal-dialog {
     max-width: 1140px;
+}
+
+/* ================= Summernote overrides ================ */
+/* Đặt sau các rule kích thước chung để chắc chắn áp dụng */
+.note-modal .modal-dialog,
+.note-modal .modal-dialog.modal-lg {
+    max-width: 520px !important; /* thu nhỏ như yêu cầu */
 }
 
 /* Modal Focus */
@@ -423,3 +444,9 @@
         padding-left: 76px;
     }
 }
+
+/* Summernote dropdowns/z-index fix inside Bootstrap modal */
+.note-popover, .note-modal, .note-hint-popover { z-index: 1065; }
+.note-dropdown-menu, .note-toolbar .dropdown-menu { z-index: 1066; }
+.note-color .dropdown-menu { z-index: 1067; }
+.note-editor .note-editable { background:#fff; }

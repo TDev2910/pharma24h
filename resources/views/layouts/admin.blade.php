@@ -9,10 +9,12 @@
     <link rel="stylesheet" href="{{ asset('css/modals.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Summernote CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.css" rel="stylesheet">
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Text editor styles injected by stacks below -->
     @stack('styles')
-   
 </head>
 <body>
     <!-- Menu trên cùng --> 
@@ -76,9 +78,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- Summernote JS -->
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.js"></script>
     <!-- Custom JS (Load sau Bootstrap) -->
     <script src="{{ asset('js/modals.js') }}"></script>
     <script src="{{ asset('js/forms.js') }}"></script>
+    <script src="{{ asset('js/products/hanghoa/editors.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

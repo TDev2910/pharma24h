@@ -13,16 +13,16 @@
               <!-- Tabs -->
               <ul class="nav nav-tabs border-0 mb-3" id="createGoodsTab" role="tablist">
                   <li class="" role="presentation">
-                      <button class="nav-link active px-4 py-2 fw-bold" id="create-info-tab" data-bs-toggle="tab" data-bs-target="#create-info" type="button" role="tab" style="margin-left:1px;margin-bottom:-2px">Thông tin</button>
+                      <button class="nav-link active px-4 py-2 fw-bold" id="create-goods-info-tab" data-bs-toggle="tab" data-bs-target="#create-goods-info" type="button" role="tab" style="margin-left:1px;margin-bottom:-2px">Thông tin</button>
                   </li>
                   <li class="" role="presentation">
-                      <button class="nav-link px-4 py-2 fw-bold" id="create-desc-tab" data-bs-toggle="tab" data-bs-target="#create-desc" type="button" role="tab" style="border-radius:8px;">Mô tả</button>
+                      <button class="nav-link px-4 py-2 fw-bold" id="create-goods-desc-tab" data-bs-toggle="tab" data-bs-target="#create-goods-desc" type="button" role="tab" style="border-radius:8px;">Mô tả</button>
                   </li>
               </ul>
               <hr class="border-0 border-top border-secondary-subtle" style="background-color: black; height: 2px;margin-top:-14px">
               <div class="tab-content" id="createGoodsTabContent">
                   <!-- Tab Thông tin -->
-                  <div class="tab-pane fade show active" id="create-info" role="tabpanel">
+                  <div class="tab-pane fade show active" id="create-goods-info" role="tabpanel">
                       <!-- THÔNG TIN CƠ BẢN -->
                       <div class="row mb-4">
                           <!-- Inputs bên trái -->
@@ -215,11 +215,13 @@
                   </div>
                   
                   <!-- Tab Mô tả -->
-                  <div class="tab-pane fade" id="create-desc" role="tabpanel">
-                      <div class="mb-3">
-                          <label for="mo_ta" class="form-label">Mô tả sản phẩm</label>
-                          <textarea class="form-control" id="mo_ta" name="mo_ta" rows="5" placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
-                      </div>
+                  <div class="tab-pane fade" id="create-goods-desc" role="tabpanel">
+                    <div class="mb-3">
+                      <label for="mo_ta" class="form-label">Mô tả sản phẩm</label>
+                      <textarea class="form-control" id="mo_ta" name="mo_ta" rows="5"
+                                placeholder="Nhập mô tả chi tiết về sản phẩm..."
+                                data-rte="true" data-rte-height="300"></textarea>
+                    </div>
                   </div>
               </div>
           </div>

@@ -1,4 +1,4 @@
-    <!-- Modal tạo thuốc -->
+<!-- Modal tạo thuốc -->
     <div class="modal fade create-modal" id="createMedicineModal" tabindex="-1" aria-labelledby="createMedicineModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content" style="border-radius:16px;">
@@ -268,7 +268,7 @@
                     <div class="tab-pane fade" id="create-desc" role="tabpanel">
                         <div class="mb-3">
                             <label for="mo_ta" class="form-label">Mô tả sản phẩm</label>
-                            <textarea class="form-control" id="mo_ta" name="mo_ta" rows="5" placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
+                            <textarea name="mo_ta" data-rte="true" data-rte-height="300"></textarea>
                         </div>
                     </div>
                 </div>

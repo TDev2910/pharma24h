@@ -296,7 +296,11 @@
                                                                 <header class="card-header">Mô tả sản phẩm</header>
                                                                 <div class="card-body">
                                                                     <div class="description-text p-3">
-                                                                        {{ $medicine->mo_ta ?? 'Chưa có mô tả' }}
+                                                                        @if(!empty($medicine->mo_ta))
+                                                                            {!! $medicine->mo_ta !!}
+                                                                        @else
+                                                                            <span class="text-muted">Chưa có mô tả</span>
+                                                                        @endif
                                                                     </div>
                                                                 </div>
                                                             </section>
@@ -484,7 +488,11 @@
                                                                 <header class="card-header">Mô tả sản phẩm</header>
                                                                 <div class="card-body">
                                                                     <div class="description-text p-3">
-                                                                        {{ $good->mo_ta ?? 'Chưa có mô tả' }}
+                                                                        @if(!empty($good->mo_ta))
+                                                                            {!! $good->mo_ta !!}
+                                                                        @else
+                                                                            <span class="text-muted">Chưa có mô tả</span>
+                                                                        @endif
                                                                     </div>
                                                                 </div>
                                                             </section>
