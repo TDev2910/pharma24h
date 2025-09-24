@@ -1,5 +1,5 @@
 <!-- Modal: Thanh toán nhà cung cấp -->
-<div class="modal fade" id="paySupplierModal" tabindex="-1" aria-labelledby="paySupplierLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="paySupplierModal" tabindex="-1" aria-labelledby="paySupplierLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">

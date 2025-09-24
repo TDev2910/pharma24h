@@ -1,7 +1,7 @@
 .summary-card {
     position: sticky;
     top: 84px;
-    border-radius: 10px;
+    border-radius: 0; /* remove rounded corners for summary panel */
 }
 
 .summary-card .form-control,
@@ -33,10 +33,6 @@
     background-color: #168f54;
     border-color: #168f54;
 }
-
-/* Ensure payment modal overlays above sticky/right elements */
-
-
 .header-control-bar {
     margin-top: 30px;
     background: transparent; /* Bỏ background */
