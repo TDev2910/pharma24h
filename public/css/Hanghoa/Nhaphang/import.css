@@ -547,3 +547,79 @@ Header Control Bar
         padding: 1rem;
     }
 }   
+.table.import-table {
+    table-layout: fixed;                /* cố định cột theo width */
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  
+  /* Header */
+  .table.import-table thead th {
+    position: sticky; top: 0; z-index: 1;   /* dính header khi scroll (nếu có) */
+    background: #eaf3ff;                    /* xanh nhạt */
+    color: #2b3440;
+    font-weight: 600;
+    padding: 12px 14px;
+    border-bottom: 1px solid #dbe7ff;
+  }
+  
+  /* Kích thước/align từng cột (theo thứ tự cột hiện tại) */
+  .table.import-table thead th:nth-child(1),
+  .table.import-table tbody td:nth-child(1) {
+    width: 44px; text-align: center;
+  }
+  .table.import-table thead th:nth-child(2),
+  .table.import-table tbody td:nth-child(2) { /* Mã nhập hàng */
+    width: 170px;
+  }
+  .table.import-table thead th:nth-child(3),
+  .table.import-table tbody td:nth-child(3) { /* Thời gian */
+    width: 170px;
+  }
+  .table.import-table thead th:nth-child(4),
+  .table.import-table tbody td:nth-child(4) { /* Mã NCC */
+    width: 120px;
+    padding-left: 30px;
+  }
+  .table.import-table thead th:nth-child(5),
+  .table.import-table tbody td:nth-child(5) { /* Nhà cung cấp */
+  width: auto;                             /* chiếm phần còn lại */
+  padding-left: 55px;                      /* đẩy nội dung dịch sang phải một chút */
+  }
+  .table.import-table thead th:nth-child(6),
+  .table.import-table tbody td:nth-child(6) { /* Cần trả NCC */
+    width: 140px; text-align: right; font-weight: 600;
+  }
+  .table.import-table thead th:nth-child(7),
+  .table.import-table tbody td:nth-child(7) { /* Trạng thái */
+    width: 140px;
+  }
+  
+  /* Body */
+  .table.import-table tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #eef2f6;
+    color: #2b3440;
+    vertical-align: middle;
+    background: #fff;
+  }
+  .table.import-table tbody tr:hover td {
+    background: #f7fbff;
+  }
+  
+  /* Badge trạng thái */
+  .badge-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .badge-status.success { background: #e6f6ee; color: #1b8756; border: 1px solid #cdeede; }
+  .badge-status.cancel  { background: #fdecec; color: #b42318; border: 1px solid #f9d3d1; }
+  
+  /* Hàng trống */
+  .table.import-table tbody td.empty {
+    color: #8a94a6; font-weight: 500;
+  }

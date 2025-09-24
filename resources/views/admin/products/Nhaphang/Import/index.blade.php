@@ -3,8 +3,7 @@
 @section('title', 'Quản lý nhập hàng')
 
 @section('content')
-<div class="container-fluid py-4" style="max-width: 1400px; margin: 0 auto;">
-    <!-- Header Control Bar -->
+<div class="container-fluid py-4" style="max-width: 1400px; margin: 0 auto;">    <!-- Header Control Bar -->
     <div class="header-control-bar">
         <div class="d-flex align-items-center justify-content-between">
             <!-- Title Section -->
@@ -75,7 +74,7 @@
     <div class="content-area mt-4">
         <div class="row">
             <!-- Left Sidebar - Filter Section -->
-            <aside class="col-xl-3 col-lg-3 col-md-4 mb-4">
+            <aside class="col-xl-2 col-lg-2 col-md-4 mb-4">
                 <div class="card sidebar-filter border-0 shadow-sm h-100">
                     <div class="card-body p-3">
                         <div class="filter-section mb-3">
@@ -104,7 +103,7 @@
                 </div>
             </aside>
             <!-- Right Main Content -->
-            <div class="col-xl-9 col-lg-9 col-md-8">
+            <div class="col-xl-10 col-lg-10 col-md-8">
                 <div class="main-content">
                     <!-- Table Section -->
                     <div class="p-2" style="background: #ffffff; border-radius: 8px; border: 1px solid #dee2e6;">
@@ -148,7 +147,6 @@
         </div>
     </div>
 
-    
     <!-- Success/Error Messages -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
