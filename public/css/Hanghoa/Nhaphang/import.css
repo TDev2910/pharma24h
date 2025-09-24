@@ -579,7 +579,7 @@ Header Control Bar
   .table.import-table thead th:nth-child(4),
   .table.import-table tbody td:nth-child(4) { /* Mã NCC */
     width: 120px;
-    padding-left: 30px;
+    padding-left: 26px;
   }
   .table.import-table thead th:nth-child(5),
   .table.import-table tbody td:nth-child(5) { /* Nhà cung cấp */
@@ -588,11 +588,12 @@ Header Control Bar
   }
   .table.import-table thead th:nth-child(6),
   .table.import-table tbody td:nth-child(6) { /* Cần trả NCC */
-    width: 140px; text-align: right; font-weight: 600;
+    width: 140px; text-align: right; font-weight: 600; padding-right: 25px;
   }
   .table.import-table thead th:nth-child(7),
   .table.import-table tbody td:nth-child(7) { /* Trạng thái */
     width: 140px;
+    padding-left:40px;
   }
   
   /* Body */
