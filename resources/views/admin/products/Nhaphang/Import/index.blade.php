@@ -26,10 +26,9 @@
                 <!-- Action Buttons -->
                 <div class="action-buttons d-flex align-items-center gap-2">
                     <!-- Tạo phiếu nhập mới -->
-                    <button class="btn btn-outline-secondary d-flex align-items-center">
-                        <i class="fas fa-plus me-2"></i>
-                        Nhập hàng
-                    </button>
+                    <a href="{{ route('admin.import.create') }}" class="btn btn-outline-secondary d-flex align-items-center">
+                        <i class="fas fa-plus me-2"></i>Nhập hàng
+                    </a>
                     
                     <!-- Xuất file -->
                     <button class="btn btn-outline-secondary d-flex align-items-center">
@@ -82,6 +81,10 @@
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" id="statusImported" name="status[]" value="imported">
                                 <label class="form-check-label" for="statusImported">Đã nhập hàng</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="statusCancelled" name="status[]" value="cancelled">
+                                <label class="form-check-label" for="statusCancelled">Phiếu tạm</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="statusCancelled" name="status[]" value="cancelled">

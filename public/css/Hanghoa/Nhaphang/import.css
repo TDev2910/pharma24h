@@ -1,4 +1,42 @@
-Header Control Bar
+.summary-card {
+    position: sticky;
+    top: 84px;
+    border-radius: 10px;
+}
+
+.summary-card .form-control,
+.summary-card .form-select {
+    height: 44px;
+    font-size: 14px;
+}
+
+.summary-card textarea.form-control {
+    min-height: 160px;
+    resize: vertical;
+}
+
+.summary-card .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-card .d-grid {
+    margin-top: auto;
+}
+
+.summary-card .btn {
+    height: 44px;
+    font-weight: 600;
+}
+
+.summary-card .btn-success {
+    background-color: #168f54;
+    border-color: #168f54;
+}
+
+/* Ensure payment modal overlays above sticky/right elements */
+
+
 .header-control-bar {
     margin-top: 30px;
     background: transparent; /* Bỏ background */
@@ -582,7 +620,7 @@ Header Control Bar
     padding-left: 26px;
   }
   .table.import-table thead th:nth-child(5),
-  .table.import-table tbody td:nth-child(5) { /* Nhà cung cấp */
+      .table.import-table tbody td:nth-child(5) { /* Nhà cung cấp */
   width: auto;                             /* chiếm phần còn lại */
   padding-left: 55px;                      /* đẩy nội dung dịch sang phải một chút */
   }

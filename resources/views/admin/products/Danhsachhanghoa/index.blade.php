@@ -126,15 +126,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="filter-section">
-                            <label>Tồn kho</label>
-                            <select class="form-select form-select-sm">
-                                <option>Tất cả</option>
-                                <option>Còn hàng</option>
-                                <option>Hết hàng</option>
-                                <option>Sắp hết</option>
-                            </select>
-                        </div>
                                          
                         <div class="filter-section">
                             <label>Nhà cung cấp</label>

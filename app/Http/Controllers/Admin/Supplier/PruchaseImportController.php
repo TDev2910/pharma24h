@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Supplier;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Supplier;
 
 class PruchaseImportController extends Controller
 {
@@ -20,7 +21,10 @@ class PruchaseImportController extends Controller
      */
     public function create()
     {
-        //
+        $suppliers = Supplier::orderBy('ten_nha_cung_cap')
+            ->get(['id','ten_nha_cung_cap','ma_nha_cung_cap']);
+
+        return view('admin.products.Nhaphang.Import.create', compact('suppliers'));
     }
 
     /**
