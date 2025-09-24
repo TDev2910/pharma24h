@@ -187,12 +187,16 @@
                                         <td colspan="7" class="p-0">
                                             <div class="supplier-detail-container bg-light border-top">
                                                 <div class="row p-4">
+                                                    <div class="title-detail">
+                                                        <button class="tab active" onclick="switchProductTab(4, 'info', this)">Thông tin</button>
+                                                        <button class="tab active" onclick="switchProductTab(4, 'info', this)">Lịch sử nhập hàng</button>
+                                                    </div>
                                                     <!-- Thông tin chung -->
                                                     <div class="col-md-6">
                                                         <h6 class="text-primary mb-3">
                                                             <i></i>Thông tin chung
                                                         </h6>
-                                                        <table class="table table-sm table-borderless">
+                                                        <table class="table table-sm table-borderless"> 
                                                             <tr>
                                                                 <td class="fw-bold" style="width: 140px;">Mã NCC:</td>
                                                                 <td>{{ $supplier->ma_nha_cung_cap }}</td>
@@ -226,7 +230,7 @@
                                                                 <td>
                                                                     @if($supplier->trang_thai == 'active')
                                                                         <span class="badge bg-success">Đang hoạt động</span>
-                                                    @else
+                                                                    @else
                                                                         <span class="badge bg-secondary">Không hoạt động</span>
                                                                     @endif
                                                                 </td>

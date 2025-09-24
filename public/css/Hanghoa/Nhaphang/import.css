@@ -1,4 +1,4 @@
-/* Header Control Bar */
+Header Control Bar
 .header-control-bar {
     margin-top: 30px;
     background: transparent; /* Bỏ background */
@@ -32,6 +32,8 @@
 /* Sidebar Filter */
 .sidebar-filter {
     padding: 0;
+    font-size: 0.95rem; /* Thu gọn chữ trong khung filter */
+    border-radius: 10px;
 }
 
 /* Giảm chiều rộng khung bao bọc filter */
@@ -41,18 +43,53 @@
 
 /* Giảm padding của khung bao bọc */
 .col-xl-3.col-lg-3.col-md-4 .p-2 {
-    padding: 12px !important; /* Giảm padding từ 16px xuống 12px */
+    padding: 10px !important; /* Thu gọn khung filter */
 }
 
 .filter-section {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem; /* Giảm khoảng trống giữa các nhóm */
 }
 
 .filter-section label {
-    font-weight: 500;
+    font-weight: 600;
     color: #495057;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem; /* Nhãn gọn hơn */
     display: block;
+    font-size: 0.95rem;
+}
+
+/* Kiểu section-title cho card filter mới */
+.sidebar-filter .section-title {
+    font-weight: 600;
+    color: #2b2f33;
+    margin-bottom: 6px;
+}
+
+/* Thu gọn checkbox trong filter */
+.sidebar-filter .form-check {
+    margin: 4px 0;          /* Sát nhau hơn */
+    padding-left: 0;        /* Bỏ thụt trái mặc định */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebar-filter .form-check-label {
+    font-size: 0.95rem;
+    line-height: 1.2;       /* Giảm chiều cao dòng */
+}
+
+.sidebar-filter .form-check-input {
+    width: 0.95rem;
+    height: 0.95rem;
+    margin-top: 0.1rem;
+    margin-left: 0;         /* Canh trái với label */
+}
+
+.sidebar-filter .card-body {
+    padding: 12px; /* đồng bộ padding card */
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
 }
 
 /* CSS cho form select - giảm chiều dài */
@@ -470,6 +507,9 @@
 .title-detail {
     margin-bottom: 20px;
 }
+
+
+
 
 /* ========== Responsive ========== */
 @media (max-width: 1200px) {

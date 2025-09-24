@@ -105,7 +105,7 @@
                         <div class="filter-section">
                             <label>
                                 Nhóm hàng
-                                <a href="#" class="create-link" data-bs-toggle="modal" data-bs-target="#createCategoryModal" style="margin-left: 90px;">Tạo mới</a>
+                                <a href="#" class="create-link" data-bs-toggle="modal" data-bs-target="#createCategoryModal" style="margin-left: 80px;">Tạo mới</a>
                             </label>
                             <div class="category-dropdown-container">
                                 <div class="category-dropdown-header" onclick="toggleCategoryDropdown()">
