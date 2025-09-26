@@ -207,7 +207,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 
 // Props từ Inertia
 const props = defineProps({
@@ -221,5 +221,21 @@ const props = defineProps({
 const csrfToken = computed(() => {
   const meta = document.querySelector('meta[name="csrf-token"]')
   return meta ? meta.getAttribute('content') : ''
+})
+
+// Listen for cart updates
+function handleCartUpdate() {
+  // Call the correct function from cart.js
+  if (typeof window.updateCartCount === 'function') {
+    window.updateCartCount()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('cart-updated', handleCartUpdate)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('cart-updated', handleCartUpdate)
 })
 </script>

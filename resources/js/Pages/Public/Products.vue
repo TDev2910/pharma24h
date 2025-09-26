@@ -88,8 +88,10 @@ defineProps({
 async function addToCart({ id, type }) {
   try {
     await axios.post('/cart/add', { item_id: id, item_type: type, quantity: 1 });
-    // TODO: toast/flash sau
-  } catch (e) { /* ignore for now */ }
+    window.dispatchEvent(new CustomEvent('cart-updated'));
+  } 
+  catch (e) { 
+  }
 }
 
 function handleImageError(event) {

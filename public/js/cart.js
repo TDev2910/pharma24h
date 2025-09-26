@@ -131,7 +131,7 @@ function updateCartCountDisplay(count) {
 }
 
 /**
- * Lấy và hiển thị số lượng sản phẩm trong giỏ
+ * Lấy và hiển thị số lượng sản phẩm trong giỏ ở trang home chính
  */
 function updateCartCount() {
     fetch('/cart?format=json', {

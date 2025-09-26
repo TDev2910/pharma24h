@@ -133,8 +133,14 @@ const props = defineProps({
 async function addToCart({ id, type }) {
   try {
     await axios.post('/cart/add', { item_id: id, item_type: type, quantity: 1 });
+    
+    // Trigger cart update event
+    window.dispatchEvent(new CustomEvent('cart-updated'));
+    
     // TODO: toast/flash sau
-  } catch (e) { /* ignore for now */ }
+  } catch (e) { 
+    // ignore for now
+  }
 }
 
 function handleImageError(event) {
