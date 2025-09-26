@@ -91,12 +91,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // User JavaScript loaded successfully
     
     // Initialize all components
-    initSmoothScrolling();
-    initNavbarScroll();
-    initCartFunctionality();
-    initSearchFunctionality();
-    initBackToTop();
-    initTooltips();
+    if (typeof initSmoothScrolling === 'function') initSmoothScrolling();
+    if (typeof initNavbarScroll === 'function') initNavbarScroll();
+    if (typeof initCartFunctionality === 'function') initCartFunctionality();
+    if (typeof initSearchFunctionality === 'function') initSearchFunctionality();
+    if (typeof initBackToTop === 'function') initBackToTop();
+    if (typeof initTooltips === 'function') initTooltips();
     
     // Initialize Google Maps if element exists
     if (document.getElementById('googleMap')) {

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+ 
 
 class DashboardController extends Controller
 {
@@ -19,6 +20,8 @@ class DashboardController extends Controller
         $user = Auth::user();
         return view('user.dashboard.index', compact('user'));
     }
+
+    
 
     public function profileSettings()
     {

@@ -4,13 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\HomeController;
-
+use Inertia\Inertia;
+ 
 // 🌐 PUBLIC ROUTES
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/co-so-kham-benh', [HomeController::class, 'cosokhambenh'])->name('cosokhambenh');
-Route::get('/products', [HomeController::class, 'products'])->name('products');
-Route::get('/about', [HomeController::class, 'about'])->name('about');
-Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::get('/',[HomeController::class,'homeInertia'])->name('home');
+Route::get('/co-so-kham-benh', fn () => Inertia::render('Public/Facilities'))->name('cosokhambenh');
+// Route::get('/products', fn () => Inertia::render('Public/Products'))->name('products');
+// Route::get('/about', [HomeController::class, 'about'])->name('about');
+// Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
 // Auth routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -47,3 +48,5 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 // Include admin routes
 require __DIR__.'/admin.php';
+
+ 

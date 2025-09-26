@@ -33,6 +33,8 @@ class Goods extends Model
         'khach_dat',
     ];
 
+    protected $appends = ['image_url', 'gia_ban_formatted'];
+
     // Get image URL - giống như Post model
     public function getImageUrlAttribute()
     {

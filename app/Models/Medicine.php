@@ -35,7 +35,9 @@ class Medicine extends Model
         'khach_dat',
     ];
 
-    // Get image URL - giống như Post model
+    protected $appends = ['image_url', 'gia_ban_formatted'];
+
+
     public function getImageUrlAttribute()
     {
         if ($this->image) {
