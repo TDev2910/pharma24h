@@ -53,7 +53,7 @@
                     <div class="text-muted" style="font-size: 13px;">{{ auth.user.email }}</div>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="/user/profile/settings">
+                    <a class="dropdown-item" href="/user/profile-settings">
                       <i class="fas fa-cog me-2"></i>Account Settings
                     </a>
                   </li>
@@ -233,6 +233,15 @@ function handleCartUpdate() {
 
 onMounted(() => {
   window.addEventListener('cart-updated', handleCartUpdate)
+  
+  // Debug auth data
+  console.log('Header mounted, auth data:', props.auth)
+  console.log('User data:', props.auth?.user)
+  console.log('Is user logged in?', !!props.auth?.user)
+  
+  // Initialize Bootstrap dropdowns
+  const dropdownElementList = document.querySelectorAll('.dropdown-toggle')
+  const dropdownList = [...dropdownElementList].map(dropdownToggleEl => new bootstrap.Dropdown(dropdownToggleEl))
 })
 
 onUnmounted(() => {

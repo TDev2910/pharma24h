@@ -27,10 +27,21 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
+        // Debug auth
+        $user = auth()->user();
+        \Log::info('HomeController - User authenticated:', ['user' => $user ? $user->toArray() : null]);
 
         return Inertia::render('Public/Home', [
             'medicines' => $medicines,
             'goods' => $goods,
+            'auth' => [
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                ] : null,
+            ],
         ]);
     }
 

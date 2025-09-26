@@ -1,5 +1,7 @@
 <template>
   <div>
+    <!-- Header Component -->
+    <Header :auth="auth" />
     <!-- Banner Carousel -->
     <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000" style="margin-top: 0;">
       <div class="carousel-indicators">
@@ -124,10 +126,12 @@
 
 <script setup>
 import axios from 'axios'
+import Header from './components/Header.vue'
 
 const props = defineProps({
   medicines: { type: Array, default: () => [] },
   goods: { type: Array, default: () => [] },
+  auth: { type: Object, default: () => ({ user: null }) }
 });
 
 async function addToCart({ id, type }) {

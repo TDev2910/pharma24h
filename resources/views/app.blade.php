@@ -19,16 +19,10 @@
     <link rel="stylesheet" href="{{ asset('css/home-sections.css') }}">
 </head>
 <body>
-    {{-- Vue Header Component --}}
-    <div id="header-app"></div>
-
-    {{-- Inertia page content --}}
+    {{-- Inertia page content with header --}}
     <main class="main-content">
         @inertia
     </main>
-
-    {{-- Vue Footer Component --}}
-    <div id="footer-app"></div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
