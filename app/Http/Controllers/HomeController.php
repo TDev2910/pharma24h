@@ -9,27 +9,6 @@ use Inertia\Inertia;
 
 class HomeController extends Controller
 {
-    /**
-     * Hiển thị trang chủ công cộng
-     */
-    public function index()
-    {
-        // Lấy 4 thuốc mới nhất cho hàng đầu tiên mặc định
-        $medicines = Medicine::with(['category', 'manufacturer'])
-            ->where('ban_truc_tiep', true)
-            ->latest()
-            ->limit(4) //giới hạn 4 sản phẩm
-            ->get();
-            
-        // Lấy 4 hàng hóa mới nhất cho hàng thứ hai mặc định 
-        $goods = Goods::with(['category', 'manufacturer'])
-            ->where('ban_truc_tiep', true)
-            ->latest()
-            ->limit(4)
-            ->get();
-        
-        return view('home', compact('medicines', 'goods'));
-    }
 
     /**
      * Trang chủ dùng Inertia + Vue (SPA)

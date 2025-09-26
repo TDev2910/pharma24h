@@ -189,7 +189,7 @@
           </li>
         </ul>
         
-        <!-- Mobile Search -->
+        <!-- Thanh tìm kiếm sản phẩm -->
         <div class="mt-3">
           <form class="search-form">
             <div class="search-container">
