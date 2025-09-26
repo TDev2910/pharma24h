@@ -8,7 +8,18 @@ use Inertia\Inertia;
  
 // 🌐 PUBLIC ROUTES
 Route::get('/',[HomeController::class,'homeInertia'])->name('home');
-Route::get('/co-so-kham-benh', fn () => Inertia::render('Public/Facilities'))->name('cosokhambenh');
+Route::get('/co-so-kham-benh', function () {
+    return Inertia::render('Public/Facilities', [
+        'auth' => [
+            'user' => auth()->user() ? [
+                'id' => auth()->user()->id,
+                'name' => auth()->user()->name,
+                'email' => auth()->user()->email,
+                'role' => auth()->user()->role,
+            ] : null,
+        ],
+    ]);
+})->name('cosokhambenh');
 // Route::get('/products', fn () => Inertia::render('Public/Products'))->name('products');
 // Route::get('/about', [HomeController::class, 'about'])->name('about');
 // Route::get('/contact', [HomeController::class, 'contact'])->name('contact');

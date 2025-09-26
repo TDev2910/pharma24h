@@ -74,6 +74,8 @@
       </div>
     </div>
   </div>
+  <!-- Footer Component -->
+  <Footer />
 </template>
 
 <script setup>

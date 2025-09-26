@@ -121,12 +121,16 @@
       </div>
     </div>
     
+    <!-- Footer Component -->
+    <Footer />
   </div>
 </template>
 
 <script setup>
 import axios from 'axios'
 import Header from './components/Header.vue'
+import Footer from './components/Footer.vue'
+
 
 const props = defineProps({
   medicines: { type: Array, default: () => [] },

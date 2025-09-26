@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\Supplier\SupplierCategoryController;
 use App\Http\Controllers\Admin\Order\OrdersController;  
 use App\Http\Controllers\Admin\Customer\CustomerController;
 use App\Http\Controllers\Admin\Supplier\PruchaseImportController;
+use App\Http\Controllers\Admin\Supplier\PurchaseReturns;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () 
@@ -75,6 +76,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     // Suppliers RESTful routes
     Route::resource('suppliers', SupplierController::class)->names('suppliers');
     Route::resource('import', PruchaseImportController::class)->names('import');
+    Route::resource('purchase-returns', PurchaseReturns::class)->names('purchase-returns');
     // Supplier Categories routes
     Route::prefix('supplier-categories')->name('supplier-categories.')->group(function () {
         Route::get('/', [SupplierCategoryController::class, 'index'])->name('index');
