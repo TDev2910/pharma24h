@@ -79,6 +79,7 @@ class MedicineController extends Controller
             'ten_thuoc'         => 'required|string|max:255',
             'ma_hang'           => 'nullable|string|max:50|unique:medicines,ma_hang',
             'ten_viet_tat'      => 'nullable|string|max:100',
+            'ton_kho'           => 'required|integer|min:0',
             'gia_ban'           => 'nullable|numeric|min:0',
             'gia_von'           => 'nullable|numeric|min:0',
             'ton_thap_nhat'     => 'nullable|integer|min:0',

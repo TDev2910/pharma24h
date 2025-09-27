@@ -192,18 +192,25 @@
 
                       <!-- Tồn kho -->
                       <fieldset class="mb-4 border rounded p-3">
-                          <legend class="float-none w-auto px-2 fs-6">Tồn kho</legend>
-                          <div class="row g-3 mb-2">
-                              <div class="col-md-6">
-                                  <label class="form-label">Định mức tồn thấp nhất</label>
-                                  <input type="number" class="form-control" name="ton_thap_nhat" id="medicine_edit_ton_thap_nhat" value="0">
-                              </div>
-                              <div class="col-md-6">
-                                  <label class="form-label">Định mức tồn cao nhất</label>
-                                  <input type="number" class="form-control" name="ton_cao_nhat" id="medicine_edit_ton_cao_nhat" value="999999999">
-                              </div>
-                          </div>
-                      </fieldset>
+                        <legend class="float-none w-auto px-2 fs-6">Tồn kho</legend>
+                        <div class="row g-3 mb-2">
+                            <div class="col-md-4">
+                                <label class="form-label">Tồn kho</label>
+                                <input type="number" class="form-control" name="ton_kho" id="medicine_edit_ton_kho" value="0" readonly>
+                                <small class="text-muted">Số lượng hiện có trong kho</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Định mức tồn thấp nhất</label>
+                                <input type="number" class="form-control" name="ton_thap_nhat" id="medicine_edit_ton_thap_nhat" value="0">
+                                <small class="text-muted">Cảnh báo khi ≤ số này</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Định mức tồn cao nhất</label>
+                                <input type="number" class="form-control" name="ton_cao_nhat" id="medicine_edit_ton_cao_nhat" value="999999999">
+                                <small class="text-muted">Cảnh báo khi ≥ số này</small>
+                            </div>
+                        </div>
+                    </fieldset>
 
                       <!-- Vị trí, trọng lượng -->
                       <fieldset class="mb-4 border rounded p-3">
