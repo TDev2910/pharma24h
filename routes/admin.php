@@ -77,6 +77,8 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::resource('suppliers', SupplierController::class)->names('suppliers');
     Route::resource('import', PruchaseImportController::class)->names('import');
     Route::resource('purchase-returns', PurchaseReturns::class)->names('purchase-returns');
+    Route::get('generate-import-code', [PruchaseImportController::class, 'generateImportCode'])->name('generate-import-code');
+    Route::post('process-excel', [PruchaseImportController::class, 'processExcel'])->name('process-excel');
     // Supplier Categories routes
     Route::prefix('supplier-categories')->name('supplier-categories.')->group(function () {
         Route::get('/', [SupplierCategoryController::class, 'index'])->name('index');

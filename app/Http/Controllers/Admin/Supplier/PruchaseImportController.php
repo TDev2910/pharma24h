@@ -10,6 +10,7 @@ use App\Models\StockImportItem;
 use App\Models\StockImportPayment;
 use App\Models\Medicine;
 use App\Models\Goods;
+use Shuchkin\SimpleXLSX;
 
 class PruchaseImportController extends Controller
 {
@@ -203,4 +204,111 @@ class PruchaseImportController extends Controller
         return redirect()->route('admin.purchase-imports.index')
             ->with('success', 'Phiếu nhập hàng đã được hoàn thành!');
     }
+
+    public function processExcel(Request $request)
+    {
+        $request->validate([
+            'excel_file' => 'required|file|mimes:xlsx|max:5120'
+        ]);
+
+        $path = $request->file('excel_file')->getRealPath();
+
+        if ($xlsx = SimpleXLSX::parse($path)) {
+            $rows = $xlsx->rows(); 
+
+            // Nếu hàng đầu là header, tách header + map
+            $header = array_map('trim', $rows[0] ?? []);
+            $data = array_slice($rows, 1);
+
+            $clean = array_map(function($r) use ($header) {
+                $row = array_combine($header, $r);
+
+                $f = function($v){
+                    if (is_string($v)) {
+                        $v = preg_replace('/\x{FEFF}|\x{200B}|\x{200C}|\x{200D}/u', '', $v);
+                        $v = trim($v);
+                        if (!mb_check_encoding($v, 'UTF-8')) {
+                            $v = mb_convert_encoding($v, 'UTF-8', 'auto');
+                        }
+                    }
+                    return $v;
+                };
+
+                return [
+                    'ma_hang'  => $f($row['Ma hang'] ?? $row['Mã hàng'] ?? ''),
+                    'ten_hang' => $f($row['Ten hang'] ?? $row['Tên hàng'] ?? ''),
+                    'dvt'      => $f($row['DVT'] ?? 'Cái'),
+                    'so_luong' => (int)($row['So luong'] ?? $row['Số lượng'] ?? 0),
+                    'don_gia'  => (float)($row['Don gia'] ?? $row['Đơn giá'] ?? 0),
+                ];
+            }, $data);
+        
+            $importedItems = [];
+            $errors = [];
+
+            // Xử lý từng dòng dữ liệu đã được clean
+            foreach ($clean as $item) {
+                $maHang = $item['ma_hang'];
+                $tenHang = $item['ten_hang'];
+                $soLuong = $item['so_luong'];
+                $donGia = $item['don_gia'];
+                $donViTinh = $item['dvt'];
+
+                if (empty($maHang) && empty($tenHang)) {
+                    continue; // Bỏ qua dòng trống
+                }
+
+                // Tìm sản phẩm trong database
+                $product = null;
+                $productType = null;
+
+                // Tìm trong medicines
+                $medicine = Medicine::where('ma_hang', $maHang)
+                    ->orWhere('ten_thuoc', 'like', '%' . $tenHang . '%')
+                    ->first();
+
+                if ($medicine) {
+                    $product = $medicine;
+                    $productType = 'medicine';
+                } else {
+                    // Tìm trong goods
+                    $goods = Goods::where('ma_hang', $maHang)
+                        ->orWhere('ten_hang_hoa', 'like', '%' . $tenHang . '%')
+                        ->first();
+                    
+                    if ($goods) {
+                        $product = $goods;
+                        $productType = 'goods';
+                    }
+                }
+
+                if ($product) {
+                    $importedItems[] = [
+                        'product_type' => $productType,
+                        'product_id' => $product->id,
+                        'ma_hang' => $product->ma_hang,
+                        'ten_hang' => $productType === 'medicine' ? $product->ten_thuoc : $product->ten_hang_hoa,
+                        'don_vi_tinh' => $product->don_vi_tinh ?? $donViTinh,
+                        'so_luong' => $soLuong,
+                        'don_gia' => $donGia,
+                        'thanh_tien' => $soLuong * $donGia
+                    ];
+                } else {
+                    $errors[] = "Không tìm thấy sản phẩm: {$maHang} - {$tenHang}";
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'items' => $importedItems,
+                'errors' => $errors,
+                'message' => 'Import thành công ' . count($importedItems) . ' sản phẩm'
+            ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE|JSON_UNESCAPED_UNICODE);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Lỗi khi đọc file Excel: ' . SimpleXLSX::parseError()
+        ], 422);
+}
 }

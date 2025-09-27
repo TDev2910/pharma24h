@@ -18,7 +18,12 @@
     <!-- Mã phiếu nhập -->
     <div class="mb-3 d-flex align-items-center">
       <label class="form-label mb-0 me-3" style="min-width: 130px;">Mã phiếu nhập</label>
-      <input type="text" name="code" class="form-control text-muted" placeholder="Mã phiếu tự động" readonly>
+      <div class="input-group">
+        <input type="text" name="import_code" id="import_code" class="form-control text-muted" placeholder="Mã phiếu tự động" readonly>
+        <button class="btn btn-outline-secondary" type="button" id="generateCodeBtn">
+          <i class="fas fa-sync-alt"></i> Tạo mã
+        </button>
+      </div>
     </div>
     
     <div class="mb-3 d-flex align-items-center">
@@ -92,7 +97,7 @@
       const debtText    = document.getElementById('debtDisplay');
       const subtotalHid = document.querySelector('input[name="subtotal"]');
       const payableHid  = document.querySelector('input[name="payable"]');
-
+  
       function recalc(){
         const sub = Number(subtotalRaw?.value || 0);
         const disc= Number(discountEl?.value || 0);
@@ -110,32 +115,32 @@
       discountEl?.addEventListener('input', recalc);
       cashPaidEl?.addEventListener('input', recalc);
       recalc();
-
+  
       // Modal interactions
       const payModal = document.getElementById('paySupplierModal');
       const payAmount = document.getElementById('payModalAmount');
       const payPayable = document.getElementById('payModalPayable');
       const payPaid = document.getElementById('payModalPaid');
       const payConfirm = document.getElementById('payModalConfirm');
-
+  
       payModal?.addEventListener('show.bs.modal', () => {
         const payableVal = Number(payableHid?.value || 0);
         payAmount.value = payableVal;
         payPayable.textContent = payableVal.toLocaleString('vi-VN');
         payPaid.textContent = Number(payAmount.value || 0).toLocaleString('vi-VN');
       });
-
+  
       payAmount?.addEventListener('input', () => {
         payPaid.textContent = Number(payAmount.value || 0).toLocaleString('vi-VN');
       });
-
+  
       document.querySelectorAll('.pay-method')?.forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.pay-method').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
         });
       });
-
+  
       payConfirm?.addEventListener('click', () => {
         const val = Number(payAmount.value || 0);
         if (cashPaidEl) cashPaidEl.value = val;
@@ -143,6 +148,46 @@
         const modal = bootstrap.Modal.getInstance(payModal);
         modal?.hide();
       });
+  
+      // Thêm code tạo mã phiếu tự động
+      const generateCodeBtn = document.getElementById('generateCodeBtn');
+      const importCodeInput = document.getElementById('import_code');
+  
+      if (generateCodeBtn && importCodeInput) {
+        // Tự động tạo mã khi trang tải
+        generateCode();
+        
+        // Tạo mã mới khi click nút
+        generateCodeBtn.addEventListener('click', function() {
+          generateCode();
+        });
+      }
+  
+      function generateCode() {
+        // Hiển thị loading
+        generateCodeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tạo...';
+        generateCodeBtn.disabled = true;
+        
+        // Gọi API để tạo mã từ server
+        fetch('{{ route("admin.generate-import-code") }}')
+          .then(response => response.json())
+          .then(data => {
+            importCodeInput.value = data.code;
+            generateCodeBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Tạo mã';
+            generateCodeBtn.disabled = false;
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            // Fallback: tạo mã client-side
+            importCodeInput.value = generateRandom7DigitCode();
+            generateCodeBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Tạo mã';
+            generateCodeBtn.disabled = false;
+          });
+      }
+  
+      function generateRandom7DigitCode() {
+        return Math.floor(1000000 + Math.random() * 9000000);
+      }
     })();
   </script>
   @endpush
