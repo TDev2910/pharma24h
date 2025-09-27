@@ -16,6 +16,7 @@ class Medicine extends Model
         'ten_viet_tat',
         'nhom_hang_id',
         'gia_von',
+        'ton_kho',
         'gia_ban',
         'so_dang_ky',
         'hoat_chat',
@@ -78,4 +79,8 @@ class Medicine extends Model
         return number_format($this->gia_von, 0, ',', '.') . ' VND';
     }
 
+    public function getTonKhoFormattedAttribute()
+    {
+        return number_format($this->ton_kho);
+    }
 }
