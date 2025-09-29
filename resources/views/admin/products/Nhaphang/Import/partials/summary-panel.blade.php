@@ -1,5 +1,6 @@
 <form action="{{ route('admin.import.store') }}" method="POST" class="card shadow-sm summary-card">
   @csrf
+  <input type="hidden" name="status" value="imported">
   <div class="card-body d-flex flex-column summary-right">
 
     <!-- Header tìm Ncc + nút thêm -->
@@ -25,13 +26,11 @@
         </button>
       </div>
     </div>
-    
+  
+    <!-- Ngày nhập hàng -->
     <div class="mb-3 d-flex align-items-center">
-      <label class="form-label mb-0 me-3" style="min-width: 130px; height: 44px;">Trạng thái</label>
-      <select name="status" class="form-select">
-        <option value="draft">Phiếu tạm</option>
-        <option value="imported">Đã nhập hàng</option>
-      </select>
+      <label class="form-label mb-0 me-3" style="min-width: 130px;">Ngày nhập</label>
+      <input type="date" name="import_date" class="form-control" value="{{ old('import_date', now()->toDateString()) }}" style="max-width: 200px;">
     </div>
 
     <!-- Khu tổng tiền giống mẫu -->
@@ -77,6 +76,7 @@
     </div>
 
    <!-- Buttons -->
+  <div id="itemsHiddenHolder"></div>
   <div class="d-flex justify-content-end gap-2 mt-3">
     <button type="submit" name="action" value="draft" class="btn btn-primary px-4">
       <i class="fas fa-save me-1"></i>Lưu tạm
@@ -189,6 +189,7 @@
         return Math.floor(1000000 + Math.random() * 9000000);
       }
     })();
+    
   </script>
   @endpush
 </form>

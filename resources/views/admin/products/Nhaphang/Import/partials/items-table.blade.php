@@ -55,36 +55,10 @@
           // Hiển thị empty state ban đầu
           showEmptyState();
 
-          function showEmptyState() {
-              importItemsBody.innerHTML = `
-                  <tr>
-                      <td colspan="7" class="empty-state-cell">
-                          <div class="empty-wrapper">
-                              <div class="fw-semibold mb-2" style="font-size:20px;color:#2b2f33;">
-                                  Thêm sản phẩm từ file excel
-                              </div>
-                              <button type="button" id="selectExcelBtn" class="btn btn-primary btn-lg" style="border-radius: 5px;">
-                                  Chọn file dữ liệu
-                              </button>
-                          </div>
-                      </td>
-                  </tr>
-              `;
-              
-              // Gắn event listener cho nút mới
-              const selectExcelBtn = document.getElementById('selectExcelBtn');
-              if (selectExcelBtn) {
-                  selectExcelBtn.addEventListener('click', function() {
-                      console.log('Button clicked, opening file dialog...');
-                      fileInput.click();
-                  });
-              }
-          }
-
-          // Tạo input file ẩn (một lần)
+          // Tạo input file
           const fileInput = document.createElement('input');
           fileInput.type = 'file';
-          fileInput.accept = '.xlsx,.xls,.csv';
+          fileInput.accept = '.xlsx,.xls,.csv'; //chỉ nhận file excel hoặc csv
           fileInput.style.display = 'none';
           document.body.appendChild(fileInput);
 
@@ -168,11 +142,11 @@
                       <td>${item.don_vi_tinh}</td>
                       <td>
                           <input type="number" class="form-control form-control-sm quantity-input" 
-                                 value="${item.so_luong}" min="1" data-index="${index}">
+                            value="${item.so_luong}" min="1" data-index="${index}">
                       </td>
                       <td>
                           <input type="number" class="form-control form-control-sm price-input" 
-                                 value="${item.don_gia}" min="0" step="0.01" data-index="${index}">
+                            value="${item.don_gia}" min="0" step="0.01" data-index="${index}">
                       </td>
                       <td class="text-end">
                           <span class="total-price">${item.thanh_tien.toLocaleString('vi-VN')}</span>
@@ -190,6 +164,9 @@
                   updateSummary();
               });
           });
+
+          // Tính lại tổng ngay sau khi render lần đầu
+          updateSummary();
       }
   
       function updateRowTotal(input) {
@@ -265,5 +242,47 @@
               fileInput.click();
           });
       }
+
+  // ---- Gom items vào form trước khi submit ----
+  const importForm = document.querySelector('form[action*="admin/import"]');
+  function buildHiddenItemsOrBlockSubmit(e){
+      const holder = document.getElementById('itemsHiddenHolder');
+      if (!holder) return;
+      holder.innerHTML = '';
+
+      const rows = document.querySelectorAll('#importItemsBody tr[data-product-id]');
+      let idx = 0;
+      rows.forEach(tr => {
+          const productType = tr.getAttribute('data-product-type');
+          const productId   = tr.getAttribute('data-product-id');
+          const qtyEl   = tr.querySelector('.quantity-input');
+          const priceEl = tr.querySelector('.price-input');
+          if (!productType || !productId || !qtyEl || !priceEl) return;
+
+          const quantity  = parseInt(qtyEl.value || '0', 10);
+          const unitPrice = parseFloat(priceEl.value || '0');
+          if (quantity <= 0) return;
+
+          const add = (name, value) => {
+              const input = document.createElement('input');
+              input.type = 'hidden';
+              input.name = `items[${idx}][${name}]`;
+              input.value = value;
+              holder.appendChild(input);
+          };
+
+          add('product_type', productType);
+          add('product_id',   productId);
+          add('quantity',     quantity);
+          add('unit_price',   unitPrice);
+          idx++;
+      });
+
+      if (idx === 0) {
+          e.preventDefault();
+          alert('Chưa có sản phẩm hợp lệ để lưu.');
+      }
+  }
+  importForm?.addEventListener('submit', buildHiddenItemsOrBlockSubmit);
   });
 </script>

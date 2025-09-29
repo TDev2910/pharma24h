@@ -59,7 +59,7 @@ class PruchaseImportController extends Controller
             'import_code' => $request->import_code,
             'supplier_id' => $request->supplier_id,
             'import_date' => $request->import_date,
-            'status' => 'pending', //trạng thái chờ xử lý
+            'status' => 'imported',
             'total_amount' => 0, //tổng tiền mặc định là 0 đồng
             'note' => $request->note
         ]);
@@ -81,6 +81,19 @@ class PruchaseImportController extends Controller
                 'total_price' => $totalPrice,
                 'note' => $item['note'] ?? null
             ]);
+
+            if($item['product_type'] === 'medicine')
+            {
+                $medicine = Medicine::find($item['product_id']);
+                $medicine->ton_kho += (int)$item['quantity'];
+                $medicine->save();
+            }
+            else
+            {
+                $goods = Goods::find($item['product_id']);
+                $gooods->ton_kho += (int)$item['quantity'];
+                $goods->save();
+            }
         }
 
         // Cập nhật tổng tiền
@@ -89,7 +102,7 @@ class PruchaseImportController extends Controller
             'remaining_amount' => $totalAmount
         ]);
 
-        return redirect()->route('admin.purchase-imports.index')
+        return redirect()->route('admin.import.index')
             ->with('success', 'Phiếu nhập hàng đã được tạo thành công!');
     }
 
@@ -132,7 +145,7 @@ class PruchaseImportController extends Controller
     public function destroy(StockImport $stockImport)
     {
         $stockImport->delete();
-        return redirect()->route('admin.purchase-imports.index')
+        return redirect()->route('admin.import.index')
             ->with('success', 'Phiếu nhập hàng đã được xóa thành công!');
     }
 
@@ -202,7 +215,7 @@ class PruchaseImportController extends Controller
         // Cập nhật trạng thái
         $stockImport->update(['status' => 'completed']);
 
-        return redirect()->route('admin.purchase-imports.index')
+        return redirect()->route('admin.import.index')
             ->with('success', 'Phiếu nhập hàng đã được hoàn thành!');
     }
 

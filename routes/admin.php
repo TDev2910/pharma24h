@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () 
 {
-    //main dashboard
+    // Dashboard / landing
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
-    
-    //medicine route (MedicineController)
+
+    // Medicines
     Route::prefix('medicines')->name('medicines.')->group(function () {
         Route::get('/', [MedicineController::class, 'index'])->name('index');
         Route::get('/list', [MedicineController::class, 'listMedicines'])->name('list');
@@ -30,7 +30,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
         Route::get('/{medicine}/detail', [MedicineController::class, 'show'])->name('detail');
     });
 
-    // goods route(GoodsController)
+    // Goods
     Route::prefix('goods')->name('goods.')->group(function () {
         Route::get('/', [GoodsController::class, 'index'])->name('index');
         Route::get('/list', [GoodsController::class, 'listGoods'])->name('list');
@@ -42,7 +42,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
         Route::get('/{goods}/detail', [GoodsController::class, 'show'])->name('detail');
     });
 
-    // services route (ServiceController)
+    // Services
     Route::prefix('services')->name('services.')->group(function () {
         Route::get('/', [ServiceController::class, 'index'])->name('index');
         Route::get('/list', [ServiceController::class, 'listServices'])->name('list');
@@ -54,9 +54,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
         Route::get('/{service}', [ServiceController::class, 'show'])->name('show');
         Route::patch('/{service}/status', [ServiceController::class, 'updateStatus'])->name('updateStatus');
     });  
-    // Main product dashboard
-    Route::get('products', [ProductController::class, 'index'])->name('products.index');
-    
+
     // Legacy medicine routes (for backward compatibility)
     Route::get('products/create-medicine', [ProductController::class, 'createMedicine'])->name('products.createMedicine');
     Route::post('products/store-medicine', [ProductController::class, 'storeMedicine'])->name('products.storeMedicine');
@@ -73,34 +71,36 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::delete('products/goods/{goods}', [ProductController::class,'deleteGoods'])->name('products.goods.delete');
     Route::get('products/goods/{goods}/detail', [ProductController::class,'showGoodsDetail'])->name('products.goods.detail');
     
-    // Suppliers RESTful routes
+    // Suppliers / Imports / Returns
     Route::resource('suppliers', SupplierController::class)->names('suppliers');
     Route::resource('import', PruchaseImportController::class)->names('import');
     Route::resource('purchase-returns', PurchaseReturns::class)->names('purchase-returns');
     Route::get('generate-import-code', [PruchaseImportController::class, 'generateImportCode'])->name('generate-import-code');
     Route::post('process-excel', [PruchaseImportController::class, 'processExcel'])->name('process-excel');
-    // Supplier Categories routes
+
+    // Supplier Categories
     Route::prefix('supplier-categories')->name('supplier-categories.')->group(function () {
         Route::get('/', [SupplierCategoryController::class, 'index'])->name('index');
         Route::post('/', [SupplierCategoryController::class, 'store'])->name('store');
         Route::put('/{supplierCategory}', [SupplierCategoryController::class, 'update'])->name('update');
         Route::delete('/{supplierCategory}', [SupplierCategoryController::class, 'destroy'])->name('destroy');
     });
-    // Supporting entities routes (using SupportingEntityController)
+
+    // Supporting entities
     Route::post('products/drugroute', [SupportingEntityController::class, 'storeDrugRoute'])->name('products.drugroute.store');
     Route::post('products/manufacturer', [SupportingEntityController::class, 'storeManufacturer'])->name('products.manufacturer.store');
     Route::post('products/position', [SupportingEntityController::class, 'storePosition'])->name('products.position.store');
 
-    // CATEGORY ROUTES
+    // Categories
     Route::resource('categories', ProductCategoryController::class)->except(['index', 'create', 'edit'])->names('categories');
     Route::get('categories/modal/data', [ProductCategoryController::class, 'getCategoriesForModal'])->name('categories.modal.data');
     Route::resource('products', ProductController::class)->except(['index'])->names('products');
 
-    // Orders routes
-    Route::resource('orders',\App\Http\Controllers\Admin\Order\OrdersController::class)->names('orders');
-    Route::post('orders/{order}/update-status', [\App\Http\Controllers\Admin\Order\OrdersController::class, 'updateStatus'])->name('orders.update-status');
-    Route::get('orders/{order}/invoice', [\App\Http\Controllers\Admin\Order\OrdersController::class, 'printInvoice'])->name('orders.invoice');
+    // Orders
+    Route::resource('orders', OrdersController::class)->names('orders');
+    Route::post('orders/{order}/update-status', [OrdersController::class, 'updateStatus'])->name('orders.update-status');
+    Route::get('orders/{order}/invoice', [OrdersController::class, 'printInvoice'])->name('orders.invoice');
 
-    // Customers routes
+    // Customers
     Route::resource('customers', CustomerController::class)->names('customers');
 });
