@@ -49,29 +49,11 @@
         fileInput.style.display = 'none';
         document.body.appendChild(fileInput);
         
-        // Trigger click on hidden file input
-        fileInput.click();
-        
         // Handle file selection
         fileInput.addEventListener('change', function(e) {
           if (e.target.files.length > 0) {
             const file = e.target.files[0];
-            // Here you would typically upload the file via AJAX
             console.log('Selected file:', file.name);
-            
-            // Example AJAX upload - uncomment and modify as needed
-            // const formData = new FormData();
-            // formData.append('excel_file', file);
-            // fetch('/admin/import/upload-excel', {
-            //   method: 'POST',
-            //   body: formData,
-            //   headers: {
-            //     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            //   }
-            // }).then(response => response.json())
-            //   .then(data => {
-            //     // Handle response, perhaps populate the table
-            //   });
           }
           document.body.removeChild(fileInput);
         });

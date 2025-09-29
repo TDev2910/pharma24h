@@ -10,7 +10,8 @@ use App\Models\StockImportItem;
 use App\Models\StockImportPayment;
 use App\Models\Medicine;
 use App\Models\Goods;
-use Shuchkin\SimpleXLSX;
+use App\Services\Excel\ExcelService;
+use App\Services\Excel\ImportService;
 
 class PruchaseImportController extends Controller
 {
@@ -213,102 +214,129 @@ class PruchaseImportController extends Controller
 
         $path = $request->file('excel_file')->getRealPath();
 
-        if ($xlsx = SimpleXLSX::parse($path)) {
-            $rows = $xlsx->rows(); 
+        /** @var ExcelService $excel */
+        $excel = app(ExcelService::class);
+        /** @var ImportService $importer */
+        $importer = app(ImportService::class);
 
-            // Nếu hàng đầu là header, tách header + map
-            $header = array_map('trim', $rows[0] ?? []);
-            $data = array_slice($rows, 1);
+        try {
+            $result = $importer->import($path, [
+                'headerMap' => [],
+                'baseRules' => [
+                    'so_luong' => ['required', 'integer', 'min:1'],
+                    'don_gia'  => ['required', 'numeric', 'min:0'],
+                ],
+                'rowNormalizer' => function(array $row) {
+                    // Chuẩn hoá và thống nhất key nội bộ
+                    $get = function(array $keys, $default = null) use ($row) {
+                        foreach ($keys as $k) {
+                            if (array_key_exists($k, $row) && $row[$k] !== null && $row[$k] !== '') {
+                                return $row[$k];
+                            }
+                        }
+                        return $default;
+                    };
 
-            $clean = array_map(function($r) use ($header) {
-                $row = array_combine($header, $r);
-
-                $f = function($v){
-                    if (is_string($v)) {
+                    $cleanString = function($v) {
+                        if (!is_string($v)) return $v;
                         $v = preg_replace('/\x{FEFF}|\x{200B}|\x{200C}|\x{200D}/u', '', $v);
                         $v = trim($v);
                         if (!mb_check_encoding($v, 'UTF-8')) {
                             $v = mb_convert_encoding($v, 'UTF-8', 'auto');
                         }
-                    }
-                    return $v;
-                };
+                        return $v;
+                    };
 
-                return [
-                    'ma_hang'  => $f($row['Ma hang'] ?? $row['Mã hàng'] ?? ''),
-                    'ten_hang' => $f($row['Ten hang'] ?? $row['Tên hàng'] ?? ''),
-                    'dvt'      => $f($row['DVT'] ?? 'Cái'),
-                    'so_luong' => (int)($row['So luong'] ?? $row['Số lượng'] ?? 0),
-                    'don_gia'  => (float)($row['Don gia'] ?? $row['Đơn giá'] ?? 0),
-                ];
-            }, $data);
-        
-            $importedItems = [];
-            $errors = [];
+                    $maHang  = $cleanString($get(['Ma hang', 'Mã hàng', 'ma_hang']));
+                    $tenHang = $cleanString($get(['Ten hang', 'Tên hàng', 'ten_hang']));
+                    $dvt     = $cleanString($get(['DVT', 'ĐVT', 'dvt'], 'Cái'));
+                    $soLuong = (int) ($get(['So luong', 'Số lượng', 'so_luong'], 0));
+                    $donGia  = (float) ($get(['Don gia', 'Đơn giá', 'don_gia'], 0));
 
-            // Xử lý từng dòng dữ liệu đã được clean
-            foreach ($clean as $item) {
-                $maHang = $item['ma_hang'];
-                $tenHang = $item['ten_hang'];
-                $soLuong = $item['so_luong'];
-                $donGia = $item['don_gia'];
-                $donViTinh = $item['dvt'];
-
-                if (empty($maHang) && empty($tenHang)) {
-                    continue; // Bỏ qua dòng trống
-                }
-
-                // Tìm sản phẩm trong database
-                $product = null;
-                $productType = null;
-
-                // Tìm trong medicines
-                $medicine = Medicine::where('ma_hang', $maHang)
-                    ->orWhere('ten_thuoc', 'like', '%' . $tenHang . '%')
-                    ->first();
-
-                if ($medicine) {
-                    $product = $medicine;
-                    $productType = 'medicine';
-                } else {
-                    // Tìm trong goods
-                    $goods = Goods::where('ma_hang', $maHang)
-                        ->orWhere('ten_hang_hoa', 'like', '%' . $tenHang . '%')
-                        ->first();
-                    
-                    if ($goods) {
-                        $product = $goods;
-                        $productType = 'goods';
-                    }
-                }
-
-                if ($product) {
-                    $importedItems[] = [
-                        'product_type' => $productType,
-                        'product_id' => $product->id,
-                        'ma_hang' => $product->ma_hang,
-                        'ten_hang' => $productType === 'medicine' ? $product->ten_thuoc : $product->ten_hang_hoa,
-                        'don_vi_tinh' => $product->don_vi_tinh ?? $donViTinh,
+                    return [
+                        'ma_hang'  => $maHang,
+                        'ten_hang' => $tenHang,
+                        'dvt'      => $dvt,
                         'so_luong' => $soLuong,
-                        'don_gia' => $donGia,
-                        'thanh_tien' => $soLuong * $donGia
+                        'don_gia'  => $donGia,
                     ];
-                } else {
-                    $errors[] = "Không tìm thấy sản phẩm: {$maHang} - {$tenHang}";
-                }
+                },
+                'rowFilter' => function(array $row) {
+                    return !(empty($row['ma_hang']) && empty($row['ten_hang']));
+                },
+                'rowResolver' => function(array $row) {
+                    $maHang = $row['ma_hang'];
+                    $tenHang = $row['ten_hang'];
+
+                    $product = null;
+                    $productType = null;
+
+                    $medicine = Medicine::where('ma_hang', $maHang)
+                        ->orWhere('ten_thuoc', 'like', '%' . $tenHang . '%')
+                        ->first();
+
+                    if ($medicine) {
+                        $product = $medicine;
+                        $productType = 'medicine';
+                    } else {
+                        $goods = Goods::where('ma_hang', $maHang)
+                            ->orWhere('ten_hang_hoa', 'like', '%' . $tenHang . '%')
+                            ->first();
+                        if ($goods) {
+                            $product = $goods;
+                            $productType = 'goods';
+                        }
+                    }
+
+                    $row['__product'] = $product;
+                    $row['__product_type'] = $productType;
+                    return $row;
+                },
+                'accumulate' => function(array $row) {
+                    $product = $row['__product'];
+                    $productType = $row['__product_type'];
+
+                    if ($product) {
+                        return [
+                            'product_type' => $productType,
+                            'product_id' => $product->id,
+                            'ma_hang' => $product->ma_hang,
+                            'ten_hang' => $productType === 'medicine' ? $product->ten_thuoc : $product->ten_hang_hoa,
+                            'don_vi_tinh' => $product->don_vi_tinh ?? $row['dvt'],
+                            'so_luong' => $row['so_luong'],
+                            'don_gia' => $row['don_gia'],
+                            'thanh_tien' => $row['so_luong'] * $row['don_gia'],
+                        ];
+                    }
+
+                    // Nếu không tìm thấy sản phẩm, ném ra để ghi ở errors
+                    throw new \RuntimeException("Không tìm thấy sản phẩm: {$row['ma_hang']} - {$row['ten_hang']}");
+                },
+            ]);
+
+            // Chuyển các exception của accumulate thành errors giống format cũ
+            $items = [];
+            $errors = [];
+            foreach ($result['items'] as $maybeItem) {
+                // Items đã qua accumulate, luôn hợp lệ
+                $items[] = $maybeItem;
+            }
+            foreach ($result['errors'] as $err) {
+                $errors[] = implode('; ', $err['messages']);
             }
 
             return response()->json([
                 'success' => true,
-                'items' => $importedItems,
+                'items' => $items,
                 'errors' => $errors,
-                'message' => 'Import thành công ' . count($importedItems) . ' sản phẩm'
+                'message' => 'Import thành công ' . count($items) . ' sản phẩm'
             ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE|JSON_UNESCAPED_UNICODE);
-        }
 
-        return response()->json([
-            'success' => false,
-            'message' => 'Lỗi khi đọc file Excel: ' . SimpleXLSX::parseError()
-        ], 422);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi khi đọc/nhập Excel: ' . $e->getMessage()
+            ], 422);
+        }
 }
 }

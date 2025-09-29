@@ -20,10 +20,6 @@
               <div class="fw-semibold mb-2" style="font-size:20px;color:#2b2f33;">
                 Thêm sản phẩm từ file excel
               </div>
-              <div class="text-muted mb-3" style="font-size:14px;">
-                (Tải về file mẫu:
-                <a href="#" class="ms-1" style="text-decoration:underline;">Excel file</a>)
-              </div>
               <button type="button" class="btn btn-primary btn-lg" style="border-radius: 5px;">
                 Chọn file dữ liệu
               </button>
@@ -54,6 +50,7 @@
           console.log('DOM loaded, initializing Excel import...');
           
           const importItemsBody = document.getElementById('importItemsBody');
+          let isImporting = false; // guard to avoid double runs
           
           // Hiển thị empty state ban đầu
           showEmptyState();
@@ -65,10 +62,6 @@
                           <div class="empty-wrapper">
                               <div class="fw-semibold mb-2" style="font-size:20px;color:#2b2f33;">
                                   Thêm sản phẩm từ file excel
-                              </div>
-                              <div class="text-muted mb-3" style="font-size:14px;">
-                                  (Tải về file mẫu:
-                                  <a href="#" class="ms-1" style="text-decoration:underline;">Excel file</a>)
                               </div>
                               <button type="button" id="selectExcelBtn" class="btn btn-primary btn-lg" style="border-radius: 5px;">
                                   Chọn file dữ liệu
@@ -88,7 +81,7 @@
               }
           }
 
-          // Tạo input file ẩn
+          // Tạo input file ẩn (một lần)
           const fileInput = document.createElement('input');
           fileInput.type = 'file';
           fileInput.accept = '.xlsx,.xls,.csv';
@@ -99,7 +92,8 @@
           fileInput.addEventListener('change', function(e) {
               const file = e.target.files[0];
               console.log('File selected:', file ? file.name : 'No file');
-              if (file) {
+              if (file && !isImporting) {
+                  isImporting = true;
                   uploadExcelFile(file);
               }
           });
@@ -150,6 +144,11 @@
           .catch(error => {
               console.error('Error:', error);
               showError('Có lỗi xảy ra khi xử lý file');
+          })
+          .finally(() => {
+              // reset guard and input so user can choose again manually
+              isImporting = false;
+              fileInput.value = '';
           });
       }
   
