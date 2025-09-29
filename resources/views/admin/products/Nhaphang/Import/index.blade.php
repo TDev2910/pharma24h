@@ -126,11 +126,92 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td colspan="7" class="text-center text-muted py-4">
-                                            <br>Không có phiếu nhập hàng nào
+                                    @forelse($imports as $import)
+                                        <tr class="import-row"
+                                            data-import-id="{{ $import->id }}"
+                                            data-supplier-id="{{ $import->supplier?->id }}"
+                                            data-status="{{ $import->status }}"
+                                            onclick="toggleImportDetail({{ $import->id }}, this)"
+                                            style="cursor:pointer;">
+                                        <td>
+                                            <input type="checkbox" class="form-check-input">
                                         </td>
-                                    </tr>
+                                        <td><span class="import-code">{{ $import->import_code }}</span></td>
+                                        <td>{{ \Carbon\Carbon::parse($import->import_date ?? $import->created_at)->format('d/m/Y H:i') }}</td>
+                                        <td><span class="supplier-code">{{ $import->supplier?->ma_nha_cung_cap }}</span></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                            <span class="supplier-name">{{ $import->supplier?->ten_nha_cung_cap }}</span>
+                                            </div>
+                                        </td>
+                                        <td>{{ number_format($import->remaining_amount ?? ($import->total_amount - ($import->paid_amount ?? 0)), 0, ',', '.') }}</td>
+                                        <td>
+                                            @php $st = $import->status; @endphp
+                                            @if ($st === 'imported' || $st === 'completed')
+                                            <span class="badge bg-success">Đã nhập hàng</span>
+                                            @else
+                                            <span class="badge bg-secondary">{{ $st }}</span>
+                                            @endif
+                                        </td>
+                                        </tr>
+                                        <!-- Chi tiết phiếu (ẩn mặc định) -->
+                                        <tr id="detail-row-{{ $import->id }}" class="detail-row" style="display: none;">
+                                            <td colspan="7" class="p-0">
+                                                <div class="supplier-detail-container bg-light border-top">
+                                                    <div class="row p-4">
+                                                        <div class="title-detail">
+                                                            <button class="tab active" type="button">Thông tin</button>
+                                                            <button class="tab" type="button">Lịch sử nhập hàng</button>
+                                                        </div>
+                                                        <!-- Thông tin chung -->
+                                                        <div class="col-md-6">
+                                                            <h6 class="text-primary mb-3">Thông tin chung</h6>
+                                                            <table class="table table-sm table-borderless">
+                                                                <tr>
+                                                                    <td class="fw-bold" style="width: 140px;">Mã NCC:</td>
+                                                                    <td>{{ $import->supplier?->ma_nha_cung_cap }}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="fw-bold">Tên NCC:</td>
+                                                                    <td>{{ $import->supplier?->ten_nha_cung_cap }}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="fw-bold">Điện thoại:</td>
+                                                                    <td>{{ $import->supplier?->dien_thoai }}</td>
+                                                                </tr>
+                                                                @if($import->supplier?->email)
+                                                                <tr>
+                                                                    <td class="fw-bold">Email:</td>
+                                                                    <td>{{ $import->supplier->email }}</td>
+                                                                </tr>
+                                                                @endif
+                                                            </table>
+                                                        </div>
+                                                        <!-- Thông tin liên hệ -->
+                                                        <div class="col-md-6">
+                                                            <h6 class="text-primary mb-3">Thông tin liên hệ</h6>
+                                                            <table class="table table-sm table-borderless">
+                                                                <tr>
+                                                                    <td class="fw-bold" style="width: 140px;">Địa chỉ:</td>
+                                                                    <td>{{ $import->supplier?->dia_chi }}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="fw-bold">Tỉnh/Thành:</td>
+                                                                    <td>{{ $import->supplier?->khu_vuc }}</td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted py-4">
+                                                Không có phiếu nhập hàng nào
+                                            </td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -140,7 +221,15 @@
                         <div class="row">
                             <div class="col-md-6">
                                  <small class="text-muted">
-                                     Tổng cộng: <strong>0</strong> phiếu nhập
+                                    @if($imports instanceof \Illuminate\Pagination\LengthAwarePaginator && $imports->total() > 0)
+                                        Tổng cộng: <strong>{{ $imports->total() }}</strong> phiếu nhập
+                                        Hiển thị : <strong>{{ $imports->firstItem() }}</strong> - <strong>{{ $imports->lastItem() }}</strong>
+                                    @elseif(is_countable($imports) && count($imports) > 0)
+                                        Tổng cộng: <strong>{{ count($imports) }}</strong> phiếu nhập
+                                        Hiển thị : <strong>1</strong> - <strong>{{ count($imports) }}</strong>
+                                    @else
+                                        Chưa có phiếu nhập hàng nào
+                                    @endif
                                  </small>
                              </div>
                         </div>
@@ -217,6 +306,10 @@
 
 @push('styles')
 <link href="{{ asset('css/Hanghoa/Nhaphang/import.css') }}" rel="stylesheet">
+@endpush
+
+@push('scripts')
+<script src="{{ asset('js/products/supplier/import-management.js') }}"></script>
 @endpush
 
 @push('scripts')
