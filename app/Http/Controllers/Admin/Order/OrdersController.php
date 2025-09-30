@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Order;
 
 use App\Http\Controllers\Controller;
+use App\Services\CheckoutService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Order;
@@ -85,22 +86,25 @@ class OrdersController extends Controller
     /**
      * Update the specified resource status.
      */
-    public function updateStatus(Request $request, string $order)
+    public function updateStatus(Request $request, string $order, CheckoutService $checkout)
     {
         $request->validate([
             'status' => 'required|in:pending,processing,completed,cancelled',
         ]);
         $order = Order::findOrFail($order);
-        //cập nhật trang thái đơn hàng và trạng thái thanh toán 
-        $order->order_status = $request->status;
+        // Nếu chọn Hoàn thành từ modal, gọi service để trừ tồn + set trạng thái
         if ($request->status === 'completed') {
-            $order->payment_status = 'paid';
-        } elseif (in_array($request->status, ['pending', 'processing'])) {
-            $order->payment_status = 'unpaid';
-        } elseif ($request->status === 'cancelled') {
-            $order->payment_status = 'cancelled';
+            $order = $checkout->completeOrder((int) $order->id);
+        } else {
+            // Cập nhật các trạng thái khác không trừ tồn
+            $order->order_status = $request->status;
+            if (in_array($request->status, ['pending', 'processing'])) {
+                $order->payment_status = 'unpaid';
+            } elseif ($request->status === 'cancelled') {
+                $order->payment_status = 'cancelled';
+            }
+            $order->save();
         }
-        $order->save();
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
@@ -162,6 +166,12 @@ class OrdersController extends Controller
         }
 
         return redirect()->route('admin.orders.index')->with('success', 'Đơn hàng đã được xóa thành công!');
+    }
+
+    public function markCompleted(int $id, CheckoutService $checkout)
+    {
+        $order = $checkout->completeOrder($id);
+        return back()->with('success', "Đã hoàn thành đơn #{$order->id} và trừ tồn kho.");
     }
 
     //In hóa đơn file pdf

@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
+use App\Models\Medicine;
+use App\Models\Goods;
+
 
 class CheckoutService
 {
@@ -86,6 +89,45 @@ class CheckoutService
             return $order;
         });
     }
+
+    //trừ tồn kho và cập nhật trạng thái đơn hàng
+    public function completeOrder(int $orderId): Order
+    {
+        return DB::transaction(function () use ($orderId) {
+            $order = Order::with('items')->lockForUpdate()->findOrFail($orderId);
+    
+            if ($order->order_status === 'completed') {
+                return $order;
+            }
+    
+            foreach ($order->items as $it) {
+                $qty = (int) $it->quantity;
+    
+                if ($it->item_type === 'medicine') {
+                    $p = Medicine::where('id', $it->item_id)->lockForUpdate()->firstOrFail();
+                    if (($p->ton_kho ?? 0) < $qty) {
+                        throw new \Exception('Không đủ tồn để hoàn thành: '.$p->ten_thuoc);
+                    }
+                    $p->decrement('ton_kho', $qty);
+                } elseif ($it->item_type === 'goods') {
+                    $p = Goods::where('id', $it->item_id)->lockForUpdate()->firstOrFail();
+                    if (($p->ton_kho ?? 0) < $qty) {
+                        throw new \Exception('Không đủ tồn để hoàn thành: '.$p->ten_hang_hoa);
+                    }
+                    $p->decrement('ton_kho', $qty);
+                }
+            }
+    
+            $order->order_status = 'completed';
+            $order->payment_status = 'paid';
+            $order->completed_at = now();
+            $order->save();
+    
+            return $order;
+        });
+    }
+
+    
 
     public function generateVnpayPaymentUrl(Order $order): string
     {

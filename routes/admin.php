@@ -100,6 +100,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::resource('orders', OrdersController::class)->names('orders');
     Route::post('orders/{order}/update-status', [OrdersController::class, 'updateStatus'])->name('orders.update-status');
     Route::get('orders/{order}/invoice', [OrdersController::class, 'printInvoice'])->name('orders.invoice');
+    Route::post('/orders/{id}/complete', [OrdersController::class, 'markCompleted'])->name('orders.complete');
 
     // Customers
     Route::resource('customers', CustomerController::class)->names('customers');
