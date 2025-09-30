@@ -2,28 +2,46 @@
   <div>
     <!-- Header Component -->
     <Header :auth="auth" />
-    <!-- Banner Carousel -->
-    <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000" style="margin-top: 0;">
-      <div class="carousel-indicators">
-        <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      </div>
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <img src="https://cdn.nhathuocbewell.com/images/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcS9pIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--918088de75b0611a6f53fdca34cb6dea5552095e/1000x0/filters:quality(90)/Banner-web_Hero-Chinh_3708x1240px.jpg" class="d-block w-100 banner-image" alt="Banner 1" />
+    <!-- Banner Layout: Left carousel + Right fixed banners -->
+    <div class="container-xxl" style="margin-top: 10px;">
+      <div class="row g-3">
+        <!-- LEFT: main carousel -->
+        <div class="col-lg-8">
+          <div class="main-banner rounded-3 overflow-hidden">
+          <div id="bannerCarousel" class="carousel slide h-100" data-bs-ride="carousel" data-bs-interval="3000">
+            <div class="carousel-indicators">
+              <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+              <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            </div>
+            <div class="carousel-inner h-100">
+              <div class="carousel-item active h-100">
+                <img src="https://production-cdn.pharmacity.io/digital/1590x0/plain/e-com/images/banners/20250926032853-0-Banner30ngaytuanthu1590x604.png?versionId=X6nfBWyh49iqMInsFSAmOdeFLcjL4reX" class="d-block w-100 h-100" style="object-fit:cover;" alt="Banner 1" />
+              </div>
+              <div class="carousel-item h-100">
+                <img src="https://production-cdn.pharmacity.io/digital/1590x0/plain/e-com/images/banners/20240510022448-0-THUCUDOIMOI%20BANNERWEB_590x604.png" class="d-block w-100 h-100" style="object-fit:cover;" alt="Banner 2" />
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+          </div>
         </div>
-        <div class="carousel-item">
-          <img src="https://inhopgiaygiare.vn/wp-content/uploads/2024/12/banner-Trai-Nghiem.jpg" class="d-block w-100 banner-image" alt="Banner 2" />
+        <!-- RIGHT: two fixed banners -->
+        <div class="col-lg-4 d-none d-lg-flex flex-column gap-3">
+          <a href="#">
+            <img src="https://production-cdn.pharmacity.io/digital/778x0/plain/e-com/images/banners/20250513024810-0-389x143-sub.png?versionId=BXtOBlz3nxYP6iHcXjIhDq5qMmuBK1ku" class="w-100" style="height:210px;object-fit:cover;border-radius:10px;" alt="Side 1" />
+          </a>
+          <a href="#">
+            <img src="https://sdmntpraustraliaeast.oaiusercontent.com/files/00000000-8de8-61fa-af1b-b346d2b0047b/raw?se=2025-09-30T12%3A20%3A01Z&sp=r&sv=2024-08-04&sr=b&scid=95c8d14e-2ab6-58ee-a73f-596304f0cd98&skoid=cb94e22a-e3df-4e6a-9e17-1696f40fa435&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-09-30T10%3A42%3A12Z&ske=2025-10-01T10%3A42%3A12Z&sks=b&skv=2024-08-04&sig=mfAX5jA6g1AvaWaxgJt5Sra2A/ImBcL1ZPyzTYzxKPE%3D" class="w-100" style="height:195px;object-fit:cover;border-radius:10px;" alt="Side 2" />
+          </a>
         </div>
       </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
     </div>
 
     <!-- Introduction -->
@@ -156,3 +174,32 @@ function handleImageError(event) {
   event.target.src = '/images/products/đạt.jpg';
 }
 </script>
+
+<style scoped>
+/* Chiều cao banner trái bằng tổng chiều cao 2 banner phải */
+.main-banner { height: 360px; }
+@media (min-width: 1400px) { .main-banner { height: 420px; } }
+
+/* Bên phải: chia đôi chiều cao, ảnh luôn phủ đầy khung */
+.d-lg-flex.flex-column.gap-3 > a { flex: 1 1 0; }
+.d-lg-flex.flex-column.gap-3 > a img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 10px; }
+</style>
+
+
+<style scoped>
+/* Hiển thị trọn ảnh banner */
+.banner-image {
+  width: 100%;
+  height: auto;            /* bỏ ép chiều cao */
+  object-fit: contain;     /* không cắt ảnh, có thể xuất hiện viền trống */
+  border-radius: 10px;
+  background: #fff;        /* nền trắng cho vùng trống nếu có */
+  display: block;
+  margin: 0 auto;          /* căn giữa khi ảnh hẹp */
+}
+
+/* Nếu muốn giới hạn tối đa chiều cao (tuỳ chọn) */
+@media (min-width: 1400px) {
+  .banner-image { max-height: 520px; } /* chỉnh con số bạn muốn */
+}
+</style>
