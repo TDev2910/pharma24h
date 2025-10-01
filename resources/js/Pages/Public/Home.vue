@@ -9,10 +9,6 @@
         <div class="col-lg-8">
           <div class="main-banner rounded-3 overflow-hidden">
           <div id="bannerCarousel" class="carousel slide h-100" data-bs-ride="carousel" data-bs-interval="3000">
-            <div class="carousel-indicators">
-              <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-              <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>  
-            </div>
             <div class="carousel-inner h-100">
               <div class="carousel-item active h-100">
                 <img src="https://production-cdn.pharmacity.io/digital/1590x0/plain/e-com/images/banners/20250926032853-0-Banner30ngaytuanthu1590x604.png?versionId=X6nfBWyh49iqMInsFSAmOdeFLcjL4reX" class="d-block w-100 h-100" style="object-fit:cover;" alt="Banner 1" />
@@ -64,58 +60,67 @@
     </div>
 
      <!-- show icon -->
-     <div class="container py-4" style="margin-top: 50px;">
-      <div class="row text-center">
-        <!-- Item 1 -->
-        <div class="col-6 col-md-3 col-lg-2 mb-4">
-          <div class="p-3 bg-light rounded">
-            <img src="https://production-cdn.pharmacity.io/digital/124x124/plain/e-com/images/ecommerce/20240825092057-0-6.png" class="img-fluid mb-2" alt="Tư vấn mua thuốc" style="height:40px;">
-            <div>Tư vấn mua thuốc</div>
+    <div class="container py-5" style="margin-top: 20px;">
+    <div class="row text-center">
+      <!-- Item 1 -->
+      <div class="col-12 col-md-6 col-lg-3 mb-4">
+        <div class="p-4">
+          <div class="d-inline-flex align-items-center justify-content-center mb-3 rounded" 
+              style="width:80px; height:80px; background:#e6f7ff;">
+            <img src="https://cdn.kiotvietweb.vn/page_builder_default_config/pharmacy/theme_2/homepage/service/picture_1.webp" alt="Cam kết 100%" style="width:40px; height:40px;">
           </div>
+          <h6 class="fw-bold text-primary">CAM KẾT 100%</h6>
+          <p class="text-muted mb-0">Thuốc chính hãng, đa dạng và chuyên sâu</p>
         </div>
-        <!-- Item 2 -->
-        <div class="col-6 col-md-3 col-lg-2 mb-4">
-          <div class="p-3 bg-light rounded">
-            <img src="https://production-cdn.pharmacity.io/digital/124x124/plain/e-com/images/ecommerce/20240717085927-0-Dealhot.png" class="img-fluid mb-2" alt="Liên hệ dược sĩ" style="height:40px;">
-            <div>Liên hệ dược sĩ</div>
+    </div>
+
+      <!-- Item 2 -->
+      <div class="col-12 col-md-6 col-lg-3 mb-4">
+        <div class="p-4">
+          <div class="d-inline-flex align-items-center justify-content-center mb-3 rounded" 
+              style="width:80px; height:80px; background:#f0f0ff;">
+            <img src="https://cdn.kiotvietweb.vn/page_builder_default_config/pharmacy/theme_2/homepage/service/picture_2.webp" alt="Giao hàng nhanh chóng" style="width:40px; height:40px;">
           </div>
+          <h6 class="fw-bold text-primary">GIAO HÀNG NHANH CHÓNG</h6>
+          <p class="text-muted mb-0">Giao hàng tận nhà hoặc nhận tại cửa hàng</p>
         </div>
-        <!-- Item 3 -->
-        <div class="col-6 col-md-3 col-lg-2 mb-4">
-          <div class="p-3 bg-light rounded">
-            <img src="https://production-cdn.pharmacity.io/digital/124x124/plain/e-com/images/ecommerce/20241020142527-0-Checkups.png" class="img-fluid mb-2" alt="Hệ thống nhà thuốc" style="height:40px;">
-            <div>Kiểm tra sức khỏe</div>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="col-12 col-md-6 col-lg-3 mb-4">
+        <div class="p-4">
+          <div class="d-inline-flex align-items-center justify-content-center mb-3 rounded" 
+              style="width:80px; height:80px; background:#eaffea;">
+            <img src="https://cdn.kiotvietweb.vn/page_builder_default_config/pharmacy/theme_2/homepage/service/picture_3.webp" alt="Đổi trả trong 30 ngày" style="width:40px; height:40px;">
           </div>
-        </div>  
-        <!-- Item 4 -->
-         <div class="col-6 col-md-3 col-lg-2 mb-4">
-            <div class="p-3 bg-light rounded">
-              <img src="https://prod-cdn.pharmacity.io/e-com/images/static-website/Booking.gif" class="img-fluid mb-2" alt="Hệ thống nhà thuốc" style="height:40px;">
-              <div>Đặt dịch vụ online</div>
-            </div>
-         </div>
-         <!-- Item 5 -->
-         <div class="col-6 col-md-3 col-lg-2 mb-4">
-            <div class="p-3 bg-light rounded">
-              <img src="https://production-cdn.pharmacity.io/digital/124x124/plain/e-com/images/ecommerce/20240326143307-0-Booking-6.png" class="img-fluid mb-2" alt="Hệ thống nhà thuốc" style="height:40px;">
-              <div>Hệ thống nhà thuốc</div>
-            </div>
-         </div>
-         <!-- Item 6 -->
-         <div class="col-6 col-md-3 col-lg-2 mb-4">
-            <div class="p-3 bg-light rounded">
-              <img src="https://production-cdn.pharmacity.io/digital/124x124/plain/e-com/images/ecommerce/20240917161106-0-HealthCheckup.png" class="img-fluid mb-2" alt="Hệ thống nhà thuốc" style="height:40px;">
-              <div>Hồ sơ sức khỏe</div>
-            </div>
-         </div>
+          <h6 class="fw-bold text-primary">ĐỔI TRẢ TRONG 30 NGÀY</h6>
+          <p class="text-muted mb-0">Kể từ ngày mua hàng và hoàn trả trong tháng</p>
+        </div>
+      </div>
+
+      <!-- Item 4 -->
+      <div class="col-12 col-md-6 col-lg-3 mb-4">
+        <div class="p-4">
+          <div class="d-inline-flex align-items-center justify-content-center mb-3 rounded" 
+              style="width:80px; height:80px; background:#ffeaea;">
+            <img src="https://cdn.kiotvietweb.vn/page_builder_default_config/pharmacy/theme_2/homepage/service/picture_4.webp" alt="Đa dạng sản phẩm" style="width:40px; height:40px;">
+          </div>
+          <h6 class="fw-bold text-primary">ĐA DẠNG SẢN PHẨM</h6>
+          <p class="text-muted mb-0">Đa dạng các loại thuốc, thực phẩm chức năng</p>
+        </div>
       </div>
     </div>
+  </div>
+
     <!-- Hiển thị sản phẩm -->
     <!-- SẢN PHẨM MỚI NHẤT: Medicines -->
     <div class="container mt-5" v-if="medicines && medicines.length">
       <div class="row mb-4">
         <div class="col-12">
-          <h4 class="product-section-title">Thuốc mới nhất</h4>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="product-section-title mb-0">Thuốc nổi bật</h4>
+            <a href="#" class="text-primary text-decoration-none" style="font-size: 18px;">Xem thêm</a>
+          </div>
         </div>
       </div>
       <div class="row g-4 mb-5">
@@ -153,7 +158,10 @@
     <div class="container mt-4" v-if="goods && goods.length">
       <div class="row mb-4">
         <div class="col-12">
-          <h4 class="product-section-title">Hàng hóa mới nhất</h4>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="product-section-title mb-0">Vật tư y tế nổi bật</h4>
+            <a href="#" class="text-primary text-decoration-none" style="font-size: 18px;">Xem thêm</a>
+          </div>
         </div>
       </div>
       <div class="row g-4">
@@ -186,7 +194,52 @@
         </div>
       </div>
     </div>
-    
+    <!-- Dịch vụ -->
+    <div>
+      <div class="text-center my-5">
+        <h2 class="fw-bold" style="color: #005EB8;">
+          DỊCH VỤ
+        </h2>
+        <p class="fw-smeibold" style="color: #005EB8; font-size: 18px;margin-top: 20px;">
+          DỊCH VỤ Y TẾ ĐA DẠNG . NHANH CHÓNG - TẬN TÂM - AN TOÀN - HIỆU QUẢ
+        </p>
+        <div class="container my-5">
+        <div class="row text-center">
+          <!-- Item 1 -->
+          <div class="col-12 col-md-6 col-lg-3 mb-4">
+            <div class="service-item">
+              <img src="https://phongkhamviethuong.vn/wp-content/uploads/2024/11/20190926_BHYT.jpg" alt="Khám bệnh BHYT" class="img-fluid mb-3">
+              <h6 class="fw-semibold text-dark">KHÁM BỆNH BHYT - DỊCH VỤ</h6>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="col-12 col-md-6 col-lg-3 mb-4">
+            <div class="service-item">
+              <img src="https://phongkhamviethuong.vn/wp-content/uploads/2024/11/freepik-5839697.jpg" alt="Khám bệnh tại nhà" class="img-fluid mb-3">
+              <h6 class="fw-semibold text-dark">KHÁM BỆNH TẠI NHÀ</h6>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="col-12 col-md-6 col-lg-3 mb-4">
+            <div class="service-item">
+              <img src="https://phongkhamviethuong.vn/wp-content/uploads/2024/11/ksk_10240607.jpg" alt="Nội soi" class="img-fluid mb-3">
+              <h6 class="fw-semibold text-dark">KHÁM SỨC KHỎE ĐI HỌC</h6>
+            </div>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="col-12 col-md-6 col-lg-3 mb-4">
+            <div class="service-item">
+              <img src="https://phongkhamviethuong.vn/wp-content/uploads/2024/11/doctor-with-digital-tablet-2048x1367.jpg" alt="Đặt lịch hẹn" class="img-fluid mb-3">
+              <h6 class="fw-semibold text-dark">ĐẶT LỊCH HẸN KHÁM BỆNH</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
     <!-- Footer Component -->
     <Footer />
   </div>
@@ -245,6 +298,7 @@ function handleImageError(event) {
   display: block;
   margin: 0 auto;          /* căn giữa khi ảnh hẹp */
 }
+
 
 /* Nếu muốn giới hạn tối đa chiều cao (tuỳ chọn) */
 @media (min-width: 1400px) {

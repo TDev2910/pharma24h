@@ -1,5 +1,5 @@
 <template>
-    <footer class="footer-section bg-white border-top">
+    <footer class="footer-section bg-white border-top" style="margin-top:25px;">
       <!-- Main Footer Content -->
       <div class="container-fluid px-0">
         <div class="row g-0">
@@ -21,19 +21,14 @@
                   
                   <div class="contact-item mb-2">
                     <i class="fas fa-phone text-primary me-2"></i>
-                    <a href="tel:0980xxxxxx" class="contact-link">0980xxxxxx</a>
+                    <a href="tel:0980xxxxxx" class="contact-link">0901645269</a>
                   </div>
   
                   <div class="contact-item mb-2">
                     <i class="fab fa-facebook text-primary me-2"></i>
                     <a href="https://www.facebook.com/chokiot" target="_blank" class="contact-link">
-                      www.facebook.com/chokiot
+                      www.facebook.com/pharmapct
                     </a>
-                  </div>
-  
-                  <div class="contact-item mb-2">
-                    <i class="fab fa-viber text-primary me-2"></i>
-                    <a href="viber://chat?number=0980xxxxxx" class="contact-link">0901645269</a>
                   </div>
   
                   <div class="contact-item">
