@@ -23,12 +23,16 @@
             <li class="nav-item">
               <a class="nav-link" href="/co-so-kham-benh" data-inertia>Cơ sở khám bệnh</a>
             </li>
-            <li class="nav-item"><a class="nav-link" href="#products">Sản phẩm</a></li>
-            <li class="nav-item"><a class="nav-link" href="#team">Dịch vụ</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="/products" data-inertia>Sản phẩm</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/services" data-inertia>Dịch vụ</a>
+            </li>
           </ul>
 
           <!-- Search Bar -->
-          <form class="search-form me-3" method="GET" action="/search">
+          <!-- <form class="search-form me-3" method="GET" action="/search">
             <div class="search-container">
               <i class="fas fa-search search-icon"></i>
               <input type="search" 
@@ -37,7 +41,7 @@
                 placeholder="Tìm kiếm sản phẩm"
                 aria-label="Search">
             </div>
-          </form>
+          </form> -->
 
           <!-- User Actions -->
           <div class="user-actions d-flex align-items-center">
@@ -248,3 +252,4 @@ onUnmounted(() => {
   window.removeEventListener('cart-updated', handleCartUpdate)
 })
 </script>
+

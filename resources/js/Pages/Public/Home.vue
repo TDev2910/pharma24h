@@ -200,8 +200,8 @@
         <h2 class="fw-bold" style="color: #005EB8;">
           DỊCH VỤ
         </h2>
-        <p class="fw-smeibold" style="color: #005EB8; font-size: 18px;margin-top: 20px;">
-          DỊCH VỤ Y TẾ ĐA DẠNG . NHANH CHÓNG - TẬN TÂM - AN TOÀN - HIỆU QUẢ
+        <p class="fw-smeibold" style="color: #005EB8; font-size: 18px;margin-top: 20px; font-family: Arial, Helvetica, sans-serif;">
+          DỊCH VỤ Y TẾ ĐA DẠNG - NHANH CHÓNG - TẬN TÂM - AN TOÀN - HIỆU QUẢ
         </p>
         <div class="container my-5">
         <div class="row text-center">

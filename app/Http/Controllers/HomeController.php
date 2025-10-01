@@ -56,23 +56,28 @@ class HomeController extends Controller
     /**
      * Hiển thị trang sản phẩm công cộng - Xem tất cả
      */
-    public function products()
+    public function products() //trang sản phẩm
     {
         // Lấy tất cả thuốc và hàng hóa để hiển thị
-        $medicines = Medicine::with(['category', 'manufacturer'])
-            ->where('ban_truc_tiep', true)
-            ->latest()
-            ->get();
+        // $medicines = Medicine::with(['category', 'manufacturer'])
+        //     ->where('ban_truc_tiep', true)
+        //     ->latest()
+        //     ->get();
             
-        $goods = Goods::with(['category', 'manufacturer'])
-            ->where('ban_truc_tiep', true)
-            ->latest()
-            ->get();
+        // $goods = Goods::with(['category', 'manufacturer'])
+        //     ->where('ban_truc_tiep', true)
+        //     ->latest()
+        //     ->get();
             
-        // Merge tất cả sản phẩm
-        $allProducts = $medicines->merge($goods)->sortByDesc('created_at');
+        // // Merge tất cả sản phẩm
+        // $allProducts = $medicines->merge($goods)->sortByDesc('created_at');
         
-        return Inertia::render('Public/Products', compact('allProducts', 'medicines', 'goods'));
+        return view('public.products');
+    }
+
+    public function services() //trang dịch vụ
+    {
+        return Inertia::render('public/services');
     }
 
     // /**

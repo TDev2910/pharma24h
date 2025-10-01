@@ -20,7 +20,8 @@ Route::get('/co-so-kham-benh', function () {
         ],
     ]);
 })->name('cosokhambenh');
-// Route::get('/products', fn () => Inertia::render('Public/Products'))->name('products');
+Route::get('/products', fn () => Inertia::render('Public/Products'))->name('products');
+Route::get('/services', fn () => Inertia::render('Public/Services'))->name('services');
 // Route::get('/about', [HomeController::class, 'about'])->name('about');
 // Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
