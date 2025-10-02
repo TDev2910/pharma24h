@@ -27,9 +27,7 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
-        // Debug auth
         $user = auth()->user();
-        \Log::info('HomeController - User authenticated:', ['user' => $user ? $user->toArray() : null]);
 
         return Inertia::render('Public/Home', [
             'medicines' => $medicines,
@@ -56,23 +54,35 @@ class HomeController extends Controller
     /**
      * Hiển thị trang sản phẩm công cộng - Xem tất cả
      */
-    public function products() //trang sản phẩm
+    public function products()
     {
-        // Lấy tất cả thuốc và hàng hóa để hiển thị
-        // $medicines = Medicine::with(['category', 'manufacturer'])
-        //     ->where('ban_truc_tiep', true)
-        //     ->latest()
-        //     ->get();
-            
-        // $goods = Goods::with(['category', 'manufacturer'])
-        //     ->where('ban_truc_tiep', true)
-        //     ->latest()
-        //     ->get();
-            
-        // // Merge tất cả sản phẩm
-        // $allProducts = $medicines->merge($goods)->sortByDesc('created_at');
-        
-        return view('public.products');
+        $medicines = Medicine::with(['category', 'manufacturer'])
+            ->where('ban_truc_tiep', true)
+            ->latest()
+            ->get();
+
+        $goods = Goods::with(['category', 'manufacturer'])
+            ->where('ban_truc_tiep', true)
+            ->latest()
+            ->get();
+
+        $allProducts = $medicines->merge($goods)
+            ->sortByDesc('created_at')
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->ten_thuoc ?? $item->ten_hang_hoa, // medicines dùng ten_thuoc, goods dùng ten_hang_hoa
+                    'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? ''): '',
+                    'unit'  => $item->don_vi_tinh, // đơn vị tính
+                    'image' => $item->image ? asset('storage/' . $item->image) : null,       // cột image trong DB
+                    'type'  => isset($item->ten_thuoc) ? 'medicine' : 'goods'
+            ];
+        })
+        ->values();
+
+        return Inertia::render('Public/Products', [
+            'products' => $allProducts
+        ]);
     }
 
     public function services() //trang dịch vụ

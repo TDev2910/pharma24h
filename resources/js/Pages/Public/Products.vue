@@ -3,23 +3,35 @@
     <!-- Header Component -->
     <Header :auth="auth" />
     
-    <!-- Main Content -->
+    <!--Banner-->
+    <div class="container my-4">
+      <div class="banner-wrapper">
+        <img
+          src="https://nhathuocminhchau.com/storage/uploads/logo/slider-2-5886-hinh.webp"
+          alt="Banner"
+          class="banner-image"
+        />
+      </div>
+    </div>
+    <!-- End Banner -->
+
     <div class="container my-4 py-4">
       <!-- Tabs bộ lọc và sắp xếp -->
-      <div class="d-flex align-items-center mb-4 filter-tabs">
-        <div class="me-3">
-          <button class="btn fw-medium me-3 px-0 ">Bộ lọc</button>
-          <button class="btn fw-medium text-primary px-0 filter-tab" style="margin-left: 65px;">Thiết lập lại</button>
+        <div class="products-toolbar d-flex align-items-center justify-content-between mb-3">
+        <!-- Trái -->
+        <div class="d-flex align-items-center gap-3">
+          <span class="fw-bold">Bộ lọc</span>
+          <a href="#" class="reset-link" style="margin-left: 70px;">Thiết lập lại</a>
         </div>
-        <div class="ms-auto d-flex align-items-center">
-          <span class="me-2">Sắp xếp theo:</span>
-          <div class="btn-group">
-            <button class="btn border px-3 sort-btn">Giá giảm dần</button>
-            <button class="btn border px-3 sort-btn">Giá tăng dần</button>
-          </div>
+
+        <!-- Phải -->
+        <div class="d-flex align-items-center gap-2" style="margin-right: 650px;">
+          <span class="title-filter">Sắp xếp theo:</span>
+          <button type="button" class="btn-sort active">Giá giảm dần</button>
+          <button type="button" class="btn-sort">Giá tăng dần</button>
         </div>
       </div>
-      
+      <hr class="light-divider"style="width: 215px; background-color: grey;">
       <div class="row">
         <!-- Bộ lọc bên trái -->
         <div class="col-lg-3 col-md-4">
@@ -93,81 +105,28 @@
 
         <!-- Sản phẩm bên phải -->
         <div class="col-lg-9 col-md-8">
-          <div class="row g-4">
-            <!-- Sản phẩm 1 -->
-            <div class="col-lg-3 col-md-4 col-sm-6">
-              <div class="card product-card h-100 border-0">
-                <img src="https://via.placeholder.com/150" class="card-img-top p-2" alt="Thytodux">
-                <div class="card-body px-0 d-flex flex-column">
-                  <h6 class="product-title mb-2">Dung dịch uống Thytodux 60mg/10ml Thymodulin</h6>
-                  <div class="text-muted small mb-2">Hộp</div>
-                  <div class="mt-auto">
-                    <button class="btn btn-warning text-white w-100 rounded-1">Cần tư vấn dược sĩ</button>
+          <div class="row g-4 product-grid">
+            <div
+              v-for="product in props.products"
+              :key="product.id + '-' + product.type"
+              class="col-lg-3 col-md-4 col-sm-6">
+              <div class="product-card-modern">
+                <div class="product-img-wrapper">
+                  <img
+                    :src="product.image || 'https://via.placeholder.com/150'"
+                    class="product-img"
+                    :alt="product.name"
+                  />
+                </div>
+                <div class="product-body">
+                  <div class="product-title-modern">{{ product.name }}</div>
+                  <div class="product-price-modern">
+                    {{ product.gia_ban_formatted }}
                   </div>
+                  <button class="btn btn-primary product-btn">Chọn sản phẩm</button>
                 </div>
               </div>
             </div>
-            
-            <!-- Sản phẩm 2 -->
-            <div class="col-lg-3 col-md-4 col-sm-6">
-              <div class="card product-card h-100 border-0">
-                <img src="https://via.placeholder.com/150" class="card-img-top p-2" alt="Focgo">
-                <div class="card-body px-0 d-flex flex-column">
-                  <h6 class="product-title mb-2">Viên nén Focgo 8mg Phong Phú kháng viêm giảm đau</h6>
-                  <div class="text-muted small mb-2">Hộp</div>
-                  <div class="mt-auto">
-                    <button class="btn btn-warning text-white w-100 rounded-1">Cần tư vấn dược sĩ</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Sản phẩm 3 -->
-            <div class="col-lg-3 col-md-4 col-sm-6">
-              <div class="card product-card h-100 border-0">
-                <img src="https://via.placeholder.com/150" class="card-img-top p-2" alt="Spulit">
-                <div class="card-body px-0 d-flex flex-column">
-                  <h6 class="product-title mb-2">Viên nang Spulit 100mg Slavia điều trị các bệnh về đường hô hấp</h6>
-                  <div class="text-muted small mb-2">Hộp</div>
-                  <div class="mt-auto">
-                    <button class="btn btn-warning text-white w-100 rounded-1">Cần tư vấn dược sĩ</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Sản phẩm 4 -->
-            <div class="col-lg-3 col-md-4 col-sm-6">
-              <div class="card product-card h-100 border-0">
-                <img src="https://via.placeholder.com/150" class="card-img-top p-2" alt="Rotundin">
-                <div class="card-body px-0 d-flex flex-column">
-                  <h6 class="product-title mb-2">Viên nén Rotundin 30mg Khánh Hòa hỗ trợ điều trị mất ngủ</h6>
-                  <div class="text-muted small mb-2">Hộp</div>
-                  <div class="mt-auto">
-                    <button class="btn btn-warning text-white w-100 rounded-1">Cần tư vấn dược sĩ</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Sản phẩm 5 -->
-            <div class="col-lg-3 col-md-4 col-sm-6">
-              <div class="card product-card h-100 border-0">
-                <img src="https://via.placeholder.com/150" class="card-img-top p-2" alt="Dasbrain">
-                <div class="card-body px-0 d-flex flex-column">
-                  <h6 class="product-title mb-2">Viên nang Dasbrain điều trị tăng cholesterol máu</h6>
-                  <div class="d-flex justify-content-between mb-2">
-                    <span class="text-muted small">Chai</span>
-                    <span class="text-primary fw-bold">399.000 đ/Chai</span>
-                  </div>
-                  <div class="mt-auto">
-                    <button class="btn btn-primary w-100 rounded-1">Chọn sản phẩm</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Thêm các sản phẩm còn lại tương tự -->
           </div>
         </div>
       </div>
@@ -181,35 +140,49 @@
 <script setup>
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
+import { computed } from 'vue';
 
 const props = defineProps({
-  auth: { type: Object, default: () => ({ user: null }) }
+  auth: { type: Object, default: () => ({ user: null }) },
+  products: { type: Array, default: () => [] }
 })
 </script>
 
 <style scoped>
-.filter-group
-{
-  margin-top: 15px;
+.title-filter{
+  font-family: 'Roboto', Arial, sans-serif;
+  font-size: 15px;   
+  color: #333;
+  margin-right: 7px;
 }
 
-.filter-tab {
-  position: relative;
-  font-weight: 500;
+
+.products-toolbar{
+  min-height: 40px;
+  gap: 12px;
+  flex-wrap: nowrap;
 }
 
-.filter-tab.active {
-  font-weight: 600;
+.reset-link{
+  color:#0d6efd; text-decoration:none; font-weight:500;
 }
+.reset-link:hover{ text-decoration:underline; }
 
-.filter-tab.active::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -3px;
-  height: 2px;
-  width: 100%;
-  background-color: #0d6efd;
+.btn-sort{
+  background:#fff;
+  border:1px solid #d9dde3;
+  color:#6b7280;
+  padding:.35rem .9rem;
+  border-radius:12px;
+  font-weight:500;
+  line-height:1.2;
+}
+.btn-sort:hover{ background:#f8f9fb; }
+
+.btn-sort.active{
+  color:#0d6efd;
+  border-color:#0d6efd;
+  box-shadow:0 0 0 2px rgba(13,110,253,.12);
 }
 
 /* Nút sắp xếp */
@@ -281,5 +254,133 @@ const props = defineProps({
   .product-title {
     font-size: 0.85rem;
   }
+}
+
+.product-grid {
+  margin-bottom: 0;
+  margin-left: -60px;
+}
+.product-card-modern {
+  background: #fff;
+  border: 1px solid #e3e6ef;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 16px 16px 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 340px;
+  position: relative;
+  transition: box-shadow 0.2s;
+}
+.product-card-modern:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+}
+.product-label {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #ff9800;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 2px 10px;
+  z-index: 2;
+  display: inline-block;
+}
+.product-img-wrapper {
+  width: 100%;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.product-img {
+  max-width: 100%;
+  max-height: 140px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #f8f9fb;
+}
+.product-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+.product-title-modern {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #222;
+  margin-bottom: 6px;
+  min-height: 2.4em;
+  max-height: 2.4em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+  line-clamp: 2;
+  /* For Firefox and future browsers */
+}
+.product-price-modern {
+  color: #1a56db;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.product-btn {
+  width: 100%;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  background: #1a56db;
+  border: none;
+  color: #fff;
+  padding: 8px 0;
+  transition: background 0.2s;
+}
+.product-btn:hover {
+  background: #1650cf;
+}
+@media (max-width: 991px) {
+  .product-card-modern {
+    min-height: 320px;
+    padding: 12px 8px 10px 8px;
+  }
+  .product-img-wrapper {
+    height: 120px;
+  }
+}
+@media (max-width: 767px) {
+  .product-card-modern {
+    min-height: 280px;
+  }
+  .product-img-wrapper {
+    height: 90px;
+  }
+  .product-title-modern {
+    font-size: 0.95rem;
+    min-height: 36px;
+  }
+  .product-price-modern {
+    font-size: 1rem;
+  }
+}
+
+.banner-wrapper {
+  width: 100%;
+  margin-bottom: 24px;
+}
+.banner-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
 }
 </style>
