@@ -119,7 +119,7 @@
         <div class="col-12">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="product-section-title mb-0">Thuốc nổi bật</h4>
-            <a href="#" class="text-primary text-decoration-none" style="font-size: 18px;">Xem thêm</a>
+            <Link Link href="/products" class="text-primary text-decoration-none" style="font-size: 18px;">Xem thêm</Link>          
           </div>
         </div>
       </div>
@@ -160,7 +160,7 @@
         <div class="col-12">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="product-section-title mb-0">Vật tư y tế nổi bật</h4>
-            <a href="#" class="text-primary text-decoration-none" style="font-size: 18px;">Xem thêm</a>
+              <Link Link href="/products" class="text-primary text-decoration-none" style="font-size: 18px;">Xem thêm</Link>          
           </div>
         </div>
       </div>
@@ -249,6 +249,7 @@
 import axios from 'axios'
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
+import { Link } from '@inertiajs/vue3'
 
 
 const props = defineProps({
