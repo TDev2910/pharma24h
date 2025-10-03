@@ -71,7 +71,7 @@ class SupportingEntityController extends Controller
                     'name' => $manufacturer->name,
                     'description' => $manufacturer->description
                 ],
-                'message'      => 'Tạo hãng sản xuất thành công!'
+                'message'=> 'Tạo hãng sản xuất thành công!'
             ], 201);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -272,6 +272,61 @@ class SupportingEntityController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi xóa hãng sản xuất: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    public function updatePosition(Request $request, $id)
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255|unique:positions,name,' . $id
+            ], [
+                'name.required' => 'Tên vị trí là bắt buộc',
+                'name.unique' => 'Vị trí này đã tồn tại',
+                'name.max' => 'Tên vị trí không được quá 255 ký tự'
+            ]);
+
+            $position = Position::findOrFail($id);
+            $position->update(['name' => trim($validated['name'])]);
+
+            return response()->json([
+                'success' => true,
+                'position' => $position,
+                'message' => 'Cập nhật vị trí thành công!'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Error updating position: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi cập nhật vị trí: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete the specified Position.
+     */
+    public function destroyPosition($id)
+    {
+        try {
+            $position = Position::findOrFail($id);
+            $position->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Xóa vị trí thành công!'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error deleting position: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi xóa vị trí: ' . $e->getMessage()
             ], 500);
         }
     }

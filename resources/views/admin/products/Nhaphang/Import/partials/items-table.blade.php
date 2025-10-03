@@ -8,7 +8,7 @@
         <th style="min-width:240px;">Tên hàng</th>
         <th style="width:90px;">ĐVT</th>
         <th style="width:120px;">Số lượng</th>
-        <th style="width:140px;">Đơn giá</th>
+        <th style="width:140px;">Giá nhập</th>
         <th class="text-end" style="width:130px;">Thành tiền</th>
       </tr>
       </thead>

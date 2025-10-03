@@ -9,12 +9,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form action="{{ route('admin.medicines.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @php
-                if (!isset($errors)) {
-                    $errors = new \Illuminate\Support\ViewErrorBag;
-                }       
-            @endphp   
+            @csrf   
             <div class="modal-body p-4">
                 <!-- Tabs -->
                 <ul class="nav nav-tabs border-0 mb-3" id="createMedicineTab" role="tablist">
@@ -146,7 +141,7 @@
                                         </select>
                                         <button class="btn btn-outline-secondary" type="button" id="btnManageManufacturer">
                                             <i class="fas fa-cog"></i> Quản lý
-                                                </button>
+                                        </button>
                                     </div>
                                     <div class="text-muted mt-1" style="font-size:12px">Thêm/Sửa/Xóa thực hiện trong cửa sổ quản lý.</div>
                                 </div>                  
@@ -190,29 +185,21 @@
                             <legend class="float-none w-auto px-2 fs-6">Vị trí, trọng lượng</legend>
                             <div class="row g-3 mb-2">
                                 <div class="col-md-4">
-                                    <label class="form-label">Vị trí</label>
-                                    <div class="position-relative">
-                                            <select class="form-select" name="position_id" id="medicine_position_select" onchange="handleMedicinePositionChange(this)">
+                                    <label class="form-label">
+                                        Vị trí <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <select class="form-select" name="position_id" id="medicine_position_select" onchange="handleMedicinePositionChange(this)">
                                             <option value="">Chọn vị trí</option>
                                             @foreach($positions as $pos)
                                                 <option value="{{ $pos->id }}">{{ $pos->name }}</option>
                                             @endforeach
-                                            <option value="create_new">+ Tạo mới vị trí</option>
-                                        </select>                                     
+                                        </select>                                  
                                             <!-- Inline form cho Position -->
-                                        <div id="createMedicinePositionInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
-                                            <div class="mb-2">
-                                                <input type="text" class="form-control" id="createNewMedicinePositionName" placeholder="Nhập tên vị trí mới">
-                                            </div>
-                                            <div class="d-flex gap-2">
-                                                <button type="button" class="btn btn-success" onclick="createNewMedicinePositionInline()">
-                                                    <i class="fas fa-save"></i> Lưu
-                                                </button>
-                                                <button type="button" class="btn btn-secondary" onclick="cancelMedicinePositionForm()">
-                                                    <i class="fas fa-times"></i> Hủy
-                                                </button>
-                                            </div>
-                                        </div>
+                                        <button class="btn btn-outline-secondary" type="button" id="btnManagePosition">
+                                            <i class="fas fa-cog"></i> Quản lý
+                                        </button>
+                                        <div class="text-muted mt-1" style="font-size:12px">Thêm/Sửa/Xóa thực hiện trong cửa sổ quản lý.</div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -341,6 +328,42 @@
             </div>
         </div>
     </div>
+    <!-- Modal Quản lý Vị trí -->
+    <div class="modal fade" id="managePositionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-cog me-2"></i>Quản lý vị trí</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col">
+                            <input type="text" id="managePositionSearch" class="form-control" placeholder="Tìm theo tên…">
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary" id="managePositionAddBtn">
+                                <i class="fas fa-plus"></i> Thêm
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:90px">Mã</th>
+                                    <th>Tên vị trí</th>
+                                    <th class="text-end" style="width:160px">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="managePositionTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @push('styles')
     <link rel="stylesheet" href="{{ asset('css/create-modal.css') }}">
@@ -348,14 +371,6 @@
 
     @push('scripts')
     <script>
-    // Logic riêng cho modal thuốc
-    function handleManufacturerChange(select) {
-        const selectedOption = select.options[select.selectedIndex];
-        if (selectedOption.value) {
-            // Manufacturer selected
-        }
-    }
-
     // Function preview ảnh cho modal thuốc
     function previewCreateMedicineImage(input) {
         const preview = document.getElementById('create-medicine-image-preview');
@@ -447,20 +462,27 @@
                 .then(data=> {
                     if(data.success) 
                     {
-                        //cập nhật với id gửi từ sever
+                        //cập nhật với id gửi từ server
+                        const oldId = item.id; // Lưu lại ID tạm thời
                         item.id = data.drug_route.id;
                         item.name = data.drug_route.name;
+                        
+                        // Cập nhật lại mảng drugRoutes với ID mới
+                        drugRoutes = drugRoutes.map(r => r.id === oldId ? item : r);
+                        
+                        console.log('Drug route created, old ID: ' + oldId + ', new ID: ' + item.id);
+                        
                         renderDrugRouteManageTable(manageDrugRouteSearch.value);
                         syncDrugRouteSelect(data.drug_route.id);
                     }
                     else
                     {
+                        console.error('Error:', data.message);
                         alert('Có lỗi xảy ra: ' + data.message);
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra khi tạo đường dùng!');
+                    consol('Có lỗi xảy ra khi tạo đường dùng!');
                 });
             } else {
                 // Gọi API để update trong database
@@ -639,8 +661,15 @@
                 .then(data => {
                     if (data.success) {
                         // Cập nhật với ID thật từ server
+                        const oldId = item.id; // Lưu lại ID tạm thời
                         item.id = data.manufacturer.id;
                         item.name = data.manufacturer.name;
+                        
+                        // Cập nhật lại mảng manufacturers với ID mới
+                        manufacturers = manufacturers.map(m => m.id === oldId ? item : m);
+                        
+                        console.log('Manufacturer created, old ID: ' + oldId + ', new ID: ' + item.id);
+                        
                         renderManufacturerManageTable(manageManufacturerSearch.value);
                         syncManufacturerSelect(data.manufacturer.id);
                     } else {
@@ -680,7 +709,7 @@
         
         cell.querySelector('.btn-cancel').addEventListener('click', () => {
             // Nếu là item mới (có tên placeholder), xóa khỏi array
-            if (item.name === 'Nhập tên…') {
+            if (item.name === 'Nhập hãng sản xuất mới') {
                 manufacturers = manufacturers.filter(m => m.id !== id);
             }
             renderManufacturerManageTable(manageManufacturerSearch.value);
@@ -700,7 +729,7 @@
     manageManufacturerAddBtn.addEventListener('click', () => {
         // Tạo item mới với tên placeholder
         const id = nextManufacturerId();
-        manufacturers.push({ id, name: 'Nhập tên…' });
+        manufacturers.push({ id, name: 'Nhập hãng sản xuất mới' });
         renderManufacturerManageTable(manageManufacturerSearch.value);
         // Tìm row vừa tạo và tự động vào edit mode
         const row = [...manageManufacturerTbody.querySelectorAll('tr')].find(tr => +tr.dataset.id === id);
@@ -759,18 +788,217 @@
     // Initialize manufacturer select
     syncManufacturerSelect('');
 
-    // Handle Position Change - RIÊNG CHO THUỐC
-    function handleMedicinePositionChange(select) {
-        const selectedOption = select.options[select.selectedIndex];
-        const inlineForm = document.getElementById('createMedicinePositionInlineForm');
-        
-        if (selectedOption.value === 'create_new') {
-            inlineForm.style.display = 'block';
-            select.value = '';
-        } else {
-            inlineForm.style.display = 'none';
-        }
+    // Position Management - Inline form approach
+    let positions = @json($positions);
+
+    const selectPositionEl = document.getElementById('medicine_position_select');
+    const btnManagePosition = document.getElementById('btnManagePosition');
+    const managePositionModal = new bootstrap.Modal(document.getElementById('managePositionModal'));
+    const managePositionTbody = document.getElementById('managePositionTbody');
+    const managePositionSearch = document.getElementById('managePositionSearch');
+    const managePositionAddBtn = document.getElementById('managePositionAddBtn');
+
+    function nextPositionId()
+    {
+        return positions.length ? Math.max(...positions.map(p => p.id)) + 1 : 1;
     }
+
+    function syncPositionSelect(selectedId = '')
+    {
+        selectPositionEl.innerHTML = '';
+        selectPositionEl.appendChild(new Option('Chọn vị trí', '', true, !selectedId));
+        positions.forEach(p => selectPositionEl.appendChild(new Option(p.name, p.id, false, p.id == selectedId)));
+    }
+
+    function renderPositionManageTable(filter = '')
+    {
+        const q = (filter || '').toLowerCase().trim();
+        const items = positions.filter(r => !q || r.name.toLowerCase().includes(q));
+        managePositionTbody.innerHTML = items.map(r => `
+            <tr data-id="${r.id}">
+                <td><span class="badge text-bg-secondary">#${r.id}</span></td>
+                <td class="name-cell">${r.name}</td>
+                <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary btn-edit"><i class="fas fa-edit"></i> Sửa</button>
+                        <button class="btn btn-outline-danger btn-del"><i class="fas fa-trash"></i> Xóa</button>
+                    </div>
+                </td>
+            </tr>`).join('') || `<tr><td colspan="3" class="text-center text-muted py-4">Không có mục nào.</td></tr>`;
+    }
+
+    function enterPositionEditMode(row) {
+        const id = +row.dataset.id;
+        const item = positions.find(r => r.id === id);
+        const cell = row.querySelector('.name-cell');
+        cell.innerHTML = `
+            <div class="d-flex gap-2">
+                <input class="form-control form-control-sm edit-input" value="${item.name}">
+                <button class="btn btn-success btn-sm btn-save"><i class="fas fa-check"></i></button>
+                <button class="btn btn-light border btn-sm btn-cancel">Hủy</button>
+            </div>`;
+        
+        cell.querySelector('.btn-save').addEventListener('click', () => {
+            const val = cell.querySelector('.edit-input').value.trim();
+            if(!val) return;
+            if(positions.some(r => r.id !== id && r.name.toLowerCase() === val.toLowerCase()))
+            {
+                alert('Vị trí đã tồn tại');
+                return;
+            }
+            //nếu là item mới (có tên placeholder), gọi api tạo mới
+            if(item.name === 'Nhập vị trí mới')
+            {
+                fetch('{{ route("admin.products.position.store") }}', {
+                    method:'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: val })
+                })
+                .then(response => response.json())
+                .then(data=> {
+                    if(data.success) 
+                    {
+                        //cập nhật với id gửi từ server
+                        const oldId = item.id; // Lưu lại ID tạm thời
+                        item.id = data.position.id; // Cập nhật ID từ server
+                        item.name = data.position.name;
+                        
+                        // Cập nhật lại mảng positions với ID mới
+                        positions = positions.map(p => p.id === oldId ? item : p);
+                        
+                        console.log('Position created, old ID: ' + oldId + ', new ID: ' + item.id);
+                        
+                        renderPositionManageTable(managePositionSearch.value);
+                        syncPositionSelect(data.position.id);
+                    }
+                    else
+                    {
+                        console.error('Error:', data.message);
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Có lỗi xảy ra khi tạo vị trí!');
+                });
+            } else {
+                // Gọi API để update trong database
+                fetch('{{ route("admin.products.position.update", ":id") }}'.replace(':id', id), {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: val })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        item.name = val;
+                        renderPositionManageTable(managePositionSearch.value);
+                        syncPositionSelect(+selectPositionEl.value || '');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi cập nhật vị trí!');
+                });
+            }
+        });
+
+        cell.querySelector('.btn-cancel').addEventListener('click', () => {
+            if(item.name === 'Nhập vị trí mới')
+            {
+                positions = positions.filter(r => r.id !== id);
+            }
+            renderPositionManageTable(managePositionSearch.value);
+        });  
+    }
+    btnManagePosition.addEventListener('click', () => {
+        managePositionSearch.value = '';
+        renderPositionManageTable();
+        managePositionModal.show();
+    });
+
+    managePositionSearch.addEventListener('input', e => renderPositionManageTable(e.target.value));
+
+    managePositionAddBtn.addEventListener('click', () => {
+        const id = nextPositionId();
+        positions.push({id,name:'Nhập vị trí mới'});
+        renderPositionManageTable(managePositionSearch.value);
+        //tìm row vừa tạo và tự động vào edit
+        const row = [...managePositionTbody.querySelectorAll('tr')].find(tr => +tr.dataset.id === id);
+        if(row)
+        {
+            enterPositionEditMode(row);
+            setTimeout(() => {
+                const input = row.querySelector('.edit-input');
+                if(input)
+                {
+                    input.focus();
+                    input.select();
+                }
+            },100);
+        }
+    });
+
+    managePositionTbody.addEventListener('click', e => {
+        const row = e.target.closest('tr'); 
+        if (!row) return;
+        
+        if (e.target.closest('.btn-edit')) {
+            enterPositionEditMode(row);
+        }
+        
+        if (e.target.closest('.btn-del')) {
+            const id = +row.dataset.id;
+            const item = positions.find(r => r.id === id);
+            if (confirm(`Xóa "${item.name}"?`)) {
+                // Gọi API để xóa khỏi database
+                fetch('{{ route("admin.products.position.destroy", ":id") }}'.replace(':id', id), {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Xóa khỏi array local
+                        positions = positions.filter(r => r.id !== id);
+                        renderPositionManageTable(managePositionSearch.value);
+                        if (+selectPositionEl.value === id) selectPositionEl.value = '';
+                        syncPositionSelect(+selectPositionEl.value || '');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa vị trí!');
+                });
+            }
+        }   
+    });
+
+    syncPositionSelect('');
+
+    // Handle Position Change - RIÊNG CHO THUỐC
+    // function handleMedicinePositionChange(select) {
+    //     const selectedOption = select.options[select.selectedIndex];
+    //     const inlineForm = document.getElementById('createMedicinePositionInlineForm');
+        
+    //     if (selectedOption.value === 'create_new') {
+    //         inlineForm.style.display = 'block';
+    //         select.value = '';
+    //     } else {
+    //         inlineForm.style.display = 'none';
+    //     }
+    // }
 
     // Create new position inline - RIÊNG CHO THUỐC
     function createNewMedicinePositionInline() {
@@ -820,15 +1048,35 @@
         document.getElementById('medicine_position_select').value = '';
     }
 
-    // Open unit modal - RIÊNG CHO THUỐC
-    function openCreateUnitModal() {
-        const modalElement = document.getElementById('unitModal');
-        if (modalElement) {
-            const modal = new bootstrap.Modal(modalElement);
-            modal.show();
-        } else {
-            alert('Modal đơn vị tính không tìm thấy!');
+    // Thiết lập đơn vị tính
+    const setupUnitModal = new bootstrap.Modal(document.getElementById('setupUnitModal'));
+    
+    document.getElementById('btnSetupUnit').addEventListener('click', function() {
+        setupUnitModal.show();
+    });
+
+    // Xử lý lưu đơn vị tính
+    document.getElementById('saveUnitBtn').addEventListener('click', function() {
+        const unitName = document.getElementById('unitName').value.trim();
+        const unitDescription = document.getElementById('unitDescription').value.trim();
+        
+        if (!unitName) {
+            alert('Vui lòng nhập tên đơn vị tính!');
+            return;
         }
-    }
+        
+        // Cập nhật input đơn vị tính trong form chính
+        document.getElementById('don_vi_tinh_input').value = unitName;
+        
+        // Đóng modal
+        setupUnitModal.hide();
+        
+        // Reset form modal
+        document.getElementById('unitName').value = '';
+        document.getElementById('unitDescription').value = '';
+        
+        alert('Đã thiết lập đơn vị tính: ' + unitName);
+    });
+
     </script>
     @endpush

@@ -96,6 +96,8 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::delete('products/manufacturer/{id}', [SupportingEntityController::class, 'destroyManufacturer'])->name('products.manufacturer.destroy');
     
     Route::post('products/position', [SupportingEntityController::class, 'storePosition'])->name('products.position.store');
+    Route::put('products/position/{id}', [SupportingEntityController::class, 'updatePosition'])->name('products.position.update');
+    Route::delete('products/position/{id}', [SupportingEntityController::class, 'destroyPosition'])->name('products.position.destroy');
 
     // Categories
     Route::resource('categories', ProductCategoryController::class)->except(['index', 'create', 'edit'])->names('categories');
