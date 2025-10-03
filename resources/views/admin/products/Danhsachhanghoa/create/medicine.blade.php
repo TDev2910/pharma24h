@@ -113,7 +113,7 @@
                                     <label class="form-label">Hàm lượng <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="ham_luong" id="ham_luong" placeholder="Bắt buộc" required>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label class="form-label">
                                         Đường dùng <span class="text-danger">*</span>
                                     </label>
@@ -130,7 +130,7 @@
                                     </div>
                                     <div class="text-muted mt-1" style="font-size:12px">Thêm/Sửa/Xóa thực hiện trong cửa sổ quản lý.</div>
                                 </div>   
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label class="form-label">Hãng sản xuất <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <select class="form-select" name="manufacturer_id" id="medicine_manufacturer_select" required>
@@ -145,15 +145,15 @@
                                     </div>
                                     <div class="text-muted mt-1" style="font-size:12px">Thêm/Sửa/Xóa thực hiện trong cửa sổ quản lý.</div>
                                 </div>                  
-                                <div class="col-md-4">
-                                    <label class="form-label">Nước sản xuất</label>
-                                    <input type="text" class="form-control" name="nuoc_san_xuat" id="nuoc_san_xuat" placeholder="Tìm nước sản xuất">
-                                </div>
                             </div>
                             <div class="row g-3 mb-2">
                                 <div class="col-md-3">
                                     <label class="form-label">Quy cách đóng gói <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="quy_cach_dong_goi" id="quy_cach_dong_goi" placeholder="Bắt buộc" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Nước sản xuất</label>
+                                    <input type="text" class="form-control" name="nuoc_san_xuat" id="nuoc_san_xuat" placeholder="Tìm nước sản xuất">
                                 </div>
                             </div>
                         </fieldset>
@@ -184,7 +184,7 @@
                         <fieldset class="mb-4 border rounded p-3">
                             <legend class="float-none w-auto px-2 fs-6">Vị trí, trọng lượng</legend>
                             <div class="row g-3 mb-2">
-                                <div class="col-md-4">
+                                <div class="col-md-5">
                                     <label class="form-label">
                                         Vị trí <span class="text-danger">*</span>
                                     </label>
@@ -1079,4 +1079,152 @@
     });
 
     </script>
-    @endpush
+@endpush
+
+<!-- Chỉ cập nhật CSS để làm modal nhỏ gọn mà không thay đổi cấu trúc -->
+<style>
+/* Modal nhỏ gọn nhưng đủ rộng */
+#createMedicineModal .modal-dialog {
+  max-width: 850px; /* Tăng kích thước một chút để hiển thị tốt hơn */
+}
+
+#createMedicineModal .modal-content {
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+#createMedicineModal .modal-header {
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #ebedf0;
+}
+
+#createMedicineModal .modal-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+#createMedicineModal .modal-body {
+  padding: 20px;
+}
+
+/* Input nhỏ gọn nhưng dễ thao tác */
+#createMedicineModal .form-control {
+  font-size: 14px;
+  padding: 8px 12px;
+  height: 38px; /* Chiều cao cố định, dễ thao tác */
+  border-radius: 6px;
+}
+
+#createMedicineModal .form-select {
+  font-size: 14px;
+  padding: 8px 28px 8px 12px; /* Thêm space cho arrow */
+  height: 38px;
+  border-radius: 6px;
+}
+
+/* Label rõ ràng hơn */
+#createMedicineModal label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #495057;
+}
+
+/* Button nhỏ gọn */
+#createMedicineModal .btn {
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+/* Cải thiện phần thông tin thuốc */
+#createMedicineModal .card-header {
+  background-color: #f5f7fa;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ebedf0;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* Vùng thông tin thuốc - làm nổi bật */
+#createMedicineModal .drug-info-section {
+  background-color: #f9f9fd;
+  border: 1px solid #e7e9ef;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+/* Phần đường dùng và hãng sản xuất */
+#createMedicineModal .input-group-append .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  color: #495057;
+}
+
+#createMedicineModal .input-group-append .btn:hover {
+  background-color: #e9ecef;
+}
+
+/* Cho các field bắt buộc */
+#createMedicineModal .required-field::after {
+  content: ' *';
+  color: #dc3545;
+}
+
+/* Cải thiện spacing cho form groups */
+#createMedicineModal .form-group {
+  margin-bottom: 15px;
+}
+
+/* Footer */
+#createMedicineModal .modal-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #ebedf0;
+}
+
+/* Điều chỉnh cho phần thông tin thuốc như ảnh mẫu */
+#createMedicineModal .drug-info-container {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+#createMedicineModal .drug-info-header {
+  background-color: #f8f9fa;
+  padding: 12px 15px;
+  border-bottom: 1px solid #dee2e6;
+  font-weight: 600;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+#createMedicineModal .drug-info-body {
+  padding: 15px;
+}
+
+/* Input group cho đường dùng và nhà sản xuất */
+#createMedicineModal .input-with-button {
+  display: flex;
+}
+
+#createMedicineModal .input-with-button select,
+#createMedicineModal .input-with-button input {
+  flex: 1;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+#createMedicineModal .input-with-button .btn {
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+</style>
