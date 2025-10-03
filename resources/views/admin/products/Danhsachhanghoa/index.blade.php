@@ -3,6 +3,14 @@
 @section('title', 'Quản lý hàng hóa')
 
 @section('content')
+<!-- Flash Messages -->
+@if(session('success'))
+    <meta name="flash-success" content="{{ session('success') }}">
+@endif
+
+@if(session('error'))
+    <meta name="flash-error" content="{{ session('error') }}">
+@endif
 <div class="container-fluid py-4" style="max-width: 1400px; margin: 0 auto;">
     <!-- Header Control Bar -->
     <div class="header-control-bar">
@@ -78,23 +86,6 @@
             </div>  
         </div>
     </div>
-    <!-- Success/Error Messages -->
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-            <i class="fas fa-check-circle me-2"></i>
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-            <i class="fas fa-exclamation-circle me-2"></i>
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
     <!-- Content Area -->
     <div class="content-area mt-4">
         <div class="row">

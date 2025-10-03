@@ -123,7 +123,7 @@
                   <div class="product-price-modern">
                     {{ product.gia_ban_formatted }}
                   </div>
-                  <button class="btn btn-primary product-btn">Chọn sản phẩm</button>
+                  <button class="btn btn-primary product-btn">Thêm vào giỏ</button>
                 </div>
               </div>
             </div>
@@ -140,12 +140,16 @@
 <script setup>
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 
 const props = defineProps({
   auth: { type: Object, default: () => ({ user: null }) },
   products: { type: Array, default: () => [] }
 })
+
+onMounted(() => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 </script>
 
 <style scoped>

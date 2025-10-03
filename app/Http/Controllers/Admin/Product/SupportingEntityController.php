@@ -24,7 +24,8 @@ class SupportingEntityController extends Controller
                 'name'=> trim($validated['name'])
             ]);
 
-            return response()->json([
+            return response()->json
+            ([
                 'success'    => true,
                 'drug_route' => $route,
                 'message'    => 'Tạo đường dùng thành công!'
@@ -159,5 +160,119 @@ class SupportingEntityController extends Controller
             'success' => true,
             'positions' => $positions
         ]);
+    }
+
+    /**
+     * Update the specified DrugRoute.
+     */
+    public function updateDrugRoute(Request $request, $id)
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255|unique:drug_routes,name,' . $id
+            ]);
+
+            $route = DrugRoute::findOrFail($id);
+            $route->update(['name' => trim($validated['name'])]);
+
+            return response()->json([
+                'success' => true,
+                'drug_route' => $route,
+                'message' => 'Cập nhật đường dùng thành công!'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Error updating drug route: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi cập nhật đường dùng: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete the specified DrugRoute.
+     */
+    public function destroyDrugRoute($id)
+    {
+        try {
+            $route = DrugRoute::findOrFail($id);
+            $route->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Xóa đường dùng thành công!'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error deleting drug route: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi xóa đường dùng: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update the specified Manufacturer.
+     */
+    public function updateManufacturer(Request $request, $id)
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255|unique:manufacturers,name,' . $id
+            ], [
+                'name.required' => 'Tên hãng sản xuất là bắt buộc',
+                'name.unique' => 'Hãng sản xuất này đã tồn tại',
+                'name.max' => 'Tên hãng sản xuất không được quá 255 ký tự'
+            ]);
+
+            $manufacturer = Manufacturer::findOrFail($id);
+            $manufacturer->update(['name' => trim($validated['name'])]);
+
+            return response()->json([
+                'success' => true,
+                'manufacturer' => $manufacturer,
+                'message' => 'Cập nhật hãng sản xuất thành công!'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Error updating manufacturer: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi cập nhật hãng sản xuất: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete the specified Manufacturer.
+     */
+    public function destroyManufacturer($id)
+    {
+        try {
+            $manufacturer = Manufacturer::findOrFail($id);
+            $manufacturer->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Xóa hãng sản xuất thành công!'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error deleting manufacturer: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi xóa hãng sản xuất: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

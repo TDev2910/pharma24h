@@ -122,57 +122,33 @@
                                     <label class="form-label">
                                         Đường dùng <span class="text-danger">*</span>
                                     </label>
-                                    <div class="position-relative">
-                                        <select class="form-select" name="drugusage_id" id="duong_dung_select" required onchange="handleCreateDrugRouteChange(this)">
+                                    <div class="input-group">
+                                        <select class="form-select" name="drugusage_id" id="duong_dung_select" required>
                                             <option value="">Bắt buộc</option>
                                             @foreach($drugRoutes as $usage)
                                                 <option value="{{ $usage->id }}">{{ $usage->name }}</option>
                                             @endforeach
-                                            <option value="create_new">+ Tạo mới đường dùng</option>
                                         </select>
-                                        
-                                        <!-- Inline form cho Drug Route -->
-                                        <div id="createDrugRouteInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
-                                            <div class="mb-2">
-                                                <input type="text" class="form-control" id="createNewDrugRouteName" placeholder="Nhập tên đường dùng mới">
-                                            </div>
-                                            <div class="d-flex gap-2">
-                                                <button type="button" class="btn btn-success" onclick="createNewCreateDrugRouteInline()">
-                                                    <i class="fas fa-save"></i> Lưu
-                                                </button>
-                                                <button type="button" class="btn btn-secondary" onclick="cancelCreateDrugRouteForm()">
-                                                    <i class="fas fa-times"></i> Hủy
-                                                </button>
-                                            </div>
-                                        </div>
+                                        <button class="btn btn-outline-secondary" type="button" id="btnManageDrugRoute">
+                                            <i class="fas fa-cog"></i> Quản lý
+                                        </button>
                                     </div>
+                                    <div class="text-muted mt-1" style="font-size:12px">Thêm/Sửa/Xóa thực hiện trong cửa sổ quản lý.</div>
                                 </div>   
                                 <div class="col-md-4">
-                                    <label class="form-label">Hãng sản xuất<span class="text-danger">*</span></label>
-                                    <div class="position-relative">
-                                        <select class="form-select" name="manufacturer_id" id="medicine_manufacturer_select" required onchange="handleMedicineManufacturerChange(this)">
+                                    <label class="form-label">Hãng sản xuất <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <select class="form-select" name="manufacturer_id" id="medicine_manufacturer_select" required>
                                             <option value="">Tìm hãng sản xuất</option>
                                             @foreach($manufacturers as $manu)
                                                 <option value="{{ $manu->id }}">{{ $manu->name }}</option>
                                             @endforeach
-                                            <option value="create_new">+ Tạo mới hãng sản xuất</option>
                                         </select>
-                                        
-                                        <!-- Inline form cho Manufacturer - MEDICINE -->
-                                        <div id="createMedicineManufacturerInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
-                                            <div class="mb-2">
-                                                <input type="text" class="form-control" id="createNewMedicineManufacturerName" placeholder="Nhập tên hãng sản xuất mới">
-                                            </div>
-                                            <div class="d-flex gap-2">
-                                                <button type="button" class="btn btn-success" onclick="createNewMedicineManufacturerInline()">
-                                                    <i class="fas fa-save"></i> Lưu
+                                        <button class="btn btn-outline-secondary" type="button" id="btnManageManufacturer">
+                                            <i class="fas fa-cog"></i> Quản lý
                                                 </button>
-                                                <button type="button" class="btn btn-secondary" onclick="cancelMedicineManufacturerForm()">
-                                                    <i class="fas fa-times"></i> Hủy
-                                                </button>
-                                            </div>
-                                        </div>
                                     </div>
+                                    <div class="text-muted mt-1" style="font-size:12px">Thêm/Sửa/Xóa thực hiện trong cửa sổ quản lý.</div>
                                 </div>                  
                                 <div class="col-md-4">
                                     <label class="form-label">Nước sản xuất</label>
@@ -291,6 +267,81 @@
         </div>
         </div>
     </div>
+
+    <!-- Modal Quản lý Đường dùng -->
+    <div class="modal fade" id="manageDrugRouteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-cog me-2"></i>Quản lý đường dùng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col">
+                            <input type="text" id="manageDrugRouteSearch" class="form-control" placeholder="Tìm theo tên…">
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary" id="manageDrugRouteAddBtn">
+                                <i class="fas fa-plus"></i> Thêm
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:90px">Mã</th>
+                                    <th>Tên đường dùng</th>
+                                    <th class="text-end" style="width:160px">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageDrugRouteTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Quản lý Hãng sản xuất -->
+    <div class="modal fade" id="manageManufacturerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-cog me-2"></i>Quản lý hãng sản xuất</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col">
+                            <input type="text" id="manageManufacturerSearch" class="form-control" placeholder="Tìm theo tên…">
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary" id="manageManufacturerAddBtn">
+                                <i class="fas fa-plus"></i> Thêm
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:90px">Mã</th>
+                                    <th>Tên hãng sản xuất</th>
+                                    <th class="text-end" style="width:160px">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageManufacturerTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('styles')
     <link rel="stylesheet" href="{{ asset('css/create-modal.css') }}">
     @endpush
@@ -306,9 +357,9 @@
     }
 
     // Function preview ảnh cho modal thuốc
-    function previewCreateImage(input) {
-        const preview = document.getElementById('create-image-preview');
-        const placeholder = document.getElementById('create-image-placeholder');
+    function previewCreateMedicineImage(input) {
+        const preview = document.getElementById('create-medicine-image-preview');
+        const placeholder = document.getElementById('create-medicine-image-placeholder');
         
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -326,127 +377,387 @@
         }
     }
 
-    // Handle Drug Route Change - RIÊNG CHO THUỐC
-    function handleCreateDrugRouteChange(select) {
-        const selectedOption = select.options[select.selectedIndex];
-        const inlineForm = document.getElementById('createDrugRouteInlineForm');
-        
-        if (selectedOption.value === 'create_new') {
-            inlineForm.style.display = 'block';
-            select.value = '';
-        } else {
-            inlineForm.style.display = 'none';
-        }
+    // Drug Route Management - Modal-based approach
+    let drugRoutes = @json($drugRoutes);
+    
+    const selectDrugRouteEl = document.getElementById('duong_dung_select');
+    const btnManageDrugRoute = document.getElementById('btnManageDrugRoute');
+    const manageDrugRouteModal = new bootstrap.Modal(document.getElementById('manageDrugRouteModal'));
+    const manageDrugRouteTbody = document.getElementById('manageDrugRouteTbody');
+    const manageDrugRouteSearch = document.getElementById('manageDrugRouteSearch');
+    const manageDrugRouteAddBtn = document.getElementById('manageDrugRouteAddBtn');
+
+    function nextDrugRouteId() { 
+        return drugRoutes.length ? Math.max(...drugRoutes.map(r => r.id)) + 1 : 1; 
     }
 
-    // Create new drug route inline - RIÊNG CHO THUỐC
-    function createNewCreateDrugRouteInline() {
-        const nameInput = document.getElementById('createNewDrugRouteName');
-        const name = nameInput.value.trim();
+    function syncDrugRouteSelect(selectedId = '') {
+        selectDrugRouteEl.innerHTML = '';
+        selectDrugRouteEl.appendChild(new Option('Bắt buộc', '', true, !selectedId));
+        drugRoutes.forEach(r => selectDrugRouteEl.appendChild(new Option(r.name, r.id, false, r.id == selectedId)));
+    }
+
+    function renderDrugRouteManageTable(filter = '') {
+        const q = (filter || '').toLowerCase().trim();
+        const items = drugRoutes.filter(r => !q || r.name.toLowerCase().includes(q));
+        manageDrugRouteTbody.innerHTML = items.map(r => `
+            <tr data-id="${r.id}">
+                <td><span class="badge text-bg-secondary">#${r.id}</span></td>
+                <td class="name-cell">${r.name}</td>
+                <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary btn-edit"><i class="fas fa-edit"></i> Sửa</button>
+                        <button class="btn btn-outline-danger btn-del"><i class="fas fa-trash"></i> Xóa</button>
+                    </div>
+                </td>
+            </tr>`).join('') || `<tr><td colspan="3" class="text-center text-muted py-4">Không có mục nào.</td></tr>`;
+    }
+
+    function enterDrugRouteEditMode(row) {
+        const id = +row.dataset.id;
+        const item = drugRoutes.find(r => r.id === id);
+        const cell = row.querySelector('.name-cell');
+        cell.innerHTML = `
+            <div class="d-flex gap-2">
+                <input class="form-control form-control-sm edit-input" value="${item.name}">
+                <button class="btn btn-success btn-sm btn-save"><i class="fas fa-check"></i></button>
+                <button class="btn btn-light border btn-sm btn-cancel">Hủy</button>
+            </div>`;
         
-        if (!name) {
-            alert('Vui lòng nhập tên đường dùng!');
-            return;
-        }
-        
-        // Gửi request tạo drug route mới
-        fetch('{{ route("admin.products.drugroute.store") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ name: name })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Thêm option mới vào select
-                const select = document.getElementById('duong_dung_select');
-                const newOption = new Option(data.drug_route.name, data.drug_route.id);
-                select.add(newOption);
-                select.value = data.drug_route.id;
-                
-                // Ẩn form inline
-                document.getElementById('createDrugRouteInlineForm').style.display = 'none';
-                nameInput.value = '';
-            } else {
-                alert('Có lỗi xảy ra: ' + data.message);
+        cell.querySelector('.btn-save').addEventListener('click', () => {
+            const val = cell.querySelector('.edit-input').value.trim();
+            if(!val) return;
+            if(drugRoutes.some(r => r.id !== id && r.name.toLowerCase() === val.toLowerCase()))
+            {
+                alert('Tên đường dùng đã tồn tại');
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi tạo đường dùng!');
+            //nếu là item mới (có tên placeholder), gọi api tạo mới
+            if(item.name === 'Nhập đường dùng mới')
+            {
+                fetch('{{ route("admin.products.drugroute.store") }}', {
+                    method:'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: val })
+                })
+                .then(response => response.json())
+                .then(data=> {
+                    if(data.success) 
+                    {
+                        //cập nhật với id gửi từ sever
+                        item.id = data.drug_route.id;
+                        item.name = data.drug_route.name;
+                        renderDrugRouteManageTable(manageDrugRouteSearch.value);
+                        syncDrugRouteSelect(data.drug_route.id);
+                    }
+                    else
+                    {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi tạo đường dùng!');
+                });
+            } else {
+                // Gọi API để update trong database
+                fetch('{{ route("admin.products.drugroute.update", ":id") }}'.replace(':id', id), {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: val })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        item.name = val;
+                        renderDrugRouteManageTable(manageDrugRouteSearch.value);
+                        syncDrugRouteSelect(+selectDrugRouteEl.value || '');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi cập nhật đường dùng!');
+                });
+            }
+        });
+
+        cell.querySelector('.btn-cancel').addEventListener('click', () => {
+            if(item.name === 'Nhập đường dùng mới')
+            {
+                drugRoutes = drugRoutes.filter(r => r.id !== id);
+            }
+            renderDrugRouteManageTable(manageDrugRouteSearch.value);
         });
     }
 
-    // Cancel drug route form - RIÊNG CHO THUỐC
-    function cancelCreateDrugRouteForm() {
-        document.getElementById('createDrugRouteInlineForm').style.display = 'none';
-        document.getElementById('createNewDrugRouteName').value = '';
-        document.getElementById('duong_dung_select').value = '';
-    }
+    // Event listeners for drug route management
+    btnManageDrugRoute.addEventListener('click', () => {
+        manageDrugRouteSearch.value = '';
+        renderDrugRouteManageTable();
+        manageDrugRouteModal.show();
+    });
 
-    // Handle Manufacturer Change - RIÊNG CHO THUỐC
-    function handleMedicineManufacturerChange(select) {
-        const selectedOption = select.options[select.selectedIndex];
-        const inlineForm = document.getElementById('createMedicineManufacturerInlineForm');
-        
-        if (selectedOption.value === 'create_new') {
-            inlineForm.style.display = 'block';
-            select.value = '';
-        } else {
-            inlineForm.style.display = 'none';
-        }
-    }
+    manageDrugRouteSearch.addEventListener('input', e => renderDrugRouteManageTable(e.target.value));
 
-    // Create new manufacturer inline - RIÊNG CHO THUỐC
-    function createNewMedicineManufacturerInline() {
-        const nameInput = document.getElementById('createNewMedicineManufacturerName');
-        const name = nameInput.value.trim();
+    //js xử lý tạo mới đường dùng
+    manageDrugRouteAddBtn.addEventListener('click', () => {
+        const id = nextDrugRouteId();
+        drugRoutes.push({id,name:'Nhập đường dùng mới'});
+        renderDrugRouteManageTable(manageDrugRouteSearch.value);
+        //tìm row vừa tạo và tự động vào edit
+        const row = [...manageDrugRouteTbody.querySelectorAll('tr')].find(tr => +tr.dataset.id === id);
+        if(row)
+        {
+            enterDrugRouteEditMode(row);
+            setTimeout(() => {
+                const input = row.querySelector('.edit-input');
+                if(input)
+                {
+                    input.focus();
+                    input.select();
+                }
+            },100);
+        }
+    });
+    //js xử lý xóa đường dùng
+    manageDrugRouteTbody.addEventListener('click', e => {
+        const row = e.target.closest('tr'); 
+        if (!row) return;
         
-        if (!name) {
-            alert('Vui lòng nhập tên hãng sản xuất!');
-            return;
+        if (e.target.closest('.btn-edit')) {
+            enterDrugRouteEditMode(row);
         }
         
-        // Gửi request tạo manufacturer mới
-        fetch('{{ route("admin.products.manufacturer.store") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ name: name })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Thêm option mới vào select
-                const select = document.getElementById('medicine_manufacturer_select');
-                const newOption = new Option(data.manufacturer.name, data.manufacturer.id);
-                select.add(newOption);
-                select.value = data.manufacturer.id;
-                
-                // Ẩn form inline
-                document.getElementById('createMedicineManufacturerInlineForm').style.display = 'none';
-                nameInput.value = '';
-            } else {
-                alert('Có lỗi xảy ra: ' + data.message);
+        if (e.target.closest('.btn-del')) {
+            const id = +row.dataset.id;
+            const item = drugRoutes.find(r => r.id === id);
+            if (confirm(`Xóa "${item.name}"?`)) {
+                // Gọi API để xóa khỏi database
+                fetch('{{ route("admin.products.drugroute.destroy", ":id") }}'.replace(':id', id), {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Xóa khỏi array local
+                        drugRoutes = drugRoutes.filter(r => r.id !== id);
+                        renderDrugRouteManageTable(manageDrugRouteSearch.value);
+                        if (+selectDrugRouteEl.value === id) selectDrugRouteEl.value = '';
+                        syncDrugRouteSelect(+selectDrugRouteEl.value || '');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa đường dùng!');
+                });
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi tạo hãng sản xuất!');
+        }
+    });
+
+    // Initialize drug route select
+    syncDrugRouteSelect('');
+
+    // Manufacturer Management - Modal-based approach
+    let manufacturers = @json($manufacturers);
+    
+    const selectManufacturerEl = document.getElementById('medicine_manufacturer_select');
+    const btnManageManufacturer = document.getElementById('btnManageManufacturer');
+    const manageManufacturerModal = new bootstrap.Modal(document.getElementById('manageManufacturerModal'));
+    const manageManufacturerTbody = document.getElementById('manageManufacturerTbody');
+    const manageManufacturerSearch = document.getElementById('manageManufacturerSearch');
+    const manageManufacturerAddBtn = document.getElementById('manageManufacturerAddBtn');
+
+    function nextManufacturerId() { 
+        return manufacturers.length ? Math.max(...manufacturers.map(m => m.id)) + 1 : 1; 
+    }
+
+    function syncManufacturerSelect(selectedId = '') {
+        selectManufacturerEl.innerHTML = '';
+        selectManufacturerEl.appendChild(new Option('Tìm hãng sản xuất', '', true, !selectedId));
+        manufacturers.forEach(m => selectManufacturerEl.appendChild(new Option(m.name, m.id, false, m.id == selectedId)));
+    }
+
+    function renderManufacturerManageTable(filter = '') {
+        const q = (filter || '').toLowerCase().trim();
+        const items = manufacturers.filter(m => !q || m.name.toLowerCase().includes(q));
+        manageManufacturerTbody.innerHTML = items.map(m => `
+            <tr data-id="${m.id}">
+                <td><span class="badge text-bg-secondary">#${m.id}</span></td>
+                <td class="name-cell">${m.name}</td>
+                <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary btn-edit"><i class="fas fa-edit"></i> Sửa</button>
+                        <button class="btn btn-outline-danger btn-del"><i class="fas fa-trash"></i> Xóa</button>
+                    </div>
+                </td>
+            </tr>`).join('') || `<tr><td colspan="3" class="text-center text-muted py-4">Không có mục nào.</td></tr>`;
+    }
+
+    function enterManufacturerEditMode(row) {
+        const id = +row.dataset.id;
+        const item = manufacturers.find(m => m.id === id);
+        const cell = row.querySelector('.name-cell');
+        cell.innerHTML = `
+            <div class="d-flex gap-2">
+                <input class="form-control form-control-sm edit-input" value="${item.name}">
+                <button class="btn btn-success btn-sm btn-save"><i class="fas fa-check"></i></button>
+                <button class="btn btn-light border btn-sm btn-cancel">Hủy</button>
+            </div>`;
+        
+        cell.querySelector('.btn-save').addEventListener('click', () => {
+            const val = cell.querySelector('.edit-input').value.trim();
+            if (!val) return;
+            if (manufacturers.some(m => m.id !== id && m.name.toLowerCase() === val.toLowerCase())) {
+                alert('Hãng sản xuất này đã tồn tại.'); 
+                return;
+            }
+            
+            // Nếu là item mới (có tên placeholder), gọi API tạo mới
+            if (item.name === 'Nhập hãng sản xuất mới') {
+                fetch('{{ route("admin.products.manufacturer.store") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: val })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Cập nhật với ID thật từ server
+                        item.id = data.manufacturer.id;
+                        item.name = data.manufacturer.name;
+                        renderManufacturerManageTable(manageManufacturerSearch.value);
+                        syncManufacturerSelect(data.manufacturer.id);
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi tạo hãng sản xuất!');
+                });
+            } else {
+                // Nếu là item đã tồn tại, gọi API update
+                fetch('{{ route("admin.products.manufacturer.update", ":id") }}'.replace(':id', id), {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: val })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        item.name = val;
+                        renderManufacturerManageTable(manageManufacturerSearch.value);
+                        syncManufacturerSelect(+selectManufacturerEl.value || '');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi cập nhật hãng sản xuất!');
+                });
+            }
+        });
+        
+        cell.querySelector('.btn-cancel').addEventListener('click', () => {
+            // Nếu là item mới (có tên placeholder), xóa khỏi array
+            if (item.name === 'Nhập tên…') {
+                manufacturers = manufacturers.filter(m => m.id !== id);
+            }
+            renderManufacturerManageTable(manageManufacturerSearch.value);
         });
     }
 
-    // Cancel manufacturer form - RIÊNG CHO THUỐC
-    function cancelMedicineManufacturerForm() {
-        document.getElementById('createMedicineManufacturerInlineForm').style.display = 'none';
-        document.getElementById('createNewMedicineManufacturerName').value = '';
-        document.getElementById('medicine_manufacturer_select').value = '';
-    }
+    // Event listeners for manufacturer management
+    btnManageManufacturer.addEventListener('click', () => {
+        manageManufacturerSearch.value = '';
+        renderManufacturerManageTable();
+        manageManufacturerModal.show();
+    });
+
+    manageManufacturerSearch.addEventListener('input', e => renderManufacturerManageTable(e.target.value));
+
+    //js xử lý tạo mới hãng sản xuất
+    manageManufacturerAddBtn.addEventListener('click', () => {
+        // Tạo item mới với tên placeholder
+        const id = nextManufacturerId();
+        manufacturers.push({ id, name: 'Nhập tên…' });
+        renderManufacturerManageTable(manageManufacturerSearch.value);
+        // Tìm row vừa tạo và tự động vào edit mode
+        const row = [...manageManufacturerTbody.querySelectorAll('tr')].find(tr => +tr.dataset.id === id);
+        if (row) {
+            enterManufacturerEditMode(row);
+            // Focus vào input field và select text
+            setTimeout(() => {
+                const input = row.querySelector('.edit-input');
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            }, 100);
+        }
+    });
+
+    manageManufacturerTbody.addEventListener('click', e => {
+        const row = e.target.closest('tr'); 
+        if (!row) return;
+        
+        if (e.target.closest('.btn-edit')) {
+            enterManufacturerEditMode(row);
+        }
+        
+        if (e.target.closest('.btn-del')) {
+            const id = +row.dataset.id;
+            const item = manufacturers.find(m => m.id === id);
+            if (confirm(`Xóa "${item.name}"?`)) {
+                // Gọi API để xóa khỏi database
+                fetch('{{ route("admin.products.manufacturer.destroy", ":id") }}'.replace(':id', id), {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Xóa khỏi array local
+                        manufacturers = manufacturers.filter(m => m.id !== id);
+                        renderManufacturerManageTable(manageManufacturerSearch.value);
+                        if (+selectManufacturerEl.value === id) selectManufacturerEl.value = '';
+                        syncManufacturerSelect(+selectManufacturerEl.value || '');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa hãng sản xuất!');
+                });
+            }
+        }
+    });
+
+    // Initialize manufacturer select
+    syncManufacturerSelect('');
 
     // Handle Position Change - RIÊNG CHO THUỐC
     function handleMedicinePositionChange(select) {

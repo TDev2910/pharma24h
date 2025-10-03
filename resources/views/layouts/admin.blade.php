@@ -80,6 +80,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <!-- Summernote JS -->
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.js"></script>
+    
+    <!-- Admin Notifications Handler -->
+    <script src="{{ asset('js/admin-notifications.js') }}"></script>
+    
     <!-- Custom JS (Load sau Bootstrap) -->
     <script src="{{ asset('js/modals.js') }}"></script>
     <script src="{{ asset('js/forms.js') }}"></script>

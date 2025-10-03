@@ -88,7 +88,13 @@ Route::prefix('admin')->name('admin.')->group(function ()
 
     // Supporting entities
     Route::post('products/drugroute', [SupportingEntityController::class, 'storeDrugRoute'])->name('products.drugroute.store');
+    Route::put('products/drugroute/{id}', [SupportingEntityController::class, 'updateDrugRoute'])->name('products.drugroute.update');
+    Route::delete('products/drugroute/{id}', [SupportingEntityController::class, 'destroyDrugRoute'])->name('products.drugroute.destroy');
+    
     Route::post('products/manufacturer', [SupportingEntityController::class, 'storeManufacturer'])->name('products.manufacturer.store');
+    Route::put('products/manufacturer/{id}', [SupportingEntityController::class, 'updateManufacturer'])->name('products.manufacturer.update');
+    Route::delete('products/manufacturer/{id}', [SupportingEntityController::class, 'destroyManufacturer'])->name('products.manufacturer.destroy');
+    
     Route::post('products/position', [SupportingEntityController::class, 'storePosition'])->name('products.position.store');
 
     // Categories

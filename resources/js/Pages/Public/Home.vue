@@ -119,7 +119,7 @@
         <div class="col-12">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="product-section-title mb-0">Thuốc nổi bật</h4>
-            <Link Link href="/products" class="text-primary text-decoration-none" style="font-size: 18px;">Xem thêm</Link>          
+            <Link href="/products" class="text-primary text-decoration-none" style="font-size: 18px;">Xem thêm</Link>
           </div>
         </div>
       </div>
@@ -160,7 +160,7 @@
         <div class="col-12">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="product-section-title mb-0">Vật tư y tế nổi bật</h4>
-              <Link Link href="/products" class="text-primary text-decoration-none" style="font-size: 18px;">Xem thêm</Link>          
+              <Link href="/products" class="text-primary text-decoration-none" style="font-size: 18px;">Xem thêm</Link>
           </div>
         </div>
       </div>
