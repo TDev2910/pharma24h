@@ -20,8 +20,9 @@
     }
 
     /* Page Layout */
-    .medicine-page {
-        padding: 24px;
+    .medicine-page 
+    {
+        padding: 0;
         background: var(--bg-light);
         min-height: 100vh;
     }
@@ -171,6 +172,11 @@
         padding: 16px 20px;
         border: none;
         white-space: nowrap;
+    }
+
+    .table thead.custom-header th {
+        background: #1db46a!important;
+        color: #fff !important;
     }
 
     .table tbody tr {
@@ -325,7 +331,7 @@
                         <span class="input-group-text">
                             <i class="fas fa-search"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="Theo mã, tên hàng" id="searchInput">
+                        <input type="text" class="form-control"style="border-radius:8px;" placeholder="Theo mã, tên hàng" id="searchInput">
                     </div>
                 </div>
             </div>

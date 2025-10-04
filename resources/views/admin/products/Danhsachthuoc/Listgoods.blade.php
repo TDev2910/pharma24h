@@ -283,6 +283,7 @@
         margin: 0 2px;
     }
 
+
     .page-link:hover {
         background: var(--bg-light);
         border-color: var(--primary-color);

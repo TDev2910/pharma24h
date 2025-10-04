@@ -31,7 +31,7 @@
                                 <div class="row g-2">
                                         <div class="col-md-6">
                                             <label class="form-label">Mã hàng</label>
-                                            <input type="text" class="form-control" name="ma_hang" id="ma_hang" placeholder="Tự động">
+                                            <input type="text" class="form-control" name="ma_hang" id="ma_hang" placeholder="Nhập mã hàng">
                                             @error('ma_hang') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                         </div>
                                     <div class="col-md-6">
@@ -195,7 +195,7 @@
                                                 <option value="{{ $pos->id }}">{{ $pos->name }}</option>
                                             @endforeach
                                         </select>                                  
-                                            <!-- Inline form cho Position -->
+                                        <!-- Inline form cho Position -->
                                         <button class="btn btn-outline-secondary" type="button" id="btnManagePosition">
                                             <i class="fas fa-cog"></i> Quản lý
                                         </button>
@@ -365,9 +365,9 @@
         </div>
     </div>
 
-    @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/create-modal.css') }}">
-    @endpush
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/modals.css') }}">
+@endpush
 
     @push('scripts')
     <script>

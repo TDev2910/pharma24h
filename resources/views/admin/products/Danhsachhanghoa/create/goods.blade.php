@@ -99,40 +99,28 @@
                       <fieldset class="mb-4 border rounded p-3">
                           <legend class="float-none w-auto px-2 fs-6">Thông tin hàng hóa</legend>
                           <div class="row g-3 mb-2">
-                              <div class="col-md-4">
+                              <div class="col-md-5">
                                   <label class="form-label">Quy cách đóng gói <span class="text-danger">*</span></label>
                                   <input type="text" class="form-control" name="quy_cach_dong_goi" id="quy_cach_dong_goi" placeholder="Bắt buộc" required>
                               </div>
-                              <div class="col-md-4">
+                              <div class="col-md-6">
                                   <label class="form-label">Hãng sản xuất</label>
-                                  <div class="position-relative">
-                                      <select class="form-select" name="manufacturer_id" id="manufacturer_id" onchange="handleCreateManufacturerChange(this)">
-                                          <option value="">Chọn hãng sản xuất</option>
+                                  <div class="input-group">
+                                      <select class="form-select" name="manufacturer_id" id="goods_manufacturer_select">
+                                          <option value="">Tìm hãng sản xuất</option>
                                           @foreach($manufacturers as $manu)
                                               <option value="{{ $manu->id }}">{{ $manu->name }}</option>
                                           @endforeach
-                                          <option value="create_new">+ Tạo mới hãng sản xuất</option>
                                       </select>
-                                      
-                                      <!-- Inline form cho Manufacturer - CREATE GOODS -->
-                                      <div id="createGoodsManufacturerInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
-                                          <div class="mb-2">
-                                              <input type="text" class="form-control" id="createNewGoodsManufacturerName" placeholder="Nhập tên hãng sản xuất mới">
-                                          </div>
-                                          <div class="d-flex gap-2">
-                                              <button type="button" class="btn btn-success" onclick="createNewCreateManufacturerInline()">
-                                                  <i class="fas fa-save"></i> Lưu
-                                              </button>
-                                              <button type="button" class="btn btn-secondary" onclick="cancelGoodsManufacturerForm()">
-                                                  <i class="fas fa-times"></i> Hủy
-                                              </button>
-                                          </div>
-                                      </div>
+                                      <button class="btn btn-outline-secondary" type="button" id="btnManageGoodsManufacturer">
+                                          <i class="fas fa-cog"></i> Quản lý
+                                      </button>
                                   </div>
+                                  <div class="text-muted mt-1" style="font-size:12px">Thêm/Sửa/Xóa thực hiện trong cửa sổ quản lý.</div>
                               </div>
                               <div class="col-md-4">
                                   <label class="form-label">Nước sản xuất</label>
-                                  <input type="text" class="form-control" name="nuoc_san_xuat" id="nuoc_san_xuat" placeholder="Nhập nước sản xuất">
+                                  <input type="text" class="form-control" name="nuoc_san_xuat" id="nuoc_san_xuat" placeholder="Tìm nước sản xuất">
                               </div>
                           </div>
                       </fieldset>
@@ -161,32 +149,22 @@
                       <fieldset class="mb-4 border rounded p-3">
                           <legend class="float-none w-auto px-2 fs-6">Vị trí, trọng lượng</legend>
                           <div class="row g-3 mb-2">
-                              <div class="col-md-4">
-                                  <label class="form-label">Vị trí</label>
-                                  <div class="position-relative">
-                                      <select class="form-select" name="position_id" id="position_id" onchange="handleCreatePositionChange(this)">
+                              <div class="col-md-6">
+                                  <label class="form-label">
+                                      Vị trí <span class="text-danger">*</span>
+                                  </label>
+                                  <div class="input-group">
+                                      <select class="form-select" name="position_id" id="goods_position_select">
                                           <option value="">Chọn vị trí</option>
                                           @foreach($positions as $pos)
                                               <option value="{{ $pos->id }}">{{ $pos->name }}</option>
                                           @endforeach
-                                          <option value="create_new">+ Tạo mới vị trí</option>
                                       </select>
-                                      
-                                      <!-- Inline form cho Position - CREATE GOODS -->
-                                      <div id="createGoodsPositionInlineForm" class="mt-2 p-3 border rounded bg-light" style="display: none;">
-                                          <div class="mb-2">
-                                              <input type="text" class="form-control" id="createNewGoodsPositionName" placeholder="Nhập tên vị trí mới">
-                                          </div>
-                                          <div class="d-flex gap-2">
-                                              <button type="button" class="btn btn-success" onclick="createNewGoodsPositionInline()">
-                                                  <i class="fas fa-save"></i> Lưu
-                                              </button>
-                                              <button type="button" class="btn btn-secondary" onclick="cancelGoodsPositionForm()">
-                                                  <i class="fas fa-times"></i> Hủy
-                                              </button>
-                                          </div>
-                                      </div>
+                                      <button class="btn btn-outline-secondary" type="button" id="btnManageGoodsPosition">
+                                          <i class="fas fa-cog"></i> Quản lý
+                                      </button>
                                   </div>
+                                  <div class="text-muted mt-1" style="font-size:12px">Thêm/Sửa/Xóa thực hiện trong cửa sổ quản lý.</div>
                               </div>
                               <div class="col-md-4">
                                   <label class="form-label">Trọng lượng</label>
@@ -234,7 +212,7 @@
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
               <button type="submit" class="btn btn-success">
-                  <i class="fas fa-save"></i> Lưu hàng hóa
+                  <i></i> Lưu hàng hóa
               </button>
           </div>
         </form>
@@ -242,153 +220,566 @@
     </div>
   </div>
 
+<!-- Modal Quản lý Hãng sản xuất cho Goods -->
+<div class="modal fade" id="manageGoodsManufacturerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-cog me-2"></i>Quản lý hãng sản xuất</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-2 mb-3">
+                    <div class="col">
+                        <input type="text" id="manageGoodsManufacturerSearch" class="form-control" placeholder="Tìm theo tên…">
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-primary" id="manageGoodsManufacturerAddBtn">
+                            <i class="fas fa-plus"></i> Thêm
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width:90px">Mã</th>
+                                <th>Tên hãng sản xuất</th>
+                                <th class="text-end" style="width:160px">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="manageGoodsManufacturerTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Quản lý Vị trí cho Goods -->
+<div class="modal fade" id="manageGoodsPositionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-cog me-2"></i>Quản lý vị trí</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-2 mb-3">
+                    <div class="col">
+                        <input type="text" id="manageGoodsPositionSearch" class="form-control" placeholder="Tìm theo tên…">
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-primary" id="manageGoodsPositionAddBtn">
+                            <i class="fas fa-plus"></i> Thêm
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width:90px">Mã</th>
+                                <th>Tên vị trí</th>
+                                <th class="text-end" style="width:160px">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="manageGoodsPositionTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/create-modal.css') }}">
 @endpush
 
 @push('scripts')
 <script>
-// Function preview ảnh cho modal hàng hóa
-function previewCreateGoodsImage(input) {
-    const preview = document.getElementById('create-goods-image-preview');
-    const placeholder = document.getElementById('create-goods-image-placeholder');
-    
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
+    //hãng sản xuất 
+    let goodsManufacturers = @json($manufacturers);
+    const selectGoodsManufacturerEl = document.getElementById('goods_manufacturer_select');
+    const btnManageGoodsManufacturer = document.getElementById('btnManageGoodsManufacturer');
+    const manageGoodsManufacturerModal = new bootstrap.Modal(document.getElementById('manageGoodsManufacturerModal'));
+    const manageGoodsManufacturerTbody = document.getElementById('manageGoodsManufacturerTbody');
+    const manageGoodsManufacturerSearch = document.getElementById('manageGoodsManufacturerSearch');
+    const manageGoodsManufacturerAddBtn = document.getElementById('manageGoodsManufacturerAddBtn');
+
+    function nextGoodsManufacturerId() 
+    {
+        return goodsManufacturers.length ? Math.max(...goodsManufacturers.map(m => m.id)) + 1 : 1;
+    }
+
+    function syncGoodsManufacturerSelect(selectedId = '')
+    {
+        selectGoodsManufacturerEl.innerHTML = '';
+        selectGoodsManufacturerEl.appendChild(new Option('Tìm hãng sản xuất', '', true, !selectedId));
+        goodsManufacturers.forEach(m => selectGoodsManufacturerEl.appendChild(new Option(m.name, m.id, false, m.id == selectedId)));
+    }
+
+    function renderGoodsManufacturerManageTable(filter = '') {
+        const q = (filter || '').toLowerCase().trim();
+        const items = goodsManufacturers.filter(m => !q || m.name.toLowerCase().includes(q));
+        manageGoodsManufacturerTbody.innerHTML = items.map(m => `
+            <tr data-id="${m.id}">
+                <td><span class="badge text-bg-secondary">#${m.id}</span></td>
+                <td class="name-cell">${m.name}</td>
+                <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary btn-edit"><i class="fas fa-edit"></i> Sửa</button>
+                        <button class="btn btn-outline-danger btn-del"><i class="fas fa-trash"></i> Xóa</button>
+                    </div>
+                </td>
+            </tr>`).join('') || `<tr><td colspan="3" class="text-center text-muted py-4">Không có mục nào.</td></tr>`;
+    }
+
+    function enterGoodsManufacturerEditMode(row) {
+        const id = +row.dataset.id;
+        const item = goodsManufacturers.find(m => m.id === id);
+        const cell = row.querySelector('.name-cell');
+        cell.innerHTML = `
+            <div class="d-flex gap-2">
+                <input class="form-control form-control-sm edit-input" value="${item.name}">
+                <button class="btn btn-success btn-sm btn-save"><i class="fas fa-check"></i></button>
+                <button class="btn btn-light border btn-sm btn-cancel">Hủy</button>
+            </div>`;
         
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-            placeholder.style.display = 'none';
-        };
+        cell.querySelector('.btn-save').addEventListener('click', () => {
+            const val = cell.querySelector('.edit-input').value.trim();
+            if (!val) return;
+            if (goodsManufacturers.some(m => m.id !== id && m.name.toLowerCase() === val.toLowerCase())) {
+                alert('Hãng sản xuất này đã tồn tại.'); 
+                return;
+            }
+            
+            // Nếu là item mới (có tên placeholder), gọi API tạo mới
+            if (item.name === 'Nhập hãng sản xuất mới') {
+                fetch('{{ route("admin.products.manufacturer.store") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: val })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Cập nhật với ID thật từ server
+                        const oldId = item.id; // Lưu lại ID tạm thời
+                        item.id = data.manufacturer.id;
+                        item.name = data.manufacturer.name;
+                        
+                        // Cập nhật lại mảng manufacturers với ID mới
+                        goodsManufacturers = goodsManufacturers.map(m => m.id === oldId ? item : m);
+                        
+                        console.log('Manufacturer created, old ID: ' + oldId + ', new ID: ' + item.id);
+                        
+                        renderGoodsManufacturerManageTable(manageGoodsManufacturerSearch.value);
+                        syncGoodsManufacturerSelect(data.manufacturer.id);
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi tạo hãng sản xuất!');
+                });
+            } else {
+                // Nếu là item đã tồn tại, gọi API update
+                fetch('{{ route("admin.products.manufacturer.update", ":id") }}'.replace(':id', id), {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: val })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        item.name = val;
+                        renderGoodsManufacturerManageTable(manageGoodsManufacturerSearch.value);
+                        syncGoodsManufacturerSelect(+selectGoodsManufacturerEl.value || '');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi cập nhật hãng sản xuất!');
+                });
+            }
+        });
         
-        reader.readAsDataURL(input.files[0]);
-    } else {
-        preview.style.display = 'none';
-        placeholder.style.display = 'block';
+        cell.querySelector('.btn-cancel').addEventListener('click', () => {
+            // Nếu là item mới (có tên placeholder), xóa khỏi array
+            if (item.name === 'Nhập hãng sản xuất mới') {
+                goodsManufacturers = goodsManufacturers.filter(m => m.id !== id);
+            }
+            renderGoodsManufacturerManageTable(manageGoodsManufacturerSearch.value);
+        });
     }
-}
 
-// Handle Position Change - RIÊNG CHO GOODS
-function handleCreatePositionChange(select) {
-    const selectedOption = select.options[select.selectedIndex];
-    const inlineForm = document.getElementById('createGoodsPositionInlineForm');
-    
-    if (selectedOption.value === 'create_new') {
-        inlineForm.style.display = 'block';
-        select.value = '';
-    } else {
-        inlineForm.style.display = 'none';
-    }
-}
-
-// Create new position inline - RIÊNG CHO GOODS
-function createNewGoodsPositionInline() {
-    const nameInput = document.getElementById('createNewGoodsPositionName');
-    const name = nameInput.value.trim();
-    
-    if (!name) {
-        alert('Vui lòng nhập tên vị trí!');
-        return;
-    }
-    
-    // Gửi request tạo position mới
-    fetch('{{ route("admin.products.position.store") }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({ name: name })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Thêm option mới vào select
-            const select = document.getElementById('position_id');
-            const newOption = new Option(data.position.name, data.position.id);
-            select.add(newOption);
-            select.value = data.position.id;
-            
-            // Ẩn form inline
-            document.getElementById('createGoodsPositionInlineForm').style.display = 'none';
-            nameInput.value = '';
-        } else {
-            alert('Có lỗi xảy ra: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Có lỗi xảy ra khi tạo vị trí!');
+    btnManageGoodsManufacturer.addEventListener('click', () => {
+        manageGoodsManufacturerSearch.value = '';
+        renderGoodsManufacturerManageTable();
+        manageGoodsManufacturerModal.show();
     });
-}
 
-// Cancel position form - RIÊNG CHO GOODS
-function cancelGoodsPositionForm() {
-    document.getElementById('createGoodsPositionInlineForm').style.display = 'none';
-    document.getElementById('createNewGoodsPositionName').value = '';
-    document.getElementById('position_id').value = '';
-}
+    manageGoodsManufacturerSearch.addEventListener('input', e => renderGoodsManufacturerManageTable(e.target.value));
 
-// Handle Manufacturer Change - RIÊNG CHO GOODS
-function handleCreateManufacturerChange(select) {
-    const selectedOption = select.options[select.selectedIndex];
-    const inlineForm = document.getElementById('createGoodsManufacturerInlineForm');
-    
-    if (selectedOption.value === 'create_new') {
-        inlineForm.style.display = 'block';
-        select.value = '';
-    } else {
-        inlineForm.style.display = 'none';
-    }
-}
-
-// Create new manufacturer inline - RIÊNG CHO GOODS
-function createNewCreateManufacturerInline() {
-    const nameInput = document.getElementById('createNewGoodsManufacturerName');
-    const name = nameInput.value.trim();
-    
-    if (!name) {
-        alert('Vui lòng nhập tên hãng sản xuất!');
-        return;
-    }
-    
-    // Gửi request tạo manufacturer mới
-    fetch('{{ route("admin.products.manufacturer.store") }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({ name: name })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Thêm option mới vào select
-            const select = document.getElementById('manufacturer_id');
-            const newOption = new Option(data.manufacturer.name, data.manufacturer.id);
-            select.add(newOption);
-            select.value = data.manufacturer.id;
-            
-            // Ẩn form inline
-            document.getElementById('createGoodsManufacturerInlineForm').style.display = 'none';
-            nameInput.value = '';
-        } else {
-            alert('Có lỗi xảy ra: ' + data.message);
+    //js xử lý tạo mới hãng sản xuất
+    manageGoodsManufacturerAddBtn.addEventListener('click', () => {
+        // Tạo item mới với tên placeholder
+        const id = nextGoodsManufacturerId();
+        goodsManufacturers.push({ id, name: 'Nhập hãng sản xuất mới' });
+        renderGoodsManufacturerManageTable(manageGoodsManufacturerSearch.value);
+        // Tìm row vừa tạo và tự động vào edit mode
+        const row = [...manageGoodsManufacturerTbody.querySelectorAll('tr')].find(tr => +tr.dataset.id === id);
+        if (row) {
+            enterGoodsManufacturerEditMode(row);
+            // Focus vào input field và select text
+            setTimeout(() => {
+                const input = row.querySelector('.edit-input');
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            }, 100);
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Có lỗi xảy ra khi tạo hãng sản xuất!');
     });
-}
 
-// Cancel manufacturer form - RIÊNG CHO GOODS
-function cancelGoodsManufacturerForm() {
-    document.getElementById('createGoodsManufacturerInlineForm').style.display = 'none';
-    document.getElementById('createNewGoodsManufacturerName').value = '';
-    document.getElementById('manufacturer_id').value = '';
-}
+    manageGoodsManufacturerTbody.addEventListener('click', e => {
+        const row = e.target.closest('tr'); 
+        if (!row) return;
+        
+        if (e.target.closest('.btn-edit')) {
+            enterGoodsManufacturerEditMode(row);
+        }
+        
+        if (e.target.closest('.btn-del')) {
+            const id = +row.dataset.id;
+            const item = goodsManufacturers.find(m => m.id === id);
+            if (confirm(`Xóa "${item.name}"?`)) {
+                // Gọi API để xóa khỏi database
+                fetch('{{ route("admin.products.manufacturer.destroy", ":id") }}'.replace(':id', id), {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Xóa khỏi array local
+                        goodsManufacturers = goodsManufacturers.filter(m => m.id !== id);
+                        renderGoodsManufacturerManageTable(manageGoodsManufacturerSearch.value);
+                        if (+selectGoodsManufacturerEl.value === id) selectGoodsManufacturerEl.value = '';
+                        syncGoodsManufacturerSelect(+selectGoodsManufacturerEl.value || '');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa hãng sản xuất!');
+                });
+            }
+        }
+    });
+    syncGoodsManufacturerSelect('');
+
+    //vị trí
+    let goodsPositions = @json($positions);
+    const selectGoodsPositionEl = document.getElementById('goods_position_select');
+    const btnManageGoodsPosition = document.getElementById('btnManageGoodsPosition');
+    const manageGoodsPositionModal = new bootstrap.Modal(document.getElementById('manageGoodsPositionModal'));
+    const manageGoodsPositionTbody = document.getElementById('manageGoodsPositionTbody');
+    const manageGoodsPositionSearch = document.getElementById('manageGoodsPositionSearch');
+    const manageGoodsPositionAddBtn = document.getElementById('manageGoodsPositionAddBtn');
+
+    function nextGoodsPositionId()
+    {
+        return goodsPositions.length ? Math.max(...goodsPositions.map(p => p.id)) + 1 : 1;
+    }
+
+    function syncGoodsPositionSelect(selectedId = '')
+    {
+        selectGoodsPositionEl.innerHTML = '';
+        selectGoodsPositionEl.appendChild(new Option('Chọn vị trí', '', true, !selectedId));
+        goodsPositions.forEach(p => selectGoodsPositionEl.appendChild(new Option(p.name, p.id, false, p.id == selectedId)));
+    }
+
+    function renderGoodsPositionManageTable(filter = '')
+    {
+        const q = (filter || '').toLowerCase().trim();
+        const items = goodsPositions.filter(r => !q || r.name.toLowerCase().includes(q));
+        manageGoodsPositionTbody.innerHTML = items.map(r => `
+            <tr data-id="${r.id}">
+                <td><span class="badge text-bg-secondary">#${r.id}</span></td>
+                <td class="name-cell">${r.name}</td>
+                <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary btn-edit"><i class="fas fa-edit"></i> Sửa</button>
+                        <button class="btn btn-outline-danger btn-del"><i class="fas fa-trash"></i> Xóa</button>
+                    </div>
+                </td>
+        </tr>`).join('') || `<tr><td colspan="3" class="text-center text-muted py-4">Không có mục nào.</td></tr>`;
+    }
+
+    function enterGoodsPositionEditMode(row) {
+        const id = +row.dataset.id;
+        const item = goodsPositions.find(r => r.id === id);
+        const cell = row.querySelector('.name-cell');
+        cell.innerHTML = `
+            <div class="d-flex gap-2">
+                <input class="form-control form-control-sm edit-input" value="${item.name}">
+                <button class="btn btn-success btn-sm btn-save"><i class="fas fa-check"></i></button>
+                <button class="btn btn-light border btn-sm btn-cancel">Hủy</button>
+            </div>`;
+        
+        cell.querySelector('.btn-save').addEventListener('click', () => {
+            const val = cell.querySelector('.edit-input').value.trim();
+            if(!val) return;
+            if(goodsPositions.some(r => r.id !== id && r.name.toLowerCase() === val.toLowerCase()))
+            {
+                alert('Vị trí đã tồn tại');
+                return;
+            }
+            //nếu là item mới (có tên placeholder), gọi api tạo mới
+            if(item.name === 'Nhập vị trí mới')
+            {
+                fetch('{{ route("admin.products.position.store") }}', {
+                    method:'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: val })
+                })
+                .then(response => response.json())
+                .then(data=> {
+                    if(data.success) 
+                    {
+                        //cập nhật với id gửi từ server
+                        const oldId = item.id; // Lưu lại ID tạm thời
+                        item.id = data.position.id; // Cập nhật ID từ server
+                        item.name = data.position.name;
+                        
+                        // Cập nhật lại mảng positions với ID mới
+                        goodsPositions = goodsPositions.map(p => p.id === oldId ? item : p);
+                        
+                        console.log('Position created, old ID: ' + oldId + ', new ID: ' + item.id);
+                        
+                        renderGoodsPositionManageTable(manageGoodsPositionSearch.value);
+                        syncPositionSelect(data.position.id);
+                    }
+                    else
+                    {
+                        console.error('Error:', data.message);
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Có lỗi xảy ra khi tạo vị trí!');
+                });
+            } else {
+                // Gọi API để update trong database
+                fetch('{{ route("admin.products.position.update", ":id") }}'.replace(':id', id), {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: val })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        item.name = val;
+                        renderGoodsPositionManageTable(manageGoodsPositionSearch.value);
+                        syncGoodsPositionSelect(+selectGoodsPositionEl.value || '');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi cập nhật vị trí!');
+                });
+            }
+        });
+
+        cell.querySelector('.btn-cancel').addEventListener('click', () => {
+            if(item.name === 'Nhập vị trí mới')
+            {
+                goodsPositions = goodsPositions.filter(r => r.id !== id);
+            }
+            renderGoodsPositionManageTable(manageGoodsPositionSearch.value);
+        });  
+    }
+    btnManageGoodsPosition.addEventListener('click', () => {
+        manageGoodsPositionSearch.value = '';
+        renderGoodsPositionManageTable();
+        manageGoodsPositionModal.show();
+    });
+
+    manageGoodsPositionSearch.addEventListener('input', e => renderGoodsPositionManageTable(e.target.value));
+
+    manageGoodsPositionAddBtn.addEventListener('click', () => {
+        const id = nextGoodsPositionId();
+        goodsPositions.push({id,name:'Nhập vị trí mới'});
+        renderGoodsPositionManageTable(manageGoodsPositionSearch.value);
+        //tìm row vừa tạo và tự động vào edit
+        const row = [...manageGoodsPositionTbody.querySelectorAll('tr')].find(tr => +tr.dataset.id === id);
+        if(row)
+        {
+            enterGoodsPositionEditMode(row);
+            setTimeout(() => {
+                const input = row.querySelector('.edit-input');
+                if(input)
+                {
+                    input.focus();
+                    input.select();
+                }
+            },100);
+        }
+    });
+
+    manageGoodsPositionTbody.addEventListener('click', e => {
+        const row = e.target.closest('tr'); 
+        if (!row) return;
+        
+        if (e.target.closest('.btn-edit')) {
+            enterGoodsPositionEditMode(row);
+        }
+        
+        if (e.target.closest('.btn-del')) {
+            const id = +row.dataset.id;
+            const item = goodsPositions.find(r => r.id === id);
+            if (confirm(`Xóa "${item.name}"?`)) {
+                // Gọi API để xóa khỏi database
+                fetch('{{ route("admin.products.position.destroy", ":id") }}'.replace(':id', id), {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Xóa khỏi array local
+                        goodsPositions = goodsPositions.filter(r => r.id !== id);
+                        renderGoodsPositionManageTable(manageGoodsPositionSearch.value);
+                        if (+selectGoodsPositionEl.value === id) selectGoodsPositionEl.value = '';
+                        syncGoodsPositionSelect(+selectGoodsPositionEl.value || '');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa vị trí!');
+                });
+            }
+        }   
+    });
+
+    syncGoodsPositionSelect('');
+
+
 </script>
-@endpush 
+@endpush
+
+<style>
+/* Modal nhỏ gọn nhưng đủ rộng cho Goods */
+#createGoodsModal .modal-dialog {
+  max-width: 850px;
+}
+
+#createGoodsModal .modal-content {
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+#createGoodsModal .modal-header {
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #ebedf0;
+}
+
+#createGoodsModal .modal-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+#createGoodsModal .modal-body {
+  padding: 20px;
+}
+
+/* Input nhỏ gọn nhưng dễ thao tác */
+#createGoodsModal .form-control {
+  font-size: 14px;
+  padding: 8px 12px;
+  height: 38px;
+  border-radius: 6px;
+}
+
+#createGoodsModal .form-select {
+  font-size: 14px;
+  padding: 8px 28px 8px 12px;
+  height: 38px;
+  border-radius: 6px;
+}
+
+/* Label rõ ràng hơn */
+#createGoodsModal label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #495057;
+}
+
+/* Button nhỏ gọn */
+#createGoodsModal .btn {
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+/* Cải thiện spacing cho form groups */
+#createGoodsModal .form-group {
+  margin-bottom: 15px;
+}
+
+/* Footer */
+#createGoodsModal .modal-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #ebedf0;
+}
+
+/* Input group cho hãng sản xuất và vị trí */
+#createGoodsModal .input-with-button {
+  display: flex;
+}
+
+#createGoodsModal .input-with-button select {
+  flex: 1;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+#createGoodsModal .input-with-button .btn {
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+</style>
