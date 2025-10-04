@@ -313,22 +313,22 @@
 <div class="medicine-page">
     <!-- Header Control Bar -->
     <div class="header-control-bar">
-        <div class="controls-section">
+        <div class="controls-section" style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
             <!-- Title Section -->
             <div class="title-section">
                 <h4>Danh sách thuốc</h4>
             </div>
-
             <!-- Search Section -->
-            <div class="search-wrapper">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="fas fa-search"></i>
-                    </span>
-                    <input type="text" class="form-control" placeholder="Theo mã, tên hàng" id="searchInput">
+            <div style="flex:1; display:flex; justify-content:center;">
+                <div class="search-wrapper">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" class="form-control" placeholder="Theo mã, tên hàng" id="searchInput">
+                    </div>
                 </div>
             </div>
-                 
             <!-- Utility Options -->
             <div class="ultility-options">
                 <!-- Xuất file -->
@@ -336,7 +336,6 @@
                     <i class="fas fa-upload"></i>
                     Xuất file
                 </button>
-                
                 <!-- Utility Icons -->
                 <div class="utility-icons">
                     <button class="btn" title="Chế độ xem">
