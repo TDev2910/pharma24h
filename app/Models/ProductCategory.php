@@ -52,6 +52,15 @@ class ProductCategory extends Model
             ->orderBy('name');
     }
 
+    /**
+     * Get all child categories recursively (unlimited depth)
+     * This relationship automatically loads all descendant levels
+     */
+    public function childrenRecursive(): HasMany
+    {
+        return $this->children()->with('childrenRecursive');
+    }
+
     // ===========================================
     // STATIC QUERY METHODS - OPTIMIZED
     // ===========================================
@@ -62,16 +71,16 @@ class ProductCategory extends Model
      * 
      * @return Collection
      */
-    public static function getRootCategories(): Collection
+    public static function getRootCategories(): Collection  //đoạn mã chỉ láy danh mục cha không lấy danh mục con
     {
         return Cache::remember('categories.roots', 3600, function () {
-            return self::whereNull('parent_id')
+            return self::whereNull('parent_id') //lấy danh mục cha
                 ->orderByRaw("CASE 
                     WHEN name = 'Thuốc' THEN 1 
                     WHEN name = 'Hàng hóa' THEN 2 
                     WHEN name = 'Dịch vụ' THEN 3 
                     ELSE 4 
-                END")
+                END") //sắp xếp theo thứ tự
                 ->orderBy('sort_order')
                 ->orderBy('name')
                 ->get();
@@ -79,7 +88,7 @@ class ProductCategory extends Model
     }
 
     /**
-     * Get complete category tree with eager loading (up to 4 levels)
+     * Get complete category tree with unlimited depth using recursive relationship
      * Optimized with caching and proper ordering
      * 
      * @return Collection
@@ -87,31 +96,14 @@ class ProductCategory extends Model
     public static function getCategoryTree(): Collection
     {
         return Cache::remember('categories.tree', 3600, function () {
-            return self::whereNull('parent_id')
-                ->with([
-                    'children' => function ($query) {
-                        $query->orderBy('sort_order')
-                              ->orderBy('name')
-                              ->with([
-                                  'children' => function ($subQuery) {
-                                      $subQuery->orderBy('sort_order')
-                                               ->orderBy('name')
-                                               ->with([
-                                                   'children' => function ($subSubQuery) {
-                                                       $subSubQuery->orderBy('sort_order')
-                                                                   ->orderBy('name');
-                                                   }
-                                               ]);
-                                  }
-                              ]);
-                    }
-                ])
+            return self::whereNull('parent_id') //lấy danh mục cha 
+                ->with('childrenRecursive') // đệ quy vô hạn cấp
                 ->orderByRaw("CASE 
                     WHEN name = 'Thuốc' THEN 1 
                     WHEN name = 'Hàng hóa' THEN 2 
                     WHEN name = 'Dịch vụ' THEN 3 
                     ELSE 4 
-                END")
+                END") //sắp xếp theo thứ tự
                 ->orderBy('sort_order')
                 ->orderBy('name')
                 ->get();

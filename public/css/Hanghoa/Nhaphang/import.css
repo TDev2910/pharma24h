@@ -542,6 +542,601 @@
     margin-bottom: 20px;
 }
 
+/* Tab Styles */
+.title-detail {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 0;
+    padding: 20px 20px 0 20px;
+    display: flex;
+    gap: 20px;
+}
+
+.title-detail .tab {
+    background: none;
+    border: none;
+    color: #6c757d;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.title-detail .tab:hover {
+    color: #007bff;
+}
+
+.title-detail .tab.active {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+}
+
+.title-detail .tab-content {
+    display: none;
+}
+
+.tab-container {
+    padding: 0;
+}
+
+/* ========== IMPORT INFO STYLES - RIÊNG BIỆT ========== */
+.import-info-container {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    margin: 0;
+}
+
+.import-info-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.import-info-code {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2b3440;
+    margin: 0;
+}
+
+.import-info-badge {
+    background: #e6f6ee;
+    color: #1b8756;
+    border: 1px solid #cdeede;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.import-info-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.import-info-left,
+.import-info-right {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.import-info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: 25px;
+}
+
+.import-info-label {
+    font-weight: 600;
+    color: #495057;
+    min-width: 100px;
+    font-size: 14px;
+}
+
+.import-info-text {
+    color: #2b3440;
+    font-size: 14px;
+}
+
+.import-info-link {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.import-info-link:hover {
+    text-decoration: underline;
+}
+
+.import-info-select {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #2b3440;
+    background: white;
+    min-width: 150px;
+    cursor: pointer;
+}
+
+.import-info-select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.import-info-input {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #2b3440;
+    background: white;
+    min-width: 150px;
+}
+
+.import-info-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Responsive cho import info */
+@media (max-width: 768px) {
+    .import-info-details {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .import-info-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+/* ========== IMPORT PRODUCT SECTION - CSS RIÊNG BIỆT ========== */
+.import-product-section {
+    margin-top: 24px;
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+/* Tìm kiếm sản phẩm */
+.import-product-search {
+    margin-bottom: 20px;
+}
+
+.import-search-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.import-search-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.import-search-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+    min-width: 80px;
+}
+
+.import-search-input {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #2b3440;
+    background: white;
+    min-width: 200px;
+}
+
+.import-search-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.import-price-link {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+}
+
+.import-price-link:hover {
+    text-decoration: underline;
+}
+
+/* Bảng sản phẩm */
+.import-product-table-container {
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.import-product-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.import-product-table thead th {
+    background: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #dee2e6;
+    text-align: left;
+}
+
+.import-product-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f3f4;
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.import-product-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.import-product-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Cột cụ thể */
+.import-col-code {
+    width: 120px;
+}
+
+.import-col-name {
+    width: auto;
+    min-width: 250px;
+}
+
+.import-col-qty,
+.import-col-price,
+.import-col-discount,
+.import-col-import-price,
+.import-col-total {
+    width: 120px;
+    text-align: right;
+}
+
+.import-product-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.import-product-link:hover {
+    text-decoration: underline;
+}
+
+.import-col-total {
+    font-weight: 700;
+}
+
+/* Phần ghi chú và tổng kết */
+.import-summary-section {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.import-notes-area {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.import-notes-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+}
+
+.import-notes-textarea {
+    border: 2px dashed #dee2e6;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 14px;
+    color: #2b3440;
+    background: #f8f9fa;
+    min-height: 120px;
+    resize: vertical;
+}
+
+.import-notes-textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    background: white;
+}
+
+.import-summary-box {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.import-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.import-summary-row:last-child {
+    margin-bottom: 0;
+}
+
+.import-summary-label {
+    font-size: 14px;
+    color: #495057;
+    font-weight: 500;
+}
+
+.import-summary-value {
+    font-size: 14px;
+    color: #2b3440;
+    font-weight: 600;
+}
+
+.import-info-icon {
+    color: #6c757d;
+    font-size: 12px;
+    margin-left: 4px;
+}
+
+.import-summary-divider {
+    border-top: 1px dashed #dee2e6;
+    margin: 8px 0;
+}
+
+.import-summary-total .import-summary-value,
+.import-summary-paid .import-summary-value {
+    color: #dc3545;
+    font-weight: 700;
+}
+
+/* Footer hành động */
+.import-action-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid #e9ecef;
+}
+
+.import-action-left,
+.import-action-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.import-action-btn {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.import-btn-cancel {
+    background: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+}
+
+.import-btn-cancel:hover {
+    background: #e9ecef;
+}
+
+.import-btn-copy,
+.import-btn-export {
+    background: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+}
+
+.import-btn-copy:hover,
+.import-btn-export:hover {
+    background: #e9ecef;
+}
+
+.import-btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.import-btn-primary:hover {
+    background: #0056b3;
+}
+
+.import-btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.import-btn-secondary:hover {
+    background: #545b62;
+}
+
+.import-btn-more {
+    background: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+}
+
+.import-btn-more:hover {
+    background: #e9ecef;
+}
+
+/* Responsive cho product section */
+@media (max-width: 768px) {
+    .import-summary-section {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .import-action-footer {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+    }
+    
+    .import-action-left,
+    .import-action-right {
+        justify-content: center;
+    }
+    
+    .import-search-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .import-search-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+    
+    .import-search-input {
+        min-width: auto;
+        width: 100%;
+    }
+}
+
+/* Table styling for import history */
+.import-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.import-history-table thead th {
+    background: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #dee2e6;
+    text-align: left;
+}
+
+.import-history-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f3f4;
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+/* Column specific styles */
+.import-history-table th.col-time,
+.import-history-table td.col-time {
+    text-align: center;
+    width: 250px;
+}
+
+.import-history-table th.col-creator,
+.import-history-table td.col-creator {
+    text-align: center;
+    width: 180px;
+}
+
+.import-history-table th.col-method,
+.import-history-table td.col-method {
+    text-align: center;
+    width: 150px;
+}
+
+.import-history-table th.col-status,
+.import-history-table td.col-status {
+    text-align: center;
+    width: 200px;
+}
+
+.import-history-table th.col-amount,
+.import-history-table td.col-amount {
+    text-align: right;
+    font-weight: 600;
+}
+
+.import-history-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.import-history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.badge-payment-paid {
+    background: #e6f6ee;
+    color: #1b8756;
+    border: 1px solid #cdeede;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-payment-pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.payment-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.payment-link:hover {
+    text-decoration: underline;
+}
+
 
 
 
@@ -596,7 +1191,10 @@
     padding: 12px 14px;
     border-bottom: 1px solid #dbe7ff;
   }
-  
+  .table.import-table tbody td:nth-child(3) { /* Thời gian */
+    width: 170px;
+    text-align: center;
+  }
   /* Kích thước/align từng cột (theo thứ tự cột hiện tại) */
   .table.import-table thead th:nth-child(1),
   .table.import-table tbody td:nth-child(1) {

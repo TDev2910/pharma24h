@@ -12,6 +12,7 @@ use App\Models\Position;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 
+
 class ProductController extends Controller
 {
     /**
@@ -19,9 +20,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $medicines        = Medicine::with(['category', 'manufacturer', 'drugRoute', 'position'])->latest()->paginate(10);
-        $goods            = Goods::with(['category', 'manufacturer', 'position'])->latest()->paginate(10);
-        $services         = Service::with(['category', 'creator', 'updater'])->latest()->paginate(10);
+        $medicines        = Medicine::with(['category', 'manufacturer', 'drugRoute', 'position'])->latest()->paginate(5);
+        $goods            = Goods::with(['category', 'manufacturer', 'position'])->latest()->paginate(5);
+        $services         = Service::with(['category', 'creator', 'updater'])->latest()->paginate(5);
         $categories       = ProductCategory::getAllCategoriesWithDepth();
         $parentCategories = ProductCategory::getAllCategoriesWithDepth();
         $manufacturers    = Manufacturer::all();

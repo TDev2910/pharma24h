@@ -770,8 +770,37 @@
                             </div>
                             <div class="col-md-6 text-md-end">
                                 @if(isset($medicines) && $medicines->hasPages())
-                                    <nav aria-label="Page navigation">
-                                        {{ $medicines->links() }}
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination pagination-sm justify-content-end" style="margin:0;">
+                                            {{-- Previous Page Link --}}
+                                            @if ($medicines->onFirstPage())
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">&laquo;</span>
+                                                </li>
+                                            @else
+                                                <li class="page-item">
+                                                    <a class="page-link" href="{{ $medicines->previousPageUrl() }}" rel="prev">&laquo;</a>
+                                                </li>
+                                            @endif
+
+                                            {{-- Pagination Elements --}}
+                                            @foreach ($medicines->getUrlRange(1, $medicines->lastPage()) as $page => $url)
+                                                <li class="page-item {{ $medicines->currentPage() == $page ? 'active' : '' }}">
+                                                    <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                                </li>
+                                            @endforeach
+
+                                            {{-- Next Page Link --}}
+                                            @if ($medicines->hasMorePages())
+                                                <li class="page-item">
+                                                    <a class="page-link" href="{{ $medicines->nextPageUrl() }}" rel="next">&raquo;</a>
+                                                </li>
+                                            @else
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">&raquo;</span>
+                                                </li>
+                                            @endif
+                                        </ul>
                                     </nav>
                                 @endif
                             </div>

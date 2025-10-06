@@ -158,48 +158,225 @@
                                         <tr id="detail-row-{{ $import->id }}" class="detail-row" style="display: none;">
                                             <td colspan="7" class="p-0">
                                                 <div class="supplier-detail-container bg-light border-top">
-                                                    <div class="row p-4">
+                                                    <div class="tab-container">
                                                         <div class="title-detail">
-                                                            <button class="tab active" type="button">Thông tin</button>
-                                                            <button class="tab" type="button">Lịch sử nhập hàng</button>
+                                                            <button class="tab active" type="button" onclick="switchTab({{ $import->id }}, 'info', this)">Thông tin</button>
+                                                            <button class="tab" type="button" onclick="switchTab({{ $import->id }}, 'history', this)">Lịch sử nhập hàng</button>
                                                         </div>
-                                                        <!-- Thông tin chung -->
-                                                        <div class="col-md-6">
-                                                            <h6 class="text-primary mb-3">Thông tin chung</h6>
-                                                            <table class="table table-sm table-borderless">
-                                                                <tr>
-                                                                    <td class="fw-bold" style="width: 140px;">Mã NCC:</td>
-                                                                    <td>{{ $import->supplier?->ma_nha_cung_cap }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="fw-bold">Tên NCC:</td>
-                                                                    <td>{{ $import->supplier?->ten_nha_cung_cap }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="fw-bold">Điện thoại:</td>
-                                                                    <td>{{ $import->supplier?->dien_thoai }}</td>
-                                                                </tr>
-                                                                @if($import->supplier?->email)
-                                                                <tr>
-                                                                    <td class="fw-bold">Email:</td>
-                                                                    <td>{{ $import->supplier->email }}</td>
-                                                                </tr>
-                                                                @endif
-                                                            </table>
+                                                        
+                                                        <!-- Tab Content: Thông tin -->
+                                                        <div id="tab-info-{{ $import->id }}" class="tab-content" style="display: block;">
+                                                            <div class="import-info-container">
+                                                                <!-- Header với mã phiếu và trạng thái -->
+                                                                <div class="import-info-header">
+                                                                    <h3 class="import-info-code">{{ $import->import_code ?? 'PN000049' }}</h3>
+                                                                    <span class="import-info-badge">Đã nhập hàng</span>
+                                                                </div>
+                                                                
+                                                                <!-- Thông tin chi tiết - Layout 2 cột -->
+                                                                <div class="import-info-details">
+                                                                    <div class="import-info-left">
+                                                                        <div class="import-info-item">
+                                                                            <span class="import-info-label">Người tạo:</span>
+                                                                            <span class="import-info-text">admin</span>
+                                                                        </div>
+                                                                        
+                                                                        <div class="import-info-item">
+                                                                            <span class="import-info-label">Tên NCC:</span>
+                                                                            <a href="#" class="import-info-link">{{ $import->supplier?->ten_nha_cung_cap ?? 'Công ty TNHH Citigo' }}</a>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <div class="import-info-right">
+                                                                        <div class="import-info-item">
+                                                                            <span class="import-info-label">Người nhập:</span>
+                                                                            <select class="import-info-select">
+                                                                                <option value="Admin">Admin</option>
+                                                                            </select>
+                                                                            <div class="import-info-item">
+                                                                                <span class="import-info-label">Ngày nhập:</span>
+                                                                                <input type="text" class="import-info-input" value="{{ \Carbon\Carbon::parse($import->import_date ?? $import->created_at)->format('d/m/Y H:i') }}" readonly>
+                                                                            </div>   
+                                                                        </div>                           
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <!-- Phần quản lý sản phẩm -->
+                                                            <div class="import-product-section">                                                                                          
+                                                                <!-- Bảng danh sách sản phẩm -->
+                                                                <div class="import-product-table-container">
+                                                                    <table class="import-product-table">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th class="import-col-code" style="width: 120px; text-align: center;">Mã hàng</th>
+                                                                                <th class="import-col-name" style="width: auto; min-width: 250px;text-align: center;">Tên hàng</th>
+                                                                                <th class="import-col-qty" style="text-align: center;">Số lượng</th>
+                                                                                <th class="import-col-price" style="width: 120px; text-align: right;">Đơn giá</th>
+                                                                                <th class="import-col-discount" style="width: 120px; text-align: right;">Giảm giá</th>
+                                                                                <th class="import-col-import-price" style="width: 120px; text-align: right;">Giá nhập</th>
+                                                                                <th class="import-col-total">Thành tiền</th>
+                                                                        </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @forelse($import->items as $item)
+                                                                            <tr>
+                                                                                <td class="import-col-code">
+                                                                                    <a href="#" class="import-product-link">
+                                                                                        {{-- Debug: {{ $item->product_type }} - {{ $item->product_id }} --}}
+                                                                                        @if(isset($item->product) && $item->product)
+                                                                                            @if($item->product_type === 'medicine')
+                                                                                                {{ $item->product->ma_thuoc ?? 'N/A' }}
+                                                                                            @elseif($item->product_type === 'goods')
+                                                                                                {{ $item->product->ma_hang ?? 'N/A' }}
+                                                                                            @else
+                                                                                                {{ $item->product->ma_dich_vu ?? 'N/A' }}
+                                                                                            @endif
+                                                                                        @else
+                                                                                            {{ $item->product_id ?? 'N/A' }}
+                                                                                        @endif
+                                                                                    </a>
+                                                                                </td>
+                                                                                <td class="import-col-name">
+                                                                                    @if(isset($item->product) && $item->product)
+                                                                                        @if($item->product_type === 'medicine')
+                                                                                            {{ $item->product->ten_thuoc ?? 'N/A' }}
+                                                                                        @elseif($item->product_type === 'goods')
+                                                                                            {{ $item->product->ten_hang_hoa ?? 'N/A' }}
+                                                                                        @else
+                                                                                            {{ $item->product->ten_dich_vu ?? 'N/A' }}
+                                                                                        @endif
+                                                                                    @else
+                                                                                        Product not loaded
+                                                                                    @endif
+                                                                                </td>
+                                                                                <td class="import-col-qty">{{ number_format($item->quantity, 0, ',', '.') }}</td>
+                                                                                <td class="import-col-price">{{ number_format($item->unit_price, 0, ',', '.') }}</td>
+                                                                                <td class="import-col-discount">{{ number_format($item->discount, 0, ',', '.') }}</td>
+                                                                                <td class="import-col-import-price">{{ number_format($item->unit_price - $item->discount, 0, ',', '.') }}</td>
+                                                                                <td class="import-col-total">{{ number_format($item->total_price, 0, ',', '.') }}</td>
+                                                                        </tr>
+                                                                            @empty
+                                                                        <tr>
+                                                                                <td colspan="7" class="text-center text-muted py-4">
+                                                                                    Không có sản phẩm nào
+                                                                                </td>
+                                                                        </tr>
+                                                                            @endforelse
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                                
+                                                                <!-- Phần ghi chú và tổng kết -->
+                                                                <div class="import-summary-section">
+                                                                    <div class="import-notes-area">
+                                                                        <label class="import-notes-label">Ghi chú:</label>
+                                                                        <textarea class="import-notes-textarea" placeholder="Ghi chú..." readonly>{{ $import->notes ?? '' }}</textarea>
+                                                                    </div>
+                                                                    
+                                                                    <div class="import-summary-box">
+                                                                        @php
+                                                                            $totalItems = $import->items->count();
+                                                                            $totalQuantity = $import->items->sum('quantity');
+                                                                            $totalAmount = $import->items->sum('total_price');
+                                                                            $totalDiscount = $import->items->sum('discount');
+                                                                            $grandTotal = $totalAmount;
+                                                                            $paidAmount = $import->total_amount ?? $grandTotal;
+                                                                        @endphp
+                                                                        
+                                                                        <div class="import-summary-row">
+                                                                            <span class="import-summary-label">Số lượng mặt hàng:</span>
+                                                                            <span class="import-summary-value">{{ $totalItems }}</span>
+                                                                        </div>
+                                                                        <div class="import-summary-row">
+                                                                            <span class="import-summary-label">Tổng tiền hàng ({{ $totalQuantity }}):</span>
+                                                                            <span class="import-summary-value">{{ number_format($totalAmount, 0, ',', '.') }}</span>
+                                                                        </div>
+                                                                        <div class="import-summary-row">
+                                                                            <span class="import-summary-label">
+                                                                                Giảm giá
+                                                                                <i class="fas fa-info-circle import-info-icon"></i>
+                                                                            </span>
+                                                                            <span class="import-summary-value">{{ number_format($totalDiscount, 0, ',', '.') }}</span>
+                                                                        </div>
+                                                                        <div class="import-summary-divider"></div>
+                                                                        <div class="import-summary-row import-summary-total">
+                                                                            <span class="import-summary-label">Tổng cộng:</span>
+                                                                            <span class="import-summary-value">{{ number_format($grandTotal, 0, ',', '.') }}</span>
+                                                                        </div>
+                                                                        <div class="import-summary-divider"></div>
+                                                                        <div class="import-summary-row import-summary-paid">
+                                                                            <span class="import-summary-label">Tiền đã trả NCC:</span>
+                                                                            <span class="import-summary-value">{{ number_format($paidAmount, 0, ',', '.') }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <!-- Footer với các nút hành động -->
+                                                                <div class="import-action-footer">
+                                                                    <div class="import-action-left">
+                                                                        <button class="import-action-btn import-btn-cancel">
+                                                                            <i class="fas fa-trash"></i> Hủy
+                                                                        </button>
+                                                                        <button class="import-action-btn import-btn-copy">
+                                                                            <i class="fas fa-copy"></i> Sao chép
+                                                                        </button>
+                                                                        <button class="import-action-btn import-btn-export">
+                                                                            <i class="fas fa-download"></i> Xuất file
+                                                                        </button>
+                                                                    </div>
+                                                                    
+                                                                    <div class="import-action-right">
+                                                                        <button class="import-action-btn import-btn-primary">
+                                                                            <i class="fas fa-file-alt"></i> Mở phiếu
+                                                                        </button>
+                                                                        <button class="import-action-btn import-btn-secondary">
+                                                                            <i class="fas fa-save"></i> Lưu
+                                                                        </button>
+                                                                        <button class="import-action-btn import-btn-secondary">
+                                                                            <i class="fas fa-undo"></i> Trả hàng nhập
+                                                                        </button>
+                                                                        <button class="import-action-btn import-btn-secondary">
+                                                                            <i class="fas fa-barcode"></i> In tem mã
+                                                                        </button>
+                                                                        <button class="import-action-btn import-btn-more">
+                                                                            <i class="fas fa-ellipsis-h"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <!-- Thông tin liên hệ -->
-                                                        <div class="col-md-6">
-                                                            <h6 class="text-primary mb-3">Thông tin liên hệ</h6>
-                                                            <table class="table table-sm table-borderless">
-                                                                <tr>
-                                                                    <td class="fw-bold" style="width: 140px;">Địa chỉ:</td>
-                                                                    <td>{{ $import->supplier?->dia_chi }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="fw-bold">Tỉnh/Thành:</td>
-                                                                    <td>{{ $import->supplier?->khu_vuc }}</td>
-                                                                </tr>
-                                                            </table>
+                                                        
+                                                        <!-- Tab Content: Lịch sử nhập hàng -->
+                                                        <div id="tab-history-{{ $import->id }}" class="tab-content" style="display: none;">
+                                                             <div class="p-6">
+                                                                 <table class="import-history-table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Mã phiếu</th>
+                                                                        <th class="col-time">Thời gian</th>
+                                                                        <th class="col-creator">Người tạo</th>
+                                                                        <th class="col-method">Phương thức</th>
+                                                                        <th class="col-status">Trạng thái</th>
+                                                                        <th class="col-amount">Tiền chi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <a href="#" class="payment-link">{{ $import->import_code }}001</a>
+                                                                        </td>
+                                                                        <td class="col-time">{{ \Carbon\Carbon::parse($import->import_date ?? $import->created_at)->format('d/m/Y H:i') }}</td>
+                                                                        <td class="col-creator">admin</td>
+                                                                        <td>Tiền mặt</td>
+                                                                        <td class="col-status">
+                                                                            <span class="badge-payment-paid">Đã nhập hàng</span>
+                                                                        </td>
+                                                                        <td class="col-amount">{{ number_format($import->total_amount ?? 0, 0, ',', '.') }}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                </table>
+                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -322,6 +499,63 @@ function searchImports() {
 function filterImports() {
     console.log('Filter function placeholder');
 }
+
+// Toggle import detail row
+function toggleImportDetail(importId, rowElement) {
+    const detailRow = document.getElementById('detail-row-' + importId);
+    
+    if (detailRow.style.display === 'none' || detailRow.style.display === '') {
+        // Hide all other detail rows first
+        document.querySelectorAll('.detail-row').forEach(row => {
+            row.style.display = 'none';
+        });
+        
+        // Show this detail row
+        detailRow.style.display = 'table-row';
+        
+        // Remove selected-row class from all rows
+        document.querySelectorAll('.import-row').forEach(row => {
+            row.classList.remove('selected-row');
+        });
+        
+        // Add selected-row class to current row
+        rowElement.classList.add('selected-row');
+    } else {
+        // Hide this detail row
+        detailRow.style.display = 'none';
+        rowElement.classList.remove('selected-row');
+    }
+}
+
+// Switch between tabs - sử dụng pattern từ Danhsachhanghoa/index.blade.php
+function switchTab(importId, tabType, btnEl) {
+    const keys = ['info', 'history'];
+
+    keys.forEach(function(key){
+        var panel = document.getElementById('tab-' + key + '-' + importId);
+        if (panel) {
+            panel.style.display = (key === tabType) ? 'block' : 'none';
+        }
+    });
+
+    if (btnEl) {
+        var wrapper = btnEl.parentElement; // .title-detail
+        if (wrapper) {
+            var buttons = wrapper.querySelectorAll('button.tab');
+            buttons.forEach(function(b){ b.classList.remove('active'); });
+        }
+        btnEl.classList.add('active');
+    }
+}
+
+// Prevent row click when clicking on tab buttons
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+});
 </script>
 @endpush
 
