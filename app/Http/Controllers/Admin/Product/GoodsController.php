@@ -226,7 +226,7 @@ class GoodsController extends Controller
     /**
      * Get data for forms.
      */
-    protected function getFormData()
+    protected function getFormData() //lấy dữ liệu cho form
     {
         return [
             'categories'       => ProductCategory::getAllCategoriesWithDepth(),
@@ -234,5 +234,16 @@ class GoodsController extends Controller
             'manufacturers'    => Manufacturer::all(),
             'positions'        => Position::all(),
         ];
+    }
+
+    public function generateCodes() //tao mã hàng ngẫu nhiên và mã vạch ngẫu nhiên
+    {
+        $productCode = Goods::generateProductCode();
+        $barcode = Goods::generateBarcode();
+
+        return response()->json([
+            'ma_hang' => $productCode,
+            'ma_vach' => $barcode
+        ]);
     }
 }

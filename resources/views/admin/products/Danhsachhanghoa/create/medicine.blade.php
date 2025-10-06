@@ -29,14 +29,23 @@
                             <!-- Inputs bên trái -->
                             <div class="col-md-8">
                                 <div class="row g-2">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Mã hàng</label>
-                                            <input type="text" class="form-control" name="ma_hang" id="ma_hang" placeholder="Nhập mã hàng">
-                                            @error('ma_hang') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    <div class="col-md-6">
+                                        <label class="form-label">Mã hàng</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control text-muted" name="ma_hang" id="medicine_ma_hang" placeholder="Tự động" readonly>
+                                            <button class="btn btn-outline-secondary" type="button" id="generateMedicineCodeBtn">
+                                                <i class="fas fa-sync-alt"></i> Tạo mã
+                                            </button>
                                         </div>
+                                    </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Mã vạch</label>
-                                        <input type="text" class="form-control" name="ma_vach" id="ma_vach" placeholder="Nhập mã vạch">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control text-muted" name="ma_vach" id="medicine_ma_vach" placeholder="Tự động" readonly>
+                                            <button class="btn btn-outline-secondary" type="button" id="generateMedicineBarcodeBtn">
+                                                <i class="fas fa-sync-alt"></i> Tạo mã
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="col-md-12">
                                         <label class="form-label">Tên thuốc <span class="text-danger">*</span></label>
@@ -1047,6 +1056,41 @@
         document.getElementById('createNewMedicinePositionName').value = '';
         document.getElementById('medicine_position_select').value = '';
     }
+
+    // Tạo mã hàng và mã vạch ngẫu nhiên
+    document.getElementById('generateMedicineCodeBtn').addEventListener('click', function() {
+        fetch('/admin/medicines/generate-codes', {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('medicine_ma_hang').value = data.ma_hang;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi khi tạo mã hàng!');
+        });
+    });
+
+    document.getElementById('generateMedicineBarcodeBtn').addEventListener('click', function() {
+        fetch('/admin/medicines/generate-codes', {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('medicine_ma_vach').value = data.ma_vach;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi khi tạo mã vạch!');
+        });
+    });
 
     // Thiết lập đơn vị tính
     const setupUnitModal = new bootstrap.Modal(document.getElementById('setupUnitModal'));

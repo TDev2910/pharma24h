@@ -60,7 +60,15 @@
                     </div>
                 </div>
             </div>
-            <a href="#" class="nav-item">Bác sĩ</a>
+            <div class="nav-item dropdown">
+                <span class="nav-item">Bác sĩ</span>
+                <div class="nav-dropdown nav-dropdown-short">
+                    <div class="dropdown-col">
+                        <div class="dropdown-title">Bác sĩ</div>
+                        <a href="{{ route('admin.doctors.index') }}" class="dropdown-link">Quản lý bác sĩ</a>
+                    </div>
+                </div>
+            </div>
             <a href="#" class="nav-item">Nhân viên</a>
             <a href="#" class="nav-item">Sổ quỹ</a>
             <a href="{{ route('logout')}}" class="nav-item">Đăng xuất</a>

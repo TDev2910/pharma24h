@@ -79,8 +79,22 @@ class Medicine extends Model
         return number_format($this->gia_von, 0, ',', '.') . ' VND';
     }
 
-    public function getTonKhoFormattedAttribute()
+    public static function generateProductCode() //tao mã hàng ngẫu nhiên
     {
-        return number_format($this->ton_kho);
+        do {
+            $code = str_pad(rand(10000000, 99999999), 8, '0', STR_PAD_LEFT);
+        } while (self::where('ma_hang', $code)->exists());
+        
+        return $code;
+    }
+
+    // Auto generate 8-digit barcode
+    public static function generateBarcode() //tao mã vạch ngẫu nhiên
+    {
+        do {
+            $barcode = str_pad(rand(10000000, 99999999), 8, '0', STR_PAD_LEFT);
+        } while (self::where('ma_vach', $barcode)->exists());
+        
+        return $barcode;
     }
 }

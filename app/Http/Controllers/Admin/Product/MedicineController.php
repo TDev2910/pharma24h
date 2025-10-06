@@ -237,4 +237,15 @@ class MedicineController extends Controller
             'positions'        => Position::all(),
         ];
     }
+
+    public function generateCodes() //tao mã hàng và mã vạch ngẫu nhiên
+    {
+        $productCode = Medicine::generateProductCode();
+        $barcode = Medicine::generateBarcode();
+
+        return response()->json([
+            'ma_hang' => $productCode,
+            'ma_vach' => $barcode
+        ]);
+    }
 }

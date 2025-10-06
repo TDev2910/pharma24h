@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\Supplier\SupplierController;
 use App\Http\Controllers\Admin\Supplier\SupplierCategoryController;
 use App\Http\Controllers\Admin\Order\OrdersController;  
 use App\Http\Controllers\Admin\Customer\CustomerController;
+use App\Http\Controllers\Admin\Doctor\DoctorController;
 use App\Http\Controllers\Admin\Supplier\PruchaseImportController;
 use App\Http\Controllers\Admin\Supplier\PurchaseReturns;
 use App\Http\Controllers\Admin\ImportController;
@@ -25,6 +26,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::prefix('medicines')->name('medicines.')->group(function () {
         Route::get('/', [MedicineController::class, 'index'])->name('index');
         Route::get('/list', [MedicineController::class, 'listMedicines'])->name('list');
+        Route::get('/generate-codes', [MedicineController::class, 'generateCodes'])->name('generate-codes');
         Route::post('/', [MedicineController::class, 'store'])->name('store');
         Route::get('/{medicine}/edit', [MedicineController::class, 'edit'])->name('edit');
         Route::put('/{medicine}', [MedicineController::class, 'update'])->name('update');
@@ -36,6 +38,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::prefix('goods')->name('goods.')->group(function () {
         Route::get('/', [GoodsController::class, 'index'])->name('index');
         Route::get('/list', [GoodsController::class, 'listGoods'])->name('list');
+        Route::get('/generate-codes', [GoodsController::class, 'generateCodes'])->name('generate-codes');
         Route::get('/inventory', [GoodsController::class, 'inventory'])->name('inventory');
         Route::post('/', [GoodsController::class, 'store'])->name('store');
         Route::get('/{goods}/edit', [GoodsController::class, 'edit'])->name('edit');
@@ -127,4 +130,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
         Route::get('orders', [ExportController::class, 'exportOrders'])->name('orders');
         Route::get('products', [ExportController::class, 'exportProducts'])->name('products');
     });
+
+    //Doctors
+    Route::resource('doctors', DoctorController::class)->names('doctors');
 });

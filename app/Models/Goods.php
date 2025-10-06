@@ -90,4 +90,23 @@ class Goods extends Model
     {
         return $query->where('nhom_hang_id', $categoryId);
     }
+
+    public static function generateProductCode() //tao mã hàng ngẫu nhiên
+    {
+        do {
+            $code = str_pad(rand(10000000, 99999999), 8, '0', STR_PAD_LEFT);
+        } while (self::where('ma_hang', $code)->exists());
+        
+        return $code;
+    }
+
+    // Auto generate 8-digit barcode
+    public static function generateBarcode()
+    {
+        do {
+            $barcode = str_pad(rand(10000000, 99999999), 8, '0', STR_PAD_LEFT);
+        } while (self::where('ma_vach', $barcode)->exists());
+        
+        return $barcode;
+    }
 }

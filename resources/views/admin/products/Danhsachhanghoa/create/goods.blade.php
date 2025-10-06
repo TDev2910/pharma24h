@@ -30,11 +30,21 @@
                               <div class="row g-2">
                                   <div class="col-md-6">
                                       <label class="form-label">Mã hàng</label>
-                                      <input type="text" class="form-control" name="ma_hang" id="ma_hang" placeholder="Tự động">
+                                      <div class="input-group">
+                                          <input type="text" class="form-control text-muted" name="ma_hang" id="goods_ma_hang" placeholder="Tự động" readonly>
+                                          <button class="btn btn-outline-secondary" type="button" id="generateGoodsCodeBtn">
+                                              <i class="fas fa-sync-alt"></i> Tạo mã
+                                          </button>
+                                      </div>
                                   </div>
                                   <div class="col-md-6">
                                       <label class="form-label">Mã vạch</label>
-                                      <input type="text" class="form-control" name="ma_vach" id="ma_vach" placeholder="Nhập mã vạch">
+                                      <div class="input-group">
+                                          <input type="text" class="form-control text-muted" name="ma_vach" id="goods_ma_vach" placeholder="Tự động" readonly>
+                                          <button class="btn btn-outline-secondary" type="button" id="generateGoodsBarcodeBtn">
+                                              <i class="fas fa-sync-alt"></i> Tạo mã
+                                          </button>
+                                      </div>
                                   </div>
                                   <div class="col-md-12">
                                       <label class="form-label">Tên hàng hóa <span class="text-danger">*</span></label>
@@ -692,6 +702,40 @@
 
     syncGoodsPositionSelect('');
 
+    // Tạo mã hàng và mã vạch ngẫu nhiên
+    document.getElementById('generateGoodsCodeBtn').addEventListener('click', function() {
+        fetch('/admin/goods/generate-codes', {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('goods_ma_hang').value = data.ma_hang;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi khi tạo mã hàng!');
+        });
+    });
+
+    document.getElementById('generateGoodsBarcodeBtn').addEventListener('click', function() {
+        fetch('/admin/goods/generate-codes', {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('goods_ma_vach').value = data.ma_vach;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi khi tạo mã vạch!');
+        });
+    });
 
 </script>
 @endpush
