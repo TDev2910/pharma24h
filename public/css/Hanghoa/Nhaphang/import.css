@@ -862,7 +862,7 @@
 }
 
 .import-notes-textarea {
-    border: 2px dashed #dee2e6;
+    border: 1px solid #dee2e6;
     border-radius: 6px;
     padding: 12px;
     font-size: 14px;

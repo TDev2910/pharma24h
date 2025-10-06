@@ -226,7 +226,7 @@
                                                                                         {{-- Debug: {{ $item->product_type }} - {{ $item->product_id }} --}}
                                                                                         @if(isset($item->product) && $item->product)
                                                                                             @if($item->product_type === 'medicine')
-                                                                                                {{ $item->product->ma_thuoc ?? 'N/A' }}
+                                                                                                {{ $item->product->ma_hang ?? 'N/A' }}
                                                                                             @elseif($item->product_type === 'goods')
                                                                                                 {{ $item->product->ma_hang ?? 'N/A' }}
                                                                                             @else
@@ -271,7 +271,7 @@
                                                                 <div class="import-summary-section">
                                                                     <div class="import-notes-area">
                                                                         <label class="import-notes-label">Ghi chú:</label>
-                                                                        <textarea class="import-notes-textarea" placeholder="Ghi chú..." readonly>{{ $import->notes ?? '' }}</textarea>
+                                                                        <textarea class="import-notes-textarea" placeholder="Ghi chú..." readonly>{{ $import->note ?? '' }}</textarea>
                                                                     </div>
                                                                     
                                                                     <div class="import-summary-box">
@@ -327,9 +327,7 @@
                                                                     </div>
                                                                     
                                                                     <div class="import-action-right">
-                                                                        <button class="import-action-btn import-btn-primary">
-                                                                            <i class="fas fa-file-alt"></i> Mở phiếu
-                                                                        </button>
+                                                                        
                                                                         <button class="import-action-btn import-btn-secondary">
                                                                             <i class="fas fa-save"></i> Lưu
                                                                         </button>
@@ -337,7 +335,7 @@
                                                                             <i class="fas fa-undo"></i> Trả hàng nhập
                                                                         </button>
                                                                         <button class="import-action-btn import-btn-secondary">
-                                                                            <i class="fas fa-barcode"></i> In tem mã
+                                                                            <i class="fas fa-barcode"></i> In thông tin
                                                                         </button>
                                                                         <button class="import-action-btn import-btn-more">
                                                                             <i class="fas fa-ellipsis-h"></i>
