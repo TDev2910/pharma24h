@@ -310,6 +310,26 @@
 
 @push('scripts')
 <script>
+    function previewCreateGoodsImage(input) {
+        const preview = document.getElementById('create-goods-image-preview');
+        const placeholder = document.getElementById('create-goods-image-placeholder');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            };
+            
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.style.display = 'none';
+            placeholder.style.display = 'block';
+        }
+    }
+    
     //hãng sản xuất 
     let goodsManufacturers = @json($manufacturers);
     const selectGoodsManufacturerEl = document.getElementById('goods_manufacturer_select');

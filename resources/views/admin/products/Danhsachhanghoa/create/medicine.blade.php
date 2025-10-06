@@ -385,17 +385,21 @@
         const preview = document.getElementById('create-medicine-image-preview');
         const placeholder = document.getElementById('create-medicine-image-placeholder');
         
-        if (input.files && input.files[0]) {
+        if (input.files && input.files[0]) 
+        {
             const reader = new FileReader();
             
-            reader.onload = function(e) {
+            reader.onload = function(e) 
+            {
                 preview.src = e.target.result;
                 preview.style.display = 'block';
                 placeholder.style.display = 'none';
             };
             
             reader.readAsDataURL(input.files[0]);
-        } else {
+        } 
+        else 
+        {
             preview.style.display = 'none';
             placeholder.style.display = 'block';
         }
@@ -1121,6 +1125,7 @@
         
         alert('Đã thiết lập đơn vị tính: ' + unitName);
     });
+
 
     </script>
 @endpush
