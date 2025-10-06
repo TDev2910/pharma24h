@@ -15,6 +15,7 @@ class StockImport extends Model
         'import_date',
         'status',
         'total_amount',
+        'total_discount',
         'paid_amount',
         'remaining_amount',
         'note'

@@ -84,10 +84,6 @@
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="statusCancelled" name="status[]" value="cancelled">
-                                <label class="form-check-label" for="statusCancelled">Phiếu tạm</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="statusCancelled" name="status[]" value="cancelled">
                                 <label class="form-check-label" for="statusCancelled">Đã hủy</label>
                             </div>
                         </div>

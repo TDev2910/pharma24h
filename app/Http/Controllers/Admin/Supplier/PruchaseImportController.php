@@ -47,12 +47,32 @@ class PruchaseImportController extends Controller
             'import_code' => 'required|unique:stock_imports,import_code',
             'supplier_id' => 'required|exists:suppliers,id',
             'import_date' => 'required|date',
+            'note' => 'nullable|string',
+            'discount' => 'nullable|numeric|min:0', // Thêm validation cho giảm giá tổng
             'items' => 'required|array|min:1',
             'items.*.product_type' => 'required|in:medicine,goods',
             'items.*.product_id' => 'required|integer',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.unit_price' => 'required|numeric|min:0',
+            // Chấp nhận cả format cũ và mới
+            'items.*.quantity' => 'nullable|integer|min:1',
+            'items.*.so_luong' => 'nullable|integer|min:1',
+            'items.*.unit_price' => 'nullable|numeric|min:0',
+            'items.*.don_gia' => 'nullable|numeric|min:0',
+            'items.*.discount' => 'nullable|numeric|min:0',
         ]);
+
+        // Validate thêm: mỗi item phải có ít nhất quantity hoặc so_luong
+        foreach ($request->items as $index => $item) {
+            if (empty($item['quantity']) && empty($item['so_luong'])) {
+                return back()->withErrors([
+                    "items.{$index}.quantity" => 'Số lượng là bắt buộc'
+                ])->withInput();
+            }
+            if (empty($item['unit_price']) && empty($item['don_gia'])) {
+                return back()->withErrors([
+                    "items.{$index}.unit_price" => 'Đơn giá là bắt buộc'
+                ])->withInput();
+            }
+        }
 
         // Tạo phiếu nhập hàng
         $stockImport = StockImport::create([
@@ -61,23 +81,42 @@ class PruchaseImportController extends Controller
             'import_date' => $request->import_date,
             'status' => 'imported',
             'total_amount' => 0, //tổng tiền mặc định là 0 đồng
+            'total_discount' => 0, //tổng giảm giá mặc định là 0 đồng
             'note' => $request->note
         ]);
 
         $totalAmount = 0;
+        $totalDiscount = 0;
+        
+        // Lấy giảm giá tổng từ form (nếu có)
+        $formDiscount = $request->discount ?? 0;
 
         // Tạo chi tiết nhập hàng
         foreach ($request->items as $item) {
-            $totalPrice = $item['quantity'] * $item['unit_price']; //tính tổng tiền cho từng sản phẩm
+            // Xử lý cả format từ Excel import và format thông thường
+            $quantity = $item['quantity'] ?? $item['so_luong'] ?? 0;
+            $unitPrice = $item['unit_price'] ?? $item['don_gia'] ?? 0;
+            $discount = $item['discount'] ?? 0;
+            
+            // Tính tổng tiền: (số lượng × đơn giá) - giảm giá
+            if (isset($item['thanh_tien'])) {
+                // Nếu có sẵn thành tiền từ Excel import
+                $totalPrice = $item['thanh_tien'];
+            } else {
+                // Tính thành tiền: (số lượng × đơn giá) - giảm giá
+                $totalPrice = ($quantity * $unitPrice) - $discount;
+            }
+            
             $totalAmount += $totalPrice; //tính tổng tiền cho tất cả sản phẩm
+            $totalDiscount += $discount; //tính tổng giảm giá
 
             StockImportItem::create([
                 'stock_import_id' => $stockImport->id,
                 'product_type' => $item['product_type'],
                 'product_id' => $item['product_id'],
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['unit_price'],
-                'discount' => $item['discount'] ?? 0,
+                'quantity' => $quantity,
+                'unit_price' => $unitPrice,
+                'discount' => $discount,
                 'total_price' => $totalPrice,
                 'note' => $item['note'] ?? null
             ]);
@@ -85,21 +124,25 @@ class PruchaseImportController extends Controller
             if($item['product_type'] === 'medicine')
             {
                 $medicine = Medicine::find($item['product_id']);
-                $medicine->ton_kho += (int)$item['quantity'];
+                $medicine->ton_kho += (int)$quantity;
                 $medicine->save();
             }
             else
             {
                 $goods = Goods::find($item['product_id']);
-                $gooods->ton_kho += (int)$item['quantity'];
+                $goods->ton_kho += (int)$quantity;
                 $goods->save();
             }
         }
 
-        // Cập nhật tổng tiền
+        // Áp dụng giảm giá tổng vào tổng tiền
+        $finalAmount = $totalAmount - $formDiscount;
+        
+        // Cập nhật tổng tiền và tổng giảm giá
         $stockImport->update([
-            'total_amount' => $totalAmount,
-            'remaining_amount' => $totalAmount
+            'total_amount' => $finalAmount,
+            'total_discount' => $totalDiscount + $formDiscount, // Cộng cả giảm giá từng sản phẩm và giảm giá tổng
+            'remaining_amount' => $finalAmount
         ]);
 
         return redirect()->route('admin.import.index')
@@ -219,137 +262,12 @@ class PruchaseImportController extends Controller
             ->with('success', 'Phiếu nhập hàng đã được hoàn thành!');
     }
 
+    /**
+     * Process Excel file for import (delegated to ImportController)
+     */
     public function processExcel(Request $request)
     {
-        $request->validate([
-            'excel_file' => 'required|file|mimes:xlsx|max:5120'
-        ]);
-
-        $path = $request->file('excel_file')->getRealPath();
-
-        /** @var ExcelService $excel */
-        $excel = app(ExcelService::class);
-        /** @var ImportService $importer */
-        $importer = app(ImportService::class);
-
-        try {
-            $result = $importer->import($path, [
-                'headerMap' => [],
-                'baseRules' => [
-                    'so_luong' => ['required', 'integer', 'min:1'],
-                    'don_gia'  => ['required', 'numeric', 'min:0'],
-                ],
-                'rowNormalizer' => function(array $row) {
-                    // Chuẩn hoá và thống nhất key nội bộ
-                    $get = function(array $keys, $default = null) use ($row) {
-                        foreach ($keys as $k) {
-                            if (array_key_exists($k, $row) && $row[$k] !== null && $row[$k] !== '') {
-                                return $row[$k];
-                            }
-                        }
-                        return $default;
-                    };
-
-                    $cleanString = function($v) {
-                        if (!is_string($v)) return $v;
-                        $v = preg_replace('/\x{FEFF}|\x{200B}|\x{200C}|\x{200D}/u', '', $v);
-                        $v = trim($v);
-                        if (!mb_check_encoding($v, 'UTF-8')) {
-                            $v = mb_convert_encoding($v, 'UTF-8', 'auto');
-                        }
-                        return $v;
-                    };
-
-                    $maHang  = $cleanString($get(['Ma hang', 'Mã hàng', 'ma_hang']));
-                    $tenHang = $cleanString($get(['Ten hang', 'Tên hàng', 'ten_hang']));
-                    $dvt     = $cleanString($get(['DVT', 'ĐVT', 'dvt'], 'Cái'));
-                    $soLuong = (int) ($get(['So luong', 'Số lượng', 'so_luong'], 0));
-                    $donGia  = (float) ($get(['Don gia', 'Đơn giá', 'don_gia'], 0));
-
-                    return [
-                        'ma_hang'  => $maHang,
-                        'ten_hang' => $tenHang,
-                        'dvt'      => $dvt,
-                        'so_luong' => $soLuong,
-                        'don_gia'  => $donGia,
-                    ];
-                },
-                'rowFilter' => function(array $row) {
-                    return !(empty($row['ma_hang']) && empty($row['ten_hang']));
-                },
-                'rowResolver' => function(array $row) {
-                    $maHang = $row['ma_hang'];
-                    $tenHang = $row['ten_hang'];
-
-                    $product = null;
-                    $productType = null;
-
-                    $medicine = Medicine::where('ma_hang', $maHang)
-                        ->orWhere('ten_thuoc', 'like', '%' . $tenHang . '%')
-                        ->first();
-
-                    if ($medicine) {
-                        $product = $medicine;
-                        $productType = 'medicine';
-                    } else {
-                        $goods = Goods::where('ma_hang', $maHang)
-                            ->orWhere('ten_hang_hoa', 'like', '%' . $tenHang . '%')
-                            ->first();
-                        if ($goods) {
-                            $product = $goods;
-                            $productType = 'goods';
-                        }
-                    }
-
-                    $row['__product'] = $product;
-                    $row['__product_type'] = $productType;
-                    return $row;
-                },
-                'accumulate' => function(array $row) {
-                    $product = $row['__product'];
-                    $productType = $row['__product_type'];
-
-                    if ($product) {
-                        return [
-                            'product_type' => $productType,
-                            'product_id' => $product->id,
-                            'ma_hang' => $product->ma_hang,
-                            'ten_hang' => $productType === 'medicine' ? $product->ten_thuoc : $product->ten_hang_hoa,
-                            'don_vi_tinh' => $product->don_vi_tinh ?? $row['dvt'],
-                            'so_luong' => $row['so_luong'],
-                            'don_gia' => $row['don_gia'],
-                            'thanh_tien' => $row['so_luong'] * $row['don_gia'],
-                        ];
-                    }
-
-                    // Nếu không tìm thấy sản phẩm, ném ra để ghi ở errors
-                    throw new \RuntimeException("Không tìm thấy sản phẩm: {$row['ma_hang']} - {$row['ten_hang']}");
-                },
-            ]);
-
-            // Chuyển các exception của accumulate thành errors giống format cũ
-            $items = [];
-            $errors = [];
-            foreach ($result['items'] as $maybeItem) {
-                // Items đã qua accumulate, luôn hợp lệ
-                $items[] = $maybeItem;
-            }
-            foreach ($result['errors'] as $err) {
-                $errors[] = implode('; ', $err['messages']);
-            }
-
-            return response()->json([
-                'success' => true,
-                'items' => $items,
-                'errors' => $errors,
-                'message' => 'Import thành công ' . count($items) . ' sản phẩm'
-            ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE|JSON_UNESCAPED_UNICODE);
-
-        } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Lỗi khi đọc/nhập Excel: ' . $e->getMessage()
-            ], 422);
-        }
-}
+        $importController = app(\App\Http\Controllers\Admin\ImportController::class);
+        return $importController->processStockImportExcel($request);
+    }
 }

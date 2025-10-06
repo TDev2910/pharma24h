@@ -12,6 +12,8 @@ use App\Http\Controllers\Admin\Order\OrdersController;
 use App\Http\Controllers\Admin\Customer\CustomerController;
 use App\Http\Controllers\Admin\Supplier\PruchaseImportController;
 use App\Http\Controllers\Admin\Supplier\PurchaseReturns;
+use App\Http\Controllers\Admin\ImportController;
+use App\Http\Controllers\Admin\ExportController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () 
@@ -112,4 +114,17 @@ Route::prefix('admin')->name('admin.')->group(function ()
 
     // Customers
     Route::resource('customers', CustomerController::class)->names('customers');
+
+    // Import/Export Excel
+    Route::prefix('import')->name('import.')->group(function () {
+        Route::post('stock-import', [ImportController::class, 'processStockImportExcel'])->name('stock-import');
+        Route::post('orders', [ImportController::class, 'processOrderExcel'])->name('orders');
+        Route::post('products', [ImportController::class, 'processProductExcel'])->name('products');
+    });
+
+    Route::prefix('export')->name('export.')->group(function () {
+        Route::get('stock-import', [ExportController::class, 'exportStockImport'])->name('stock-import');
+        Route::get('orders', [ExportController::class, 'exportOrders'])->name('orders');
+        Route::get('products', [ExportController::class, 'exportProducts'])->name('products');
+    });
 });

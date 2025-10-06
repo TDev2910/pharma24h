@@ -70,6 +70,91 @@ class ExcelService
         }
         return $row;
     }
+
+    // ===== CÁC METHOD MỚI CHO CẤU TRÚC EXPORT/IMPORT =====
+    
+    /**
+     * Export dữ liệu ra file Excel
+     */
+    public function export(string $type, array $data, string $filename = null)
+    {
+        $exporter = $this->getExporter($type);
+        return $exporter->export($data, $filename);
+    }
+
+    /**
+     * Import dữ liệu từ file Excel
+     */
+    public function import(string $type, \Illuminate\Http\UploadedFile $file): array
+    {
+        $importer = $this->getImporter($type);
+        return $importer->import($file);
+    }
+
+    /**
+     * Lấy exporter theo type
+     */
+    private function getExporter(string $type)
+    {
+        switch ($type) {
+            case 'order':
+                return new \App\Services\Excel\Export\OrderExport();
+            case 'import':
+                return new \App\Services\Excel\Export\StockImportExport();
+            case 'product':
+                return new \App\Services\Excel\Export\ProductExport();
+            default:
+                throw new \InvalidArgumentException("Export type '{$type}' không được hỗ trợ");
+        }
+    }
+
+    /**
+     * Lấy importer theo type
+     */
+    private function getImporter(string $type)
+    {
+        switch ($type) {
+            case 'order':
+                return new \App\Services\Excel\Import\OrderImport();
+            case 'import':
+                return new \App\Services\Excel\Import\StockImportImport();
+            case 'product':
+                return new \App\Services\Excel\Import\ProductImport();
+            default:
+                throw new \InvalidArgumentException("Import type '{$type}' không được hỗ trợ");
+        }
+    }
+
+    /**
+     * Lấy danh sách các loại export/import được hỗ trợ
+     */
+    public function getSupportedTypes(): array
+    {
+        return [
+            'order' => 'Đơn hàng',
+            'import' => 'Nhập hàng',
+            'product' => 'Sản phẩm',
+        ];
+    }
+
+    /**
+     * Validate file Excel
+     */
+    public function validateFile(\Illuminate\Http\UploadedFile $file): array
+    {
+        $errors = [];
+
+        // Kiểm tra extension
+        $allowedExtensions = ['xlsx', 'xls', 'csv'];
+        if (!in_array($file->getClientOriginalExtension(), $allowedExtensions)) {
+            $errors[] = 'File phải có định dạng Excel (.xlsx, .xls) hoặc CSV';
+        }
+
+        // Kiểm tra size (max 10MB)
+        if ($file->getSize() > 10 * 1024 * 1024) {
+            $errors[] = 'File không được vượt quá 10MB';
+        }
+
+        return $errors;
+    }
 }
-
-
