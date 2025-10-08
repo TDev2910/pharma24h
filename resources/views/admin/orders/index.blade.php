@@ -14,10 +14,6 @@
             </div>
             <!-- Controls Section -->
             <div class="controls-section d-flex align-items-center gap-3">
-                <button class="btn btn-outline-secondary d-flex align-items-center">
-                    <i class="fas fa-file-export me-2"></i>
-                    Xuất file
-                </button>
                 <button class="btn btn-primary d-flex align-items-center">
                     <i class="fas fa-plus me-2"></i>
                     Tạo đơn hàng mới

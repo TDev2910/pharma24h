@@ -28,7 +28,7 @@
                         <div class="dropdown-title">Hàng hóa</div>
                         <a href="{{ route('admin.products.index') }}" class="dropdown-link">Tổng quan</a>
                         <a href="{{ route('admin.medicines.list') }}" class="dropdown-link">Danh sách thuốc</a>
-                        <a href="{{ route('admin.goods.inventory') }}" class="dropdown-link">Danh sách hàng hóa</a>
+                        <a href="{{ route('admin.goods.list') }}" class="dropdown-link">Danh sách hàng hóa</a>
                     </div>
                     <div class="dropdown-col">
                         <div class="dropdown-title">Kho hàng</div>

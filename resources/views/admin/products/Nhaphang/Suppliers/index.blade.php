@@ -30,13 +30,7 @@
                     <button class="btn btn-outline-secondary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#createSupplierModal">
                         <i class="fas fa-plus me-2"></i>
                         Nhà cung cấp
-                    </button>
-                    
-                    <!-- Import file -->
-                    <button class="btn btn-outline-secondary d-flex align-items-center">
-                        <i class="fas fa-download me-2"></i>
-                        Import file
-                    </button>
+                    </button>              
                     <!-- Xuất file -->
                     <button class="btn btn-outline-secondary d-flex align-items-center">
                         <i class="fas fa-upload me-2"></i>

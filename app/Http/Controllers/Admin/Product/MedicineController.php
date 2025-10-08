@@ -10,6 +10,7 @@ use App\Models\Position;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class MedicineController extends Controller
 {
@@ -20,14 +21,14 @@ class MedicineController extends Controller
     {
         $medicines = Medicine::with(['category', 'manufacturer', 'drugRoute', 'position'])
             ->latest()
-            ->paginate(10);
+            ->get();
 
         $data = $this->getFormData();
 
-        return view(
-            'admin.products.Danhsachthuoc.Listmedicine',
-            compact('medicines', 'data')
-        );
+        return Inertia::render('Admin/Products/Lists/ListMedicines', [
+            'medicines' => $medicines,
+            'data' => $data
+        ]);
     }
 
     /**
@@ -52,13 +53,13 @@ class MedicineController extends Controller
             $query->where('nhom_hang_id', $request->category_id);
         }
 
-        $medicines = $query->latest()->paginate(15);
+        $medicines = $query->latest()->get();
         $data = $this->getFormData();
 
-        return view(
-            'admin.products.Danhsachthuoc.Listmedicine',
-            compact('medicines', 'data')
-        );
+        return Inertia::render('Admin/Products/Lists/ListMedicines', [
+            'medicines' => $medicines,
+            'data' => $data
+        ]);
     }
 
     /**

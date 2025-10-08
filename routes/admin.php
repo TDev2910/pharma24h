@@ -37,7 +37,8 @@ Route::prefix('admin')->name('admin.')->group(function ()
     // Goods
     Route::prefix('goods')->name('goods.')->group(function () {
         Route::get('/', [GoodsController::class, 'index'])->name('index');
-        Route::get('/list', [GoodsController::class, 'listGoods'])->name('list');
+        Route::get('/list', [GoodsController::class, 'vueListGoods'])->name('list');
+        Route::get('/vue-list', [GoodsController::class, 'vueListGoods'])->name('vue-list');
         Route::get('/generate-codes', [GoodsController::class, 'generateCodes'])->name('generate-codes');
         Route::get('/inventory', [GoodsController::class, 'inventory'])->name('inventory');
         Route::post('/', [GoodsController::class, 'store'])->name('store');
@@ -132,5 +133,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     });
 
     //Doctors
-    Route::resource('doctors', DoctorController::class)->names('doctors');
+    Route::prefix('doctors')->name('doctors.')->group(function () {
+        Route::get('/', [DoctorController::class, 'index'])->name('index');
+    });
 });

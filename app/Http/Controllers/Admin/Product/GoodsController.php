@@ -9,6 +9,7 @@ use App\Models\Position;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class GoodsController extends Controller
 {
@@ -38,6 +39,37 @@ class GoodsController extends Controller
         $data = $this->getFormData();
         
         return view('admin.products.Danhsachhanghoa.index', compact('goods', 'data'));
+    }
+
+    /**
+     * Vue component for goods listing with PrimeVue DataTable.
+     */
+    public function vueListGoods()
+    {
+        $goods = Goods::with(['category', 'manufacturer', 'position'])
+            ->get()
+            ->map(function ($good) {
+                return [
+                    'id' => $good->id,
+                    'ma_hang' => $good->ma_hang,
+                    'ten_hang_hoa' => $good->ten_hang_hoa,
+                    'category_name' => $good->category?->name,
+                    'quy_cach_dong_goi' => $good->quy_cach_dong_goi,
+                    'don_vi_tinh' => $good->don_vi_tinh,
+                    'gia_von' => $good->gia_von,
+                    'gia_ban' => $good->gia_ban,
+                    'ban_truc_tiep' => $good->ban_truc_tiep,
+                    'gia_von_formatted' => $good->gia_von_formatted,
+                    'gia_ban_formatted' => $good->gia_ban_formatted,
+                ];
+            });
+
+        $categories = ProductCategory::select('id', 'name')->get();
+
+        return Inertia::render('Admin/Products/Lists/ListGoods', [
+            'goods' => $goods,
+            'categories' => $categories,
+        ]);
     }
 
     /**
