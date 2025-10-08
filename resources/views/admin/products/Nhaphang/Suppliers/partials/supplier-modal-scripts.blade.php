@@ -69,42 +69,20 @@
                 }
             });
             
-            //danh sach tinh thành - sử dụng API provinces.open-api.vn
+            // Sử dụng shared ProvinceService
             async function loadProvinces() {
-                try {               
-                    const response = await fetch('https://provinces.open-api.vn/api/?depth=1');
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    console.log('Dữ liệu tỉnh/thành:', data);
-                    
-                    // Clear existing options
-                    provinceSelect.innerHTML = '<option value="">-- Chọn tỉnh/thành --</option>';
-                    
-                    if (!Array.isArray(data) || data.length === 0) {
-                        throw new Error('Không có dữ liệu tỉnh/thành');
-                    }
-                    
-                    // Add provinces to select
-                    data.forEach(province => {
-                        const option = document.createElement('option');
-                        // Dùng code làm value để truy vấn quận/huyện/px, lưu name để submit
-                        option.value = province.code;
-                        option.textContent = province.name;
-                        option.dataset.name = province.name;
-                        provinceSelect.appendChild(option);
-                    });                               
-                } catch (error) {
+                try 
+                {
+                    await window.provinceService.populateProvinceSelect(provinceSelect, '-- Chọn tỉnh/thành --');
+                } 
+                catch (error) 
+                {
                     console.error('Lỗi load tỉnh/thành:', error);
-                    provinceSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
                     alert('Không thể tải danh sách tỉnh/thành. Vui lòng thử lại!\nLỗi: ' + error.message);
                 }
             }
             
-            //tải danh sách phường xã - sử dụng API provinces.open-api.vn
+            // Sử dụng shared ProvinceService
             async function loadWards(provinceCode) {
                 try {
                     console.log('Đang tải phường/xã cho tỉnh:', provinceCode);
@@ -112,54 +90,7 @@
                     wardSelect.disabled = true;
                     wardSelect.innerHTML = '<option value="">Đang tải...</option>';
                     
-                    // Sử dụng API provinces.open-api.vn để lấy districts trước, sau đó lấy wards
-                    const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=3`);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    console.log('Dữ liệu tỉnh với districts và wards:', data);
-                    
-                    // Clear ward select first
-                    wardSelect.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
-                    
-                    // Collect all wards from all districts in the province
-                    let allWards = [];
-                    if (data.districts && Array.isArray(data.districts)) {
-                        data.districts.forEach(district => {
-                            if (district.wards && Array.isArray(district.wards)) {
-                                district.wards.forEach(ward => {
-                                    allWards.push({
-                                        code: ward.code,
-                                        name: `${ward.name} (${district.name})`, // Hiển thị cả tên quận/huyện
-                                        ward_name: ward.name,
-                                        district_name: district.name
-                                    });
-                                });
-                            }
-                        });
-                    }
-                    
-                    if (allWards.length === 0) {
-                        wardSelect.innerHTML = '<option value="">Không có dữ liệu phường/xã</option>';
-                        console.warn('Không có phường/xã cho tỉnh:', provinceCode);
-                    } else {
-                        // Sort wards by name
-                        allWards.sort((a, b) => a.name.localeCompare(b.name));
-                        
-                        // Populate ward select
-                        allWards.forEach(ward => {
-                            const option = document.createElement('option');
-                            option.value = ward.code;
-                            option.textContent = ward.name;
-                            option.dataset.name = ward.ward_name; // Chỉ lưu tên phường/xã
-                            wardSelect.appendChild(option);
-                        });
-                        
-                        console.log(`Đã tải ${allWards.length} phường/xã thành công`);
-                    }
+                    await window.provinceService.populateWardSelect(wardSelect, provinceCode, '-- Chọn phường/xã --');
                     
                     wardSelect.disabled = false;
                     

@@ -14,7 +14,7 @@ use App\Http\Controllers\Admin\Doctor\DoctorController;
 use App\Http\Controllers\Admin\Supplier\PruchaseImportController;
 use App\Http\Controllers\Admin\Supplier\PurchaseReturns;
 use App\Http\Controllers\Admin\ImportController;
-use App\Http\Controllers\Admin\ExportController;
+// use App\Http\Controllers\Admin\ExportController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () 
@@ -126,14 +126,17 @@ Route::prefix('admin')->name('admin.')->group(function ()
         Route::post('products', [ImportController::class, 'processProductExcel'])->name('products');
     });
 
-    Route::prefix('export')->name('export.')->group(function () {
-        Route::get('stock-import', [ExportController::class, 'exportStockImport'])->name('stock-import');
-        Route::get('orders', [ExportController::class, 'exportOrders'])->name('orders');
-        Route::get('products', [ExportController::class, 'exportProducts'])->name('products');
-    });
+    // Route::prefix('export')->name('export.')->group(function () {
+    //     Route::get('stock-import', [ExportController::class, 'exportStockImport'])->name('stock-import');
+    //     Route::get('orders', [ExportController::class, 'exportOrders'])->name('orders');
+    //     Route::get('products', [ExportController::class, 'exportProducts'])->name('products');
+    // });
 
     //Doctors
     Route::prefix('doctors')->name('doctors.')->group(function () {
         Route::get('/', [DoctorController::class, 'index'])->name('index');
+        Route::post('/', [DoctorController::class, 'store'])->name('store');
+        //tạo mã bác sĩ
+        Route::get('/generate-code', [DoctorController::class, 'generateDoctorCode'])->name('generate-code'); 
     });
 });

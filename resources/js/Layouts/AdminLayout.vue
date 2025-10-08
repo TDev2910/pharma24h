@@ -65,10 +65,15 @@
     <div>
       <slot />
     </div>
+    
+    <!-- Toast for notifications -->
+    <Toast />
   </div>
 </template>
 
 <script setup>
+import Toast from 'primevue/toast'
+
 // Admin layout component - có thể đặt provide/inject, breadcrumb… ở đây
 </script>
 

@@ -91,6 +91,9 @@
     <!-- Admin Notifications Handler -->
     <script src="{{ asset('js/admin-notifications.js') }}"></script>
     
+    <!-- ✅ Shared Province Service -->
+    <script src="{{ asset('js/shared/province-service.js') }}"></script>
+    
     <!-- Custom JS (Load sau Bootstrap) -->
     <script src="{{ asset('js/modals.js') }}"></script>
     <script src="{{ asset('js/forms.js') }}"></script>
