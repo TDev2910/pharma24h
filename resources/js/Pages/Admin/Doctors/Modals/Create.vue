@@ -51,7 +51,7 @@
 
             <!-- Giới tính -->
             <div class="form-field">
-                <label for="gender" class="field-label" style="margin-left: -385px;">Giới tính</label>
+                <label for="gender" class="field-label" style="margin-left: -380px;">Giới tính</label>
                 <Dropdown
                     id="gender"
                     v-model="formData.gender"
@@ -59,19 +59,19 @@
                     optionLabel="label"
                     optionValue="value"
                     placeholder= "Chọn giới tính"
-                    class="field-input" style="margin-left: -385px;"
+                    class="field-input" style="margin-left: -380px;"
                 />
             </div>
 
             <!-- Điện thoại -->
             <div class="form-field">
-                <label for="phone" class="field-label" style="margin-left: 240px;margin-top: -210px;">Điện thoại</label>
+                <label for="phone" class="field-label" style="margin-left: 235px;margin-top: -210px;">Điện thoại</label>
                 <InputText
                     id="phone"
                     v-model="formData.phone"
                     type="tel"
                     placeholder="Nhập số điện thoại"
-                    class="field-input" style="margin-left: 240px;margin-top: -6px;"
+                    class="field-input" style="margin-left: 235px;margin-top: -6px;"
                 />
             </div>
 
@@ -130,10 +130,72 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>     
+             <!-- Thông tin chuyên môn -->
+             <div class="specialty-section">
+                 <div class="specialty-container">
+                     <!-- Header với icon -->
+                     <div class="specialty-header">
+                         <span class="specialty-title">Thông tin chuyên môn</span>
+                         <i class="pi pi-chevron-up specialty-icon"></i>
+                     </div>
+
+                     <!-- Chuyên khoa và Trình độ -->
+                     <div class="specialty-row">
+                         <!-- Chuyên khoa -->
+                         <div class="form-field">
+                             <label for="specialty" class="field-label">Chuyên khoa</label>
+                         <Dropdown
+                             id="specialty"
+                             v-model="formData.specialty"
+                             :options="specialtyOptions"
+                             optionLabel="label"
+                             optionValue="value"
+                             placeholder="Chọn chuyên khoa"
+                             class="field-input"
+                             style="width: 350px !important;"
+                         />
+                         </div>
+
+                         <!-- Trình độ -->
+                         <div class="form-field">
+                             <label for="degree" class="field-label">Trình độ</label>
+                             <Dropdown
+                                 id="degree"
+                                 v-model="formData.degree"
+                                 :options="degreeOptions"
+                                 optionLabel="label"
+                                 optionValue="value"
+                                 placeholder="Chọn trình độ"
+                                 class="field-input"
+                                 style="width: 350px !important;"
+                             />
+                         </div>
+                     </div>
+                 </div>
+             </div>
+
+             <!-- Ghi chú -->
+             <div class="notes-section">
+                 <div class="notes-container">
+                     <!-- Ghi chú Input -->
+                     <div class="form-field notes-input">
+                         <label for="notes" class="field-label">Ghi chú</label>
+                         <Textarea
+                             id="notes"
+                             v-model="formData.notes"
+                             rows="4"
+                             placeholder="Nhập ghi chú"
+                             class="field-textarea"
+                             style="width: 100% !important;"
+                         />
+                     </div>
+                 </div>
+             </div>
+              
+    </div>
+    </div>
       <template #footer>
-        <div class="flex justify-end gap-2">
+    <div class="flex justify-end gap-2">
           <Button 
             type="button" 
             label="Hủy" 
@@ -146,16 +208,17 @@
             @click="saveDoctor"
             :loading="loading"
           />
-        </div>
+    </div>
       </template>
     </Dialog>
-  </template>
+</template>
 
 <script>
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Dropdown from 'primevue/dropdown'
+import Textarea from 'primevue/textarea'
 
 export default {
   name: 'CreateDoctorModal',
@@ -163,7 +226,8 @@ export default {
     Dialog,
     Button,
     InputText,
-    Dropdown
+    Dropdown,
+    Textarea
   },
   props: {
     visible: {
@@ -181,15 +245,30 @@ export default {
         gender: null,
         phone: '',
         email: '',
-        specialty: '',
+        specialty: null,
         address: '',
         district: '',
-        ward: ''
+        ward: '',
+        degree: null,
+        notes: ''
       },
       genderOptions: [
         { label: 'Nam', value: 'male' },
         { label: 'Nữ', value: 'female' },
         { label: 'Khác', value: 'other' }
+      ],
+      specialtyOptions: [
+        { label: 'Đa khoa', value: 'general' },
+        { label: 'Nhi khoa', value: 'pediatrics' },
+        { label: 'Tim mạch', value: 'cardiology' },
+        { label: 'Da liễu', value: 'dermatology' },
+        { label: 'Thần kinh', value: 'neurology' }
+      ],
+      degreeOptions: [
+        { label: 'Bác sĩ', value: 'doctor' },
+        { label: 'Thạc sĩ', value: 'master' },
+        { label: 'Tiến sĩ', value: 'phd' },
+        { label: 'Giáo sư', value: 'professor' }
       ]
     }
   },
@@ -223,10 +302,12 @@ export default {
         gender: null,
         phone: '',
         email: '',
-        specialty: '',
+        specialty: null,
         address: '',
         district: '',
-        ward: ''
+        ward: '',
+        degree: null,
+        notes: ''
       }
     },
     handleImageUpload() {
@@ -297,6 +378,103 @@ export default {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px 12px;
+}
+
+/* Specialty Section */
+.specialty-section {
+  grid-column: 1 / -1; /* Span across both columns */
+  margin-top: 8px;
+}
+
+.specialty-container {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fff;
+}
+
+.specialty-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.specialty-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+}
+
+.specialty-icon {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.specialty-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 12px;
+}
+
+/* Notes Section */
+.notes-section {
+  grid-column: 1 / -1; /* Span across both columns */
+  margin-top: 8px;
+}
+
+.notes-container {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fff;
+}
+
+.notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.notes-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+}
+
+.notes-icon {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.field-textarea {
+  width: 100% !important;
+  border-radius: 6px !important;
+  font-size: 15px !important;
+  padding: 10px !important;
+  border: 1px solid #ced4da !important;
+  resize: vertical;
+  font-family: inherit;
+}
+
+/* Custom placeholder styling for dropdown */
+:deep(.p-select-label) {
+  margin-top: -5px !important;
+  margin-left: -5px !important;
+  line-height: 1.2 !important;
+}
+
+/* Hoặc có thể dùng cách này */
+:deep(.p-placeholder) {
+  margin-top: -9px !important;
+  margin-left: -9px !important;
+  line-height: 1.2 !important;
+  font-size: 15px;
 }
 
 .field-label {
