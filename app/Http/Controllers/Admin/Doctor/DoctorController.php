@@ -11,11 +11,55 @@ use Inertia\Inertia;
 class DoctorController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource (Vue.js page).
      */
     public function index()
     {
         return Inertia::render('Admin/Doctors/Index');
+    }
+
+    /**
+     * Get doctors data for API (JSON response).
+     */
+    public function getDoctors(Request $request)
+    {
+        try {
+            $query = Doctor::query();
+            
+            // Search functionality
+            if ($request->has('search') && $request->search) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('doctor_code', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+                });
+            }
+            
+            // Pagination
+            $doctors = $query->orderBy('created_at', 'desc')
+                ->paginate($request->get('per_page', 10));
+            
+            return response()->json([
+                'success' => true,
+                'data' => $doctors->items(),
+                'pagination' => [
+                    'current_page' => $doctors->currentPage(),
+                    'last_page' => $doctors->lastPage(),
+                    'per_page' => $doctors->perPage(),
+                    'total' => $doctors->total(),
+                    'from' => $doctors->firstItem(),
+                    'to' => $doctors->lastItem()
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi tải danh sách bác sĩ: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -82,6 +126,7 @@ class DoctorController extends Controller
                 'specialty' => $request->specialty,
                 'qualification' => $request->degree,
                 'note' => $request->notes,
+                'avatar' => $request->avatar, // Lưu path avatar
                 'status' => 'active'
             ];
 
@@ -145,5 +190,63 @@ class DoctorController extends Controller
             'success' => true,
             'code' => $code
         ]);
+    }
+
+    //Upload avatar
+    public function uploadAvatar(Request $request)
+    {
+        try {
+            // Validate file
+            $validator = Validator::make($request->all(), [
+                'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            ], [
+                'avatar.required' => 'Vui lòng chọn ảnh',
+                'avatar.image' => 'File phải là ảnh',
+                'avatar.mimes' => 'Ảnh phải có định dạng: jpeg, png, jpg, gif',
+                'avatar.max' => 'Kích thước ảnh không được vượt quá 2MB'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            if ($request->hasFile('avatar')) {
+                $file = $request->file('avatar');
+                
+                // Tạo tên file unique
+                $filename = 'doctor_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                
+                // Lưu vào storage/app/public/avatars/doctors/
+                $path = $file->storeAs('avatars/doctors', $filename, 'public');
+                
+                // Trả về URL để hiển thị
+                $url = asset('storage/' . $path);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Upload ảnh thành công',
+                    'data' => [
+                        'filename' => $filename,
+                        'path' => $path,
+                        'url' => $url
+                    ]
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy file ảnh'
+            ], 400);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -134,9 +134,11 @@ Route::prefix('admin')->name('admin.')->group(function ()
 
     //Doctors
     Route::prefix('doctors')->name('doctors.')->group(function () {
-        Route::get('/', [DoctorController::class, 'index'])->name('index');
+        Route::get('/', [DoctorController::class, 'index'])->name('index'); // Vue.js page
+        Route::get('/api', [DoctorController::class, 'getDoctors'])->name('api'); // API endpoint
         Route::post('/', [DoctorController::class, 'store'])->name('store');
         //tạo mã bác sĩ
         Route::get('/generate-code', [DoctorController::class, 'generateDoctorCode'])->name('generate-code'); 
+        Route::post('/upload-avatar',[DoctorController::class, 'uploadAvatar'])->name('upload-avatar');
     });
 });

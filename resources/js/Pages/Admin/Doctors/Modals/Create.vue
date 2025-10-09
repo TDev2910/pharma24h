@@ -39,16 +39,33 @@
                 />
                 <small v-if="errors.doctorCode" class="p-error">{{ errors.doctorCode[0] }}</small>
             </div>
-              <!-- Right Section: Image Upload -->
+              <!-- Right Section: Tải ảnh -->
             <div class="upload-section">
                 <div class="image-upload-container"style="margin-left: 1100px;margin-top: -155px;">
-                    <div class="image-upload-circle">
-                        <Button 
-                            label="Thêm ảnh"
-                            severity="secondary"
-                            class="upload-btn"
-                            @click="handleImageUpload"
-                        />
+                    <div class="image-upload-circle" @click="handleImageUpload"> <!-- Tạo hình tròn -->
+                        <!-- Hiển thị nút upload khi không có ảnh -->
+                        <div v-if="!imagePreview" class="upload-content"> <!-- Hiển thị nút upload -->
+                            <Button 
+                                label="Thêm ảnh"
+                                severity="secondary"
+                                class="upload-btn"
+                                @click.stop="handleImageUpload"
+                            />
+                        </div>
+                        
+                        <!-- Hiển thị ảnh preview khi đã có ảnh -->
+                        <div v-if="imagePreview" class="image-preview-content"> 
+                            <img :src="imagePreview" alt="Preview" class="preview-image" /> 
+                            <div class="image-overlay">
+                                <Button 
+                                    label="Xóa" 
+                                    @click.stop="removeImage" 
+                                    size="small" 
+                                    severity="danger"
+                                    class="remove-btn"
+                                />
+                            </div>
+                        </div>
                     </div>
                     <p class="upload-text">Ảnh không được vượt quá 2MB</p>
                 </div>
@@ -303,11 +320,13 @@ export default {
         province: null,
         ward: null,
         degree: null,
-        notes: ''
+        notes: '',
+        avatar: null
       },
       errors: {},
       provinceOptions: [],
       wardOptions: [],
+      imagePreview: null,
       genderOptions: [
         { label: 'Nam', value: 'male' },
         { label: 'Nữ', value: 'female' }
@@ -406,14 +425,92 @@ export default {
         province: null,
         ward: null,
         degree: null,
-        notes: ''
+        notes: '',
+        avatar: null
       }
       this.errors = {}
+      this.imagePreview = null
     },
 
     handleImageUpload() {
-      // TODO: Implement image upload logic
-      console.log('Image upload clicked')
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = 'image/*'
+      
+      input.onchange = async (event) => {
+        const file = event.target.files[0]
+        if (!file) return
+        
+        // Validate file
+        if (!file.type.startsWith('image/')) {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Lỗi',
+            detail: 'Chỉ chấp nhận file ảnh!',
+            life: 3000
+          })
+          return
+        }
+        
+        if (file.size > 2 * 1024 * 1024) { // 2MB
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Lỗi',
+            detail: 'File quá lớn! Tối đa 2MB',
+            life: 3000
+          })
+          return
+        }
+        
+        try {
+          // Tạo FormData để upload
+          const formData = new FormData()
+          formData.append('avatar', file)
+          
+          // Upload lên server
+          const response = await axios.post('/admin/doctors/upload-avatar', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          
+          if (response.data.success) {
+            // Lưu path vào formData
+            this.formData.avatar = response.data.data.path
+            
+            // Tạo preview
+            const reader = new FileReader()
+            reader.onload = (e) => {
+              this.imagePreview = e.target.result
+            }
+            reader.readAsDataURL(file)
+            
+            this.$toast.add({
+              severity: 'success',
+              summary: 'Thành công',
+              detail: 'Ảnh đã được upload',
+              life: 3000
+            })
+          }
+          
+        } catch (error) {
+          console.error('Upload error:', error)
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Lỗi',
+            detail: 'Không thể upload ảnh',
+            life: 3000
+          })
+        }
+      }
+      
+      input.click()
+    },
+
+    // Remove selected image
+    removeImage() {
+      this.formData.avatar = null
+      this.imagePreview = null
     },
     
     // API tỉnh thành 
@@ -712,11 +809,22 @@ export default {
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .image-upload-circle:hover {
   border-color: #007bff;
   background-color: #f0f8ff;
+}
+
+.upload-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .upload-btn {
@@ -733,6 +841,43 @@ export default {
   color: #6c757d;
   margin: 0;
   text-align: center;
+}
+
+/* Image Preview Content */
+.image-preview-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.image-overlay {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-upload-circle:hover .image-overlay {
+  opacity: 1;
+}
+
+.remove-btn {
+  font-size: 12px !important;
+  padding: 4px 8px !important;
+  background: rgba(220, 53, 69, 0.9) !important;
+  border: none !important;
 }
 
 /* Error styling */
