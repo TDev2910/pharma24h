@@ -48,6 +48,7 @@
     <div class="table-container">
         <DataTable 
             :value="paginatedDoctors" 
+            v-model:expandedRows="expandedRows"
             stripedRows
             responsiveLayout="scroll"
             tableStyle="min-width: 50rem"
@@ -55,6 +56,7 @@
             dataKey="id"
             loadingIcon="pi pi-spinner"
             emptyMessage="Không có dữ liệu bác sĩ">
+            <Column expander style="width: 3rem" />
             <Column field="avatar" header="Ảnh">
                 <template #body="slotProps">
                     <img 
@@ -99,6 +101,111 @@
                     <span v-else>{{ slotProps.data.qualification || '-' }}</span>
                 </template>
             </Column>
+            
+            <!-- Hiển thị chi tiết thông tin khi nhấn vào dropdown-->
+            <template #expansion="slotProps">
+                <div class="doctor-detail-container">
+                  <!-- 2 danh mục thông tin và lịch làm việc-->
+                    <div class="detail-tabs">  
+                        <button class="tab active" @click="switchTab('info')">Thông tin</button>
+                        <button class="tab" @click="switchTab('schedule')">Lịch làm việc</button>
+                    </div>
+                    
+                    <!-- Danh mục thông tin và lịch làm việc-->
+                    <div class="detail-content">
+                        <!-- Tab Thông tin -->
+                        <div v-if="activeTab === 'info'" class="tab-content">
+                            <div class="row">
+                                <!-- Thông tin chung -->
+                                <div class="col-md-6">
+                                    <h6 class="text-primary mb-3">
+                                        <i></i>Thông tin chung
+                                    </h6>
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td class="fw-bold" style="width: 140px;">Mã bác sĩ:</td>
+                                            <td>{{ slotProps.data.doctor_code }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Tên bác sĩ:</td>
+                                            <td>{{ slotProps.data.name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Giới tính:</td>
+                                            <td>{{ slotProps.data.gender }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Điện thoại:</td>
+                                            <td>{{ slotProps.data.phone }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Email:</td>
+                                            <td>{{ slotProps.data.email }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Chuyên khoa:</td>
+                                            <td>
+                                                <span class="badge bg-info">{{ getSpecialtyText(slotProps.data.specialty) }}</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Trình độ:</td>
+                                            <td>
+                                                <span class="badge bg-success">{{ getQualificationText(slotProps.data.qualification) }}</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                
+                                <!-- Thông tin bổ sung -->
+                                <div class="col-md-6">
+                                    <h6 class="text-primary mb-3">
+                                        <i></i>Thông tin bổ sung
+                                    </h6>
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td class="fw-bold">Địa chỉ:</td>
+                                            <td>{{ slotProps.data.address || '-' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Trạng thái:</td>
+                                            <td>
+                                                <span class="badge bg-success">Đang hoạt động</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Ngày tạo:</td>
+                                            <td>{{ formatDate(slotProps.data.created_at) }}</td>
+                                        </tr>
+                                    </table>
+                                    
+                                    <!-- Action buttons chỉnh sửa và xóa-->
+                                    <div class="mt-3">
+                                        <Button 
+                                            label="Chỉnh sửa" 
+                                            icon="pi pi-pencil" 
+                                            class="p-button-success p-button-sm me-2"
+                                            @click="editDoctor(slotProps.data)" />                                       
+                                        <Button 
+                                            label="Xóa" 
+                                            icon="pi pi-trash" 
+                                            class="p-button-danger p-button-sm"
+                                            @click="deleteDoctor(slotProps.data)" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tab Lịch làm việc -->
+                        <div v-if="activeTab === 'schedule'" class="tab-content">
+                            <div class="text-center text-muted py-4">
+                                <i class="pi pi-calendar" style="font-size: 2rem;"></i>
+                                <p class="mt-2">Chức năng lịch làm việc đang được phát triển</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
         </DataTable>
     </div>
 
@@ -139,6 +246,7 @@ export default {
     Paginator,
     CreateDoctorModal
   },
+  
   data() {
     return {
       showModal: false,
@@ -146,6 +254,8 @@ export default {
       loading: false,
       selectedDoctors: [],
       doctors: [],
+      expandedRows: {},
+      activeTab: 'info',
       pagination: {
         current_page: 1,
         last_page: 1,
@@ -369,6 +479,61 @@ export default {
       console.log('Image load error:', event.target.src)
       // Có thể thêm fallback image hoặc ẩn ảnh
       event.target.style.display = 'none'
+    },
+
+    // Tab switching
+    switchTab(tab) {
+      this.activeTab = tab
+    },
+
+    // Get specialty text
+    getSpecialtyText(specialty) {
+      const specialtyMap = {
+        'General': 'Tổng quát',
+        'general': 'Tổng quát',
+        'Cardiology': 'Tim mạch',
+        'cardiology': 'Tim mạch',
+        'Neurology': 'Thần kinh',
+        'neurology': 'Thần kinh',
+        'Pediatrics': 'Nhi khoa',
+        'pediatrics': 'Nhi khoa',
+        'Orthopedics': 'Chỉnh hình',
+        'orthopedics': 'Chỉnh hình',
+        'Dermatology': 'Da liễu',
+        'dermatology': 'Da liễu',
+        'Ophthalmology': 'Mắt',
+        'ophthalmology': 'Mắt',
+        'ENT': 'Tai mũi họng',
+        'ent': 'Tai mũi họng',
+        'Gynecology': 'Sản phụ khoa',
+        'gynecology': 'Sản phụ khoa',
+        'Urology': 'Tiết niệu',
+        'urology': 'Tiết niệu'
+      }
+      return specialtyMap[specialty] || specialty || '-'
+    },
+
+    // Get qualification text
+    getQualificationText(qualification) {
+      const qualificationMap = {
+        'Master': 'Thạc sĩ',
+        'master': 'Thạc sĩ',
+        'Doctor': 'Bác sĩ',
+        'doctor': 'Bác sĩ',
+        'Professor': 'Giáo sư',
+        'professor': 'Giáo sư',
+        'Specialist': 'Chuyên khoa',
+        'specialist': 'Chuyên khoa',
+        'Resident': 'Nội trú',
+        'resident': 'Nội trú'
+      }
+      return qualificationMap[qualification] || qualification || '-'
+    },
+
+    // Format date
+    formatDate(date) {
+      if (!date) return '-'
+      return new Date(date).toLocaleDateString('vi-VN')
     }
   }
 }
@@ -528,7 +693,7 @@ export default {
 :deep(.p-datatable) {
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #e9ecef;
+  border: 2px solid #000;
 }
 
 :deep(.p-datatable .p-datatable-header) {
@@ -571,8 +736,13 @@ export default {
   color: #495057;
   font-size: 14px;
   vertical-align: middle;
-  border: none;
+  border-right: 1px solid #e9ecef;
   border-bottom: 1px solid #f1f3f4;
+}
+
+/* Loại bỏ viền dọc của cột cuối cùng */
+:deep(.p-datatable .p-datatable-tbody > tr > td:last-child) {
+  border-right: none;
 }
 
 /* Loading state styling */
@@ -595,6 +765,96 @@ export default {
   background: #f8f9fa;
 }
 
+/* Doctor Detail Container */
+.doctor-detail-container {
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  padding: 0;
+}
+
+.detail-tabs {
+  display: flex;
+  border-bottom: 1px solid #e9ecef;
+  background: #ffffff;
+}
+
+.detail-tabs .tab {
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6c757d;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.detail-tabs .tab:hover {
+  color: #495057;
+  background: #f8f9fa;
+}
+
+.detail-tabs .tab.active {
+  color: #007bff;
+  border-bottom-color: #007bff;
+  background: #ffffff;
+}
+
+.detail-content {
+  padding: 20px;
+  background: #ffffff;
+}
+
+.tab-content {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.detail-content .table {
+  margin-bottom: 0;
+}
+
+.detail-content .table td {
+  padding: 8px 0;
+  border: none;
+  vertical-align: top;
+}
+
+.detail-content .fw-bold {
+  color: #495057;
+  font-weight: 600;
+}
+
+.detail-content .badge {
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+.detail-content .text-primary {
+  color: #007bff !important;
+  font-weight: 600;
+}
+
+.detail-content .text-primary i {
+  font-size: 16px;
+}
+
+/* Action buttons in detail */
+.detail-content .p-button {
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+.detail-content .p-button-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
 /* Responsive improvements */
 @media (max-width: 768px) {
   .table-container {
@@ -612,6 +872,23 @@ export default {
   .no-avatar {
     width: 32px;
     height: 32px;
+  }
+
+  .detail-content {
+    padding: 15px;
+  }
+
+  .detail-tabs .tab {
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+
+  .detail-content .row {
+    margin: 0;
+  }
+
+  .detail-content .col-md-6 {
+    margin-bottom: 20px;
   }
 }
 
