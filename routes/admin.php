@@ -137,8 +137,9 @@ Route::prefix('admin')->name('admin.')->group(function ()
         Route::get('/', [DoctorController::class, 'index'])->name('index'); // Vue.js page
         Route::get('/api', [DoctorController::class, 'getDoctors'])->name('api'); // API endpoint
         Route::post('/', [DoctorController::class, 'store'])->name('store');
-        Route::get('/{doctor}/edit', [DoctorController::class, 'edit'])->name('edit'); // THÊM MỚI
+        Route::get('/{doctor}/edit', [DoctorController::class, 'edit'])->name('edit');
         Route::put('/{doctor}', [DoctorController::class, 'update'])->name('update');
+        Route::delete('/{doctor}', [DoctorController::class, 'destroy'])->name('destroy');
         //tạo mã bác sĩ
         Route::get('/generate-code', [DoctorController::class, 'generateDoctorCode'])->name('generate-code'); 
         Route::post('/upload-avatar',[DoctorController::class, 'uploadAvatar'])->name('upload-avatar');

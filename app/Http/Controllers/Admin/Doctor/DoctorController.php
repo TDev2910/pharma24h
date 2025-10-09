@@ -63,14 +63,6 @@ class DoctorController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -278,7 +270,27 @@ class DoctorController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $doctor = Doctor::findOrFail($id);
+            $doctor->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Bác sĩ đã được xóa thành công'
+            ]);
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy bác sĩ với ID: ' . $id
+            ], 404);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi xóa bác sĩ: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

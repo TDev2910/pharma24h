@@ -337,7 +337,44 @@ export default {
     // Search doctors
     async searchDoctors() {
       this.pagination.current_page = 1 // Reset về trang đầu
-      await this.loadDoctors()
+      
+      if (!this.searchQuery.trim()) {
+        // Nếu không có search query, load tất cả
+        await this.loadDoctors()
+        return
+      }
+      
+      // Sử dụng findDoctors để tìm kiếm local
+      const searchValue = this.searchQuery.trim()
+      
+      // Tách searchValue thành doctor_code và name
+      // Giả sử format: "mã_bác_sĩ tên_bác_sĩ" hoặc chỉ "mã_bác_sĩ" hoặc chỉ "tên_bác_sĩ"
+      const parts = searchValue.split(' ')
+      let doctorCode = ''
+      let name = ''
+      
+      if (parts.length >= 2) {
+        // Nếu có 2 phần trở lên, phần đầu là mã, phần còn lại là tên
+        doctorCode = parts[0]
+        name = parts.slice(1).join(' ')
+      } else {
+        // Nếu chỉ có 1 phần, thử đoán là mã hay tên
+        const firstPart = parts[0]
+        if (/^\d+$/.test(firstPart)) {
+          // Nếu là số, coi như là mã bác sĩ
+          doctorCode = firstPart
+        } else {
+          // Nếu không phải số, coi như là tên
+          name = firstPart
+        }
+      }
+      
+      // Gọi findDoctors với dữ liệu đã tách
+      const filteredDoctors = this.findDoctors(doctorCode, name)
+      
+      // Cập nhật danh sách hiển thị
+      this.doctors = filteredDoctors
+      this.pagination.total = filteredDoctors.length
     },
 
     // Pagination handling
@@ -410,7 +447,7 @@ export default {
       this.selectedDoctorId = null
     },
 
-    // Bulk delete selected doctors
+    // Delete selected doctors (one by one)
     async deleteSelectedDoctors() {
       if (this.selectedDoctors.length === 0) {
         this.$toast.add({
@@ -424,67 +461,39 @@ export default {
 
       if (confirm(`Bạn có chắc muốn xóa ${this.selectedDoctors.length} bác sĩ đã chọn?`)) {
         try {
-          const ids = this.selectedDoctors.map(doctor => doctor.id)
-          const response = await axios.delete('/admin/doctors/bulk-delete', {
-            data: { ids }
+          let deletedCount = 0
+          
+          // Xóa từng doctor một
+          for (const doctor of this.selectedDoctors) {
+            try {
+              const response = await axios.delete(`/admin/doctors/${doctor.id}`)
+              if (response.data.success) {
+                deletedCount++
+              }
+            } catch (error) {
+              console.error(`Error deleting doctor ${doctor.id}:`, error)
+            }
+          }
+          
+          this.$toast.add({
+            severity: 'success',
+            summary: 'Thành công',
+            detail: `Đã xóa ${deletedCount}/${this.selectedDoctors.length} bác sĩ`,
+            life: 3000
           })
           
-          if (response.data.success) {
-            this.$toast.add({
-              severity: 'success',
-              summary: 'Thành công',
-              detail: `Đã xóa ${response.data.deleted_count} bác sĩ`,
-              life: 3000
-            })
-            this.selectedDoctors = []
-            await this.loadDoctors()
-          }
+          this.selectedDoctors = []
+          await this.loadDoctors()
+          
         } catch (error) {
-          console.error('Error bulk deleting doctors:', error)
+          console.error('Error deleting doctors:', error)
           this.$toast.add({
             severity: 'error',
             summary: 'Lỗi',
-            detail: 'Không thể xóa các bác sĩ đã chọn',
+            detail: 'Có lỗi xảy ra khi xóa các bác sĩ',
             life: 3000
           })
         }
-      }
-    },
-
-    // Export doctors
-    async exportDoctors() {
-      try {
-        const response = await axios.get('/admin/doctors/export', {
-          params: {
-            search: this.searchQuery
-          },
-          responseType: 'blob'
-        })
-        
-        // Tạo download link
-        const url = window.URL.createObjectURL(new Blob([response.data]))
-        const link = document.createElement('a')
-        link.href = url
-        link.setAttribute('download', `doctors_${new Date().toISOString().split('T')[0]}.xlsx`)
-        document.body.appendChild(link)
-        link.click()
-        link.remove()
-        window.URL.revokeObjectURL(url)
-        
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Thành công',
-          detail: 'Đã xuất file danh sách bác sĩ',
-          life: 3000
-        })
-      } catch (error) {
-        console.error('Error exporting doctors:', error)
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Lỗi',
-          detail: 'Không thể xuất file',
-          life: 3000
-        })
       }
     },
 
@@ -561,6 +570,36 @@ export default {
     formatDate(date) {
       if (!date) return '-'
       return new Date(date).toLocaleDateString('vi-VN')
+    },
+
+    findDoctors(doctor_code, name) {
+      try {
+        const codeValue = (doctor_code || '').trim();
+        const nameValue = (name || '').trim();
+        
+        if (!codeValue && !nameValue) {
+          return this.doctors;
+        }
+        
+        return this.doctors.filter(doctor => {
+          let matches = true;
+          
+          // Nếu có doctor_code, phải khớp
+          if (codeValue) {
+            matches = matches && doctor.doctor_code.toLowerCase().includes(codeValue.toLowerCase());
+          }
+          
+          // Nếu có name, phải khớp
+          if (nameValue) {
+            matches = matches && doctor.name.toLowerCase().includes(nameValue.toLowerCase());
+          }
+          
+          return matches;
+        });
+      } catch (error) {
+        console.error('Error finding doctors:', error);
+        return this.doctors;
+      }
     }
   }
 }
