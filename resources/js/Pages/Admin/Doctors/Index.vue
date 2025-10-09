@@ -224,6 +224,14 @@
       @close="closeModal"
       @created="handleDoctorCreated"
     />
+    
+    <!-- Edit Doctor Modal -->
+    <EditDoctorModal 
+      :visible="showEditModal" 
+      :doctorId="selectedDoctorId" 
+      @close="showEditModal = false" 
+      @edited="handleDoctorEdited"
+    />
   </div>
 </template>
 
@@ -234,6 +242,7 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Paginator from 'primevue/paginator'
 import CreateDoctorModal from './Modals/Create.vue'
+import EditDoctorModal from './Modals/Edit.vue'  // THÊM MỚI
 import axios from 'axios'
 
 export default {
@@ -244,12 +253,15 @@ export default {
     DataTable,
     Column,
     Paginator,
-    CreateDoctorModal
+    CreateDoctorModal,
+    EditDoctorModal  // THÊM MỚI
   },
   
   data() {
     return {
       showModal: false,
+      showEditModal: false,  // THÊM MỚI
+      selectedDoctorId: null,  // THÊM MỚI
       searchQuery: '',
       loading: false,
       selectedDoctors: [],
@@ -352,9 +364,12 @@ export default {
     
     // Edit doctor
     editDoctor(doctor) {
-      console.log('Edit doctor:', doctor)
-      // TODO: Implement edit functionality
-      // Có thể mở modal edit hoặc navigate đến trang edit
+      this.selectedDoctorId = doctor.id  
+      
+      // Đảm bảo selectedDoctorId được set trước khi mở modal
+      this.$nextTick(() => {
+        this.showEditModal = true
+      })
     },
     
     // Delete doctor
@@ -381,6 +396,18 @@ export default {
           })
         }
       }
+    },
+
+    // Handle doctor edited event
+    handleDoctorEdited(updatedDoctor) {
+      // Cập nhật danh sách doctors
+      const index = this.doctors.findIndex(d => d.id === updatedDoctor.id)
+      if (index !== -1) {
+        this.doctors.splice(index, 1, updatedDoctor)
+      }
+      
+      this.showEditModal = false
+      this.selectedDoctorId = null
     },
 
     // Bulk delete selected doctors

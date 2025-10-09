@@ -160,7 +160,34 @@ class DoctorController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        try {
+            // Validate ID format
+            if (!is_numeric($id) || $id <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ID bác sĩ không hợp lệ'
+                ], 400);
+            }
+
+            $doctor = Doctor::findOrFail($id);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $doctor
+            ]);
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy bác sĩ với ID: ' . $id
+            ], 404);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi tải thông tin bác sĩ: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -168,7 +195,82 @@ class DoctorController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'doctorCode' => 'required|string|size:6|unique:doctors,doctor_code,' . $id,
+            'gender' => 'required|in:male,female',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'specialty' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:500',
+            'province' => 'nullable|array',
+            'ward' => 'nullable|array',
+            'degree' => 'nullable|string|max:255',
+            'notes' => 'nullable|string'
+        ], 
+        
+        [
+            'province.array' => 'Tỉnh/thành phố phải là object',
+            'ward.array' => 'Quận/huyện phải là object'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        try 
+        {
+            $doctor = Doctor::findOrFail($id);
+            $genderMap = [
+                'male' => 'Male',
+                'female' => 'Female'
+            ];
+
+            $provinceName = $request->province['name'] ?? null;
+            $wardName = $request->ward['name'] ?? null;
+
+            $doctorData = [
+                'doctor_code' => $request->doctorCode,
+                'name' => $request->name,
+                'gender' => $genderMap[$request->gender] ?? 'Male',
+                'phone' => $request->phone,
+                'email' => $request->email,
+                'address' => $request->address,
+                'province_district' => $provinceName,
+                'ward_commune' => $wardName,
+                'specialty' => $request->specialty,
+                'qualification' => $request->degree,
+                'note' => $request->notes,
+                'avatar' => $request->avatar,
+                'status' => 'active'
+            ];
+            $doctor->update($doctorData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Thông tin bác sĩ đã được cập nhật thành công',
+                'data' => $doctor
+            ]);
+
+        } 
+        catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) 
+        {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy bác sĩ với ID: ' . $id
+            ], 404);
+            
+        } 
+        catch (\Exception $e) 
+        {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi cập nhật bác sĩ: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
