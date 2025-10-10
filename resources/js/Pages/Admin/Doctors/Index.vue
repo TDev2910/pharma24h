@@ -122,38 +122,40 @@
                                         <i></i>Thông tin chung
                                     </h6>
                                     <table class="table table-sm table-borderless">
-                                        <tr>
-                                            <td class="fw-bold" style="width: 140px;">Mã bác sĩ:</td>
-                                            <td>{{ slotProps.data.doctor_code }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">Tên bác sĩ:</td>
-                                            <td>{{ slotProps.data.name }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">Giới tính:</td>
-                                            <td>{{ slotProps.data.gender }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">Điện thoại:</td>
-                                            <td>{{ slotProps.data.phone }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">Email:</td>
-                                            <td>{{ slotProps.data.email }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">Chuyên khoa:</td>
-                                            <td>
-                                                <span class="badge bg-info">{{ getSpecialtyText(slotProps.data.specialty) }}</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">Trình độ:</td>
-                                            <td>
-                                                <span class="badge bg-success">{{ getQualificationText(slotProps.data.qualification) }}</span>
-                                            </td>
-                                        </tr>
+                                        <tbody>
+                                            <tr>
+                                                <td class="fw-bold" style="width: 140px;">Mã bác sĩ:</td>
+                                                <td>{{ slotProps.data.doctor_code }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">Tên bác sĩ:</td>
+                                                <td>{{ slotProps.data.name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">Giới tính:</td>
+                                                <td>{{ slotProps.data.gender }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">Điện thoại:</td>
+                                                <td>{{ slotProps.data.phone }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">Email:</td>
+                                                <td>{{ slotProps.data.email }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">Chuyên khoa:</td>
+                                                <td>
+                                                    <span class="badge bg-info">{{ getSpecialtyText(slotProps.data.specialty) }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">Trình độ:</td>
+                                                <td>
+                                                    <span class="badge bg-success">{{ getQualificationText(slotProps.data.qualification) }}</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
                                     </table>
                                 </div>
                                 
@@ -163,20 +165,22 @@
                                         <i></i>Thông tin bổ sung
                                     </h6>
                                     <table class="table table-sm table-borderless">
-                                        <tr>
-                                            <td class="fw-bold">Địa chỉ:</td>
-                                            <td>{{ slotProps.data.address || '-' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">Trạng thái:</td>
-                                            <td>
-                                                <span class="badge bg-success">Đang hoạt động</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">Ngày tạo:</td>
-                                            <td>{{ formatDate(slotProps.data.created_at) }}</td>
-                                        </tr>
+                                        <tbody>
+                                            <tr>
+                                                <td class="fw-bold">Địa chỉ:</td>
+                                                <td>{{ slotProps.data.address || '-' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">Trạng thái:</td>
+                                                <td>
+                                                    <span class="badge bg-success">Đang hoạt động</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">Ngày tạo:</td>
+                                                <td>{{ formatDate(slotProps.data.created_at) }}</td>
+                                            </tr>
+                                        </tbody>
                                     </table>
                                     
                                     <!-- Action buttons chỉnh sửa và xóa-->
@@ -242,7 +246,7 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Paginator from 'primevue/paginator'
 import CreateDoctorModal from './Modals/Create.vue'
-import EditDoctorModal from './Modals/Edit.vue'  // THÊM MỚI
+import EditDoctorModal from './Modals/Edit.vue' 
 import axios from 'axios'
 
 export default {
@@ -254,14 +258,14 @@ export default {
     Column,
     Paginator,
     CreateDoctorModal,
-    EditDoctorModal  // THÊM MỚI
+    EditDoctorModal  
   },
   
   data() {
     return {
       showModal: false,
-      showEditModal: false,  // THÊM MỚI
-      selectedDoctorId: null,  // THÊM MỚI
+      showEditModal: false,  
+      selectedDoctorId: null,  
       searchQuery: '',
       loading: false,
       selectedDoctors: [],
@@ -572,6 +576,7 @@ export default {
       return new Date(date).toLocaleDateString('vi-VN')
     },
 
+    // Tìm kiếm bác sĩ theo mã và tên
     findDoctors(doctor_code, name) {
       try {
         const codeValue = (doctor_code || '').trim();

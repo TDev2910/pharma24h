@@ -5,6 +5,7 @@ import Aura from '@primeuix/themes/aura'
 import ToastService from 'primevue/toastservice'
 import 'primeicons/primeicons.css'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
+import PublicLayout from '@/Layouts/PublicLayout.vue'
 
 const primevueOptions = {
   ripple: true,
@@ -17,16 +18,6 @@ const primevueOptions = {
     }
   }
 }
-
-// (Nếu bạn vẫn giữ header/footer là app riêng, dùng cùng 1 options)
-import Header from './Pages/Public/components/Header.vue'
-import Footer from './Pages/Public/components/Footer.vue'
-
-const headerApp = createApp(Header)
-headerApp.use(PrimeVue, primevueOptions).mount('#header-app')
-
-const footerApp = createApp(Footer)
-footerApp.use(PrimeVue, primevueOptions).mount('#footer-app')
 
 createInertiaApp({
   resolve: (name) => {
@@ -44,6 +35,11 @@ createInertiaApp({
       page.layout = AdminLayout
     }
     
+    // Gán layout mặc định cho các trang Public nếu page chưa set layout
+    if (name.startsWith('Public/') && !page.layout) {
+      page.layout = PublicLayout
+    }
+    
     return page
   },
   setup({ el, App, props, plugin }) {
@@ -56,7 +52,7 @@ createInertiaApp({
   }
 })
 
-// Intercept links (giữ nguyên của bạn)
+// Intercept links 
 document.addEventListener('click', (event) => {
   const anchor = event.target.closest('a[data-inertia]')
   if (!anchor) return

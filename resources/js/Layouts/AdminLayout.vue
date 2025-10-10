@@ -121,10 +121,10 @@ html, body {
   cursor: pointer;
 }
 
-.nav-item:hover {
+/* .nav-item:hover {
   background: #1db46a;
   color: white;
-}
+} */
 
 .nav-item.active {
   color: white;

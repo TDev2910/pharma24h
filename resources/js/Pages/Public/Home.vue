@@ -1,9 +1,7 @@
 <template>
   <div>
-    <!-- Header Component -->
-    <Header :auth="auth" />
     <!-- Banner Layout: Left carousel + Right fixed banners -->
-    <div class="container-xxl" style="margin-top: 10px;">
+    <div class="container-xxl" style="margin-top: 100px;">
       <div class="row g-3">
         <!-- LEFT: main carousel -->
         <div class="col-lg-8">
@@ -240,15 +238,11 @@
       </div>
       </div>
     </div>
-    <!-- Footer Component -->
-    <Footer />
   </div>
 </template>
 
 <script setup>
 import axios from 'axios'
-import Header from './components/Header.vue'
-import Footer from './components/Footer.vue'
 import { Link } from '@inertiajs/vue3'
 
 

@@ -240,4 +240,3 @@ onUnmounted(() => {
   window.removeEventListener('cart-updated', handleCartUpdate)
 })
 </script>
-

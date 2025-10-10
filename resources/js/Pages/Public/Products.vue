@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-top: 100px;">
     <!-- Header Component -->
     <Header :auth="auth" />
     
@@ -131,16 +131,13 @@
         </div>
       </div>
     </div>
-    
-    <!-- Footer Component -->
-   <Footer/>
   </div>
 </template>
 
 <script setup>
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
-import { computed, onMounted } from 'vue';
+import { computed, onMounted } from 'vue';  
 
 const props = defineProps({
   auth: { type: Object, default: () => ({ user: null }) },

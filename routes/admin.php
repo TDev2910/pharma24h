@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\Supplier\PurchaseReturns;
 use App\Http\Controllers\Admin\ImportController;
 // use App\Http\Controllers\Admin\ExportController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::prefix('admin')->name('admin.')->group(function () 
 {
@@ -144,4 +145,11 @@ Route::prefix('admin')->name('admin.')->group(function ()
         Route::get('/generate-code', [DoctorController::class, 'generateDoctorCode'])->name('generate-code'); 
         Route::post('/upload-avatar',[DoctorController::class, 'uploadAvatar'])->name('upload-avatar');
     });
+
+    // Quản lý khách hàng
+    Route::get('/customers', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'index'])->name('customers.index');
+    Route::post('/customers', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'store'])->name('customers.store');
+    Route::put('/customers/{customer}', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'update'])->name('customers.update');
+    Route::get('/customers/{customer}/edit', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'edit'])->name('customers.edit');
+    Route::delete('/customers/{id}', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'destroy'])->name('customers.destroy');
 });
