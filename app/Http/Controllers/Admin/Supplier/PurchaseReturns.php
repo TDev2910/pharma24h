@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Supplier;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class PurchaseReturns extends Controller
 {
@@ -12,7 +13,7 @@ class PurchaseReturns extends Controller
      */
     public function index()
     {
-        return view('admin.products.Nhaphang.PurchaseReturns.index');
+        return Inertia::render('Admin/Purchases/Purchase-Returns/Dashboard');
     }
 
     /**
