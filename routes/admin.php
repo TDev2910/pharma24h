@@ -133,18 +133,15 @@ Route::prefix('admin')->name('admin.')->group(function ()
     //     Route::get('products', [ExportController::class, 'exportProducts'])->name('products');
     // });
 
-    //Doctors
-    Route::prefix('doctors')->name('doctors.')->group(function () {
-        Route::get('/', [DoctorController::class, 'index'])->name('index'); // Vue.js page
-        Route::get('/api', [DoctorController::class, 'getDoctors'])->name('api'); // API endpoint
-        Route::post('/', [DoctorController::class, 'store'])->name('store');
-        Route::get('/{doctor}/edit', [DoctorController::class, 'edit'])->name('edit');
-        Route::put('/{doctor}', [DoctorController::class, 'update'])->name('update');
-        Route::delete('/{doctor}', [DoctorController::class, 'destroy'])->name('destroy');
-        //tạo mã bác sĩ
-        Route::get('/generate-code', [DoctorController::class, 'generateDoctorCode'])->name('generate-code'); 
-        Route::post('/upload-avatar',[DoctorController::class, 'uploadAvatar'])->name('upload-avatar');
-    });
+    // Quản lý bác sĩ
+    Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
+    Route::get('/doctors/api', [DoctorController::class, 'getDoctors'])->name('doctors.api');
+    Route::post('/doctors', [DoctorController::class, 'store'])->name('doctors.store');
+    Route::get('/doctors/{doctor}/edit', [DoctorController::class, 'edit'])->name('doctors.edit');
+    Route::put('/doctors/{doctor}', [DoctorController::class, 'update'])->name('doctors.update');
+    Route::delete('/doctors/{doctor}', [DoctorController::class, 'destroy'])->name('doctors.destroy');
+    Route::get('/doctors/generate-code', [DoctorController::class, 'generateDoctorCode'])->name('doctors.generate-code');
+    Route::post('/doctors/upload-avatar', [DoctorController::class, 'uploadAvatar'])->name('doctors.upload-avatar');
 
     // Quản lý khách hàng
     Route::get('/customers', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'index'])->name('customers.index');
