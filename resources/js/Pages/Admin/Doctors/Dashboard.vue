@@ -47,12 +47,18 @@
     <!-- DataTable -->
     <div class="table-container">
         <DataTable 
-            :value="paginatedDoctors" 
+            :value="doctors" 
             v-model:expandedRows="expandedRows"
             stripedRows
             responsiveLayout="scroll"
             tableStyle="min-width: 50rem"
-            :paginator="false"
+            :paginator="true"
+            :row="5"
+            :rows="pagination.per_page"
+            :totalRecords="pagination.total"
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            :rowsPerPageOptions="[5,10,25]"
+            currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bác sĩ"
             dataKey="id"
             loadingIcon="pi pi-spinner"
             emptyMessage="Không có dữ liệu bác sĩ">
@@ -213,15 +219,6 @@
         </DataTable>
     </div>
 
-    <!-- Custom Paginator -->
-    <Paginator 
-        :rows="pagination.per_page" 
-        :totalRecords="pagination.total" 
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-        @page="onPageChange"
-        style="margin-top: 20px;">
-    </Paginator>
-    
     <!-- Create Doctor Modal -->
     <CreateDoctorModal 
       :visible="showModal"
@@ -244,19 +241,17 @@ import ButtonGroup from 'primevue/buttongroup'
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import Paginator from 'primevue/paginator'
 import CreateDoctorModal from './Modals/Create.vue'
 import EditDoctorModal from './Modals/Edit.vue' 
 import axios from 'axios'
 
 export default {
-  name: 'DoctorIndex',
+  name: 'DoctorDashboard',
   components: {
     ButtonGroup,
     Button,
     DataTable,
     Column,
-    Paginator,
     CreateDoctorModal,
     EditDoctorModal  
   },
@@ -284,14 +279,6 @@ export default {
     }
   },
 
-  computed: {
-    // Computed property để lấy dữ liệu đã phân trang
-    paginatedDoctors() {
-      const start = (this.pagination.current_page - 1) * this.pagination.per_page
-      const end = start + this.pagination.per_page
-      return this.doctors.slice(start, end)
-    }
-  },
 
   mounted() {
     this.loadDoctors()
@@ -381,11 +368,6 @@ export default {
       this.pagination.total = filteredDoctors.length
     },
 
-    // Pagination handling
-    async onPageChange(event) {
-      this.pagination.current_page = event.page + 1
-      this.pagination.per_page = event.rows
-    },
 
     // Modal methods
     showCreateModal() {
@@ -963,90 +945,14 @@ export default {
   }
 }
 
-/* Custom Paginator */
-.custom-paginator {
-  margin-top: 16px;
-  display: flex;  
-  justify-content: center;
-}
-
+/* Pagination styling */
 :deep(.p-paginator) {
-  background: transparent;
-  border: 0;
-  padding: 0;
-  gap: 14px;                /* khoảng cách các nút */
-  align-items: center;
+  font-size: 12px;
+  padding: 8px 12px;
 }
 
-/* Nút số trang */
-:deep(.p-paginator .p-paginator-page) {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;     /* tròn */
-  border: 0;
-  background: transparent;
-  color: #6b7280;           /* xám nhạt */
-  font-weight: 600;
-  transition: all .15s ease;
-}
-
-:deep(.p-paginator .p-paginator-page:hover) {
-  background: #f2f4f7;
-  color: #111827;
-}
-
-/* Trang đang chọn = chấm tròn đen */
-:deep(.p-paginator .p-paginator-page.p-highlight) {
-  background: #0b1020;      /* đen/xanh đậm */
-  color: #fff;
-}
-
-/* Mũi tên điều hướng « ‹ › » */
-:deep(.p-paginator .p-paginator-first),
-:deep(.p-paginator .p-paginator-prev),
-:deep(.p-paginator .p-paginator-next),
-:deep(.p-paginator .p-paginator-last) {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  border: 0;
-  color: #9aa3b2;
-  background: transparent;
-  transition: all .15s ease;
-}
-
-:deep(.p-paginator .p-paginator-first:hover),
-:deep(.p-paginator .p-paginator-prev:hover),
-:deep(.p-paginator .p-paginator-next:hover),
-:deep(.p-paginator .p-paginator-last:hover) {
-  background: #f2f4f7;
-  color: #111827;
-}
-
-/* Dropdown chọn số dòng bên phải */
-:deep(.p-paginator .p-dropdown) {
-  margin-left: 12px;
-  height: 36px;
-  border: 1px solid #d5dbe6;
-  border-radius: 10px;
-  background: transparent;
-}
-
-:deep(.p-paginator .p-dropdown .p-inputtext) {
-  padding: 0 10px;
-  height: 34px;
-  line-height: 34px;
-  text-align: center;       /* số 10 căn giữa */
-  color: #6b7280;
-  font-weight: 600;
-}
-
-:deep(.p-paginator .p-dropdown .p-dropdown-trigger) {
-  color: #9aa3b2;
-}
-
-/* Ẩn khung tiêu đề nếu bạn dùng CurrentPageReport */
-:deep(.p-paginator .p-paginator-current) {
-  display: none;
+:deep(.p-paginator .p-paginator-pages .p-paginator-page) {
+  font-size: 12px;
+  padding: 4px 8px;
 }
 </style>
