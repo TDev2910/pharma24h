@@ -149,4 +149,9 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::put('/customers/{customer}', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'update'])->name('customers.update');
     Route::get('/customers/{customer}/edit', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'edit'])->name('customers.edit');
     Route::delete('/customers/{id}', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'destroy'])->name('customers.destroy');
+
+    // Demo route
+    Route::get('/demo', function () {
+        return Inertia::render('Admin/Purchases/Purchase-Returns/Create');
+    })->name('demo');
 });

@@ -28,6 +28,13 @@
           severity="secondary"
           style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
         />
+        <Button 
+          icon="pi pi-file-excel"
+          label="Xuất file"
+          @click="showCreateModal"
+          severity="secondary"
+          style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
+        />
                 <!-- Utility Icons -->
                 <div class="utility-icons">
                     <button class="btn" title="Chế độ xem">
@@ -77,6 +84,24 @@
               <input type="radio" id="custom" value="custom" v-model="filters.timeRange" />
               <label for="custom">Tùy chỉnh</label>
             </div>
+          </div>
+          <div v-if="filters.timeRange === 'thisMonth'" class="date-picker-container">
+            <DatePicker 
+              v-model="filters.thisMonthDate" 
+              size="small" 
+              placeholder="Tháng này" 
+              showIcon 
+              iconDisplay="input" 
+            />
+          </div>
+          <div v-if="filters.timeRange === 'custom'" class="date-picker-container">
+            <DatePicker 
+              v-model="filters.customDate" 
+              size="small" 
+              placeholder="Chọn ngày" 
+              showIcon 
+              iconDisplay="input" 
+            />
           </div>
         </div>
 
@@ -250,13 +275,15 @@
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import DatePicker from 'primevue/datepicker'
 
 export default {
   name: 'PurchaseReturnsDashboard',
   components: {
     Button,
     DataTable,
-    Column
+    Column,
+    DatePicker
   },
   
   data() {
@@ -269,7 +296,9 @@ export default {
         temp: true,
         returned: true,
         cancelled: false,
-        timeRange: 'thisMonth'
+        timeRange: 'thisMonth',
+        thisMonthDate: null,
+        customDate: null
       },
       purchaseReturns: [
         {
@@ -789,5 +818,10 @@ export default {
 .detail-content .p-button-sm {
   padding: 6px 12px;
   font-size: 12px;
+}
+
+/* Date Picker Container */
+.date-picker-container {
+  margin-top: 15px;
 }
 </style>
