@@ -24,14 +24,14 @@
         <Button 
           icon="pi pi-plus"
           label="Trả hàng"
-          @click="showCreateModal"
+          @click="showCreate"
           severity="secondary"
           style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
         />
         <Button 
           icon="pi pi-file-excel"
           label="Xuất file"
-          @click="showCreateModal"
+          @click="showImport"
           severity="secondary"
           style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
         />
@@ -381,9 +381,9 @@ export default {
     },
 
     // Modal methods
-    showCreateModal() {
-      this.showModal = true
-      // TODO: Implement create modal
+    showCreate() {
+      // Chuyển hướng đến trang tạo phiếu trả hàng
+      this.$inertia.visit('/admin/purchase-returns/create')
     },
 
     // Continue search

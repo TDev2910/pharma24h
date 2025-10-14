@@ -382,8 +382,8 @@ export default {
 
     // Modal methods
     showCreateModal() {
-      this.showModal = true
-      // TODO: Implement create modal
+      // Chuyển hướng đến trang tạo phiếu đặt hàng
+      this.$inertia.visit('/admin/purchase-returns/create')
     },
 
     // Continue search

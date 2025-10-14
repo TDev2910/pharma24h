@@ -77,13 +77,13 @@
           >
         </div>
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <span class="form-label m-0">Cần trả nhà cung cấp</span>
+          <span class="form-label m-0">Nhà cung cấp cẩn trả</span>
           <span class="link-number">{{ formatCurrency(formData.payable) }}</span>
         </div>
 
         <div class="mb-1 d-flex justify-content-between align-items-center">
           <div class="d-flex align-items-center gap-2">
-            <span class="form-label m-0">Tiền trả nhà cung cấp</span>
+            <span class="form-label m-0">Tiền nhà cung cấp cần trả</span>
             <button 
               type="button" 
               class="btn btn-sm btn-outline-primary" 
@@ -122,11 +122,8 @@
 
      <!-- Buttons -->
      <div class="d-flex justify-content-end gap-2 mt-3">
-       <button type="submit" name="action" value="draft" class="btn btn-primary px-4">
-         <i class="fas fa-save me-1"></i>Lưu tạm
-       </button>
        <button type="submit" name="action" value="complete" class="btn btn-success px-4">
-         <i class="fas fa-check me-1"></i>Hoàn thành
+         <i></i>Lưu
        </button>
      </div>
     </div>
@@ -160,7 +157,7 @@ export default {
         cash_paid: 0,
         debt: 0,
         note: '',
-        status: 'imported'
+        status: 'pending'
       },
       isGeneratingCode: false
     }
@@ -171,7 +168,7 @@ export default {
       this.isGeneratingCode = true
       
       // Gọi API để tạo mã từ server
-      fetch('/admin/generate-import-code')
+      fetch('/admin/generate-return-code')
         .then(response => response.json())
         .then(data => {
           this.formData.import_code = data.code

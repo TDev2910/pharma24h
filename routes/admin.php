@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\Order\OrdersController;
 use App\Http\Controllers\Admin\Customer\CustomerController;
 use App\Http\Controllers\Admin\Doctor\DoctorController;
 use App\Http\Controllers\Admin\Supplier\PruchaseImportController;
-use App\Http\Controllers\Admin\Supplier\PurchaseReturns;
+use App\Http\Controllers\Admin\Supplier\PurchaseReturnsController;
 use App\Http\Controllers\Admin\ImportController;
 // use App\Http\Controllers\Admin\ExportController;
 use Illuminate\Support\Facades\Route;
@@ -81,8 +81,9 @@ Route::prefix('admin')->name('admin.')->group(function ()
     // Suppliers / Imports / Returns
     Route::resource('suppliers', SupplierController::class)->names('suppliers');
     Route::resource('import', PruchaseImportController::class)->names('import');
-    Route::resource('purchase-returns', PurchaseReturns::class)->names('purchase-returns');
+    Route::resource('purchase-returns', PurchaseReturnsController::class)->names('purchase-returns');
     Route::get('generate-import-code', [PruchaseImportController::class, 'generateImportCode'])->name('generate-import-code');
+    Route::get('generate-return-code', [PurchaseReturnsController::class, 'generateReturnCode'])->name('generate-return-code');
     Route::post('process-excel', [PruchaseImportController::class, 'processExcel'])->name('process-excel');
 
     // Supplier Categories

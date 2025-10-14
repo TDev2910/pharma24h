@@ -11,6 +11,7 @@
         />
         <ItemTable 
           @update-total="handleUpdateTotal"
+          @update-items="handleUpdateItems"
         />
       </div>
       
@@ -33,6 +34,7 @@
 </template>
 
 <script>
+import { useToast } from 'primevue/usetoast'
 import Toolbar from './Components/Toolbar.vue'
 import ItemTable from './Components/Item-table.vue'
 import SummaryPanel from './Components/Summary-panel.vue'
@@ -47,18 +49,32 @@ export default {
     SummaryPanel,
     ModalPayment
   },
+
+  setup() {
+    const toast = useToast()
+    return { toast }
+  },
+  
+  props: {
+    suppliers: {
+      type: Array,
+      default: () => []
+    },
+    medicines: {
+      type: Array,
+      default: () => []
+    },
+    goods: {
+      type: Array,
+      default: () => []
+    }
+  },
   
   data() {
     return {
       totalAmount: 0,
       payableAmount: 0,
-      suppliers: [
-        { id: 1, ten_nha_cung_cap: 'Công ty Dược phẩm ABC', ma_nha_cung_cap: 'NCC001' },
-        { id: 2, ten_nha_cung_cap: 'Nhà cung cấp XYZ', ma_nha_cung_cap: 'NCC002' },
-        { id: 3, ten_nha_cung_cap: 'Công ty Thuốc DEF', ma_nha_cung_cap: 'NCC003' },
-        { id: 4, ten_nha_cung_cap: 'Nhà cung cấp GHI', ma_nha_cung_cap: 'NCC004' },
-        { id: 5, ten_nha_cung_cap: 'Công ty Dược JKL', ma_nha_cung_cap: 'NCC005' }
-      ]
+      items: [] // Store items from ItemTable
     }
   },
 
@@ -83,26 +99,131 @@ export default {
       this.payableAmount = amount // Initially payable = total, will be updated by discount
     },
 
-    handleFormSubmit(formData) {
-      console.log('Form submitted:', formData)
-      // TODO: Implement form submission
-      this.$toast.add({
-        severity: 'success',
-        summary: 'Thành công',
-        detail: 'Phiếu trả hàng đã được lưu',
-        life: 3000
-      })
+    handleUpdateItems(items) {
+      this.items = items
+    },
+
+    async handleFormSubmit(formData) {
+      // Validate required fields
+      if (!formData.supplier_id) {
+        this.toast.add({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: 'Vui lòng chọn nhà cung cấp',
+          life: 3000
+        })
+        return
+      }
+
+      if (this.items.length === 0) {
+        this.toast.add({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: 'Vui lòng thêm ít nhất một sản phẩm',
+          life: 3000
+        })
+        return
+      }
+
+      try {
+        // Prepare data for backend
+        const processedItems = this.items.map(item => {
+          const processedItem = {
+            product_type: item.product_type || 'goods', // Use product_type from Excel import
+            product_id: item.product_id || item.id,
+            quantity: item.so_luong || item.quantity,
+            unit_price: item.don_gia || item.unit_price,
+            discount: 0, // Individual item discount
+            note: item.note || null
+          }
+          
+          // Validate each item
+          if (!processedItem.product_id) {
+            throw new Error(`Sản phẩm "${item.ten_hang || item.ma_hang}" không có ID`)
+          }
+          if (!processedItem.quantity || processedItem.quantity <= 0) {
+            throw new Error(`Sản phẩm "${item.ten_hang || item.ma_hang}" có số lượng không hợp lệ`)
+          }
+          if (!processedItem.unit_price || processedItem.unit_price <= 0) {
+            throw new Error(`Sản phẩm "${item.ten_hang || item.ma_hang}" có đơn giá không hợp lệ`)
+          }
+          
+          return processedItem
+        })
+
+        const submitData = {
+          return_code: formData.import_code,
+          supplier_id: formData.supplier_id,
+          return_date: formData.import_date,
+          note: formData.note,
+          discount: formData.discount || 0,
+          items: processedItems
+        }
+
+        // Submit to backend
+        const response = await fetch('/admin/purchase-returns', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: JSON.stringify(submitData)
+        })
+
+        if (response.ok) {
+          this.toast.add({
+            severity: 'success',
+            summary: 'Thành công',
+            detail: 'Phiếu trả hàng đã được lưu thành công',
+            life: 3000
+          })
+            
+          // Redirect to dashboard after successful save
+          setTimeout(() => {
+            window.location.href = '/admin/purchase-returns'
+          }, 1500)
+        } else {
+          let errorMessage = 'Có lỗi xảy ra khi lưu phiếu trả hàng'
+          
+          try {
+            const errorData = await response.json()
+            
+            if (errorData.message) {
+              errorMessage = errorData.message
+            } else if (errorData.errors) {
+              // Handle validation errors
+              const errorMessages = Object.values(errorData.errors).flat()
+              errorMessage = errorMessages.join(', ')
+            }
+          } catch (e) {
+            errorMessage = `HTTP ${response.status}: ${response.statusText}`
+          }
+          
+          this.toast.add({
+            severity: 'error',
+            summary: 'Lỗi',
+            detail: errorMessage,
+            life: 5000
+          })
+        }
+      } catch (error) {
+        this.toast.add({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: 'Có lỗi xảy ra khi gửi dữ liệu',
+          life: 3000
+        })
+      }
     },
 
     handlePaymentConfirmed(paymentData) {
-      console.log('Payment confirmed:', paymentData)
       // TODO: Update summary panel with payment data
     }
   },
 
   mounted() {
     // Initialize any required data
-    console.log('Create Purchase Return page mounted')
   }
 }
 </script>

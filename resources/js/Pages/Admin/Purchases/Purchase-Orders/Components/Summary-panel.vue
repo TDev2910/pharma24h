@@ -171,7 +171,7 @@ export default {
       this.isGeneratingCode = true
       
       // Gọi API để tạo mã từ server
-      fetch('/admin/generate-order-code')
+      fetch('/admin/generate-import-code')
         .then(response => response.json())
         .then(data => {
           this.formData.order_code = data.code

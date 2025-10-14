@@ -38,29 +38,29 @@
   import SummaryPanel from './Components/Summary-panel.vue'
   import ModalPayment from './Components/Modal-payment.vue'
   
-  export default {
-    name: 'CreatePurchaseReturn',
-    
-    components: {
-      Toolbar,
-      ItemTable,
-      SummaryPanel,
-      ModalPayment
-    },
-    
-    data() {
-      return {
-        totalAmount: 0,
-        payableAmount: 0,
-        suppliers: [
-          { id: 1, ten_nha_cung_cap: 'Công ty Dược phẩm ABC', ma_nha_cung_cap: 'NCC001' },
-          { id: 2, ten_nha_cung_cap: 'Nhà cung cấp XYZ', ma_nha_cung_cap: 'NCC002' },
-          { id: 3, ten_nha_cung_cap: 'Công ty Thuốc DEF', ma_nha_cung_cap: 'NCC003' },
-          { id: 4, ten_nha_cung_cap: 'Nhà cung cấp GHI', ma_nha_cung_cap: 'NCC004' },
-          { id: 5, ten_nha_cung_cap: 'Công ty Dược JKL', ma_nha_cung_cap: 'NCC005' }
-        ]
-      }
-    },
+export default {
+  name: 'CreatePurchaseOrder',
+  
+  components: {
+    Toolbar,
+    ItemTable,
+    SummaryPanel,
+    ModalPayment
+  },
+  
+  data() {
+    return {
+      totalAmount: 0,
+      payableAmount: 0,
+      suppliers: [
+        { id: 1, ten_nha_cung_cap: 'Công ty Dược phẩm ABC', ma_nha_cung_cap: 'NCC001' },
+        { id: 2, ten_nha_cung_cap: 'Nhà cung cấp XYZ', ma_nha_cung_cap: 'NCC002' },
+        { id: 3, ten_nha_cung_cap: 'Công ty Thuốc DEF', ma_nha_cung_cap: 'NCC003' },
+        { id: 4, ten_nha_cung_cap: 'Nhà cung cấp GHI', ma_nha_cung_cap: 'NCC004' },
+        { id: 5, ten_nha_cung_cap: 'Công ty Dược JKL', ma_nha_cung_cap: 'NCC005' }
+      ]
+    }
+  },
   
     methods: {
       handleSearch(query) {

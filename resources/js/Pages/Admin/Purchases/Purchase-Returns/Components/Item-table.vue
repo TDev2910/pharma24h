@@ -212,6 +212,7 @@ export default {
       })
       
       this.$emit('update-total', total)
+      this.$emit('update-items', this.items) // Emit items data
     },
 
     showErrors(errors) {
