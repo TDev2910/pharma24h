@@ -21,7 +21,31 @@ class PurchaseReturnsController extends Controller
     public function index()
     {
         $returns = PurchaseReturn::with(['supplier', 'items'])->get();
-        return Inertia::render('Admin/Purchases/Purchase-Returns/Dashboard',compact('returns'));
+
+        $formattedReturns = $returns->map(function($return) {
+            return [
+                'id' => $return->id,
+                'return_code' => $return->return_code,
+                'supplier_name' => $return->supplier->ten_nha_cung_cap ?? 'N/A',
+                'return_date' => $return->return_date,
+                'status' => $return->status,
+                'total_amount' => $return->total_amount,
+                'total_discount' => $return->total_discount,
+                'remaining_amount' => $return->remaining_amount,
+                'note' => $return->note,
+                'items_count' => $return->items->count(),
+                'created_at' => $return->created_at,
+                // Map đúng các field cho frontend
+                'discount' => $return->total_discount,
+                'supplier_pay' => $return->remaining_amount,
+                'supplier_paid' => $return->paid_amount ?? 0,
+                'reason' => $return->note ?? 'Không có lý do'
+            ];
+        });
+            
+        return Inertia::render('Admin/Purchases/Purchase-Returns/Dashboard', [
+            'returns' => $formattedReturns
+        ]);    
     }
 
     /**
@@ -65,7 +89,7 @@ class PurchaseReturnsController extends Controller
             'return_code' => $request->return_code,
             'supplier_id' => $request->supplier_id,
             'return_date' => $request->return_date,
-            'status' => 'pending',
+            'status' => 'returned', // Mặc định là đã trả hàng
             'total_amount' => 0,
             'total_discount' => 0,
             'note' => $request->note
@@ -119,7 +143,8 @@ class PurchaseReturnsController extends Controller
         $purchaseReturn->update([
             'total_amount' => $finalAmount,
             'total_discount' => $totalDiscount + $formDiscount,
-            'remaining_amount' => $finalAmount
+            'paid_amount' => 0, // Ban đầu chưa trả tiền
+            'remaining_amount' => $finalAmount // Số tiền còn lại = tổng tiền (vì chưa trả)
         ]);
 
             return redirect()->route('admin.purchase-returns.index')
@@ -142,7 +167,11 @@ class PurchaseReturnsController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $purchaseReturn = PurchaseReturn::with(['supplier', 'items.product'])->findOrFail($id);
+        
+        return Inertia::render('Admin/Purchases/Purchase-Returns/Show', [
+            'purchaseReturn' => $purchaseReturn
+        ]);
     }
 
     /**
@@ -150,7 +179,13 @@ class PurchaseReturnsController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $purchaseReturn = PurchaseReturn::with(['supplier', 'items.product'])->findOrFail($id);
+        $suppliers = Supplier::orderBy('ten_nha_cung_cap')->get(['id','ten_nha_cung_cap','ma_nha_cung_cap']);
+        
+        return Inertia::render('Admin/Purchases/Purchase-Returns/Edit', [
+            'purchaseReturn' => $purchaseReturn,
+            'suppliers' => $suppliers
+        ]);
     }
 
     /**
@@ -166,7 +201,25 @@ class PurchaseReturnsController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $purchaseReturn = PurchaseReturn::findOrFail($id);
+            
+            // Xóa các items liên quan
+            $purchaseReturn->items()->delete();
+            
+            // Xóa payments liên quan
+            $purchaseReturn->payments()->delete();
+            
+            // Xóa purchase return
+            $purchaseReturn->delete();
+            
+            return redirect()->route('admin.purchase-returns.index')
+                ->with('success', 'Phiếu trả hàng đã được xóa thành công!');
+                
+        } catch (\Exception $e) {
+            return redirect()->route('admin.purchase-returns.index')
+                ->with('error', 'Có lỗi xảy ra khi xóa phiếu trả hàng: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -179,5 +232,39 @@ class PurchaseReturnsController extends Controller
         } while (PurchaseReturn::where('return_code', $code)->exists());
         
         return response()->json(['code' => $code]);
+    }
+
+    /**
+     * Process Excel file for purchase returns (delegated to ImportController)
+     */
+    public function processExcel(Request $request)
+    {
+        $importController = app(\App\Http\Controllers\Admin\ImportController::class);
+        return $importController->processPurchaseReturnExcel($request);
+    }
+
+    /**
+     * Create sample data for testing
+     */
+    public function createSampleData()
+    {
+        // Tạo một phiếu trả hàng mẫu
+        $purchaseReturn = PurchaseReturn::create([
+            'return_code' => 'TR' . date('Ymd') . rand(1000, 9999),
+            'supplier_id' => 1, // Giả sử có supplier với ID = 1
+            'return_date' => now(),
+            'status' => 'returned', // Mặc định là đã trả hàng
+            'total_amount' => 5000000,
+            'total_discount' => 500000,
+            'paid_amount' => 0,
+            'remaining_amount' => 4500000,
+            'note' => 'Trả hàng mẫu để test'
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã tạo dữ liệu mẫu thành công!',
+            'data' => $purchaseReturn
+        ]);
     }
 }

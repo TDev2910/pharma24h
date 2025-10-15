@@ -6,61 +6,65 @@
         :value="items" 
         stripedRows
         responsiveLayout="scroll"
-        tableStyle="min-width: 50rem"
+        tableStyle="min-width: 100%; width: 100%;"
         dataKey="id"
         loadingIcon="pi pi-spinner"
         emptyMessage="Chưa có sản phẩm nào được thêm"
-        :loading="isImporting">
+        :loading="isImporting"
+        scrollable
+        scrollHeight="flex">
         
-        <Column field="stt" header="STT" style="width:60px;">
+        <Column field="stt" header="STT" style="width:50px; min-width:50px;">
           <template #body="slotProps">
             {{ slotProps.index + 1 }}
           </template>
-        </Column>
+        </Column> 
         
-        <Column field="ma_hang" header="Mã hàng" style="min-width:140px;"></Column>
-        <Column field="ten_hang" header="Tên hàng" style="min-width:240px;"></Column>
-        <Column field="don_vi_tinh" header="ĐVT" style="width:90px;"></Column>
+        <Column field="ma_hang" header="Mã hàng" style="width:100px; min-width:100px;"></Column>
+        <Column field="ten_hang" header="Tên hàng" style="width:200px; min-width:150px;"></Column>
+        <Column field="don_vi_tinh" header="ĐVT" style="width:70px; min-width:70px;"></Column>
         
-        <Column field="so_luong" header="Số lượng" style="width:120px;">
+        <Column field="so_luong" header="Số lượng" style="width:100px; min-width:100px;">
           <template #body="slotProps">
             <InputNumber 
               v-model="slotProps.data.so_luong" 
               :min="1" 
               size="small"
-              style="width: 80px;"
+              style="width: 105px;"
               @input="updateRowTotal(slotProps.data)"
             />
           </template>         
         </Column>
         
-        <Column field="don_gia" header="Giá nhập" style="width:140px;">
+        <Column field="don_gia" header="Giá nhập" style="width:110px; min-width:110px;">
           <template #body="slotProps">
             <InputNumber 
               v-model="slotProps.data.don_gia" 
               :min="0" 
               :step="0.01"
               size="small"
+              style="width: 100%; max-width: 100px;"
               @input="updateRowTotal(slotProps.data)"
             />
           </template>         
         </Column>
 
-        <Column field="don_gia" header="Giá trả lại" style="width:140px;">
+        <Column field="don_gia" header="Giá trả lại" style="width:110px; min-width:110px;">
           <template #body="slotProps">
             <InputNumber 
               v-model="slotProps.data.don_gia" 
               :min="0" 
               :step="0.01"
-              size="small" style="width: 50px;"
+              size="small" 
+              style="width: 100%; max-width: 100px;"
               @input="updateRowTotal(slotProps.data)"
             />
           </template>         
         </Column>
         
-        <Column field="thanh_tien" header="Thành tiền" style="width:150px; min-width:150px; max-width:130px;" class="text-end">
+        <Column field="thanh_tien" header="Thành tiền" style="width:120px; min-width:120px;" class="text-end">
           <template #body="slotProps">
-            <div style="width: 130px; text-align: right; white-space: nowrap;">
+            <div style="width: 100%; text-align: right; white-space: nowrap; font-size: 0.875rem;">
               {{ formatCurrency(slotProps.data.thanh_tien) }}
             </div>
           </template>
@@ -153,7 +157,7 @@ export default {
       formData.append('excel_file', file)
       formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'))
 
-      fetch('/admin/process-excel', {
+      fetch('/admin/purchase-returns/process-excel', {
         method: 'POST',
         body: formData,
         headers: {
@@ -255,6 +259,7 @@ export default {
 :deep(.p-datatable) {
   border: none;
   table-layout: fixed;
+  width: 100%;
 }
 
 :deep(.p-datatable .p-datatable-header) {
@@ -270,11 +275,14 @@ export default {
   color: #495057;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 0.875rem;
+  padding: 0.5rem;
 }
 
 :deep(.p-datatable .p-datatable-tbody > tr > td) {
   border: 1px solid #dee2e6;
-  padding: 0.75rem;
+  padding: 0.5rem;
+  font-size: 0.875rem;
 }
 
 :deep(.p-datatable .p-datatable-tbody > tr:nth-child(even)) {
@@ -292,13 +300,60 @@ export default {
 
 :deep(.p-inputnumber .p-inputnumber-input) {
   border: 1px solid #ced4da;
-  border-radius: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  height: 32px;
+  width: 115px;
 }
 
 :deep(.p-inputnumber .p-inputnumber-input:focus) {
   border-color: #86b7fe;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1400px) {
+  :deep(.p-datatable .p-datatable-thead > tr > th),
+  :deep(.p-datatable .p-datatable-tbody > tr > td) {
+    padding: 0.4rem;
+    font-size: 0.8rem;
+  }
+  
+  :deep(.p-inputnumber .p-inputnumber-input) {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.75rem;
+    height: 28px;
+  }
+}
+
+@media (max-width: 1200px) {
+  :deep(.p-datatable .p-datatable-thead > tr > th),
+  :deep(.p-datatable .p-datatable-tbody > tr > td) {
+    padding: 0.3rem;
+    font-size: 0.75rem;
+  }
+  
+  :deep(.p-inputnumber .p-inputnumber-input) {
+    padding: 0.15rem 0.3rem;
+    font-size: 0.7rem;
+    height: 26px;
+  }
+}
+
+/* Ensure table fits container */
+.card-body {
+  overflow-x: auto;
+}
+
+/* Fix for small screens */
+@media (max-width: 992px) {
+  .card {
+    margin-left: 0 !important;
+  }
+  
+  :deep(.p-datatable) {
+    font-size: 0.8rem;
+  }
 }
 </style>

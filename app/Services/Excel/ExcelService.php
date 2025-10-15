@@ -115,11 +115,13 @@ class ExcelService
     {
         switch ($type) {
             case 'order':
-                return new \App\Services\Excel\Import\OrderImport();
+                return new \App\Services\Excel\Import\OrderImport(); //nhập đơn hàng
             case 'import':
-                return new \App\Services\Excel\Import\StockImportImport();
+                return new \App\Services\Excel\Import\StockImportImport(); //nhập hàng
             case 'product':
-                return new \App\Services\Excel\Import\ProductImport();
+                return new \App\Services\Excel\Import\ProductImport(); //nhập sản phẩm
+            case 'purchase-return':
+                return new \App\Services\Excel\Import\PurchaseReturnImport(); //nhập trả hàng
             default:
                 throw new \InvalidArgumentException("Import type '{$type}' không được hỗ trợ");
         }
@@ -134,6 +136,7 @@ class ExcelService
             'order' => 'Đơn hàng',
             'import' => 'Nhập hàng',
             'product' => 'Sản phẩm',
+            'purchase-return' => 'Trả hàng',
         ];
     }
 

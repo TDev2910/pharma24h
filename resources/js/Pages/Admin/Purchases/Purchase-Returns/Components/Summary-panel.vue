@@ -65,16 +65,18 @@
           </div>
           <span class="fw-bold value">{{ formatCurrency(formData.subtotal_raw) }}</span>
         </div>
-        <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="d-flex justify-content-between align-items-center mb-1">
           <span class="form-label m-0">Giảm giá</span>
-          <input 
-            type="number" 
+          <InputNumber 
             v-model="formData.discount" 
-            class="form-control text-end" 
-            style="width:120px;background:#fff;" 
-            min="0"
+            mode="currency"
+            currency="VND"
+            locale="vi-VN"
+            :min="0"
+            :maxFractionDigits="0"
+            style="width:120px;"
             @input="recalculate"
-          >
+          />
         </div>
         <div class="d-flex justify-content-between align-items-center mb-2">
           <span class="form-label m-0">Nhà cung cấp cẩn trả</span>
@@ -131,8 +133,14 @@
 </template>
 
 <script>
+import InputNumber from 'primevue/inputnumber'
+
 export default {
   name: 'SummaryPanel',
+  
+  components: {
+    InputNumber
+  },
   
   props: {
     suppliers: {
@@ -268,5 +276,10 @@ export default {
 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+:deep(.p-inputnumber-input) {
+  width: 120px !important;
+  font-size: 0.9rem;
 }
 </style>

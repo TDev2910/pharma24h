@@ -112,7 +112,7 @@
         <!-- DataTable -->
         <div class="table-container">
             <DataTable 
-                :value="purchaseReturns" 
+                :value="returns" 
                 v-model:expandedRows="expandedRows"
                 stripedRows
                 responsiveLayout="scroll"
@@ -128,14 +128,14 @@
                 loadingIcon="pi pi-spinner"
                 emptyMessage="Không có dữ liệu phiếu trả hàng">
                 <Column expander style="width: 3rem" />
-                <Column field="return_code" header="Mã trả hàng nhập"></Column>
+                <Column field="return_code" style="width:155px;" header="Mã trả hàng nhập"></Column>
                 <Column field="created_at" header="Thời gian">
                     <template #body="slotProps">
                         {{ formatDate(slotProps.data.created_at) }}
                     </template>
                 </Column>
                 <Column field="supplier_name" header="Nhà cung cấp"></Column>
-                <Column field="total_amount" header="Tổng tiền hàng">
+                <Column field="total_amount" style="width:140px;" header="Tổng tiền hàng">
                     <template #body="slotProps">
                         {{ formatCurrency(slotProps.data.total_amount) }}
                     </template>
@@ -145,14 +145,19 @@
                         {{ formatCurrency(slotProps.data.discount) }}
                     </template>
                 </Column>
-                <Column field="supplier_pay" header="NCC cần trả">
+                <Column field="supplier_pay" style="width:120px;" header="NCC cần trả">
                     <template #body="slotProps">
                         {{ formatCurrency(slotProps.data.supplier_pay) }}
                     </template>
                 </Column>
-                <Column field="supplier_paid" header="NCC đã trả">
+                <Column field="supplier_paid" style="width:120px;" header="NCC đã trả">
                     <template #body="slotProps">
                         {{ formatCurrency(slotProps.data.supplier_paid) }}
+                    </template>
+                </Column>
+                <Column field="status" style="width:120px;" header="Trạng thái">
+                    <template #body="slotProps">
+                        {{ getStatusText(slotProps.data.status) }}
                     </template>
                 </Column>
                 
@@ -187,7 +192,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td class="fw-bold">Lý do trả hàng:</td>
-                                                    <td>{{ slotProps.data.reason }}</td>
+                                                    <td>{{ slotProps.data.note }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="fw-bold">Tổng tiền hàng:</td>
@@ -221,7 +226,7 @@
                                                 <tr>
                                                     <td class="fw-bold">NCC đã trả:</td>
                                                     <td>
-                                                        <span class="badge bg-success">{{ formatCurrency(slotProps.data.supplier_paid) }}</span>
+                                                        <span class="badge bg-success">{{ formatCurrency(slotProps.data.supplier_pay) }}</span>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -276,6 +281,7 @@ import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import DatePicker from 'primevue/datepicker'
+import { usePage } from '@inertiajs/vue3'
 
 export default {
   name: 'PurchaseReturnsDashboard',
@@ -284,6 +290,14 @@ export default {
     DataTable,
     Column,
     DatePicker
+  },
+  
+  setup() {
+    const { props } = usePage()
+    
+    return {
+      returns: props.returns || []
+    }
   },
   
   data() {
@@ -300,75 +314,13 @@ export default {
         thisMonthDate: null,
         customDate: null
       },
-      purchaseReturns: [
-        {
-          id: 1,
-          return_code: 'TR20251010001',
-          created_at: '2025-10-10',
-          supplier_name: 'Công ty Dược phẩm ABC',
-          total_amount: 15000000,
-          discount: 500000,
-          supplier_pay: 14500000,
-          supplier_paid: 10000000,
-          reason: 'Hàng hư hỏng',
-          status: 'returned'
-        },
-        {
-          id: 2,
-          return_code: 'TR20251010002',
-          created_at: '2025-10-09',
-          supplier_name: 'Nhà cung cấp XYZ',
-          total_amount: 8500000,
-          discount: 200000,
-          supplier_pay: 8300000,
-          supplier_paid: 8300000,
-          reason: 'Hàng không đúng mẫu mã',
-          status: 'completed'
-        },
-        {
-          id: 3,
-          return_code: 'TR20251010003',
-          created_at: '2025-10-08',
-          supplier_name: 'Công ty Thuốc DEF',
-          total_amount: 12000000,
-          discount: 0,
-          supplier_pay: 12000000,
-          supplier_paid: 0,
-          reason: 'Hàng hết hạn sử dụng',
-          status: 'pending'
-        },
-        {
-          id: 4,
-          return_code: 'TR20251010004',
-          created_at: '2025-10-07',
-          supplier_name: 'Nhà cung cấp GHI',
-          total_amount: 6500000,
-          discount: 100000,
-          supplier_pay: 6400000,
-          supplier_paid: 3200000,
-          reason: 'Lỗi đơn hàng',
-          status: 'partial'
-        },
-        {
-          id: 5,
-          return_code: 'TR20251010005',
-          created_at: '2025-10-06',
-          supplier_name: 'Công ty Dược JKL',
-          total_amount: 9500000,
-          discount: 300000,
-          supplier_pay: 9200000,
-          supplier_paid: 9200000,
-          reason: 'Hàng không đạt chất lượng',
-          status: 'completed'
-        }
-      ],
       pagination: {
         current_page: 1,
         last_page: 1,
         per_page: 10,
-        total: 5,
+        total: 0,
         from: 1,
-        to: 5
+        to: 0
       }
     }
   },
@@ -428,6 +380,7 @@ export default {
     editPurchaseReturn(purchaseReturn) {
       console.log('Edit purchase return:', purchaseReturn)
       // TODO: Implement edit functionality
+      this.$inertia.visit(`/admin/purchase-returns/${purchaseReturn.id}/edit`)
     },
 
     // Delete purchase return
@@ -435,6 +388,7 @@ export default {
       if (confirm(`Bạn có chắc muốn xóa phiếu trả hàng ${purchaseReturn.return_code}?`)) {
         console.log('Delete purchase return:', purchaseReturn)
         // TODO: Implement delete functionality
+        this.$inertia.delete(`/admin/purchase-returns/${purchaseReturn.id}`)
       }
     }
   }

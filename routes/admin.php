@@ -85,6 +85,8 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::get('generate-import-code', [PruchaseImportController::class, 'generateImportCode'])->name('generate-import-code');
     Route::get('generate-return-code', [PurchaseReturnsController::class, 'generateReturnCode'])->name('generate-return-code');
     Route::post('process-excel', [PruchaseImportController::class, 'processExcel'])->name('process-excel');
+    Route::post('purchase-returns/process-excel', [PurchaseReturnsController::class, 'processExcel'])->name('purchase-returns.process-excel');
+    Route::get('purchase-returns/create-sample', [PurchaseReturnsController::class, 'createSampleData'])->name('purchase-returns.create-sample');
 
     // Supplier Categories
     Route::prefix('supplier-categories')->name('supplier-categories.')->group(function () {
