@@ -9,13 +9,28 @@
             </div>
             <!-- Search Section -->
             <div style="flex:1; display:flex; justify-content:center;">
-                <div class="search-wrapper">
+                <div class="search-wrapper" style="width: 100%; max-width: 500px;">
                     <div class="input-group">
                         <span class="input-group-text">
                             <i class="pi pi-search"></i>
                         </span>
-                        <input type="text" class="form-control" style="border-radius:8px;" placeholder="Theo mã, tên nhà cung cấp" v-model="searchQuery" @input="debounceSearch">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            style="border-radius:8px;" 
+                            placeholder="Tìm kiếm theo mã trả hàng, tên nhà cung cấp" 
+                            v-model="searchQuery" 
+                            @input="debounceSearch"
+                        >
                     </div>
+                </div>
+                
+                <!-- Thông báo số kết quả -->
+                <div v-if="isSearching" class="search-results-info mt-2 text-center">
+                  <small class="text-muted">
+                    Hiển thị {{ searchResultsCount }} / {{ returns.length }} kết quả
+                    <span v-if="!hasSearchResults" class="text-warning"> - Không tìm thấy kết quả nào</span>
+                  </small>
                 </div>
             </div>
     <!-- Utility Options -->
@@ -112,7 +127,7 @@
         <!-- DataTable -->
         <div class="table-container">
             <DataTable 
-                :value="returns" 
+                :value="filteredReturns" 
                 v-model:expandedRows="expandedRows"
                 stripedRows
                 responsiveLayout="scroll"
@@ -167,7 +182,7 @@
                       <!-- 2 danh mục thông tin và sản phẩm-->
                         <div class="detail-tabs">  
                             <button class="tab active" @click="switchTab('info')">Thông tin</button>
-                            <button class="tab" @click="switchTab('products')">Sản phẩm</button>
+                            <button class="tab" @click="switchTab('products')">Lịch sử nhập hàng</button>
                         </div>
                         
                         <!-- Danh mục thông tin và sản phẩm-->
@@ -243,12 +258,7 @@
                                         </table>
                                         
                                         <!-- Action buttons chỉnh sửa và xóa-->
-                                        <div class="mt-3">
-                                            <Button 
-                                                label="Chỉnh sửa" 
-                                                icon="pi pi-pencil" 
-                                                class="p-button-success p-button-sm me-2"
-                                                @click="editPurchaseReturn(slotProps.data)" />                                       
+                                        <div class="mt-3">                                    
                                             <Button 
                                                 label="Xóa" 
                                                 icon="pi pi-trash" 
@@ -303,6 +313,8 @@ export default {
   data() {
     return {
       searchQuery: '',
+      debounceTimer: null,
+      filteredReturns: [],
       showModal: false,
       expandedRows: {},
       activeTab: 'info',
@@ -325,16 +337,52 @@ export default {
     }
   },
 
-  methods: {
-    // Search functionality với debounce
+  computed: {
+    // Computed property để tối ưu performance
+    searchResultsCount() {
+      return this.filteredReturns.length
+    },
+    
+    hasSearchResults() {
+      return this.searchQuery && this.filteredReturns.length > 0
+    },
+    
+    isSearching() {
+      return this.searchQuery && this.searchQuery.trim().length > 0
+    }
+  },
+
+  methods: { 
+    //Lọc kết quả 
     debounceSearch() {
-      // TODO: Implement search functionality
-      console.log('Search query:', this.searchQuery)
+      clearTimeout(this.debounceTimer)
+      this.debounceTimer = setTimeout(() => {
+        this.searchReturns()
+      }, 200) 
     },
 
-    // Modal methods
+    matches(item, term) {
+      const code = (item.return_code || '').toLowerCase()
+      const name = (item.supplier_name || '').toLowerCase()
+      const note = (item.note || '').toLowerCase()
+      return code.includes(term) || name.includes(term) || note.includes(term)
+    },
+
+    // Function tìm kiếm 
+    searchReturns() {
+      const term = this.searchQuery.toLowerCase().trim()
+      
+      if (!term) {
+        // Nếu không có từ khóa, hiển thị tất cả
+        this.filteredReturns = [...this.returns]
+      } else {
+        // Lọc kết quả sử dụng hàm matches
+        this.filteredReturns = this.returns.filter(r => this.matches(r, term))
+      }
+    },
+
+    // Chuyển hướng đến trang tạo phiếu trả hàng
     showCreate() {
-      // Chuyển hướng đến trang tạo phiếu trả hàng
       this.$inertia.visit('/admin/purchase-returns/create')
     },
 
@@ -391,6 +439,11 @@ export default {
         this.$inertia.delete(`/admin/purchase-returns/${purchaseReturn.id}`)
       }
     }
+  },
+
+  mounted() {
+    // Khởi tạo filteredReturns với dữ liệu gốc
+    this.filteredReturns = [...this.returns]
   }
 };
 </script>
