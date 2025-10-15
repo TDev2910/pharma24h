@@ -43,13 +43,6 @@
           severity="secondary"
           style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
         />
-        <Button 
-          icon="pi pi-file-excel"
-          label="Xuất file"
-          @click="showImport"
-          severity="secondary"
-          style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
-        />
                 <!-- Utility Icons -->
                 <div class="utility-icons">
                     <button class="btn" title="Chế độ xem">
@@ -258,12 +251,19 @@
                                         </table>
                                         
                                         <!-- Action buttons chỉnh sửa và xóa-->
-                                        <div class="mt-3">                                    
-                                            <Button 
-                                                label="Xóa" 
-                                                icon="pi pi-trash" 
-                                                class="p-button-danger p-button-sm"
-                                                @click="deletePurchaseReturn(slotProps.data)" />
+                                        <div class="mt-3">     
+                                          <Button 
+                                              icon="pi pi-file-excel"
+                                              label="Xuất file"
+                                              @click="showImport"
+                                              severity="secondary"
+                                              style="background:#3A6F43; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"/>       
+                                          <Button 
+                                              icon="pi pi-trash"
+                                              label="Xóa"
+                                              @click="deletePurchaseReturn(slotProps.data)"
+                                              severity="secondary"
+                                              style="background:#DC143C; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"/>                                                                                          
                                         </div>
                                     </div>
                                 </div>
