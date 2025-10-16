@@ -327,9 +327,6 @@ export default {
   
   data() {
     return {
-      isExporting: false,
-      searchQuery: '',
-      debounceTimer: null,
       filteredReturns: [],
       showModal: false,
       expandedRows: {},
@@ -400,12 +397,6 @@ export default {
     // Chuyển hướng đến trang tạo phiếu trả hàng
     showCreate() {
       this.$inertia.visit('/admin/purchase-returns/create')
-    },
-
-    // Continue search
-    continueSearch() {
-      console.log('Continue searching...')
-      // TODO: Implement continue search functionality
     },
 
     // Tab switching

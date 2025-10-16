@@ -18,11 +18,11 @@
                 type="text" 
                 class="form-control" 
                 style="border-radius:8px;" 
-                placeholder="Theo tên, email, số điện thoại khách hàng" 
+                placeholder="Tìm kiếm theo tên, email, số điện thoại khách hàng" 
                 v-model="searchQuery" 
                 @input="debounceSearch"
               >
-            </div>
+            </div>         
           </div>
         </div>
         <!-- Utility Options -->
@@ -75,7 +75,7 @@
          <!-- Customer Data Table -->
          <div class="table-container">
            <DataTable 
-             :value="displayCustomers" 
+             :value="filteredCustomers" 
              removableSort 
              tableStyle="min-width: 50rem"
              class="customers-table"
@@ -237,7 +237,6 @@ export default {
   
   data() {
     return {
-      testInput: '',
       searchQuery: '',
       searchTimeout: null,
       showCreateModal: false,
@@ -250,6 +249,25 @@ export default {
   computed: {
     displayCustomers() {
       return this.localCustomers.length > 0 ? this.localCustomers : this.customers;
+    },
+    
+    //Lọc khách hàng
+    filteredCustomers() {
+      const customers = this.localCustomers.length > 0 ? this.localCustomers : this.customers;
+
+      //Nếu không nhập từ khóa , thông tin khách hàng sẽ hiển thị tất cả
+      if (!this.searchQuery || !this.searchQuery.trim()) {
+        return customers; //Trả về tất cả khách hàng
+      }
+      
+      //Lọc khách hàng theo tên, email, số điện thoại
+      const term = this.searchQuery.toLowerCase().trim();
+      return customers.filter(customer => {
+        const name = (customer.name || '').toLowerCase();
+        const email = (customer.email || '').toLowerCase();
+        const phone = (customer.phone || '').toLowerCase();
+        return name.includes(term) || email.includes(term) || phone.includes(term);
+      });
     }
   },
   
@@ -263,10 +281,6 @@ export default {
   },
   
   methods: {
-    testFunction() {
-      alert('Button clicked! Input value: ' + this.testInput)
-    },
-    
     openCreateModal() {
       this.showCreateModal = true
     },
@@ -274,13 +288,9 @@ export default {
     debounceSearch() {
       clearTimeout(this.searchTimeout)
       this.searchTimeout = setTimeout(() => {
-        this.searchCustomers()
-      }, 500)
+      }, 200)
     },
     
-    searchCustomers() {
-      console.log('Searching customers:', this.searchQuery)
-    },
     
     formatCurrency(amount) {
       return new Intl.NumberFormat('vi-VN', {
@@ -363,6 +373,10 @@ export default {
       if (index !== -1) {
         this.localCustomers[index] = customer;
       }
+    },
+
+    mounted() {
+      // Filter sẽ tự động áp dụng thông qua computed property
     }
   }
 }
@@ -403,21 +417,6 @@ export default {
   min-width: 280px;
 }
 
-.search-wrapper .input-group {
-  position: relative;
-}
-
-.search-wrapper .input-group-text {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  color: #6c757d;
-  z-index: 2;
-  pointer-events: none;
-}
 
 .search-wrapper .form-control {
   padding-left: 40px !important;
@@ -434,6 +433,32 @@ export default {
   border-color: #007bff !important;
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1) !important;
   outline: none !important;
+}
+
+/* Search wrapper improvements */
+.search-wrapper {
+  position: relative;
+}
+
+.search-wrapper .input-group {
+  position: relative;
+}
+
+.search-wrapper .input-group-text {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #6c757d;
+  z-index: 2;
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.search-wrapper .form-control:focus + .input-group-text {
+  color: #007bff;
 }
 
 /* Utility Options */

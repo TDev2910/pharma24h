@@ -2,7 +2,7 @@
 
 namespace App\Services\Excel\Export;
 
-use Shuchkin\SimpleXLSXGen;
+use Shuchkin\SimpleXLSXGen; //thư viện simplexlsxgen dùng xuất file excel
 
 class PurchaseReturnExport
 {
@@ -44,7 +44,7 @@ class PurchaseReturnExport
     {
         $result = [];
         
-        // Header
+        // Tiêu đề cột
         $result[] = [
             'Mã phiếu trả',
             'Nhà cung cấp', 
@@ -59,7 +59,7 @@ class PurchaseReturnExport
             'Ngày tạo'
         ];
         
-        // Data
+        // dữ liệu truyền vào 
         foreach ($data as $return) {
             $result[] = [
                 $return['return_code'] ?? '',
@@ -79,7 +79,8 @@ class PurchaseReturnExport
         return $result;
     }
 
-    protected function getDefaultFilename(): string
+
+    protected function getDefaultFilename(): string 
     {
         return 'phieu_tra_hang_' . date('Y_m_d_H_i_s');
     }

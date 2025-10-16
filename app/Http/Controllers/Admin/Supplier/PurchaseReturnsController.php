@@ -245,13 +245,14 @@ class PurchaseReturnsController extends Controller
         return $importController->processPurchaseReturnExcel($request);
     }
 
+    // Xuất file excel
     public function export(Request $request)
     {
         try {
             // Lấy dữ liệu với filter
             $query = PurchaseReturn::with(['supplier', 'items']);
             
-            // Filter theo search (tìm kiếm theo mã phiếu, tên nhà cung cấp)
+            //tìm kiếm theo mã phiếu, tên nhà cung cấp
             if ($request->filled('search')) {
                 $searchTerm = $request->search;
                 $query->where(function($q) use ($searchTerm) {
