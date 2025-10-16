@@ -43,6 +43,17 @@
           severity="secondary"
           style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
         />
+        
+        <!-- Xuất file Excel -->
+        <Button 
+          icon="pi pi-file-excel"
+          :label="isExporting ? 'Đang xuất...' : 'Xuất file'"
+          :disabled="isExporting"
+          @click="exportToExcel"
+          severity="secondary"
+          style="background:#3A6F43; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
+        />
+        
                 <!-- Utility Icons -->
                 <div class="utility-icons">
                     <button class="btn" title="Chế độ xem">
@@ -253,11 +264,11 @@
                                         <!-- Action buttons chỉnh sửa và xóa-->
                                         <div class="mt-3">     
                                           <Button 
-                                              icon="pi pi-file-excel"
-                                              label="Xuất file"
-                                              @click="showImport"
+                                              icon="pi pi-pencil"
+                                              label="Chỉnh sửa"
+                                              @click="editPurchaseReturn(slotProps.data)"
                                               severity="secondary"
-                                              style="background:#3A6F43; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"/>       
+                                              style="background:#007bff; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"/>       
                                           <Button 
                                               icon="pi pi-trash"
                                               label="Xóa"
@@ -292,6 +303,8 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import DatePicker from 'primevue/datepicker'
 import { usePage } from '@inertiajs/vue3'
+import { useToast } from 'primevue/usetoast'
+// import axios from 'axios' // Tạm thời disable
 
 export default {
   name: 'PurchaseReturnsDashboard',
@@ -304,14 +317,17 @@ export default {
   
   setup() {
     const { props } = usePage()
+    const toast = useToast()
     
     return {
-      returns: props.returns || []
+      returns: props.returns || [],
+      toast
     }
   },
   
   data() {
     return {
+      isExporting: false,
       searchQuery: '',
       debounceTimer: null,
       filteredReturns: [],
@@ -438,6 +454,17 @@ export default {
         // TODO: Implement delete functionality
         this.$inertia.delete(`/admin/purchase-returns/${purchaseReturn.id}`)
       }
+    },
+
+    // Export to Excel - Tạm thời disable
+    async exportToExcel() {
+      // TODO: Implement export functionality later
+      this.toast.add({
+        severity: 'info',
+        summary: 'Thông báo',
+        detail: 'Chức năng xuất file Excel đang được phát triển',
+        life: 3000
+      });
     }
   },
 

@@ -10,6 +10,8 @@ use App\Models\Inventory\PurchaseReturnItem;
 use App\Models\Inventory\PurchaseReturnPayment;
 use App\Models\Medicine;
 use App\Models\Goods;
+// use App\Services\Excel\Export\PurchaseReturnExport; // Tạm thời disable
+use Illuminate\Support\Str;
 
 use Inertia\Inertia;
 
@@ -242,6 +244,10 @@ class PurchaseReturnsController extends Controller
         $importController = app(\App\Http\Controllers\Admin\ImportController::class);
         return $importController->processPurchaseReturnExcel($request);
     }
+
+    // Export functionality temporarily disabled
+
+    // Test export functionality temporarily disabled
 
     /**
      * Create sample data for testing
