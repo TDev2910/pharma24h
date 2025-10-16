@@ -15,21 +15,31 @@
                         <span class="input-group-text">
                             <i class="pi pi-search"></i>
                         </span>
-                        <input type="text" class="form-control" style="border-radius:8px;background-color: #f2f4f7;" placeholder="Theo mã, tên hàng" v-model="searchQuery">
+                        <input type="text" class="form-control" style="border-radius:8px;" placeholder="Theo mã, tên hàng" v-model="searchQuery" @input="debounceSearch">
                     </div>
                 </div>
             </div>
             <!-- Utility Options -->
             <div class="ultility-options">
                 <!-- Xuất file -->
-                <div class="text-end pb-4">
-                  <Button 
-                    icon="pi pi-external-link"
-                    label="Export"
-                    @click="exportData"
-                    severity="secondary"
-                    style="margin-top: 20px;background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
-                  />
+                <Button 
+                  icon="pi pi-upload"
+                  label="Xuất file"
+                  @click="exportData"
+                  severity="secondary"
+                  style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
+                />
+                <!-- Utility Icons -->
+                <div class="utility-icons">
+                    <button class="btn" title="Chế độ xem">
+                        <i class="pi pi-list"></i>
+                    </button>
+                    <button class="btn" title="Cài đặt">
+                        <i class="pi pi-cog"></i>
+                    </button>
+                    <button class="btn" title="Trợ giúp">
+                        <i class="pi pi-question-circle"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -146,62 +156,41 @@ const onPageChange = (event) => {
   rows.value = event.rows
 }
 
+const debounceSearch = () => {
+  // Debounce search functionality - có thể implement sau
+}
+
 onMounted(() => {
   console.log('Medicines data:', props.medicines)
 })
 </script>
 
 <style scoped>
-/* Modern UI Variables */
-:root {
-  --primary-color: #4f46e5;
-  --primary-hover: #4338ca;
-  --secondary-color: #64748b;
-  --success-color: #10b981;
-  --border-color: #e2e8f0;
-  --bg-light: #f8fafc;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-/* Page Layout */
 .medicines-page {
-  padding: 0;
-  background: var(--bg-light);
-  min-height: 100vh;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 
-               "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  padding: 20px;
 }
 
 /* Header Control Bar */
 .header-control-bar {
-  background: white;
+  background: #fff;
   border-radius: 12px;
-  padding: 20px 24px;
-  margin-bottom: 24px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
 }
 
 .controls-section {
   display: flex;
   align-items: center;
   gap: 16px;
-  flex-wrap: wrap;
 }
 
-/* Title Section */
 .title-section h4 {
-  color: var(--text-primary);
-  font-weight: 700;
-  font-size: 20px;
+  color: #2c3e50;
   margin: 0;
-  white-space: nowrap;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 
-               "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
 }
 
 /* Search Box */
@@ -222,93 +211,70 @@ onMounted(() => {
   transform: translateY(-50%);
   background: transparent;
   border: none;
-  z-index: 10;
-  color: var(--text-secondary);
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
+  color: #6c757d;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .search-wrapper .form-control {
   padding-left: 40px !important;
   padding-right: 16px !important;
-  border: 1.5px solid var(--border-color) !important;
+  border: 2px solid #91C4C3 !important;
   border-radius: 8px !important;
   height: 42px !important;
   font-size: 14px !important;
+  background: #fff !important;
   transition: all 0.2s ease !important;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 
-               "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
 .search-wrapper .form-control:focus {
-  border-color: var(--primary-color) !important;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1) !important;
+  border-color: #007bff !important;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1) !important;
   outline: none !important;
 }
 
 /* Utility Options */
 .ultility-options {
   display: flex;
-  gap: 8px;
-  margin-left: auto;
-}
-
-.btn-export {
-  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border: 1.5px solid var(--border-color);
-  border-radius: 8px;
-  background: white;
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.btn-export:hover {
-  background: var(--bg-light);
-  border-color: var(--primary-color);
-  color: var(--primary-color);
+  gap: 12px;
 }
 
 .utility-icons {
   display: flex;
-  gap: 4px;
+  gap: 8px;
 }
 
-.utility-icons .btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  border: 1.5px solid var(--border-color);
-  background: white;
-  color: var(--text-secondary);
+.btn {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-  padding: 0;
 }
 
-.utility-icons .btn:hover {
-  background: var(--bg-light);
-  border-color: var(--primary-color);
-  color: var(--primary-color);
+.btn:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.btn i {
+  font-size: 14px;
 }
 
 /* Table Container */
 .table-container {
-  background: white;
+  background: #fff;
   border-radius: 12px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
-  overflow: hidden;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  margin-top: 20px;
 }
 
 /* Badge/Tag Styles for Active Ingredients */
@@ -322,241 +288,85 @@ onMounted(() => {
   font-weight: 500;
 }
 
-/* PrimeVue DataTable Header Styling */
+/* DataTable Styling */
+:deep(.p-datatable) {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #000;
+}
+
 :deep(.p-datatable .p-datatable-header) {
-  background: #1db46a;
-  color: #fff;
-  border: none;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
   padding: 16px 20px;
 }
 
 :deep(.p-datatable .p-datatable-thead > tr > th) {
-  background: #1db46a !important;
-  color: #fff !important;
+  background: #B4DEBD;
+  color: #495057;
   font-weight: 600;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+  border-bottom: 2px solid #e9ecef;
   padding: 16px 20px;
-  border: none;
-  text-align: center;
-  position: relative;
-  white-space: nowrap;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 
-               "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-size: 14px;
 }
 
-:deep(.p-datatable .p-datatable-thead > tr > th:first-child) {
-  border-top-left-radius: 12px;
-}
-
-:deep(.p-datatable .p-datatable-thead > tr > th:last-child) {
-  border-top-right-radius: 12px;
-}
-
-:deep(.p-datatable .p-datatable-thead > tr > th:hover) {
-  background: #1db46a;
-}
-
-/* Table body styling */
 :deep(.p-datatable .p-datatable-tbody > tr) {
   transition: all 0.2s ease;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid #f1f3f4;
+}
+
+/* Striped rows styling */
+:deep(.p-datatable .p-datatable-tbody > tr:nth-child(even)) {
+  background: #f8f9fa;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr:nth-child(odd)) {
+  background: #ffffff;
 }
 
 :deep(.p-datatable .p-datatable-tbody > tr:hover) {
-  background: #fafbfc;
+  background: #e3f2fd !important;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr:last-child) {
-  border-bottom: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 :deep(.p-datatable .p-datatable-tbody > tr > td) {
   padding: 16px 20px;
-  color: var(--text-primary);
+  color: #495057;
   font-size: 14px;
   vertical-align: middle;
-  border: none;
-  text-align: left;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 
-               "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  border-right: 1px solid #e9ecef;
+  border-bottom: 1px solid #f1f3f4;
 }
 
-/* Pagination Styling */
+/* Loại bỏ viền dọc của cột cuối cùng */
+:deep(.p-datatable .p-datatable-tbody > tr > td:last-child) {
+  border-right: none;
+}
+
+/* Pagination styling */
 :deep(.p-paginator) {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 0 0 12px 12px;
-  padding: 16px 20px;
+  font-size: 12px;
+  padding: 8px 12px;
 }
 
-:deep(.p-paginator .p-paginator-page) {
-  background: white;
-  border: 1px solid #d1d5db;
-  color: #6b7280;
-  border-radius: 6px;
-  margin: 0 2px;
-  transition: all 0.2s ease;
+:deep(.p-paginator .p-paginator-pages .p-paginator-page) {
+  font-size: 12px;
+  padding: 4px 8px;
 }
 
-:deep(.p-paginator .p-paginator-page:hover) {
-  background: var(--bg-light);
-  border-color: var(--primary-color);
-  color: var(--primary-color);
-}
-
-:deep(.p-paginator .p-paginator-page.p-highlight) {
-  background: var(--primary-color);
-  border-color: var(--primary-color);
-  color: white;
-}
-
-:deep(.p-paginator .p-dropdown) {
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-}
-
-/* Responsive Design */
+/* Responsive improvements */
 @media (max-width: 768px) {
-  .medicines-page {
-    padding: 16px;
-  }
-
-  .controls-section {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-wrapper {
-    max-width: 100%;
-  }
-
-  .ultility-options {
-    margin-left: 0;
-    justify-content: space-between;
-  }
-
   .table-container {
-    overflow-x: auto;
+    padding: 10px;
+    margin-top: 10px;
   }
-}
-
-@media (max-width: 576px) {
-  .header-control-bar {
-    padding: 16px;
+  
+  :deep(.p-datatable .p-datatable-thead > tr > th),
+  :deep(.p-datatable .p-datatable-tbody > tr > td) {
+    padding: 12px 8px;
+    font-size: 13px;
   }
-
-  .title-section h4 {
-    font-size: 18px;
-  }
-}
-
-/* Scrollbar Styling */
-.table-container::-webkit-scrollbar {
-  height: 8px;
-}
-
-.table-container::-webkit-scrollbar-track {
-  background: var(--bg-light);
-  border-radius: 4px;
-}
-
-.table-container::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 4px;
-}
-
-.table-container::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
-}
-
-/* Custom Paginator */
-.custom-paginator {
-  margin-top: 16px;
-  display: flex;
-  justify-content: center;
-}
-:deep(.p-paginator) {
-  background: transparent;
-  border: 0;
-  padding: 0;
-  gap: 14px;                /* khoảng cách các nút */
-  align-items: center;
-}
-
-/* Nút số trang */
-:deep(.p-paginator .p-paginator-page) {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;     /* tròn */
-  border: 0;
-  background: transparent;
-  color: #6b7280;           /* xám nhạt */
-  font-weight: 600;
-  transition: all .15s ease;
-}
-
-:deep(.p-paginator .p-paginator-page:hover) {
-  background: #f2f4f7;
-  color: #111827;
-}
-
-/* Trang đang chọn = chấm tròn đen */
-:deep(.p-paginator .p-paginator-page.p-highlight) {
-  background: #0b1020;      /* đen/xanh đậm */
-  color: #fff;
-}
-
-/* Mũi tên điều hướng « ‹ › » */
-:deep(.p-paginator .p-paginator-first),
-:deep(.p-paginator .p-paginator-prev),
-:deep(.p-paginator .p-paginator-next),
-:deep(.p-paginator .p-paginator-last) {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  border: 0;
-  color: #9aa3b2;
-  background: transparent;
-  transition: all .15s ease;
-}
-
-:deep(.p-paginator .p-paginator-first:hover),
-:deep(.p-paginator .p-paginator-prev:hover),
-:deep(.p-paginator .p-paginator-next:hover),
-:deep(.p-paginator .p-paginator-last:hover) {
-  background: #f2f4f7;
-  color: #111827;
-}
-
-/* Dropdown chọn số dòng bên phải */
-:deep(.p-paginator .p-dropdown) {
-  margin-left: 12px;
-  height: 36px;
-  border: 1px solid #d5dbe6;
-  border-radius: 10px;
-  background: transparent;
-}
-
-:deep(.p-paginator .p-dropdown .p-inputtext) {
-  padding: 0 10px;
-  height: 34px;
-  line-height: 34px;
-  text-align: center;       /* số 10 căn giữa */
-  color: #6b7280;
-  font-weight: 600;
-}
-
-:deep(.p-paginator .p-dropdown .p-dropdown-trigger) {
-  color: #9aa3b2;
-}
-
-/* Ẩn khung tiêu đề nếu bạn dùng CurrentPageReport */
-:deep(.p-paginator .p-paginator-current) {
-  display: none;
 }
 
 
