@@ -10,7 +10,7 @@ use App\Models\Inventory\PurchaseReturnItem;
 use App\Models\Inventory\PurchaseReturnPayment;
 use App\Models\Medicine;
 use App\Models\Goods;
-// use App\Services\Excel\Export\PurchaseReturnExport; // Tạm thời disable
+use App\Services\Excel\Export\PurchaseReturnExport; 
 use Illuminate\Support\Str;
 
 use Inertia\Inertia;
@@ -245,9 +245,75 @@ class PurchaseReturnsController extends Controller
         return $importController->processPurchaseReturnExcel($request);
     }
 
-    // Export functionality temporarily disabled
-
-    // Test export functionality temporarily disabled
+    public function export(Request $request)
+    {
+        try {
+            // Lấy dữ liệu với filter
+            $query = PurchaseReturn::with(['supplier', 'items']);
+            
+            // Filter theo search (tìm kiếm theo mã phiếu, tên nhà cung cấp)
+            if ($request->filled('search')) {
+                $searchTerm = $request->search;
+                $query->where(function($q) use ($searchTerm) {
+                    $q->where('return_code', 'like', '%' . $searchTerm . '%')
+                      ->orWhereHas('supplier', function($subQ) use ($searchTerm) {
+                          $subQ->where('ten_nha_cung_cap', 'like', '%' . $searchTerm . '%');
+                      })
+                      ->orWhere('note', 'like', '%' . $searchTerm . '%');
+                });
+            }
+            
+            // Filter theo status (có thể là nhiều status)
+            if ($request->filled('status')) {
+                $statuses = explode(',', $request->status);
+                $query->whereIn('status', $statuses);
+            }
+            
+            // Filter theo supplier
+            if ($request->filled('supplier_id')) {
+                $query->where('supplier_id', $request->supplier_id);
+            }
+            
+            // Filter theo thời gian
+            if ($request->filled('date_from')) {
+                $query->where('return_date', '>=', $request->date_from);
+            }
+            
+            if ($request->filled('date_to')) {
+                $query->where('return_date', '<=', $request->date_to);
+            }
+            
+            $returns = $query->get();
+            
+            // Format dữ liệu
+            $formattedReturns = $returns->map(function($return) {
+                return [
+                    'return_code' => $return->return_code,
+                    'supplier_name' => $return->supplier->ten_nha_cung_cap ?? 'N/A',
+                    'return_date' => $return->return_date,
+                    'status' => $return->status,
+                    'total_amount' => $return->total_amount,
+                    'total_discount' => $return->total_discount,
+                    'remaining_amount' => $return->remaining_amount,
+                    'paid_amount' => $return->paid_amount,
+                    'note' => $return->note,
+                    'items_count' => $return->items->count(),
+                    'created_at' => $return->created_at,
+                    'discount' => $return->total_discount,
+                    'supplier_pay' => $return->remaining_amount,
+                    'supplier_paid' => $return->paid_amount ?? 0,
+                    'reason' => $return->note ?? 'Không có lý do'
+                ];
+            });
+            
+            // Export file
+            $exportService = new PurchaseReturnExport();
+            return $exportService->download($formattedReturns->toArray());
+            
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi: ' . $e->getMessage()], 500);
+        }
+    }
 
     /**
      * Create sample data for testing

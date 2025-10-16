@@ -20,7 +20,9 @@ use Inertia\Inertia;
 
 Route::prefix('admin')->name('admin.')->group(function () 
 {
-    // Dashboard / landing
+    // Xuất file excel
+    Route::get('purchase-returns/export', [PurchaseReturnsController::class, 'export'])->name('purchase-returns.export')->middleware('auth');
+    // Dashboard 
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
 
     // Medicines
@@ -87,9 +89,6 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::post('process-excel', [PruchaseImportController::class, 'processExcel'])->name('process-excel');
     Route::post('purchase-returns/process-excel', [PurchaseReturnsController::class, 'processExcel'])->name('purchase-returns.process-excel');
     Route::get('purchase-returns/create-sample', [PurchaseReturnsController::class, 'createSampleData'])->name('purchase-returns.create-sample');
-    // Route::get('purchase-returns/export', [PurchaseReturnsController::class, 'export'])->name('purchase-returns.export')->middleware('auth');
-    // Route::get('purchase-returns/test-export', [PurchaseReturnsController::class, 'testExport'])->name('purchase-returns.test-export')->middleware('auth');
-
     // Supplier Categories
     Route::prefix('supplier-categories')->name('supplier-categories.')->group(function () {
         Route::get('/', [SupplierCategoryController::class, 'index'])->name('index');

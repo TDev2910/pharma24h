@@ -304,7 +304,7 @@ import Column from 'primevue/column'
 import DatePicker from 'primevue/datepicker'
 import { usePage } from '@inertiajs/vue3'
 import { useToast } from 'primevue/usetoast'
-// import axios from 'axios' // Tạm thời disable
+import axios from 'axios' // Tạm thời disable
 
 export default {
   name: 'PurchaseReturnsDashboard',
@@ -458,13 +458,67 @@ export default {
 
     // Export to Excel - Tạm thời disable
     async exportToExcel() {
-      // TODO: Implement export functionality later
-      this.toast.add({
-        severity: 'info',
-        summary: 'Thông báo',
-        detail: 'Chức năng xuất file Excel đang được phát triển',
-        life: 3000
-      });
+      try {
+        this.isExporting = true;
+        
+        // Tạo URL với filter
+        const params = new URLSearchParams();
+        
+        // Filter theo search
+        if (this.searchQuery?.trim()) {
+          params.append('search', this.searchQuery.trim());
+        }
+        
+        // Filter theo status
+        const statusFilters = [];
+        if (this.filters.temp) statusFilters.push('temp');
+        if (this.filters.returned) statusFilters.push('returned');
+        if (this.filters.cancelled) statusFilters.push('cancelled');
+        if (statusFilters.length) {
+          params.append('status', statusFilters.join(','));
+        }
+        
+        // Filter theo thời gian
+        if (this.filters.timeRange === 'custom' && this.filters.customDate) {
+          const [d0, d1] = this.filters.customDate ?? [];
+          if (d0) params.append('date_from', new Date(d0).toISOString().split('T')[0]);
+          if (d1) params.append('date_to', new Date(d1).toISOString().split('T')[0]);
+        } else if (this.filters.timeRange === 'thisMonth' && this.filters.thisMonthDate) {
+          const d = new Date(this.filters.thisMonthDate);
+          const start = new Date(d.getFullYear(), d.getMonth(), 1);
+          const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+          params.append('date_from', start.toISOString().split('T')[0]);
+          params.append('date_to', end.toISOString().split('T')[0]);
+        }
+        
+        this.toast.add({ severity: 'info', summary: 'Đang xuất file...', detail: 'Vui lòng chờ', life: 2000 });
+        
+        const url = `/admin/purchase-returns/export${params.toString() ? '?' + params.toString() : ''}`;
+        const res = await axios.get(url, { 
+          responseType: 'blob',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+          }
+        });
+        
+        // Tạo và download file
+        const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `phieu_tra_hang_${new Date().toISOString().split('T')[0]}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(a.href);
+        a.remove();
+        
+        this.toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã tải Excel', life: 3000 });
+      } catch (error) {
+        this.toast.add({ severity: 'error', summary: 'Lỗi', detail: error.message || 'Xuất file thất bại', life: 5000 });
+      } finally {
+        this.isExporting = false;
+      }
     }
   },
 

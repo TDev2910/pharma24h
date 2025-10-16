@@ -9,22 +9,14 @@ class PurchaseReturnExport
     protected $data = [];
     protected $filename = '';
 
-    /**
-     * Xuất dữ liệu phiếu trả hàng ra file Excel
-     *
-     * @param array $data Dữ liệu phiếu trả hàng
-     * @param string $filename Tên file (không cần extension)
-     * @return string Đường dẫn file Excel đã tạo
-     */
     public function export(array $data, string $filename = null): string
     {
         $this->data = $this->prepareData($data);
         $this->filename = $filename ?: $this->getDefaultFilename();
         
-        // Tạo file Excel trong thư mục public/exports
         $filePath = public_path('exports/' . $this->filename . '.xlsx');
         
-        // Đảm bảo thư mục tồn tại
+        // Tạo thư mục nếu chưa có
         $exportDir = dirname($filePath);
         if (!is_dir($exportDir)) {
             mkdir($exportDir, 0755, true);
@@ -36,17 +28,26 @@ class PurchaseReturnExport
         return $filePath;
     }
 
-    /**
-     * Chuẩn bị dữ liệu cho export
-     */
+    public function download(array $data, string $filename = null)
+    {
+        $filePath = $this->export($data, $filename);
+        
+        if (!file_exists($filePath)) {
+            throw new \Exception('File Excel không được tạo thành công');
+        }
+        
+        return response()->download($filePath, $this->filename . '.xlsx')
+            ->deleteFileAfterSend(true);
+    }
+
     protected function prepareData(array $data): array
     {
         $result = [];
         
-        // Thêm header
+        // Header
         $result[] = [
             'Mã phiếu trả',
-            'Nhà cung cấp',
+            'Nhà cung cấp', 
             'Ngày trả hàng',
             'Trạng thái',
             'Tổng tiền',
@@ -58,7 +59,7 @@ class PurchaseReturnExport
             'Ngày tạo'
         ];
         
-        // Thêm dữ liệu
+        // Data
         foreach ($data as $return) {
             $result[] = [
                 $return['return_code'] ?? '',
@@ -78,42 +79,22 @@ class PurchaseReturnExport
         return $result;
     }
 
-    /**
-     * Lấy tên file mặc định
-     */
     protected function getDefaultFilename(): string
     {
         return 'phieu_tra_hang_' . date('Y_m_d_H_i_s');
     }
 
-    /**
-     * Format số tiền
-     */
     protected function formatCurrency($amount): string
     {
-        if (is_null($amount) || $amount === '') {
-            return '0 VND';
-        }
         return number_format((float)$amount, 0, ',', '.') . ' VND';
     }
 
-    /**
-     * Format ngày tháng
-     */
     protected function formatDate($date): string
     {
         if (!$date) return '';
-        
-        try {
-            return \Carbon\Carbon::parse($date)->format('d/m/Y H:i');
-        } catch (\Exception $e) {
-            return $date;
-        }
+        return \Carbon\Carbon::parse($date)->format('d/m/Y H:i');
     }
 
-    /**
-     * Lấy text trạng thái
-     */
     protected function getStatusText($status): string
     {
         $statusMap = [
@@ -124,26 +105,5 @@ class PurchaseReturnExport
         ];
         
         return $statusMap[$status] ?? $status;
-    }
-
-    /**
-     * Xuất file Excel và trả về response download
-     *
-     * @param array $data
-     * @param string $filename
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
-     */
-    public function download(array $data, string $filename = null)
-    {
-        $filePath = $this->export($data, $filename);
-        
-        // Kiểm tra file có tồn tại không
-        if (!file_exists($filePath)) {
-            throw new \Exception('File Excel không được tạo thành công');
-        }
-        
-        // Trả về file từ public folder
-        return response()->download($filePath, $this->filename . '.xlsx')
-            ->deleteFileAfterSend(true);
     }
 }
