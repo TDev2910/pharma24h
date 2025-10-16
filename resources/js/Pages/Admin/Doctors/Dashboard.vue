@@ -47,7 +47,7 @@
     <!-- DataTable -->
     <div class="table-container">
         <DataTable 
-            :value="doctors" 
+            :value="filteredDoctors" 
             v-model:expandedRows="expandedRows"
             stripedRows
             responsiveLayout="scroll"
@@ -279,12 +279,28 @@ export default {
     }
   },
 
+  computed: {
+    filteredDoctors() {
+      //Nếu không nhập từ khóa , thông tin bác sĩ sẽ hiển thị tất cả
+      if(!this.searchQuery || !this.searchQuery.trim()) {
+        return this.doctors; //Trả về tất cả bác sĩ có trong datatable
+      }
+
+      const term = this.searchQuery.toLowerCase().trim();
+      return this.doctors.filter(doctor => {
+        const name = (doctor.name || '').toLowerCase();
+        const code = (doctor.doctor_code || '').toLowerCase();
+        const phone = (doctor.phone || '').toLowerCase();
+        const email = (doctor.email || '').toLowerCase();
+        return name.includes(term) || code.includes(term) || phone.includes(term) || email.includes(term);
+      });
+    }
+  },
 
   mounted() {
     this.loadDoctors()
   },
   
-
   methods: {
     // Load danh sách bác sĩ từ API
     async loadDoctors() {
@@ -321,53 +337,9 @@ export default {
     debounceSearch() {
       clearTimeout(this.searchTimeout)
       this.searchTimeout = setTimeout(() => {
-        this.searchDoctors()
-      }, 500) // Delay 500ms
+        // Filter sẽ tự động áp dụng thông qua computed property
+      }, 200)
     },
-
-    // Search doctors
-    async searchDoctors() {
-      this.pagination.current_page = 1 // Reset về trang đầu
-      
-      if (!this.searchQuery.trim()) {
-        // Nếu không có search query, load tất cả
-        await this.loadDoctors()
-        return
-      }
-      
-      // Sử dụng findDoctors để tìm kiếm local
-      const searchValue = this.searchQuery.trim()
-      
-      // Tách searchValue thành doctor_code và name
-      // Giả sử format: "mã_bác_sĩ tên_bác_sĩ" hoặc chỉ "mã_bác_sĩ" hoặc chỉ "tên_bác_sĩ"
-      const parts = searchValue.split(' ')
-      let doctorCode = ''
-      let name = ''
-      
-      if (parts.length >= 2) {
-        // Nếu có 2 phần trở lên, phần đầu là mã, phần còn lại là tên
-        doctorCode = parts[0]
-        name = parts.slice(1).join(' ')
-      } else {
-        // Nếu chỉ có 1 phần, thử đoán là mã hay tên
-        const firstPart = parts[0]
-        if (/^\d+$/.test(firstPart)) {
-          // Nếu là số, coi như là mã bác sĩ
-          doctorCode = firstPart
-        } else {
-          // Nếu không phải số, coi như là tên
-          name = firstPart
-        }
-      }
-      
-      // Gọi findDoctors với dữ liệu đã tách
-      const filteredDoctors = this.findDoctors(doctorCode, name)
-      
-      // Cập nhật danh sách hiển thị
-      this.doctors = filteredDoctors
-      this.pagination.total = filteredDoctors.length
-    },
-
 
     // Modal methods
     showCreateModal() {
@@ -556,37 +528,6 @@ export default {
     formatDate(date) {
       if (!date) return '-'
       return new Date(date).toLocaleDateString('vi-VN')
-    },
-
-    // Tìm kiếm bác sĩ theo mã và tên
-    findDoctors(doctor_code, name) {
-      try {
-        const codeValue = (doctor_code || '').trim();
-        const nameValue = (name || '').trim();
-        
-        if (!codeValue && !nameValue) {
-          return this.doctors;
-        }
-        
-        return this.doctors.filter(doctor => {
-          let matches = true;
-          
-          // Nếu có doctor_code, phải khớp
-          if (codeValue) {
-            matches = matches && doctor.doctor_code.toLowerCase().includes(codeValue.toLowerCase());
-          }
-          
-          // Nếu có name, phải khớp
-          if (nameValue) {
-            matches = matches && doctor.name.toLowerCase().includes(nameValue.toLowerCase());
-          }
-          
-          return matches;
-        });
-      } catch (error) {
-        console.error('Error finding doctors:', error);
-        return this.doctors;
-      }
     }
   }
 }
