@@ -3,7 +3,7 @@
     <div class="controls-section">
       <!-- Title Section -->
       <div class="title-section">
-        <h4>Danh sách đặt hàng</h4>
+        <h4>Danh sách nhập hàng</h4>
       </div>
       
       <!-- Search Section -->
@@ -31,7 +31,7 @@
           @click="handleCreate"
         >
           <i class="pi pi-plus"></i>
-          Đặt hàng
+          Trả hàng
         </button>
         
         <div class="utility-icons">

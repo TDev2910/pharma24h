@@ -28,7 +28,7 @@ return new class extends Migration
             $table->decimal('total_amount', 12, 0);
             $table->string('payment_method'); // 'cod' hoặc 'vnpay'
             $table->string('payment_status')->default('pending'); // 'pending', 'paid', 'failed'
-            $table->string('order_status')->default('new'); // 'new', 'processing', 'shipped', 'delivered', 'cancelled'
+            $table->string('order_status')->default('new'); // 'new', 'pending', 'completed', 'cancelled'
             $table->string('transaction_id')->nullable(); // Mã giao dịch VNPAY
             $table->text('note')->nullable(); // Ghi chú đơn hàng
             $table->timestamps();

@@ -55,7 +55,6 @@
                 <select class="order-status-filter form-select" name="status">
                     <option value="" {{ request('status')==='' ? 'selected' : '' }}>Tất cả</option>
                     <option value="pending" {{ request('status')==='pending' ? 'selected' : '' }}>Đang chờ xử lý</option>
-                    <option value="processing" {{ request('status')==='processing' ? 'selected' : '' }}>Đang xử lý</option>
                     <option value="completed" {{ request('status')==='completed' ? 'selected' : '' }}>Hoàn thành</option>
                     <option value="cancelled" {{ request('status')==='cancelled' ? 'selected' : '' }}>Đã hủy</option>
                 </select>
@@ -99,8 +98,6 @@
                                 @php($status = strtolower($order->order_status ?? ''))
                                 @if($status === 'pending' || $status === 'new')
                                     <span class="badge bg-warning text-dark">Đang chờ xử lý</span>
-                                @elseif($status === 'processing')
-                                    <span class="badge bg-primary">Đang xử lý</span>
                                 @elseif($status === 'completed')
                                     <span class="badge bg-success">Hoàn thành</span>
                                 @elseif($status === 'cancelled')

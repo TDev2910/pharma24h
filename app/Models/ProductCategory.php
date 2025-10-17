@@ -93,7 +93,7 @@ class ProductCategory extends Model
      * 
      * @return Collection
      */
-    public static function getCategoryTree(): Collection
+    public static function getCategoryTree(): Collection 
     {
         return Cache::remember('categories.tree', 3600, function () {
             return self::whereNull('parent_id') //lấy danh mục cha 
@@ -120,6 +120,7 @@ class ProductCategory extends Model
     {
         return Cache::remember('categories.dropdown', 3600, function () {
             $result = [];
+            //lấy danh mục gốc
             $rootCategories = self::whereNull('parent_id')
                 ->orderByRaw("CASE 
                     WHEN name = 'Thuốc' THEN 1 
@@ -131,6 +132,7 @@ class ProductCategory extends Model
                 ->orderBy('name')
                 ->get();
 
+            //dùng foreach và duyệt tất cả danh mục được thêm vào
             foreach ($rootCategories as $root) {
                 self::addCategoryWithChildren($root, $result, 0);
             }
@@ -148,10 +150,10 @@ class ProductCategory extends Model
      */
     private static function addCategoryWithChildren($category, &$result, $depth): void
     {
-        $prefix = str_repeat(' - ', $depth);
+        $prefix = str_repeat(' - ', $depth); //tạo prefix dựa trên depth và dùng - để đánh dấu các cấp con
         $result[$category->id] = $prefix . $category->name;
 
-        $children = $category->children()->orderBy('sort_order')->orderBy('name')->get();
+        $children = $category->children()->orderBy('sort_order')->orderBy('name')->get(); //lấy danh mục con
         foreach ($children as $child) {
             self::addCategoryWithChildren($child, $result, $depth + 1);
         }

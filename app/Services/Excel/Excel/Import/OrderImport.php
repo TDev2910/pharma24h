@@ -39,7 +39,7 @@ class OrderImport extends BaseImport
             'customer_phone' => 'required|string|max:20',
             'customer_address' => 'required|string|max:500',
             'total_amount' => 'required|numeric|min:0',
-            'status' => 'nullable|string|in:pending,processing,completed,cancelled',
+            'status' => 'nullable|string|in:pending,completed,cancelled',
             'notes' => 'nullable|string',
         ];
     }

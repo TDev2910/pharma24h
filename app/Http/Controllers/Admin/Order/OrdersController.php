@@ -89,7 +89,7 @@ class OrdersController extends Controller
     public function updateStatus(Request $request, string $order, CheckoutService $checkout)
     {
         $request->validate([
-            'status' => 'required|in:pending,processing,completed,cancelled',
+            'status' => 'required|in:pending,completed,cancelled',
         ]);
         $order = Order::findOrFail($order);
         // Nếu chọn Hoàn thành từ modal, gọi service để trừ tồn + set trạng thái
@@ -98,7 +98,7 @@ class OrdersController extends Controller
         } else {
             // Cập nhật các trạng thái khác không trừ tồn
             $order->order_status = $request->status;
-            if (in_array($request->status, ['pending', 'processing'])) {
+            if ($request->status === 'pending') {
                 $order->payment_status = 'unpaid';
             } elseif ($request->status === 'cancelled') {
                 $order->payment_status = 'cancelled';

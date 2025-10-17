@@ -61,7 +61,6 @@ class OrderExport extends BaseExport
     {
         $statusMap = [
             'pending' => 'Chờ xử lý',
-            'processing' => 'Đang xử lý',
             'completed' => 'Hoàn thành',
             'cancelled' => 'Đã hủy',
         ];

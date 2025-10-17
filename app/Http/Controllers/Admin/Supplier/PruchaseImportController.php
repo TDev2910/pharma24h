@@ -12,6 +12,7 @@ use App\Models\Medicine;
 use App\Models\Goods;
 use App\Services\Excel\ExcelService;
 use App\Services\Excel\ImportService;
+use App\Services\Excel\Export\StockImportExport;
 
 class PruchaseImportController extends Controller
 {
@@ -21,7 +22,27 @@ class PruchaseImportController extends Controller
     public function index()
     {
         $imports = StockImport::with(['supplier', 'items'])->get();
-        return view('admin.products.Nhaphang.Import.index', compact('imports'));
+        
+        // Transform data to match Vue component expectations
+        $orders = $imports->map(function ($import) {
+            return [
+                'id' => $import->id,
+                'order_code' => $import->import_code,
+                'created_at' => $import->created_at,
+                'supplier_name' => $import->supplier->ten_nha_cung_cap ?? 'N/A',
+                'ma_nha_cung_cap' => $import->supplier->ma_nha_cung_cap ?? 'N/A',
+                'total_amount' => $import->total_amount ?? 0,
+                'discount' => $import->discount ?? 0,
+                'supplier_pay' => $import->supplier_pay ?? 0,
+                'supplier_paid' => $import->supplier_paid ?? 0,
+                'status' => $import->status ?? 'pending',
+                'note' => $import->note ?? ''
+            ];
+        });
+        
+        return inertia('Admin/Purchases/Purchase-Orders/Dashboard', [
+            'orders' => $orders
+        ]);
     }
 
     /**
@@ -35,7 +56,11 @@ class PruchaseImportController extends Controller
         $medicines = Medicine::all();
         $goods = Goods::all();
 
-        return view('admin.products.Nhaphang.Import.create', compact('suppliers', 'medicines', 'goods'));
+        return inertia('Admin/Purchases/Purchase-Orders/Create', [
+            'suppliers' => $suppliers,
+            'medicines' => $medicines,
+            'goods' => $goods
+        ]);
     }
 
     /**
@@ -155,7 +180,25 @@ class PruchaseImportController extends Controller
     public function show(StockImport $stockImport)
     {
         $stockImport->load(['supplier', 'items.product', 'payments']);
-        return view('admin.products.Nhaphang.Import.show', compact('stockImport'));
+        
+        // Transform data for Vue component
+        $order = [
+            'id' => $stockImport->id,
+            'order_code' => $stockImport->import_code,
+            'created_at' => $stockImport->created_at,
+            'supplier_name' => $stockImport->supplier->ten_nha_cung_cap ?? 'N/A',
+            'total_amount' => $stockImport->total_amount ?? 0,
+            'discount' => $stockImport->discount ?? 0,
+            'supplier_pay' => $stockImport->supplier_pay ?? 0,
+            'supplier_paid' => $stockImport->supplier_paid ?? 0,
+            'status' => $stockImport->status ?? 'pending',
+            'note' => $stockImport->note ?? '',
+            'items' => $stockImport->items
+        ];
+        
+        return inertia('Admin/Purchases/Purchase-Orders/Show', [
+            'order' => $order
+        ]);
     }
 
     /**
@@ -171,7 +214,27 @@ class PruchaseImportController extends Controller
         
         $stockImport->load(['items']);
         
-        return view('admin.products.Nhaphang.Import.edit', compact('stockImport', 'suppliers', 'medicines', 'goods'));
+        // Transform data for Vue component
+        $order = [
+            'id' => $stockImport->id,
+            'order_code' => $stockImport->import_code,
+            'created_at' => $stockImport->created_at,
+            'supplier_name' => $stockImport->supplier->ten_nha_cung_cap ?? 'N/A',
+            'total_amount' => $stockImport->total_amount ?? 0,
+            'discount' => $stockImport->discount ?? 0,
+            'supplier_pay' => $stockImport->supplier_pay ?? 0,
+            'supplier_paid' => $stockImport->supplier_paid ?? 0,
+            'status' => $stockImport->status ?? 'pending',
+            'note' => $stockImport->note ?? '',
+            'items' => $stockImport->items
+        ];
+        
+        return inertia('Admin/Purchases/Purchase-Orders/Edit', [
+            'order' => $order,
+            'suppliers' => $suppliers,
+            'medicines' => $medicines,
+            'goods' => $goods
+        ]);
     }
 
     /**
@@ -190,6 +253,83 @@ class PruchaseImportController extends Controller
         $stockImport->delete();
         return redirect()->route('admin.import.index')
             ->with('success', 'Phiếu nhập hàng đã được xóa thành công!');
+    }
+
+    /**
+     * Export purchase orders to Excel
+     */
+    public function export(Request $request)
+    {
+        try {
+            // Lấy dữ liệu với filter
+            $query = StockImport::with(['supplier', 'items']);
+            
+            // Filter theo status nếu có
+            if ($request->has('status') && $request->status) {
+                $statuses = explode(',', $request->status);
+                // Chỉ filter nếu có ít nhất 1 status hợp lệ
+                $validStatuses = array_intersect($statuses, ['imported', 'pending', 'completed', 'cancelled', 'temp', 'ordered']);
+                if (!empty($validStatuses)) {
+                    $query->whereIn('status', $validStatuses);
+                }
+            }
+            
+            // Filter theo ngày nếu có (hỗ trợ cả from_date/to_date và date_from/date_to)
+            if ($request->has('from_date') && $request->from_date) {
+                $query->whereDate('import_date', '>=', $request->from_date);
+            } elseif ($request->has('date_from') && $request->date_from) {
+                $query->whereDate('import_date', '>=', $request->date_from);
+            }
+            
+            if ($request->has('to_date') && $request->to_date) {
+                $query->whereDate('import_date', '<=', $request->to_date);
+            } elseif ($request->has('date_to') && $request->date_to) {
+                $query->whereDate('import_date', '<=', $request->date_to);
+            }
+            
+            // Filter theo nhà cung cấp nếu có
+            if ($request->has('supplier_id') && $request->supplier_id) {
+                $query->where('supplier_id', $request->supplier_id);
+            }
+            
+            // Filter theo search query nếu có
+            if ($request->has('search') && $request->search) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('import_code', 'like', "%{$search}%")
+                      ->orWhereHas('supplier', function($subQ) use ($search) {
+                          $subQ->where('ten_nha_cung_cap', 'like', "%{$search}%")
+                               ->orWhere('ma_nha_cung_cap', 'like', "%{$search}%");
+                      });
+                });
+            }
+            
+            $imports = $query->orderBy('created_at', 'desc')->get();
+            
+            // Format dữ liệu cho export
+            $formattedImports = $imports->map(function($import) {
+                return [
+                    'import_code' => $import->import_code,
+                    'supplier_name' => $import->supplier->ten_nha_cung_cap ?? 'N/A',
+                    'ma_nha_cung_cap' => $import->supplier->ma_nha_cung_cap ?? 'N/A',
+                    'import_date' => $import->import_date,
+                    'status' => $import->status,
+                    'total_amount' => $import->total_amount,
+                    'paid_amount' => $import->paid_amount ?? 0,
+                    'remaining_amount' => $import->remaining_amount ?? 0,
+                    'note' => $import->note ?? '',
+                    'items_count' => $import->items->count(),
+                    'created_at' => $import->created_at,
+                ];
+            });
+            
+            // Export file
+            $exportService = new StockImportExport();
+            return $exportService->download($formattedImports->toArray());
+            
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi: ' . $e->getMessage()], 500);
+        }
     }
 
     /**

@@ -1,40 +1,59 @@
 <template>
-  <div class="purchase-returns-page">
+  <div class="purchase-orders-page">
     <!-- Header Control Bar -->
     <div class="header-control-bar">
         <div class="controls-section" style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
             <!-- Title Section -->
             <div class="title-section">
-                <h3>Trả hàng</h3>
+                <h3>Đặt hàng</h3>
             </div>
             <!-- Search Section -->
             <div style="flex:1; display:flex; justify-content:center;">
-                <div class="search-wrapper">
+                <div class="search-wrapper" style="width: 100%; max-width: 500px;">
                     <div class="input-group">
                         <span class="input-group-text">
                             <i class="pi pi-search"></i>
                         </span>
-                        <input type="text" class="form-control" style="border-radius:8px;" placeholder="Theo mã, tên nhà cung cấp" v-model="searchQuery" @input="debounceSearch">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            style="border-radius:8px;" 
+                            placeholder="Tìm kiếm theo mã đặt hàng, tên nhà cung cấp" 
+                            v-model="searchQuery" 
+                            @input="debounceSearch"
+                        >
                     </div>
+                </div>
+                
+                <!-- Thông báo số kết quả -->
+                <div v-if="isSearching" class="search-results-info mt-2 text-center">
+                  <small class="text-muted">
+                    Hiển thị {{ searchResultsCount }} / {{ orders.length }} kết quả
+                    <span v-if="!hasSearchResults" class="text-warning"> - Không tìm thấy kết quả nào</span>
+                  </small>
                 </div>
             </div>
     <!-- Utility Options -->
     <div class="ultility-options">
-      <!-- Thêm trả hàng -->
+      <!-- Thêm đặt hàng -->
         <Button 
           icon="pi pi-plus"
-          label="Trả hàng"
-          @click="showCreateModal"
+          label="Đặt hàng"
+          @click="showCreate"
           severity="secondary"
           style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
         />
+        
+        <!-- Xuất file Excel -->
         <Button 
           icon="pi pi-file-excel"
-          label="Xuất file"
-          @click="showCreateModal"
+          :label="isExporting ? 'Đang xuất...' : 'Xuất file'"
+          :disabled="isExporting"
+          @click="exportToExcel"
           severity="secondary"
-          style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
+          style="background:#3A6F43; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
         />
+        
                 <!-- Utility Icons -->
                 <div class="utility-icons">
                     <button class="btn" title="Chế độ xem">
@@ -63,8 +82,8 @@
               <label for="temp">Phiếu tạm</label>
             </div>
             <div class="checkbox-item">
-              <input type="checkbox" id="returned" v-model="filters.returned" />
-              <label for="returned">Đã trả hàng</label>
+              <input type="checkbox" id="ordered" v-model="filters.ordered" />
+              <label for="ordered">Đã đặt hàng</label>
             </div>
             <div class="checkbox-item">
               <input type="checkbox" id="cancelled" v-model="filters.cancelled" />
@@ -112,7 +131,7 @@
         <!-- DataTable -->
         <div class="table-container">
             <DataTable 
-                :value="purchaseReturns" 
+                :value="filteredOrders" 
                 v-model:expandedRows="expandedRows"
                 stripedRows
                 responsiveLayout="scroll"
@@ -123,46 +142,37 @@
                 :totalRecords="pagination.total"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5,10,25]"
-                currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} phiếu trả hàng"
+                currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} phiếu đặt hàng"
                 dataKey="id"
                 loadingIcon="pi pi-spinner"
-                emptyMessage="Không có dữ liệu phiếu trả hàng">
+                emptyMessage="Không có dữ liệu phiếu đặt hàng">
                 <Column expander style="width: 3rem" />
-                <Column field="return_code" header="Mã trả hàng nhập"></Column>
+                <Column field="order_code" style="width:155px;" header="Mã đặt hàng"></Column>
                 <Column field="created_at" header="Thời gian">
                     <template #body="slotProps">
                         {{ formatDate(slotProps.data.created_at) }}
                     </template>
                 </Column>
                 <Column field="supplier_name" header="Nhà cung cấp"></Column>
-                <Column field="total_amount" header="Tổng tiền hàng">
+                <Column field="ma_nha_cung_cap" style="width:120px;" header="Mã NCC"></Column>
+                <Column field="total_amount" style="width:120px;" header="Cần trả NCC">
                     <template #body="slotProps">
                         {{ formatCurrency(slotProps.data.total_amount) }}
                     </template>
                 </Column>
-                <Column field="discount" header="Giảm giá">
+                <Column field="status" style="width:120px;" header="Trạng thái">
                     <template #body="slotProps">
-                        {{ formatCurrency(slotProps.data.discount) }}
-                    </template>
-                </Column>
-                <Column field="supplier_pay" header="NCC cần trả">
-                    <template #body="slotProps">
-                        {{ formatCurrency(slotProps.data.supplier_pay) }}
-                    </template>
-                </Column>
-                <Column field="supplier_paid" header="NCC đã trả">
-                    <template #body="slotProps">
-                        {{ formatCurrency(slotProps.data.supplier_paid) }}
+                        {{ getStatusText(slotProps.data.status) }}
                     </template>
                 </Column>
                 
                 <!-- Hiển thị chi tiết thông tin khi nhấn vào dropdown-->
                 <template #expansion="slotProps">
-                    <div class="purchase-return-detail-container">
+                    <div class="purchase-order-detail-container">
                       <!-- 2 danh mục thông tin và sản phẩm-->
                         <div class="detail-tabs">  
                             <button class="tab active" @click="switchTab('info')">Thông tin</button>
-                            <button class="tab" @click="switchTab('products')">Sản phẩm</button>
+                            <button class="tab" @click="switchTab('products')">Lịch sử đặt hàng</button>
                         </div>
                         
                         <!-- Danh mục thông tin và sản phẩm-->
@@ -178,16 +188,20 @@
                                         <table class="table table-sm table-borderless">
                                             <tbody>
                                                 <tr>
-                                                    <td class="fw-bold" style="width: 140px;">Mã trả hàng:</td>
-                                                    <td>{{ slotProps.data.return_code }}</td>
+                                                    <td class="fw-bold" style="width: 140px;">Mã đặt hàng:</td>
+                                                    <td>{{ slotProps.data.order_code }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="fw-bold">Nhà cung cấp:</td>
                                                     <td>{{ slotProps.data.supplier_name }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="fw-bold">Lý do trả hàng:</td>
-                                                    <td>{{ slotProps.data.reason }}</td>
+                                                    <td class="fw-bold">Mã NCC:</td>
+                                                    <td>{{ slotProps.data.ma_nha_cung_cap }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold">Ghi chú:</td>
+                                                    <td>{{ slotProps.data.note }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="fw-bold">Tổng tiền hàng:</td>
@@ -198,7 +212,7 @@
                                                 <tr>
                                                     <td class="fw-bold">Giảm giá:</td>
                                                     <td>
-                                                        <span class="badge bg-warning">{{ formatCurrency(slotProps.data.discount) }}</span>
+                                                        <span class="badge bg-warning">{{ formatCurrency(slotProps.data.remaining_amount) }}</span>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -213,15 +227,9 @@
                                         <table class="table table-sm table-borderless">
                                             <tbody>
                                                 <tr>
-                                                    <td class="fw-bold">NCC cần trả:</td>
+                                                    <td class="fw-bold">Cần trả nhà cung cấp:</td>
                                                     <td>
-                                                        <span class="badge bg-danger">{{ formatCurrency(slotProps.data.supplier_pay) }}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="fw-bold">NCC đã trả:</td>
-                                                    <td>
-                                                        <span class="badge bg-success">{{ formatCurrency(slotProps.data.supplier_paid) }}</span>
+                                                        <span class="badge bg-success">{{ formatCurrency(slotProps.data.total_amount) }}</span>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -240,15 +248,17 @@
                                         <!-- Action buttons chỉnh sửa và xóa-->
                                         <div class="mt-3">
                                             <Button 
-                                                label="Chỉnh sửa" 
                                                 icon="pi pi-pencil" 
-                                                class="p-button-success p-button-sm me-2"
-                                                @click="editPurchaseReturn(slotProps.data)" />                                       
+                                              label="Chỉnh sửa"
+                                              @click="editPurchaseOrder(slotProps.data)"
+                                              severity="secondary"
+                                              style="background:#007bff; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"/>       
                                             <Button 
-                                                label="Xóa" 
                                                 icon="pi pi-trash" 
-                                                class="p-button-danger p-button-sm"
-                                                @click="deletePurchaseReturn(slotProps.data)" />
+                                              label="Xóa"
+                                              @click="deletePurchaseOrder(slotProps.data)"
+                                              severity="secondary"
+                                              style="background:#DC143C; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"/>                                                                                          
                                         </div>
                                     </div>
                                 </div>
@@ -258,7 +268,7 @@
                             <div v-if="activeTab === 'products'" class="tab-content">
                                 <div class="text-center text-muted py-4">
                                     <i class="pi pi-box" style="font-size: 2rem;"></i>
-                                    <p class="mt-2">Danh sách sản phẩm trả hàng</p>
+                                    <p class="mt-2">Danh sách sản phẩm đặt hàng</p>
                                 </div>
                             </div>
                         </div>
@@ -276,9 +286,12 @@ import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import DatePicker from 'primevue/datepicker'
+import { usePage } from '@inertiajs/vue3'
+import { useToast } from 'primevue/usetoast'
+import axios from 'axios'
 
 export default {
-  name: 'PurchaseReturnsDashboard',
+  name: 'PurchaseOrdersDashboard',
   components: {
     Button,
     DataTable,
@@ -286,110 +299,89 @@ export default {
     DatePicker
   },
   
+  setup() {
+    const { props } = usePage()
+    const toast = useToast()
+    
+    return {
+      orders: props.orders || [],
+      toast
+    }
+  },
+  
   data() {
     return {
-      searchQuery: '',
+      filteredOrders: [],
       showModal: false,
       expandedRows: {},
       activeTab: 'info',
       filters: {
         temp: true,
-        returned: true,
+        ordered: true,
         cancelled: false,
         timeRange: 'thisMonth',
         thisMonthDate: null,
         customDate: null
       },
-      purchaseReturns: [
-        {
-          id: 1,
-          return_code: 'TR20251010001',
-          created_at: '2025-10-10',
-          supplier_name: 'Công ty Dược phẩm ABC',
-          total_amount: 15000000,
-          discount: 500000,
-          supplier_pay: 14500000,
-          supplier_paid: 10000000,
-          reason: 'Hàng hư hỏng',
-          status: 'returned'
-        },
-        {
-          id: 2,
-          return_code: 'TR20251010002',
-          created_at: '2025-10-09',
-          supplier_name: 'Nhà cung cấp XYZ',
-          total_amount: 8500000,
-          discount: 200000,
-          supplier_pay: 8300000,
-          supplier_paid: 8300000,
-          reason: 'Hàng không đúng mẫu mã',
-          status: 'completed'
-        },
-        {
-          id: 3,
-          return_code: 'TR20251010003',
-          created_at: '2025-10-08',
-          supplier_name: 'Công ty Thuốc DEF',
-          total_amount: 12000000,
-          discount: 0,
-          supplier_pay: 12000000,
-          supplier_paid: 0,
-          reason: 'Hàng hết hạn sử dụng',
-          status: 'pending'
-        },
-        {
-          id: 4,
-          return_code: 'TR20251010004',
-          created_at: '2025-10-07',
-          supplier_name: 'Nhà cung cấp GHI',
-          total_amount: 6500000,
-          discount: 100000,
-          supplier_pay: 6400000,
-          supplier_paid: 3200000,
-          reason: 'Lỗi đơn hàng',
-          status: 'partial'
-        },
-        {
-          id: 5,
-          return_code: 'TR20251010005',
-          created_at: '2025-10-06',
-          supplier_name: 'Công ty Dược JKL',
-          total_amount: 9500000,
-          discount: 300000,
-          supplier_pay: 9200000,
-          supplier_paid: 9200000,
-          reason: 'Hàng không đạt chất lượng',
-          status: 'completed'
-        }
-      ],
       pagination: {
         current_page: 1,
         last_page: 1,
         per_page: 10,
-        total: 5,
+        total: 0,
         from: 1,
-        to: 5
-      }
+        to: 0
+      },
+      isExporting: false
+    }
+  },
+
+  computed: {
+    // Computed property để tối ưu performance
+    searchResultsCount() {
+      return this.filteredOrders.length
+    },
+    
+    hasSearchResults() {
+      return this.searchQuery && this.filteredOrders.length > 0
+    },
+    
+    isSearching() {
+      return this.searchQuery && this.searchQuery.trim().length > 0
     }
   },
 
   methods: {
-    // Search functionality với debounce
+    //Lọc kết quả 
     debounceSearch() {
-      // TODO: Implement search functionality
-      console.log('Search query:', this.searchQuery)
+      clearTimeout(this.debounceTimer)
+      this.debounceTimer = setTimeout(() => {
+        this.searchOrders()
+      }, 200) 
     },
 
-    // Modal methods
-    showCreateModal() {
-      // Chuyển hướng đến trang tạo phiếu đặt hàng
-      this.$inertia.visit('/admin/purchase-returns/create')
+    matches(item, term) {
+      const code = (item.order_code || '').toLowerCase()
+      const name = (item.supplier_name || '').toLowerCase()
+      const note = (item.note || '').toLowerCase()
+      return code.includes(term) || name.includes(term) || note.includes(term)
     },
 
-    // Continue search
-    continueSearch() {
-      console.log('Continue searching...')
-      // TODO: Implement continue search functionality
+    // Function tìm kiếm 
+    searchOrders() {
+      const term = this.searchQuery.toLowerCase().trim()
+      
+      if (!term) {
+        // Nếu không có từ khóa, hiển thị tất cả
+        this.filteredOrders = [...this.orders]
+      } else {
+        // Lọc kết quả sử dụng hàm matches
+        this.filteredOrders = this.orders.filter(o => this.matches(o, term))
+      }
+    },
+
+    // Chuyển hướng đến trang tạo phiếu đặt hàng
+    showCreate() {
+      this.$inertia.visit('/admin/purchase-orders/create')
     },
 
     // Tab switching
@@ -416,33 +408,109 @@ export default {
     getStatusText(status) {
       const statusMap = {
         'pending': 'Chờ xử lý',
-        'returned': 'Đã trả hàng',
+        'ordered': 'Đã đặt hàng',
         'completed': 'Hoàn thành',
-        'partial': 'Trả một phần',
-        'cancelled': 'Đã hủy'
+        'cancelled': 'Đã hủy',
+        'imported': 'Đã đặt hàng'
       }
       return statusMap[status] || status || '-'
     },
 
-    // Edit purchase return
-    editPurchaseReturn(purchaseReturn) {
-      console.log('Edit purchase return:', purchaseReturn)
+    // Edit purchase order
+    editPurchaseOrder(purchaseOrder) {
+      console.log('Edit purchase order:', purchaseOrder)
       // TODO: Implement edit functionality
+      this.$inertia.visit(`/admin/purchase-orders/${purchaseOrder.id}/edit`)
     },
 
-    // Delete purchase return
-    deletePurchaseReturn(purchaseReturn) {
-      if (confirm(`Bạn có chắc muốn xóa phiếu trả hàng ${purchaseReturn.return_code}?`)) {
-        console.log('Delete purchase return:', purchaseReturn)
+    // Delete purchase order
+    deletePurchaseOrder(purchaseOrder) {
+      if (confirm(`Bạn có chắc muốn xóa phiếu đặt hàng ${purchaseOrder.order_code}?`)) {
+        console.log('Delete purchase order:', purchaseOrder)
         // TODO: Implement delete functionality
+        this.$inertia.delete(`/admin/purchase-orders/${purchaseOrder.id}`)
+      }
+    },
+
+    // Export to Excel
+    async exportToExcel() {
+      try {
+        this.isExporting = true;
+        
+        // Tạo URL với filter
+        const params = new URLSearchParams();
+        
+        // Filter theo search
+        if (this.searchQuery?.trim()) {
+          params.append('search', this.searchQuery.trim());
+        }
+        
+        // Filter theo status - map đúng với database
+        const statusFilters = [];
+        if (this.filters.temp) statusFilters.push('temp');
+        if (this.filters.ordered) statusFilters.push('imported'); // Map ordered -> imported
+        if (this.filters.cancelled) statusFilters.push('cancelled');
+        // Thêm status 'imported' nếu không có filter nào được chọn
+        if (statusFilters.length === 0) {
+          statusFilters.push('imported', 'pending', 'completed');
+        }
+        if (statusFilters.length) {
+          params.append('status', statusFilters.join(','));
+        }
+        
+        // Filter theo thời gian
+        if (this.filters.timeRange === 'custom' && this.filters.customDate) {
+          const [d0, d1] = this.filters.customDate ?? [];
+          if (d0) params.append('date_from', new Date(d0).toISOString().split('T')[0]);
+          if (d1) params.append('date_to', new Date(d1).toISOString().split('T')[0]);
+        } else if (this.filters.timeRange === 'thisMonth' && this.filters.thisMonthDate) {
+          const d = new Date(this.filters.thisMonthDate);
+          const start = new Date(d.getFullYear(), d.getMonth(), 1);
+          const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+          params.append('date_from', start.toISOString().split('T')[0]);
+          params.append('date_to', end.toISOString().split('T')[0]);
+        }
+        
+        this.toast.add({ severity: 'info', summary: 'Đang xuất file...', detail: 'Vui lòng chờ', life: 2000 });
+        
+        const url = `/admin/purchase-orders/export${params.toString() ? '?' + params.toString() : ''}`;
+        const res = await axios.get(url, { 
+          responseType: 'blob',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+          }
+        });
+        
+        // Tạo và download file
+        const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `phieu_dat_hang_${new Date().toISOString().split('T')[0]}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(a.href);
+        a.remove();
+        
+        this.toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã tải Excel', life: 3000 });
+      } catch (error) {
+        this.toast.add({ severity: 'error', summary: 'Lỗi', detail: error.message || 'Xuất file thất bại', life: 5000 });
+      } finally {
+        this.isExporting = false;
       }
     }
+  },
+
+  mounted() {
+    // Khởi tạo filteredOrders với dữ liệu gốc
+    this.filteredOrders = [...this.orders]
   }
 };
 </script>
 
 <style scoped>
-.purchase-returns-page {
+.purchase-orders-page {
   padding: 20px;
 }
 
@@ -730,8 +798,8 @@ export default {
   border-right: none;
 }
 
-/* Purchase Return Detail Container */
-.purchase-return-detail-container {
+/* Purchase Order Detail Container */
+.purchase-order-detail-container {
   background: #f8f9fa;
   border-top: 1px solid #e9ecef;
   padding: 0;

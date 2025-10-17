@@ -14,24 +14,64 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = User::where('role','user')
-            ->select('id', 'avatar', 'name', 'email', 'phone', 
-            'address', 'province', 'district', 'ward', 'created_at')
-            ->get();
-        
-        //tính tổng số khách hàng có trong hệ thống
-        $totalCustomers = User::where('role','user')->count();
-        $newCustomers = User::where('role','user')
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)  
+        // Lấy dữ liệu từ db với orders count và total amount
+        $totalCustomers = User::where('role', 'user')->count();
+        $activeCustomers = User::where('role', 'user')
+            ->whereNotNull('email_verified_at') 
             ->count();
+        
+        // Lấy danh sách khách hàng 
+        $customers = User::where('role', 'user')
+            ->withCount('orders') //đếm số lượng đơn hàng user đã mua
+            ->withSum('orders', 'total_amount') // tổng tiền user đã mua
+            ->paginate(10);
+        
+        $customersData = $customers->map(function ($customer) {
+            $avatarUrl = null;
+            if ($customer->avatar) {
+                // đường dẫn avatar
+                $avatarPath = $customer->avatar;
+                
+                // Nếu đường dẫn không bắt đầu bằng 'avatars/', thêm vào
+                if (!str_starts_with($avatarPath, 'avatars/')) {
+                    $avatarPath = 'avatars/' . $avatarPath;
+                }
+                
+                $avatarUrl = url('storage/' . $avatarPath);
+                
+                // Kiểm tra file có tồn tại không
+                $fullPath = public_path('storage/' . $avatarPath);
+                if (!file_exists($fullPath)) {
+                    $avatarUrl = null; // Set null nếu file không tồn tại
+                }
+            }
             
+            return [
+                'id' => $customer->id,
+                'name' => $customer->name,
+                'email' => $customer->email,
+                'phone' => $customer->phone,
+                'address' => $customer->address,
+                'avatar' => $customer->avatar,
+                'avatar_url' => $avatarUrl,
+                'orders_count' => $customer->orders_count ?? 0,
+                'total_amount' => $customer->orders_sum_total_amount ?? 0
+            ];
+        });
+        
         return inertia('Admin/Customers/Dashboard', [
-            'customers' => $customers,
             'stats' => [
                 'totalCustomers' => $totalCustomers,
-                'newCustomers' => $newCustomers,
-                'activeCustomers' => $totalCustomers // Có thể tính toán khác
+                'activeCustomers' => $activeCustomers
+            ],
+            'customers' => $customersData,
+            'pagination' => [
+                'current_page' => $customers->currentPage(),
+                'last_page' => $customers->lastPage(),
+                'per_page' => $customers->perPage(),
+                'total' => $customers->total(),
+                'from' => $customers->firstItem(),
+                'to' => $customers->lastItem()
             ]
         ]);
     }

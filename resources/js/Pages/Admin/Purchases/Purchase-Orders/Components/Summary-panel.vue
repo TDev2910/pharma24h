@@ -15,13 +15,13 @@
         </div>
       </div>
 
-      <!-- Mã phiếu đặt hàng -->
+      <!-- Mã phiếu nhập -->
       <div class="mb-3 d-flex align-items-center">
-        <label class="form-label mb-0 me-3" style="min-width: 130px;">Mã phiếu đặt</label>
+        <label class="form-label mb-0 me-3" style="min-width: 130px;">Mã phiếu nhập</label>
         <div class="input-group">
           <input 
             type="text" 
-            v-model="formData.order_code" 
+            v-model="formData.import_code" 
             class="form-control text-muted" 
             placeholder="Mã phiếu tự động" 
             readonly
@@ -40,10 +40,10 @@
     
       <!-- Ngày đặt hàng -->
       <div class="mb-3 d-flex align-items-center">
-        <label class="form-label mb-0 me-3" style="min-width: 130px;">Ngày đặt</label>
+        <label class="form-label mb-0 me-3" style="min-width: 130px;">Ngày nhập</label>
         <input 
           type="date" 
-          v-model="formData.order_date" 
+          v-model="formData.import_date" 
           class="form-control" 
           style="max-width: 200px;"
         >
@@ -87,8 +87,7 @@
             <button 
               type="button" 
               class="btn btn-sm btn-outline-primary" 
-              data-bs-toggle="modal" 
-              data-bs-target="#paySupplierModal" 
+              @click="showPaymentModal"
               title="Thanh toán"
             >
               <i class="fas fa-credit-card"></i>
@@ -152,15 +151,15 @@ export default {
     return {
       formData: {
         supplier_id: '',
-        order_code: '',
-        order_date: new Date().toISOString().split('T')[0],
+        import_code: '',
+        import_date: new Date().toISOString().split('T')[0],
         subtotal_raw: 0,
         discount: 0,
         payable: 0,
         cash_paid: 0,
         debt: 0,
         note: '',
-        status: 'ordered'
+        status: 'imported'
       },
       isGeneratingCode: false
     }
@@ -174,13 +173,13 @@ export default {
       fetch('/admin/generate-import-code')
         .then(response => response.json())
         .then(data => {
-          this.formData.order_code = data.code
+          this.formData.import_code = data.code
           this.isGeneratingCode = false
         })
         .catch(error => {
           console.error('Error:', error)
           // Fallback: tạo mã client-side
-          this.formData.order_code = this.generateRandom7DigitCode()
+          this.formData.import_code = this.generateRandom7DigitCode()
           this.isGeneratingCode = false
         })
     },
@@ -217,6 +216,13 @@ export default {
     updateTotal(amount) {
       this.formData.subtotal_raw = amount
       this.recalculate()
+    },
+
+    showPaymentModal() {
+      this.$emit('show-payment-modal', {
+        payable: this.formData.payable,
+        currentPaid: this.formData.cash_paid
+      })
     },
 
     // Method để cập nhật payment từ modal

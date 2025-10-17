@@ -89,10 +89,6 @@
                     badgeClass = 'bg-warning text-dark';
                     statusText = 'Đang chờ xử lý';
                     break;
-                case 'processing':
-                    badgeClass = 'bg-primary';
-                    statusText = 'Đang xử lý';
-                    break;
                 case 'completed':
                     badgeClass = 'bg-success';
                     statusText = 'Hoàn thành';

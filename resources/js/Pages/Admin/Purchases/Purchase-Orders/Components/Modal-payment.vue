@@ -1,11 +1,19 @@
 <template>
   <!-- Modal: Thanh toán nhà cung cấp -->
-  <div class="modal fade" id="paySupplierModal" tabindex="-1" aria-labelledby="paySupplierLabel" aria-hidden="true">
+  <div 
+    v-if="showModal" 
+    class="modal fade show" 
+    :class="{ 'd-block': showModal }"
+    tabindex="-1" 
+    aria-labelledby="paySupplierLabel" 
+    aria-hidden="false"
+    style="background-color: rgba(0,0,0,0.5);"
+  >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="paySupplierLabel">Tiền trả nhà cung cấp</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
@@ -13,9 +21,7 @@
             <input 
               type="number" 
               class="form-control form-control-lg text-end" 
-              id="payModalAmount" 
               v-model="paymentAmount"
-              value="0" 
               min="0"
               @input="updatePaymentDisplay"
             >
@@ -26,7 +32,6 @@
               class="btn btn-outline-primary flex-fill pay-method" 
               :class="{ active: selectedMethod === 'cash' }"
               @click="selectPaymentMethod('cash')"
-              data-method="cash"
             >
               Tiền mặt
             </button>
@@ -35,7 +40,6 @@
               class="btn btn-outline-primary flex-fill pay-method" 
               :class="{ active: selectedMethod === 'card' }"
               @click="selectPaymentMethod('card')"
-              data-method="card"
             >
               Thẻ
             </button>
@@ -44,22 +48,21 @@
               class="btn btn-outline-primary flex-fill pay-method" 
               :class="{ active: selectedMethod === 'transfer' }"
               @click="selectPaymentMethod('transfer')"
-              data-method="transfer"
             >
               Chuyển khoản
             </button>
           </div>
           <div class="d-flex justify-content-between mb-2">
             <span class="text-muted">Cần trả nhà cung cấp</span>
-            <span id="payModalPayable" class="fw-bold">{{ formatCurrency(payableAmount) }}</span>
+            <span class="fw-bold">{{ formatCurrency(payableAmount) }}</span>
           </div>
           <div class="d-flex justify-content-between">
             <span class="text-muted">Tiền trả nhà cung cấp</span>
-            <span id="payModalPaid" class="fw-bold">{{ formatCurrency(paymentAmount) }}</span>
+            <span class="fw-bold">{{ formatCurrency(paymentAmount) }}</span>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bỏ qua</button>
+          <button type="button" class="btn btn-secondary" @click="closeModal">Bỏ qua</button>
           <button type="button" class="btn btn-primary" @click="confirmPayment">Xong</button>
         </div>
       </div>
@@ -75,13 +78,25 @@ export default {
     payableAmount: {
       type: Number,
       default: 0
+    },
+    show: {
+      type: Boolean,
+      default: false
     }
   },
+
+  emits: ['close', 'payment-confirmed', 'payment-updated'],
 
   data() {
     return {
       paymentAmount: 0,
       selectedMethod: 'cash'
+    }
+  },
+
+  computed: {
+    showModal() {
+      return this.show
     }
   },
 
@@ -106,13 +121,11 @@ export default {
       })
       
       // Đóng modal
-      const modal = document.getElementById('paySupplierModal')
-      if (modal) {
-        const bsModal = bootstrap.Modal.getInstance(modal)
-        if (bsModal) {
-          bsModal.hide()
-        }
-      }
+      this.closeModal()
+    },
+
+    closeModal() {
+      this.$emit('close')
     },
 
     formatCurrency(amount) {
@@ -130,16 +143,12 @@ export default {
   watch: {
     payableAmount(newVal) {
       this.paymentAmount = newVal
-    }
-  },
-
-  mounted() {
-    // Lắng nghe event khi modal được mở
-    const modal = document.getElementById('paySupplierModal')
-    if (modal) {
-      modal.addEventListener('show.bs.modal', () => {
+    },
+    
+    show(newVal) {
+      if (newVal) {
         this.resetModal()
-      })
+      }
     }
   }
 }

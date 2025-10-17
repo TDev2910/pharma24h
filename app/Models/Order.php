@@ -98,7 +98,7 @@ class Order extends Model
 
     public function scopeFilterByStatus($query,$status)
     {
-        if($status && in_array($status, ['new','processing','shipped','delivered','cancelled']))
+        if($status && in_array($status, ['new','pending','completed','cancelled']))
         {
             return $query->where('order_status',$status);
         }

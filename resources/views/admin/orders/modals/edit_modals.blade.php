@@ -16,12 +16,10 @@
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="editUpdateStatusDropdown">
                         <li><a class="dropdown-item update-status-edit" href="#" data-status="pending">Đang chờ xử lý</a></li>
-                        <li><a class="dropdown-item update-status-edit" href="#" data-status="processing">Đang xử lý</a></li>
                         <li><a class="dropdown-item update-status-edit" href="#" data-status="completed">Hoàn thành</a></li>
                         <li><a class="dropdown-item update-status-edit" href="#" data-status="cancelled">Hủy đơn hàng</a></li>
                     </ul>
                 </div>
-                <button type="button" class="btn btn-success print-invoice-btn">In hóa đơn</button>
                 <button type="button" class="btn btn-primary ms-auto" id="saveOrderInfoBtn">Lưu thông tin</button>
             </div>
         </div>
@@ -156,7 +154,6 @@
         function getStatusBadge(status){
             const s = (status||'').toLowerCase();
             if(s==='pending' || s==='new') return '<span class="badge bg-warning text-dark">Đang chờ xử lý</span>';
-            if(s==='processing') return '<span class="badge bg-primary">Đang xử lý</span>';
             if(s==='completed') return '<span class="badge bg-success">Hoàn thành</span>';
             if(s==='cancelled') return '<span class="badge bg-danger">Đã hủy</span>';
             return '<span class="badge bg-secondary">Khác</span>';

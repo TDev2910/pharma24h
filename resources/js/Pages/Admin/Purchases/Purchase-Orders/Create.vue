@@ -1,116 +1,259 @@
 <template>
-    <div class="create-purchase-return-page">
-      <!-- Main content area -->
-      <div class="row g-3">
-        <!-- Products table - Left side (main content) -->
-        <div class="col-lg-8">
-          <Toolbar 
-            @search="handleSearch"
-            @file-upload="handleFileUpload"
-            @settings="handleSettings"
-          />
-          <ItemTable 
-            @update-total="handleUpdateTotal"
-          />
-        </div>
-        
-        <!-- Form details - Right sidebar -->
-        <div class="col-lg-4">
-          <SummaryPanel 
-            :suppliers="suppliers"
-            :total-amount="totalAmount"
-            @form-submit="handleFormSubmit"
-          />
-        </div>
+  <div class="create-purchase-order-page">
+    <!-- Main content area -->
+    <div class="row g-3">
+      <!-- Products table - Left side (main content) -->
+      <div class="col-lg-8">
+        <Toolbar 
+          @search="handleSearch"
+          @file-upload="handleFileUpload"
+          @settings="handleSettings"
+        />
+      <ItemsTable 
+        :items="items"
+        @update-items="handleUpdateItems"
+        @update-total="handleUpdateTotal"
+      />
       </div>
       
-      <!-- Modal Payment -->
-      <ModalPayment 
-        :payable-amount="payableAmount"
-        @payment-confirmed="handlePaymentConfirmed"
-      />
+      <!-- Form details - Right sidebar -->
+      <div class="col-lg-4">
+        <SummaryPanel 
+          ref="summaryPanel"
+          :suppliers="suppliers"
+          :total-amount="totalAmount"
+          @form-submit="handleFormSubmit"
+          @show-payment-modal="handleShowPaymentModal"
+        />
+      </div>
     </div>
-  </template>
+    
+    <!-- Modal Payment -->
+    <ModalPayment 
+      :payable-amount="payableAmount"
+      :show="showPaymentModal"
+      @close="closePaymentModal"
+      @payment-confirmed="handlePaymentConfirmed"
+    />
+  </div>
+</template>
   
-  <script>
-  import Toolbar from './Components/Toolbar.vue'
-  import ItemTable from './Components/Item-table.vue'
-  import SummaryPanel from './Components/Summary-panel.vue'
-  import ModalPayment from './Components/Modal-payment.vue'
-  
+<script>
+import { useToast } from 'primevue/usetoast'
+import Toolbar from './Components/Toolbar.vue'
+import ItemsTable from './Components/Items-table.vue'
+import SummaryPanel from './Components/Summary-panel.vue'
+import ModalPayment from './Components/Modal-payment.vue'
+
 export default {
   name: 'CreatePurchaseOrder',
   
   components: {
     Toolbar,
-    ItemTable,
+    ItemsTable,
     SummaryPanel,
     ModalPayment
+  },
+
+  setup() {
+    const toast = useToast()
+    return { toast }
+  },
+  
+  props: {
+    suppliers: {
+      type: Array,
+      default: () => []
+    },
+    medicines: {
+      type: Array,
+      default: () => []
+    },
+    goods: {
+      type: Array,
+      default: () => []
+    }
   },
   
   data() {
     return {
       totalAmount: 0,
       payableAmount: 0,
-      suppliers: [
-        { id: 1, ten_nha_cung_cap: 'Công ty Dược phẩm ABC', ma_nha_cung_cap: 'NCC001' },
-        { id: 2, ten_nha_cung_cap: 'Nhà cung cấp XYZ', ma_nha_cung_cap: 'NCC002' },
-        { id: 3, ten_nha_cung_cap: 'Công ty Thuốc DEF', ma_nha_cung_cap: 'NCC003' },
-        { id: 4, ten_nha_cung_cap: 'Nhà cung cấp GHI', ma_nha_cung_cap: 'NCC004' },
-        { id: 5, ten_nha_cung_cap: 'Công ty Dược JKL', ma_nha_cung_cap: 'NCC005' }
-      ]
+      items: [], // Store items from ItemTable
+      showPaymentModal: false
     }
   },
-  
-    methods: {
-      handleSearch(query) {
-        console.log('Search query:', query)
-        // TODO: Implement search functionality
-      },
-  
-      handleFileUpload() {
-        console.log('File upload requested')
-        // TODO: Implement file upload functionality
-      },
-  
-      handleSettings() {
-        console.log('Settings requested')
-        // TODO: Implement settings functionality
-      },
-  
-      handleUpdateTotal(amount) {
-        this.totalAmount = amount
-        this.payableAmount = amount // Initially payable = total, will be updated by discount
-      },
-  
-      handleFormSubmit(formData) {
-        console.log('Form submitted:', formData)
-        // TODO: Implement form submission
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Thành công',
-          detail: 'Phiếu trả hàng đã được lưu',
+
+  methods: {
+    handleSearch(query) {
+      console.log('Search query:', query)
+      // TODO: Implement search functionality
+    },
+
+    handleFileUpload() {
+      console.log('File upload requested')
+      // TODO: Implement file upload functionality
+    },
+
+    handleSettings() {
+      console.log('Settings requested')
+      // TODO: Implement settings functionality
+    },
+
+    handleUpdateTotal(amount) {
+      this.totalAmount = amount
+      this.payableAmount = amount // Initially payable = total, will be updated by discount
+    },
+
+    handleUpdateItems(items) {
+      this.items = items
+    },
+
+    async handleFormSubmit(formData) {
+      // Validate required fields
+      if (!formData.supplier_id) {
+        this.toast.add({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: 'Vui lòng chọn nhà cung cấp',
           life: 3000
         })
-      },
-  
-      handlePaymentConfirmed(paymentData) {
-        console.log('Payment confirmed:', paymentData)
-        // TODO: Update summary panel with payment data
+        return
+      }
+
+      if (this.items.length === 0) {
+        this.toast.add({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: 'Vui lòng thêm ít nhất một sản phẩm',
+          life: 3000
+        })
+        return
+      }
+
+      try {
+        // Prepare data for backend
+        const processedItems = this.items.map(item => {
+          const processedItem = {
+            product_type: item.product_type || 'goods', // Use product_type from Excel import
+            product_id: item.product_id || item.id,
+            quantity: item.so_luong || item.quantity,
+            unit_price: item.don_gia || item.unit_price,
+            discount: 0, // Individual item discount
+            note: item.note || null
+          }
+          
+          // Validate each item
+          if (!processedItem.product_id) {
+            throw new Error(`Sản phẩm "${item.ten_hang || item.ma_hang}" không có ID`)
+          }
+          if (!processedItem.quantity || processedItem.quantity <= 0) {
+            throw new Error(`Sản phẩm "${item.ten_hang || item.ma_hang}" có số lượng không hợp lệ`)
+          }
+          if (!processedItem.unit_price || processedItem.unit_price <= 0) {
+            throw new Error(`Sản phẩm "${item.ten_hang || item.ma_hang}" có đơn giá không hợp lệ`)
+          }
+          
+          return processedItem
+        })
+
+        const submitData = {
+          import_code: formData.import_code,
+          supplier_id: formData.supplier_id,
+          import_date: formData.import_date,
+          note: formData.note,
+          discount: formData.discount || 0,
+          items: processedItems
+        }
+
+        // Submit to backend
+        const response = await fetch('/admin/purchase-orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: JSON.stringify(submitData)
+        })
+
+        if (response.ok) {
+          this.toast.add({
+            severity: 'success',
+            summary: 'Thành công',
+            detail: 'Phiếu nhập hàng đã được lưu thành công',
+            life: 3000
+          })
+            
+          // Redirect to dashboard after successful save
+          setTimeout(() => {
+            window.location.href = '/admin/import'
+          }, 1500)
+        } else {
+          let errorMessage = 'Có lỗi xảy ra khi lưu phiếu nhập hàng'
+          
+          try {
+            const errorData = await response.json()
+            
+            if (errorData.message) {
+              errorMessage = errorData.message
+            } else if (errorData.errors) {
+              // Handle validation errors
+              const errorMessages = Object.values(errorData.errors).flat()
+              errorMessage = errorMessages.join(', ')
+            }
+          } catch (e) {
+            errorMessage = `HTTP ${response.status}: ${response.statusText}`
+          }
+          
+          this.toast.add({
+            severity: 'error',
+            summary: 'Lỗi',
+            detail: errorMessage,
+            life: 5000
+          })
+        }
+      } catch (error) {
+        this.toast.add({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: 'Có lỗi xảy ra khi gửi dữ liệu',
+          life: 3000
+        })
       }
     },
-  
-    mounted() {
-      // Initialize any required data
-      console.log('Create Purchase Return page mounted')
+
+    handleShowPaymentModal(paymentData) {
+      // Show payment modal with current data
+      this.payableAmount = paymentData.payable
+      this.showPaymentModal = true
+    },
+
+    closePaymentModal() {
+      this.showPaymentModal = false
+    },
+
+    handlePaymentConfirmed(paymentData) {
+      // Update summary panel with payment data
+      console.log('Payment confirmed:', paymentData)
+      this.showPaymentModal = false
+      
+      // Emit event to SummaryPanel to update cash_paid
+      this.$refs.summaryPanel?.updatePayment(paymentData)
     }
+
+  },
+
+  mounted() {
+    // Initialize any required data
   }
-  </script>
+}
+</script>
   
-  <style scoped>
-  .create-purchase-return-page {
-    padding: 20px;
-  }
+<style scoped>
+.create-purchase-order-page {
+  padding: 20px;
+}
   
   .summary-card {
     position: sticky;

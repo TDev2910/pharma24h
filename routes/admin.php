@@ -21,6 +21,7 @@ use Inertia\Inertia;
 Route::prefix('admin')->name('admin.')->group(function () 
 {
     // Xuất file excel
+    Route::get('purchase-orders/export', [PruchaseImportController::class, 'export'])->name('purchase-orders.export')->middleware('auth');
     Route::get('purchase-returns/export', [PurchaseReturnsController::class, 'export'])->name('purchase-returns.export')->middleware('auth');
     // Dashboard 
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
@@ -83,6 +84,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     // Suppliers / Imports / Returns
     Route::resource('suppliers', SupplierController::class)->names('suppliers');
     Route::resource('import', PruchaseImportController::class)->names('import');
+    Route::resource('purchase-orders', PruchaseImportController::class)->names('purchase-orders');
     Route::resource('purchase-returns', PurchaseReturnsController::class)->names('purchase-returns');
     Route::get('generate-import-code', [PruchaseImportController::class, 'generateImportCode'])->name('generate-import-code');
     Route::get('generate-return-code', [PurchaseReturnsController::class, 'generateReturnCode'])->name('generate-return-code');
