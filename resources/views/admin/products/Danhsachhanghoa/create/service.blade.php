@@ -1,4 +1,4 @@
-<!-- Modal tạo dịch vụ -->
+{{-- <!-- Modal tạo dịch vụ -->
 <div class="modal fade create-modal" id="createServiceModal" tabindex="-1" aria-labelledby="createServiceModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
       <div class="modal-content" style="border-radius:16px;">
@@ -186,4 +186,4 @@ document.querySelector('form').addEventListener('submit', function(e) {
     priceInput.value = price;
 });
 </script>
-@endpush
+@endpush --}}

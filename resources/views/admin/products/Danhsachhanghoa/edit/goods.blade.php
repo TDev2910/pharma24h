@@ -1,4 +1,4 @@
-<div class="modal fade" id="editGoodsModal" tabindex="-1" aria-labelledby="editGoodsModalLabel" aria-hidden="true">
+{{-- <div class="modal fade" id="editGoodsModal" tabindex="-1" aria-labelledby="editGoodsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content" style="border-radius: 16px;">
             <div class="modal-header">
@@ -363,4 +363,4 @@
 
 @push('scripts')
 <script src="{{ asset('js/forms.js') }}"></script>
-@endpush
+@endpush --}}

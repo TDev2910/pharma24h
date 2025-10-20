@@ -10,6 +10,7 @@ use App\Models\Position;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class MedicineController extends Controller
@@ -28,6 +29,43 @@ class MedicineController extends Controller
         return Inertia::render('Admin/Products/Lists/ListMedicines', [
             'medicines' => $medicines,
             'data' => $data
+        ]);
+    }
+
+    public function apiIndex(Request $request)
+    {
+        $query = Medicine::with(['category', 'manufacturer', 'drugRoute', 'position']);
+
+        if($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('ten_thuoc', 'LIKE', "%{$search}%")
+                  ->orWhere('ma_hang', 'LIKE', "%{$search}%")
+                    ->orWhere('hoat_chat', 'LIKE', "%{$search}%");
+            });
+        }
+        if($request->filled('category_id')) {
+            $query->where('nhom_hang_id', $request->category_id);
+        }
+        if($request->filled('manufacturer_id')) {
+            $query->where('manufacturer_id', $request->manufacturer_id);
+        }
+        if($request->filled('drugRoute_id')) {
+            $query->where('drugRoute_id', $request->drugRoute_id);
+        }
+
+        $perPage = $request->get('per_page', 10);
+        $medicines = $query->latest()->paginate($perPage);
+        
+        return response()->json([
+            'success' => true,
+            'data' => $medicines->items(),
+            'pagination' => [
+                'current_page' => $medicines->currentPage(),
+                'last_page' => $medicines->lastPage(),
+                'per_page' => $medicines->perPage(),
+                'total' => $medicines->total()
+            ]
         ]);
     }
 
@@ -76,48 +114,72 @@ class MedicineController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'ten_thuoc'         => 'required|string|max:255',
-            'ma_hang'           => 'nullable|string|max:50|unique:medicines,ma_hang',
-            'ten_viet_tat'      => 'nullable|string|max:100',
-            'ton_kho'           => 'required|integer|min:0',
-            'gia_ban'           => 'nullable|numeric|min:0',
-            'gia_von'           => 'nullable|numeric|min:0',
-            'ton_thap_nhat'     => 'nullable|integer|min:0',
-            'khach_dat'         => 'nullable|integer|min:0',
-            'mo_ta'             => 'nullable|string',
-            'image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'nhom_hang_id'      => 'nullable|exists:product_categories,id',
-            'manufacturer_id'   => 'nullable|exists:manufacturers,id',
-            'drugusage_id'      => 'nullable|exists:drug_routes,id',
-            'position_id'       => 'nullable|exists:positions,id',
-            'ma_vach'           => 'nullable|string|unique:medicines,ma_vach',
-            'so_dang_ky'        => 'nullable|string|unique:medicines,so_dang_ky',
-            'hoat_chat'         => 'nullable|string',
-            'ham_luong'         => 'nullable|string',
-            'nuoc_san_xuat'     => 'nullable|string',
-            'quy_cach_dong_goi' => 'nullable|string',
-            'ton_cao_nhat'      => 'nullable|integer|min:0',
-            'trong_luong'       => 'nullable|numeric|min:0',
-            'don_vi_tinh'       => 'nullable|string',
-            'ban_truc_tiep'     => 'nullable',
-        ], [
-            'ma_hang.unique'    => 'Mã hàng bạn nhập đang trùng với một sản phẩm khác.',
-            'ma_vach.unique'    => 'Mã vạch bạn nhập đang trùng với một sản phẩm khác.',
-            'so_dang_ky.unique' => 'Số đăng ký bạn nhập đang trùng với một sản phẩm khác.',
-        ]);
+        try {
+            // Validate the request
+            $validator = \Validator::make($request->all(), [
+                'ten_thuoc'         => 'required|string|max:255',
+                'ma_hang'           => 'nullable|string|max:50|unique:medicines,ma_hang',
+                'ten_viet_tat'      => 'nullable|string|max:100',
+                'ton_kho'           => 'required|integer|min:0',
+                'gia_ban'           => 'nullable|numeric|min:0',
+                'gia_von'           => 'nullable|numeric|min:0',
+                'ton_thap_nhat'     => 'nullable|integer|min:0',
+                'khach_dat'         => 'nullable|integer|min:0',
+                'mo_ta'             => 'nullable|string',
+                'image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'nhom_hang_id'      => 'nullable|exists:product_categories,id',
+                'manufacturer_id'   => 'nullable|exists:manufacturers,id',
+                'drugusage_id'      => 'nullable|exists:drug_routes,id',
+                'position_id'       => 'nullable|exists:positions,id',
+                'ma_vach'           => 'nullable|string|unique:medicines,ma_vach',
+                'so_dang_ky'        => 'nullable|string|unique:medicines,so_dang_ky',
+                'hoat_chat'         => 'nullable|string',
+                'ham_luong'         => 'nullable|string',
+                'nuoc_san_xuat'     => 'nullable|string',
+                'quy_cach_dong_goi' => 'nullable|string',
+                'ton_cao_nhat'      => 'nullable|integer|min:0',
+                'trong_luong'       => 'nullable|numeric|min:0',
+                'don_vi_tinh'       => 'nullable|string',
+                'ban_truc_tiep'     => 'nullable',
+            ], [
+                'ma_hang.unique'    => 'Mã hàng bạn nhập đang trùng với một sản phẩm khác.',
+                'ma_vach.unique'    => 'Mã vạch bạn nhập đang trùng với một sản phẩm khác.',
+                'so_dang_ky.unique' => 'Số đăng ký bạn nhập đang trùng với một sản phẩm khác.',
+            ]);
 
-        $data = $request->all();
-        $data['ban_truc_tiep'] = $request->has('ban_truc_tiep') ? 1 : 0;
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
 
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('products', 'public');
-            $data['image'] = $imagePath;
+            // Prepare data
+            $data = $request->all();
+            $data['ban_truc_tiep'] = $request->has('ban_truc_tiep') ? 1 : 0;
+
+            // Handle image upload
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('products', 'public');
+                $data['image'] = $imagePath;
+            }
+
+            // Create the medicine
+            $medicine = Medicine::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Thuốc đã được thêm thành công',
+                'data' => $medicine
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi thêm thuốc: ' . $e->getMessage()
+            ], 500);
         }
-
-        Medicine::create($data);
-
-        return redirect()->route('admin.products.index')->with('success', 'Thêm thuốc thành công!');
     }
 
     /**
@@ -136,8 +198,10 @@ class MedicineController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'ten_thuoc'         => 'required|string|max:255',
+        
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'ten_thuoc'         => 'nullable|string|max:255',
             'ma_hang'           => 'nullable|string|max:50|unique:medicines,ma_hang,' . $id,
             'ten_viet_tat'      => 'nullable|string|max:100',
             'gia_ban'           => 'nullable|numeric|min:0',
@@ -166,25 +230,85 @@ class MedicineController extends Controller
             'so_dang_ky.unique' => 'Số đăng ký bạn nhập đang trùng với một sản phẩm khác.',
         ]);
 
-        $medicine = Medicine::findOrFail($id);
-        
-        // Sanitize giá trị
-        $data = $request->all();
-        $data['gia_von'] = (int)preg_replace('/\D/', '', $request->gia_von);
-        $data['gia_ban'] = (int)preg_replace('/\D/', '', $request->gia_ban);
-        
-        // Xử lý checkbox ban_truc_tiep
-        $data['ban_truc_tiep'] = $request->has('ban_truc_tiep') ? 1 : 0;
-        
-        // Xử lý trường bắt buộc khác (nếu có)
-        if (!isset($data['khach_dat'])) {
-            $data['khach_dat'] = $medicine->khach_dat ?? 0;
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
-        
-        // Update
-        $medicine->update($data);
-        
-        return redirect()->route('admin.products.index')->with('success', 'Cập nhật thuốc thành công');
+
+        try {
+            $medicine = Medicine::findOrFail($id);
+            
+            $data = $request->all();
+                     
+            // Xử lý checkbox ban_truc_tiep
+            $data['ban_truc_tiep'] = $request->has('ban_truc_tiep') ? 1 : 0;
+            
+            // Xử lý trường bắt buộc khác (nếu có)
+            if (!isset($data['khach_dat'])) {
+                $data['khach_dat'] = $medicine->khach_dat ?? 0;
+            }
+            
+            // Xử lý upload ảnh
+            if ($request->hasFile('image')) {
+                // Xóa ảnh cũ nếu có
+                if ($medicine->image) {
+                    Storage::disk('public')->delete($medicine->image);
+                }
+                
+                // Upload ảnh mới (giống Create)
+                $imagePath = $request->file('image')->store('products', 'public');
+                $data['image'] = $imagePath;
+                
+            } else {
+                // Không có file mới - giữ nguyên ảnh cũ
+                unset($data['image']);
+            }
+            
+            // Update
+            $medicine->update($data);
+            
+            // Kiểm tra nếu là AJAX request
+            if (request()->ajax() || request()->wantsJson()) {
+                // Refresh medicine data từ database để đảm bảo có dữ liệu mới nhất
+                $medicine->refresh();
+                
+                
+                // Load relationships để trả về đầy đủ thông tin
+                $medicine->load([
+                    'category:id,name',
+                    'manufacturer:id,name', 
+                    'drugRoute:id,name',
+                    'position:id,name'
+                ]);
+                
+                // Thêm product_type để datatable hiển thị đúng
+                $medicineData = $medicine->fresh()->toArray();
+                $medicineData['product_type'] = 'medicine';
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Thông tin thuốc đã được cập nhật thành công',
+                    'data' => $medicineData // Đảm bảo trả về dữ liệu mới nhất với relationships
+                ]);
+            }
+            
+            return redirect()->route('admin.products.index')->with('success', 'Cập nhật thuốc thành công');
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy thuốc với ID: ' . $id
+            ], 404);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi cập nhật thuốc: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

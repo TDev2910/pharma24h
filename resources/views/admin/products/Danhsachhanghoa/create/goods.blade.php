@@ -1,4 +1,4 @@
-<div class="modal fade create-modal" id="createGoodsModal" tabindex="-1" aria-labelledby="createGoodsModalLabel" aria-hidden="true">
+{{-- <div class="modal fade create-modal" id="createGoodsModal" tabindex="-1" aria-labelledby="createGoodsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
       <div class="modal-content" style="border-radius:16px;">
         <div class="modal-header">
@@ -846,4 +846,4 @@
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-</style>
+</style> --}}

@@ -1,4 +1,4 @@
-<div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true" style="z-index: 1060;">
+{{-- <div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -123,4 +123,4 @@ document.addEventListener('DOMContentLoaded', function() {
 #unitModal .modal-content {
     z-index: 1062 !important;
 }
-</style> 
+</style>  --}}

@@ -23,12 +23,15 @@ Route::prefix('admin')->name('admin.')->group(function ()
     // Xuất file excel
     Route::get('purchase-orders/export', [PruchaseImportController::class, 'export'])->name('purchase-orders.export')->middleware('auth');
     Route::get('purchase-returns/export', [PurchaseReturnsController::class, 'export'])->name('purchase-returns.export')->middleware('auth');
-    // Dashboard 
-    Route::get('products', [ProductController::class, 'index'])->name('products.index');
+    // Dashboard - Vue Component
+    Route::get('products', function () {
+        return Inertia::render('Admin/Products/Overviews/Dashboard');
+    })->name('products.index');
 
     // Medicines
     Route::prefix('medicines')->name('medicines.')->group(function () {
         Route::get('/', [MedicineController::class, 'index'])->name('index');
+        Route::get('/api', [MedicineController::class, 'apiIndex'])->name('api');
         Route::get('/list', [MedicineController::class, 'listMedicines'])->name('list');
         Route::get('/generate-codes', [MedicineController::class, 'generateCodes'])->name('generate-codes');
         Route::post('/', [MedicineController::class, 'store'])->name('store');
@@ -41,6 +44,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     // Goods
     Route::prefix('goods')->name('goods.')->group(function () {
         Route::get('/', [GoodsController::class, 'index'])->name('index');
+        Route::get('/api', [GoodsController::class, 'apiIndex'])->name('api'); 
         Route::get('/list', [GoodsController::class, 'vueListGoods'])->name('list');
         Route::get('/vue-list', [GoodsController::class, 'vueListGoods'])->name('vue-list');
         Route::get('/generate-codes', [GoodsController::class, 'generateCodes'])->name('generate-codes');
@@ -100,14 +104,20 @@ Route::prefix('admin')->name('admin.')->group(function ()
     });
 
     // Supporting entities
+    // Drug Route
+    Route::get('products/drugroute', [SupportingEntityController::class, 'indexDrugRoute'])->name('products.drugroute.index');
     Route::post('products/drugroute', [SupportingEntityController::class, 'storeDrugRoute'])->name('products.drugroute.store');
     Route::put('products/drugroute/{id}', [SupportingEntityController::class, 'updateDrugRoute'])->name('products.drugroute.update');
     Route::delete('products/drugroute/{id}', [SupportingEntityController::class, 'destroyDrugRoute'])->name('products.drugroute.destroy');
     
+    // Manufacturer
+    Route::get('products/manufacturer', [SupportingEntityController::class, 'indexManufacturer'])->name('products.manufacturer.index');
     Route::post('products/manufacturer', [SupportingEntityController::class, 'storeManufacturer'])->name('products.manufacturer.store');
     Route::put('products/manufacturer/{id}', [SupportingEntityController::class, 'updateManufacturer'])->name('products.manufacturer.update');
     Route::delete('products/manufacturer/{id}', [SupportingEntityController::class, 'destroyManufacturer'])->name('products.manufacturer.destroy');
     
+    // Position
+    Route::get('products/position', [SupportingEntityController::class, 'indexPosition'])->name('products.position.index');
     Route::post('products/position', [SupportingEntityController::class, 'storePosition'])->name('products.position.store');
     Route::put('products/position/{id}', [SupportingEntityController::class, 'updatePosition'])->name('products.position.update');
     Route::delete('products/position/{id}', [SupportingEntityController::class, 'destroyPosition'])->name('products.position.destroy');
@@ -115,6 +125,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     // Categories
     Route::resource('categories', ProductCategoryController::class)->except(['index', 'create', 'edit'])->names('categories');
     Route::get('categories/modal/data', [ProductCategoryController::class, 'getCategoriesForModal'])->name('categories.modal.data');
+    Route::post('categories', [ProductCategoryController::class, 'store'])->name('categories.store');
     Route::resource('products', ProductController::class)->except(['index'])->names('products');
 
     // Orders
@@ -156,8 +167,8 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::get('/customers/{customer}/edit', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'edit'])->name('customers.edit');
     Route::delete('/customers/{id}', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'destroy'])->name('customers.destroy');
 
-    // Demo route
+    // Demo route for Vue Product Management
     Route::get('/demo', function () {
-        return Inertia::render('Admin/Purchases/Purchase-Returns/Create');
+        return Inertia::render('Admin/Products/Demo');
     })->name('demo');
 });

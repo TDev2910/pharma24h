@@ -1,4 +1,4 @@
-<!-- Modal tạo thuốc -->
+{{-- <!-- Modal tạo thuốc -->
     <div class="modal fade create-modal" id="createMedicineModal" tabindex="-1" aria-labelledby="createMedicineModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content" style="border-radius:16px;">
@@ -1276,4 +1276,4 @@
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-</style>
+</style> --}}

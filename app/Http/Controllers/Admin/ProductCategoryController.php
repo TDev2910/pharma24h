@@ -32,7 +32,17 @@ class ProductCategoryController extends Controller
             'sort_order' => 'nullable|integer|min:0'
         ]);
 
-        ProductCategory::create($request->only('name', 'parent_id', 'sort_order'));
+        $category = ProductCategory::create($request->only('name', 'parent_id', 'sort_order'));
+        
+        // Return JSON response for API calls
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Tạo nhóm hàng thành công!',
+                'data' => $category
+            ], 201);
+        }
+        
         return redirect()->route('admin.products.index')
             ->with('success', 'Tạo nhóm hàng thành công!');
     }
@@ -78,6 +88,15 @@ class ProductCategoryController extends Controller
 
         $category->update($request->only('name', 'parent_id', 'sort_order'));
 
+        // Return JSON response for API calls
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật nhóm hàng thành công!',
+                'data' => $category
+            ], 200);
+        }
+
         return redirect()->route('admin.products.index')
             ->with('success', 'Cập nhật nhóm hàng thành công!');
     }
@@ -91,13 +110,34 @@ class ProductCategoryController extends Controller
         
         $categories = ProductCategory::getCategoryTree();
         
-        // Add product counts to each category
-        $categoriesWithCounts = $this->addProductCounts($categories, $search);
+        // Convert to array format for Vue component
+        $categoriesArray = $this->convertToArray($categories);
         
         return response()->json([
             'success' => true,
-            'data' => $categoriesWithCounts
+            'data' => $categoriesArray
         ]);
+    }
+    
+    /**
+     * Convert Collection to array format for Vue component
+     */
+    private function convertToArray($categories)
+    {
+        $result = [];
+        
+        foreach ($categories as $category) {
+            $categoryData = [
+                'id' => $category->id,
+                'name' => $category->name,
+                'parent_id' => $category->parent_id,
+                'children' => $category->children->isNotEmpty() ? $this->convertToArray($category->children) : []
+            ];
+            
+            $result[] = $categoryData;
+        }
+        
+        return $result;
     }
     
     /**
@@ -161,6 +201,14 @@ class ProductCategoryController extends Controller
 
         $categoryName = $category->name;
         $category->delete(); // Will cascade delete children due to DB constraint
+
+        // Return JSON response for API calls
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Đã xóa nhóm hàng '{$categoryName}' thành công!"
+            ], 200);
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', "Đã xóa nhóm hàng '{$categoryName}' thành công!");

@@ -11,17 +11,79 @@ use Illuminate\Http\Request;
 class SupportingEntityController extends Controller
 {
     /**
+     * Get all DrugRoutes (Đường dùng).
+     */
+    public function indexDrugRoute()
+    {
+        try {
+            $drugRoutes = DrugRoute::orderBy('name')->get();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $drugRoutes
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching drug routes: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi lấy danh sách đường dùng',
+                'data' => []
+            ], 500);
+        }
+    }
+
+    public function indexManufacturer()
+    {
+        try {
+            $manufacturers = Manufacturer::orderBy('name')->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $manufacturers
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching manufacturers: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi lấy danh sách hãng sản xuất',
+                'data' => []
+            ], 500);
+        }
+    }
+
+    public function indexPosition()
+    {
+        try {
+            $positions = Position::orderBy('name')->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $positions
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching positions: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi lấy danh sách vị trí',
+                'data' => []
+            ], 500);
+        }
+    }
+
+    /**
      * Store a newly created DrugRoute (Đường dùng).
      */
     public function storeDrugRoute(Request $request)
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:drug_routes,name'
+                'name' => 'required|string|max:255|unique:drug_routes,name',
+                'description' => 'nullable|string|max:1000'
             ]);
 
             $route = DrugRoute::create([
-                'name'=> trim($validated['name'])
+                'name' => trim($validated['name']),
+                'description' => $validated['description'] ? trim($validated['description']) : null
             ]);
 
             return response()->json
@@ -53,7 +115,8 @@ class SupportingEntityController extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:manufacturers,name'
+                'name' => 'required|string|max:255|unique:manufacturers,name',
+                'description' => 'nullable|string|max:1000'
             ], [
                 'name.required' => 'Tên hãng sản xuất là bắt buộc',
                 'name.unique' => 'Hãng sản xuất này đã tồn tại',
@@ -61,7 +124,8 @@ class SupportingEntityController extends Controller
             ]);
 
             $manufacturer = Manufacturer::create([
-                'name'        => trim($validated['name'])
+                'name' => trim($validated['name']),
+                'description' => $validated['description'] ? trim($validated['description']) : null
             ]);
 
             return response()->json([
@@ -95,11 +159,13 @@ class SupportingEntityController extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:positions,name'
+                'name' => 'required|string|max:255|unique:positions,name',
+                'description' => 'nullable|string|max:1000'
             ]);
 
             $position = Position::create([
-                'name'=> trim($validated['name'])
+                'name' => trim($validated['name']),
+                'description' => $validated['description'] ? trim($validated['description']) : null
             ]);
 
             return response()->json([
@@ -169,11 +235,15 @@ class SupportingEntityController extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:drug_routes,name,' . $id
+                'name' => 'required|string|max:255|unique:drug_routes,name,' . $id,
+                'description' => 'nullable|string|max:1000'
             ]);
 
             $route = DrugRoute::findOrFail($id);
-            $route->update(['name' => trim($validated['name'])]);
+            $route->update([
+                'name' => trim($validated['name']),
+                'description' => $validated['description'] ? trim($validated['description']) : null
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -224,7 +294,8 @@ class SupportingEntityController extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:manufacturers,name,' . $id
+                'name' => 'required|string|max:255|unique:manufacturers,name,' . $id,
+                'description' => 'nullable|string|max:1000'
             ], [
                 'name.required' => 'Tên hãng sản xuất là bắt buộc',
                 'name.unique' => 'Hãng sản xuất này đã tồn tại',
@@ -232,7 +303,10 @@ class SupportingEntityController extends Controller
             ]);
 
             $manufacturer = Manufacturer::findOrFail($id);
-            $manufacturer->update(['name' => trim($validated['name'])]);
+            $manufacturer->update([
+                'name' => trim($validated['name']),
+                'description' => $validated['description'] ? trim($validated['description']) : null
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -279,7 +353,8 @@ class SupportingEntityController extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:positions,name,' . $id
+                'name' => 'required|string|max:255|unique:positions,name,' . $id,
+                'description' => 'nullable|string|max:1000'
             ], [
                 'name.required' => 'Tên vị trí là bắt buộc',
                 'name.unique' => 'Vị trí này đã tồn tại',
@@ -287,7 +362,10 @@ class SupportingEntityController extends Controller
             ]);
 
             $position = Position::findOrFail($id);
-            $position->update(['name' => trim($validated['name'])]);
+            $position->update([
+                'name' => trim($validated['name']),
+                'description' => $validated['description'] ? trim($validated['description']) : null
+            ]);
 
             return response()->json([
                 'success' => true,
