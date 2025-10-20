@@ -90,18 +90,139 @@
       <!-- Zalo Button -->
       <a href="https://zalo.me/0376193244" target="_blank" class="floating-btn floating-zalo">
         <i class="fab fa-viber"></i>
-      </a>
-  
-      <!-- Facebook Button -->
+      </a>     
+
       <a href="https://www.facebook.com/dat.hocongthien" target="_blank" class="floating-btn floating-facebook">
         <i class="fab fa-facebook-messenger"></i>
       </a>
-    </div> 
+      
+      <VchatWidget :auth="auth" />
+    </div>
+
+    <!-- vChat Widget -->
   </template>
   
   <script setup>
   import { computed } from 'vue'
+  import VchatWidget from '@/Components/VchatWidget.vue'
+  
+  // Props từ Inertia
+  const props = defineProps({
+    auth: {
+      type: Object,
+      default: () => ({ user: null })
+    }
+  })
   
   // Computed property for current year
   const currentYear = computed(() => new Date().getFullYear())
   </script>
+
+<style scoped>
+/* CSS để định vị vChat widget dưới nút message */
+:deep(.vchat-widget),
+:deep(#vchat-widget),
+:deep([id*="vchat"]) {
+  position: fixed;
+  bottom: 90px; /* Dưới nút message (80px + 10px margin) */
+  right: 20px;
+  z-index: 999;
+  /* Đảm bảo không bị ảnh hưởng bởi scrollbar */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Điều chỉnh cho mobile */
+@media (max-width: 767.98px) {
+  :deep(.vchat-widget),
+  :deep(#vchat-widget),
+  :deep([id*="vchat"]) {
+    bottom: 80px;
+    right: 15px;
+  }
+}
+
+/* Điều chỉnh cho desktop có scrollbar */
+@media (min-width: 768px) {
+  :deep(.vchat-widget),
+  :deep(#vchat-widget),
+  :deep([id*="vchat"]) {
+    /* Tính toán lại vị trí để tránh scrollbar */
+    right: calc(20px + env(scrollbar-gutter, 0px));
+  }
+}
+
+/* Floating Contacts */
+.floating-contacts {
+  position: fixed;
+  right: 20px;
+  bottom: 80px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center; /* Căn giữa các nút */
+}
+
+.floating-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+}
+
+.floating-zalo {
+  background: #28a745;
+  animation: pulse-phone 2s infinite;
+}
+
+.floating-btn:hover {
+  transform: scale(1.1);
+  color: #fff;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes pulse-phone {
+  0%, 100% {
+    box-shadow: 0 3px 15px rgba(40, 167, 69, 0.4);
+  }
+  50% {
+    box-shadow: 0 3px 20px rgba(40, 167, 69, 0.7);
+    transform: scale(1.05);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 991.98px) {
+  .floating-contacts {
+    right: 15px;
+    bottom: 70px;
+  }
+  
+  .floating-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .floating-contacts {
+    right: 10px;
+    bottom: 60px;
+  }
+  
+  .floating-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+}
+</style>
