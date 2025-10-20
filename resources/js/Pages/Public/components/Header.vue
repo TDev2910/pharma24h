@@ -21,13 +21,16 @@
               <a class="nav-link" href="/" data-inertia>Trang chủ</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/co-so-kham-benh" data-inertia>Cơ sở khám bệnh</a>
+              <a class="nav-link" href="/co-so-kham-benh" data-inertia>Đội ngũ</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/products" data-inertia>Sản phẩm</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/services" data-inertia>Dịch vụ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/contact" data-inertia>Liên hệ</a>
             </li>
           </ul>
 

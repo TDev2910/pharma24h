@@ -22,9 +22,7 @@ Route::get('/co-so-kham-benh', function () {
 })->name('cosokhambenh');
 Route::get('/products', [HomeController::class, 'products'])->name('products');
 Route::get('/services', fn () => Inertia::render('Public/Services'))->name('services');
-
-// Route::get('/about', [HomeController::class, 'about'])->name('about');
-// Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::get('/contact', fn () => Inertia::render('Public/Contact'))->name('contact');
 
 // Auth routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

@@ -8,7 +8,8 @@
 import { onMounted } from 'vue'
 
 onMounted(() => {
-  
+  // Script vChat từ Nhanh.vn
+
   
   // Thêm script vào head
   document.head.appendChild(script)

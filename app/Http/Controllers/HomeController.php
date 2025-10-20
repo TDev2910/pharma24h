@@ -90,6 +90,11 @@ class HomeController extends Controller
         return Inertia::render('public/services');
     }
 
+    public function contact()
+    {
+        return Inertia::render('public/contact');
+    }
+
     // /**
     //  * Hiển thị trang giới thiệu
     //  */
