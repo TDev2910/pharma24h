@@ -96,6 +96,14 @@ class GoodsController extends Controller
         if($request->filled('position_id')) {
             $query->where('position_id', $request->position_id);
         }
+        
+        // Date filtering
+        if($request->filled('from_date')) {
+            $query->whereDate('created_at', '>=', $request->from_date);
+        }
+        if($request->filled('to_date')) {
+            $query->whereDate('created_at', '<=', $request->to_date);
+        }
 
         $perPage = $request->get('per_page', 10);
         $goods = $query->latest()->paginate($perPage);

@@ -53,6 +53,14 @@ class MedicineController extends Controller
         if($request->filled('drugRoute_id')) {
             $query->where('drugRoute_id', $request->drugRoute_id);
         }
+        
+        // Date filtering
+        if($request->filled('from_date')) {
+            $query->whereDate('created_at', '>=', $request->from_date);
+        }
+        if($request->filled('to_date')) {
+            $query->whereDate('created_at', '<=', $request->to_date);
+        }
 
         $perPage = $request->get('per_page', 10);
         $medicines = $query->latest()->paginate($perPage);

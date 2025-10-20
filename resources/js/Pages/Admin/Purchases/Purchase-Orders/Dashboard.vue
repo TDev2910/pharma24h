@@ -78,10 +78,6 @@
           <h5>Trạng thái</h5>
           <div class="filter-options">
             <div class="checkbox-item">
-              <input type="checkbox" id="temp" v-model="filters.temp" />
-              <label for="temp">Phiếu tạm</label>
-            </div>
-            <div class="checkbox-item">
               <input type="checkbox" id="ordered" v-model="filters.ordered" />
               <label for="ordered">Đã đặt hàng</label>
             </div>
@@ -96,30 +92,25 @@
           <h5>Thời gian</h5>
           <div class="radio-options">
             <div class="radio-item">
-              <input type="radio" id="thisMonth" value="thisMonth" v-model="filters.timeRange" />
-              <label for="thisMonth">Tháng này</label>
-            </div>
-            <div class="radio-item">
               <input type="radio" id="custom" value="custom" v-model="filters.timeRange" />
               <label for="custom">Tùy chỉnh</label>
             </div>
           </div>
-          <div v-if="filters.timeRange === 'thisMonth'" class="date-picker-container">
+          <div v-if="filters.timeRange === 'thisMonth'" class="date-picker-container d-flex align-items-center" style="gap:8px;">
             <DatePicker 
-              v-model="filters.thisMonthDate" 
-              size="small" 
-              placeholder="Tháng này" 
+              v-model="filters.fromDate" 
               showIcon 
+              fluid 
               iconDisplay="input" 
+              placeholder="Từ ngày" 
             />
-          </div>
-          <div v-if="filters.timeRange === 'custom'" class="date-picker-container">
+            <span class="text-muted">→</span>
             <DatePicker 
-              v-model="filters.customDate" 
-              size="small" 
-              placeholder="Chọn ngày" 
+              v-model="filters.toDate" 
               showIcon 
+              fluid 
               iconDisplay="input" 
+              placeholder="Đến ngày" 
             />
           </div>
         </div>
@@ -320,9 +311,12 @@ export default {
         ordered: true,
         cancelled: false,
         timeRange: 'thisMonth',
-        thisMonthDate: null,
-        customDate: null
+        fromDate: null,
+        toDate: null
       },
+      // Date range for filtering
+      filtersRangeInitialized: false,
+      
       pagination: {
         current_page: 1,
         last_page: 1,

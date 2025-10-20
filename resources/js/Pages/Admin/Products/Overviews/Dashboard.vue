@@ -156,16 +156,31 @@
               </option>
             </select>
           </div>
-          
+          <!-- test -->
           <div class="filter-section">
-            <label>Loại hàng</label>
-            <select class="form-select form-select-sm" v-model="filters.productType" @change="filterProducts">
-              <option value="">Chọn loại hàng</option>
-              <option value="medicine">Thuốc</option>
-              <option value="goods">Hàng hóa</option>
-              <option value="service">Dịch vụ</option>
-              <option value="combo">Combo - đóng gói</option>
-            </select>
+            <h5>Thời gian</h5>
+            <div class="radio-options">
+              <div class="radio-item">
+                <label for="custom">Tùy chỉnh</label>
+              </div>
+            </div>
+            <div v-if="filters.timeRange === 'thisMonth'" class="date-picker-container d-flex align-items-center" style="gap:8px;">
+              <DatePicker 
+                v-model="filters.fromDate" 
+                showIcon 
+                fluid 
+                iconDisplay="input" 
+                placeholder="Từ ngày" 
+              />
+              <span class="text-muted">→</span>
+              <DatePicker 
+                v-model="filters.toDate" 
+                showIcon 
+                fluid 
+                iconDisplay="input" 
+                placeholder="Đến ngày" 
+              />
+            </div>
           </div>
         </div>
   
@@ -359,8 +374,12 @@
                               <td>{{ slotProps.data.ton_cao_nhat || '-' }}</td>
                             </tr>
                             <tr>
-                              <td class="fw-bold">Khách đặt:</td>
-                              <td>{{ slotProps.data.khach_dat || 0 }}</td>
+                              <td class="fw-bold">Trạng thái tồn kho:</td>
+                              <td>
+                                <span :class="['badge', getInventoryStatus(slotProps.data).class]">
+                                  {{ getInventoryStatus(slotProps.data).label }}
+                                </span>
+                              </td>
                             </tr>
                           </tbody>
                         </table>
@@ -433,6 +452,7 @@
   
   <script>
   import Button from 'primevue/button'
+  import DatePicker from 'primevue/datepicker'
   import DataTable from 'primevue/datatable'
   import Column from 'primevue/column'
   import Tree from 'primevue/tree'
@@ -456,7 +476,8 @@
       CreateMedicine,
       CreateGoods,
       MedicineEditModal,
-      GoodsEditModal
+      GoodsEditModal,
+      DatePicker
     },
     
     data() {
@@ -478,7 +499,11 @@
         filters: {
           manufacturerId: '',
           positionId: '',
-          productType: ''
+          productType: '',
+          timeRange: 'thisMonth',
+          // Range filter: từ ngày - đến ngày
+          fromDate: null,
+          toDate: null
         },
         
         // Modal states
@@ -508,6 +533,7 @@
     },
 
     computed: {
+      //dùng để lọc trên thanh tim kiếm
       filteredProducts() {
         // Nếu không nhập từ khóa, hiển thị tất cả sản phẩm
         if (!this.searchQuery || !this.searchQuery.trim()) {
@@ -522,8 +548,47 @@
         });
       }
     },
-    
+
+    watch: {
+      // Watch cho date filters
+      'filters.fromDate': {
+        handler() {
+          this.loadProducts();
+        }
+      },
+      'filters.toDate': {
+        handler() {
+          this.loadProducts();
+        }
+      }
+    },
+
     methods: {
+      // Xác định trạng thái tồn kho 
+      getInventoryStatus(row) {
+        const qty = Number(row?.ton_kho ?? 0)
+        const min = Number(row?.ton_thap_nhat ?? 0)
+        const max = Number(row?.ton_cao_nhat ?? 0)
+
+        if (qty === 0) {
+          return { label: 'Hết hàng', class: 'bg-secondary' }
+        }
+
+        // Nếu đã cấu hình ngưỡng
+        if (min > 0 && max > 0 && max >= min) {
+          if (qty <= min) {
+            return { label: 'Sắp hết hàng', class: 'bg-warning text-dark' }
+          }
+          if (qty > max) {
+            return { label: 'Tồn vượt mức', class: 'bg-danger' }
+          }
+          return { label: 'Còn hàng', class: 'bg-success' }
+        }
+
+        // Fallback khi chưa có ngưỡng: >0 coi là còn hàng
+        return { label: 'Còn hàng', class: 'bg-success' }
+      },
+      
       // Tìm kiếm với debounce
       debounceSearch() {
         clearTimeout(this.debounceTimer)
@@ -782,7 +847,10 @@
                       manufacturer_id: this.filters.manufacturerId,
                       position_id: this.filters.positionId,
                       per_page: this.pagination.per_page, 
-                      page: this.pagination.current_page
+                      page: this.pagination.current_page,
+                      // Thêm date filters
+                      from_date: this.filters.fromDate,
+                      to_date: this.filters.toDate
                   }
               }),
               //vật tư y tế
@@ -793,7 +861,10 @@
                       manufacturer_id: this.filters.manufacturerId,
                       position_id: this.filters.positionId,
                       per_page: this.pagination.per_page,
-                      page: this.pagination.current_page
+                      page: this.pagination.current_page,
+                      // Thêm date filters
+                      from_date: this.filters.fromDate,
+                      to_date: this.filters.toDate
                   }
               })
           ])
@@ -911,6 +982,7 @@
           this.showEditGoodsModal = true
         }
       },
+
 
       // Delete product
       async deleteProduct(product) {
@@ -1548,6 +1620,54 @@
     .detail-content .col-md-6 {
       margin-bottom: 20px;
     }
+  }
+
+  /* Filter Section */
+  .filter-section {
+    margin-bottom: 25px;
+  }
+
+  .filter-section h5 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .checkbox-item, .radio-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .checkbox-item input[type="checkbox"],
+  .radio-item input[type="radio"] {
+    margin: 0;
+  }
+
+  .checkbox-item label,
+  .radio-item label {
+    margin: 0;
+    font-size: 14px;
+    color: #495057;
+    cursor: pointer;
+  }
+
+  .radio-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Date Picker Container */
+  .date-picker-container {
+    margin-top: 15px;
   }
   </style>
   
