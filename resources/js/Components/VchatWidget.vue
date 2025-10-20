@@ -8,27 +8,7 @@
 import { onMounted } from 'vue'
 
 onMounted(() => {
-  // Script vChat từ Nhanh.vn
-  const script = document.createElement('script')
-  script.type = 'text/javascript'
-  script.async = true
-  script.defer = true
-  script.textContent = `
-    var __vnp = {
-      code: 28492,
-      key: '',
-      secret: '06ec0ef78d8d33e06025493767e8d7bb'
-    };
-    (function() {
-      var ga = document.createElement('script');
-      ga.type = 'text/javascript';
-      ga.async = true;
-      ga.defer = true;
-      ga.src = '//core.vchat.vn/code/tracking.js?v=53557';
-      var s = document.getElementsByTagName('script');
-      s[0].parentNode.insertBefore(ga, s[0]);
-    })();
-  `
+  
   
   // Thêm script vào head
   document.head.appendChild(script)
@@ -55,24 +35,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.vchat-container {
-  /* Container cho vChat widget */
-  position: relative;
-  z-index: 1000;
-}
 
-/* Custom styles cho vChat widget nếu cần */
-:deep(.vchat-widget) {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  z-index: 999 !important;
-}
-
-/* Điều chỉnh vị trí để không che nút message */
-@media (min-width: 768px) {
-  :deep(.vchat-widget) {
-    bottom: 90px !important; /* Để có khoảng cách với nút message */
-  }
-}
 </style>
