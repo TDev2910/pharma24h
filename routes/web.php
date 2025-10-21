@@ -25,6 +25,9 @@ Route::get('/products/{type}/{id}', [HomeController::class, 'productDetail'])->n
 Route::get('/services', fn () => Inertia::render('Public/Services'))->name('services');
 Route::get('/contact', fn () => Inertia::render('Public/Contact'))->name('contact');
 
+// Review routes
+Route::post('/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
+Route::delete('/reviews/{id}', [App\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy')->middleware('auth');
 // Auth routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);

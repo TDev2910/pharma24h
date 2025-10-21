@@ -68,6 +68,11 @@ class Medicine extends Model
         return $this->belongsTo(Position::class, 'position_id');
     }
 
+    public function reviews()
+    {
+        return $this->morphMany(ProductReview::class, 'product');
+    }
+
     // Accessors for price formatting
     public function getGiaBanFormattedAttribute()
     {

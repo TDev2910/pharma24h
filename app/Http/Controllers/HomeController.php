@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Medicine;
 use App\Models\Goods;
 use Inertia\Inertia;
+use App\Models\ProductReview;
 
 class HomeController extends Controller
 {
@@ -94,9 +95,33 @@ class HomeController extends Controller
         
         $user = auth()->user();
         
+        $reviews = ProductReview::where('product_id', $id)
+            ->where('product_type', $type)
+            ->approved()
+            ->with('user:id,name')
+            ->latest()
+            ->get();
+
+        // Tính toán averageRating và reviewCount
+        $reviewCount = $reviews->count();
+        $averageRating = $reviewCount > 0 ? $reviews->avg('rating') : 0;
+
+        // Tính rating breakdown (số lượng review cho mỗi mức sao)
+        $ratingBreakdown = [
+            5 => $reviews->where('rating', 5)->count(),
+            4 => $reviews->where('rating', 4)->count(),
+            3 => $reviews->where('rating', 3)->count(),
+            2 => $reviews->where('rating', 2)->count(),
+            1 => $reviews->where('rating', 1)->count(),
+        ];
+
         return Inertia::render('Public/DetailsProduct', [
             'product' => $product,
             'type' => $type,
+            'reviews' => $reviews,
+            'averageRating' => round($averageRating, 1),
+            'reviewCount' => $reviewCount,
+            'ratingBreakdown' => $ratingBreakdown,
             'auth' => [
                 'user' => $user ? [
                     'id' => $user->id,

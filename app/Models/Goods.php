@@ -59,6 +59,11 @@ class Goods extends Model
         return $this->belongsTo(Position::class);
     }
 
+    public function reviews()
+    {
+        return $this->morphMany(ProductReview::class, 'product');
+    }
+
     // Accessors
     public function getGiaBanFormattedAttribute()
     {
