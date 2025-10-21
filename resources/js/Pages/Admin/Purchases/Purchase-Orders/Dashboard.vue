@@ -337,7 +337,7 @@ export default {
   },
 
   methods: {
-    // Format date theo local timezone (tránh bug UTC)
+    // Format date to local timezone
     formatDateToLocal(dateValue) {
       if (!dateValue) return null;
       const date = new Date(dateValue);

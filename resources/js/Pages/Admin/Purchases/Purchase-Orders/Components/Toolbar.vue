@@ -5,33 +5,15 @@
       <div class="title-section">
         <h4>Danh sách nhập hàng</h4>
       </div>
-      
-      <!-- Search Section -->
-      <div class="search-wrapper">
-        <div class="input-group">
-          <span class="input-group-text">
-            <i class="fas fa-search"></i>
-          </span>
-          <input 
-            type="text" 
-            class="form-control" 
-            placeholder="Tìm hàng hóa theo mã hoặc tên (F3)"
-            v-model="searchQuery"
-            @input="handleSearch"
-            @keydown="handleKeydown"
-            ref="searchInput"
-          >
-        </div>
-      </div>
-      
+           
       <!-- Utility Options -->
-      <div class="ultility-options">
+      <div class="ultility-options" style="margin-left: auto;">
         <button 
           class="btn btn-primary"
           @click="handleCreate"
         >
           <i class="pi pi-plus"></i>
-          Trả hàng
+         Đặt hàng
         </button>
         
         <div class="utility-icons">
