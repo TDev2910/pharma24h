@@ -20,6 +20,9 @@ use Inertia\Inertia;
 
 Route::prefix('admin')->name('admin.')->group(function () 
 {
+    // API endpoint cho purchase orders
+    Route::get('purchase-orders/api', [PruchaseImportController::class, 'apiIndex'])->name('purchase-orders.api')->middleware('auth');
+    
     // Xuất file excel
     Route::get('purchase-orders/export', [PruchaseImportController::class, 'export'])->name('purchase-orders.export')->middleware('auth');
     Route::get('purchase-returns/export', [PurchaseReturnsController::class, 'export'])->name('purchase-returns.export')->middleware('auth');

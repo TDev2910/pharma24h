@@ -46,4 +46,22 @@ class StockImport extends Model
     {
         return $query->where('status', 'cancelled');
     }
+
+    public function scopeFilterByDate($query,$from,$to)
+    {
+        if($from && $to)
+        {
+            return $query->whereDate('created_at','>=',$from)
+                ->whereDate('created_at','<=',$to);
+            //Lọc tất cả đơn nhập hàng ví dụ 13/09 đến 15/09 (bao gồm cả ngày 13 và 15).
+        }
+        elseif($from)
+        {
+            return $query->whereDate('created_at', '>=', $from);
+        }
+        elseif($to)
+        {
+            return $query->whereDate('created_at', '<=', $to);
+        }
+    }
 }

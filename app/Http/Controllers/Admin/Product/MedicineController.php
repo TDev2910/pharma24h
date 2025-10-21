@@ -54,7 +54,7 @@ class MedicineController extends Controller
             $query->where('drugRoute_id', $request->drugRoute_id);
         }
         
-        // Date filtering
+        // chức năng lọc theo ngày
         if($request->filled('from_date')) {
             $query->whereDate('created_at', '>=', $request->from_date);
         }

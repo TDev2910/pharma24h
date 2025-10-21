@@ -91,10 +91,6 @@
         <div class="filter-section">
           <h5>Thời gian</h5>
           <div class="radio-options">
-            <div class="radio-item">
-              <input type="radio" id="custom" value="custom" v-model="filters.timeRange" />
-              <label for="custom">Tùy chỉnh</label>
-            </div>
           </div>
           <div v-if="filters.timeRange === 'thisMonth'" class="date-picker-container d-flex align-items-center" style="gap:8px;">
             <DatePicker 
@@ -114,7 +110,6 @@
             />
           </div>
         </div>
-
       </div>
 
       <!-- Right Main Content -->
@@ -313,10 +308,7 @@ export default {
         timeRange: 'thisMonth',
         fromDate: null,
         toDate: null
-      },
-      // Date range for filtering
-      filtersRangeInitialized: false,
-      
+      },      
       pagination: {
         current_page: 1,
         last_page: 1,
@@ -345,6 +337,16 @@ export default {
   },
 
   methods: {
+    // Format date theo local timezone (tránh bug UTC)
+    formatDateToLocal(dateValue) {
+      if (!dateValue) return null;
+      const date = new Date(dateValue);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
+    
     //Lọc kết quả 
     debounceSearch() {
       clearTimeout(this.debounceTimer)
@@ -453,16 +455,15 @@ export default {
         }
         
         // Filter theo thời gian
-        if (this.filters.timeRange === 'custom' && this.filters.customDate) {
-          const [d0, d1] = this.filters.customDate ?? [];
-          if (d0) params.append('date_from', new Date(d0).toISOString().split('T')[0]);
-          if (d1) params.append('date_to', new Date(d1).toISOString().split('T')[0]);
-        } else if (this.filters.timeRange === 'thisMonth' && this.filters.thisMonthDate) {
-          const d = new Date(this.filters.thisMonthDate);
-          const start = new Date(d.getFullYear(), d.getMonth(), 1);
-          const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
-          params.append('date_from', start.toISOString().split('T')[0]);
-          params.append('date_to', end.toISOString().split('T')[0]);
+        if(this.filters.fromDate)
+        {
+          const fromDate = this.formatDateToLocal(this.filters.fromDate);
+          if (fromDate) params.append('from_date', fromDate);
+        }
+        if(this.filters.toDate)
+        {
+          const toDate = this.formatDateToLocal(this.filters.toDate);
+          if (toDate) params.append('to_date', toDate);
         }
         
         this.toast.add({ severity: 'info', summary: 'Đang xuất file...', detail: 'Vui lòng chờ', life: 2000 });
@@ -492,6 +493,55 @@ export default {
         this.toast.add({ severity: 'error', summary: 'Lỗi', detail: error.message || 'Xuất file thất bại', life: 5000 });
       } finally {
         this.isExporting = false;
+      }
+    },
+    
+      async loadOrders() {
+      try {
+        // Format dates theo local timezone
+        const fromDate = this.formatDateToLocal(this.filters.fromDate);
+        const toDate = this.formatDateToLocal(this.filters.toDate);
+        
+        const response = await axios.get('/admin/purchase-orders/api', {
+          params: {
+            from_date: fromDate,
+            to_date: toDate,
+            search: this.searchQuery,
+            per_page: this.pagination.per_page,
+            page: this.pagination.current_page
+          }
+        });
+
+        if (response.data.success) {
+          // Cập nhật danh sách orders từ API
+          this.orders = response.data.data;
+          this.filteredOrders = response.data.data;
+          
+          // Cập nhật pagination
+          this.pagination = response.data.pagination;
+        }
+      } catch (error) {
+        this.toast.add({ 
+          severity: 'error', 
+          summary: 'Lỗi', 
+          detail: 'Không thể tải dữ liệu đơn hàng', 
+          life: 3000 
+        });
+      }
+    }
+  },
+
+  watch: {
+    // Watch khi user chọn ngày "Từ ngày"
+    'filters.fromDate': {
+      handler() {
+        this.loadOrders();
+      }
+    },
+    // Watch khi user chọn ngày "Đến ngày"
+    'filters.toDate': {
+      handler() {
+        this.loadOrders();
       }
     }
   },

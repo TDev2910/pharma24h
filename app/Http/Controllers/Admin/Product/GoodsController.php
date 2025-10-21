@@ -97,7 +97,7 @@ class GoodsController extends Controller
             $query->where('position_id', $request->position_id);
         }
         
-        // Date filtering
+        // chức năng lọc theo ngày
         if($request->filled('from_date')) {
             $query->whereDate('created_at', '>=', $request->from_date);
         }

@@ -46,6 +46,70 @@ class PruchaseImportController extends Controller
     }
 
     /**
+     * API endpoint để lọc đơn nhập hàng theo ngày
+     */
+    public function apiIndex(Request $request)
+    {
+        $query = StockImport::with(['supplier', 'items']);
+
+        // Sử dụng scope FilterByDate từ Model
+        if ($request->filled('from_date') || $request->filled('to_date')) {
+            $query->filterByDate($request->from_date, $request->to_date);
+        }
+
+        // Filter theo search nếu có
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('import_code', 'like', "%{$search}%")
+                  ->orWhereHas('supplier', function($subQ) use ($search) {
+                      $subQ->where('ten_nha_cung_cap', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Lọc trạng thái 
+        if ($request->filled('status')) {
+            $statuses = explode(',', $request->status);
+            $query->whereIn('status', $statuses);
+        }
+
+        // Lấy dữ liệu với pagination
+        $imports = $query->latest()->paginate($request->get('per_page', 10));
+
+        // Transform data
+        $orders = $imports->getCollection()->map(function ($import) {
+            return [
+                'id' => $import->id,
+                'order_code' => $import->import_code,
+                'created_at' => $import->created_at,
+                'supplier_name' => $import->supplier->ten_nha_cung_cap ?? 'N/A',
+                'ma_nha_cung_cap' => $import->supplier->ma_nha_cung_cap ?? 'N/A',
+                'total_amount' => $import->total_amount ?? 0,
+                'discount' => $import->discount ?? 0,
+                'supplier_pay' => $import->supplier_pay ?? 0,
+                'supplier_paid' => $import->supplier_paid ?? 0,
+                'remaining_amount' => $import->remaining_amount ?? 0,
+                'status' => $import->status ?? 'pending',
+                'note' => $import->note ?? ''
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $orders,
+            'pagination' => [
+                'current_page' => $imports->currentPage(),
+                'last_page' => $imports->lastPage(),
+                'per_page' => $imports->perPage(),
+                'total' => $imports->total(),
+                'from' => $imports->firstItem(),
+                'to' => $imports->lastItem()
+            ]
+        ]);
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -275,16 +339,8 @@ class PruchaseImportController extends Controller
             }
             
             // Filter theo ngày nếu có (hỗ trợ cả from_date/to_date và date_from/date_to)
-            if ($request->has('from_date') && $request->from_date) {
-                $query->whereDate('import_date', '>=', $request->from_date);
-            } elseif ($request->has('date_from') && $request->date_from) {
-                $query->whereDate('import_date', '>=', $request->date_from);
-            }
-            
-            if ($request->has('to_date') && $request->to_date) {
-                $query->whereDate('import_date', '<=', $request->to_date);
-            } elseif ($request->has('date_to') && $request->date_to) {
-                $query->whereDate('import_date', '<=', $request->date_to);
+            if ($request->filled('from_date') || $request->filled('to_date')) {
+                $query->filterByDate($request->from_date, $request->to_date);
             }
             
             // Filter theo nhà cung cấp nếu có
