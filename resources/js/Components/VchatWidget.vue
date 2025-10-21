@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <div id="vchat-widget" class="vchat-container">
   </div>
 </template>
@@ -50,4 +50,4 @@ onMounted(() => {
 
 <style scoped>
 
-</style> -->
+</style>

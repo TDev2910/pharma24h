@@ -524,7 +524,7 @@ export default {
         this.toast.add({ 
           severity: 'error', 
           summary: 'Lỗi', 
-          detail: 'Không thể tải dữ liệu đơn hàng', 
+          detail: 'Không thể tải dữ liệu nhập hàng', 
           life: 3000 
         });
       }

@@ -564,6 +564,15 @@
     },
 
     methods: {
+      // Format date to local timezone
+      formatDateToLocal(dateValue) {
+        if (!dateValue) return null;
+        const date = new Date(dateValue);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      },
       // Xác định trạng thái tồn kho 
       getInventoryStatus(row) {
         const qty = Number(row?.ton_kho ?? 0)
@@ -838,6 +847,9 @@
       // DataTable methods
       async loadProducts() {
       try {
+        // Format dates theo local timezone
+        const fromDate = this.formatDateToLocal(this.filters.fromDate);
+        const toDate = this.formatDateToLocal(this.filters.toDate);
           // Thuốc ( thực phẩm chức năng)
           const [medicinesResponse, goodsResponse] = await Promise.all([
               axios.get('/admin/medicines/api', {
@@ -846,11 +858,10 @@
                       category_id: this.selectedCategoryId,
                       manufacturer_id: this.filters.manufacturerId,
                       position_id: this.filters.positionId,
+                      from_date: fromDate, 
+                      to_date: toDate,   
                       per_page: this.pagination.per_page, 
                       page: this.pagination.current_page,
-                      // Thêm date filters
-                      from_date: this.filters.fromDate,
-                      to_date: this.filters.toDate
                   }
               }),
               //vật tư y tế
@@ -860,11 +871,10 @@
                       category_id: this.selectedCategoryId,
                       manufacturer_id: this.filters.manufacturerId,
                       position_id: this.filters.positionId,
+                      from_date: fromDate, 
+                      to_date: toDate,     
                       per_page: this.pagination.per_page,
                       page: this.pagination.current_page,
-                      // Thêm date filters
-                      from_date: this.filters.fromDate,
-                      to_date: this.filters.toDate
                   }
               })
           ])
