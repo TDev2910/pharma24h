@@ -20,14 +20,13 @@
         <!-- Product Info -->
         <div class="col-md-7">
           <div class="product-detail-info">
-            <span class="badge bg-primary mb-2">{{ type === 'medicine' ? 'Thuốc' : 'Hàng hóa' }}</span>
-            <h1 class="product-name">{{ product.ten_thuoc || product.ten_hang_hoa }}</h1>
+            <h1 class="product-name" style="font-style:bold">{{ product.ten_thuoc || product.ten_hang_hoa }}</h1>
             
             <div class="product-price mb-4">
               <span class="current-price">{{ formatCurrency(product.gia_ban) }}</span>
               <span class="unit">/{{ product.don_vi_tinh || 'Đơn vị' }}</span>
             </div>
-            
+            <p>Phân loại sản phẩm</p>
             <div class="product-meta mb-4">
               <div class="meta-item">
                 <strong>Mã hàng:</strong> {{ product.ma_hang || 'N/A' }}
@@ -68,12 +67,14 @@
         <div class="col-12">
           <div class="product-description">
             <h3>Thông tin chi tiết</h3>
-            <div class="description-content" v-if="type === 'medicine'">
+            <div v-html="sanitizedDescription" class="html-content"></div>       
+            <!-- Thông tin bổ sung -->
+            <div class="description-content mt-4" v-if="type === 'medicine'">
               <p v-if="product.hoat_chat"><strong>Hoạt chất:</strong> {{ product.hoat_chat }}</p>
               <p v-if="product.ham_luong"><strong>Hàm lượng:</strong> {{ product.ham_luong }}</p>
               <p v-if="product.quy_cach_dong_goi"><strong>Quy cách đóng gói:</strong> {{ product.quy_cach_dong_goi }}</p>
             </div>
-            <div class="description-content" v-else>
+            <div class="description-content mt-4" v-else>
               <p v-if="product.quy_cach_dong_goi"><strong>Quy cách đóng gói:</strong> {{ product.quy_cach_dong_goi }}</p>
             </div>
           </div>
@@ -90,11 +91,24 @@
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
 import axios from 'axios'
+import { computed } from 'vue' 
+import DOMPurify from 'dompurify' 
 
 const props = defineProps({
   auth: { type: Object, default: () => ({ user: null }) },
   product: { type: Object, required: true },
   type: { type: String, required: true }
+})
+
+//Sanitize HTML từ mo_ta để tránh XSS
+const sanitizedDescription = computed(() => {
+  const dirtyHTML = props.product.mo_ta || ''
+  return DOMPurify.sanitize(dirtyHTML, {
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
+                  'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'span', 'div'],
+    ALLOWED_ATTR: ['href', 'target', 'src', 'alt', 'class', 'style'],
+    ALLOW_DATA_ATTR: false
+  })
 })
 
 // Format currency
@@ -238,6 +252,109 @@ async function addToCart() {
   line-height: 1.6;
 }
 
+/* ✅ THÊM: Styles cho HTML content từ PrimeVue Editor */
+.html-content {
+  line-height: 1.8;
+  color: #495057;
+}
+
+.html-content >>> p {
+  margin-bottom: 1rem;
+}
+
+.html-content >>> strong,
+.html-content >>> b {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.html-content >>> em,
+.html-content >>> i {
+  font-style: italic;
+}
+
+.html-content >>> u {
+  text-decoration: underline;
+}
+
+.html-content >>> h1,
+.html-content >>> h2,
+.html-content >>> h3,
+.html-content >>> h4,
+.html-content >>> h5,
+.html-content >>> h6 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.html-content >>> h1 { font-size: 2rem; }
+.html-content >>> h2 { font-size: 1.75rem; }
+.html-content >>> h3 { font-size: 1.5rem; }
+.html-content >>> h4 { font-size: 1.25rem; }
+
+.html-content >>> ul,
+.html-content >>> ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.html-content >>> ul li {
+  list-style-type: disc;
+  margin-bottom: 0.5rem;
+}
+
+.html-content >>> ol li {
+  list-style-type: decimal;
+  margin-bottom: 0.5rem;
+}
+
+.html-content >>> a {
+  color: #1a56db;
+  text-decoration: underline;
+}
+
+.html-content >>> a:hover {
+  color: #1650cf;
+}
+
+.html-content >>> img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.html-content >>> blockquote {
+  border-left: 4px solid #1a56db;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #6c757d;
+}
+
+.html-content >>> code {
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.html-content >>> pre {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.html-content >>> pre code {
+  background: none;
+  padding: 0;
+}
+
 @media (max-width: 768px) {
   .product-name {
     font-size: 1.5rem;
@@ -250,5 +367,9 @@ async function addToCart() {
   .product-actions .btn {
     width: 100%;
   }
+  
+  .html-content >>> h1 { font-size: 1.5rem; }
+  .html-content >>> h2 { font-size: 1.35rem; }
+  .html-content >>> h3 { font-size: 1.2rem; }
 }
 </style>

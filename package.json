@@ -22,6 +22,7 @@
         "@primeuix/themes": "^1.2.5",
         "@primevue/forms": "^4.4.0",
         "bootstrap": "^5.3.7",
+        "dompurify": "^3.3.0",
         "primeicons": "^7.0.0",
         "primevue": "^4.4.0",
         "quill": "^2.0.3",
