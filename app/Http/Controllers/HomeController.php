@@ -84,6 +84,29 @@ class HomeController extends Controller
             'products' => $allProducts
         ]);
     }
+    public function productDetail($type, $id)
+    {
+        if($type === 'medicine') {
+            $product = Medicine::with(['category', 'manufacturer', 'drugRoute', 'position'])->findOrFail($id);
+        } else {
+            $product = Goods::with(['category', 'manufacturer', 'position'])->findOrFail($id);
+        }
+        
+        $user = auth()->user();
+        
+        return Inertia::render('Public/DetailsProduct', [
+            'product' => $product,
+            'type' => $type,
+            'auth' => [
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                ] : null,
+            ],
+        ]);
+    }
 
     public function services() //trang dịch vụ
     {

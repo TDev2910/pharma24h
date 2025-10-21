@@ -254,14 +254,38 @@ const props = defineProps({
 
 async function addToCart({ id, type }) {
   try {
-    await axios.post('/cart/add', { item_id: id, item_type: type, quantity: 1 });
+    const response = await axios.post('/cart/add', { 
+      item_id: id, 
+      item_type: type, 
+      quantity: 1 
+    });
     
-    // Trigger cart update event
-    window.dispatchEvent(new CustomEvent('cart-updated'));
-    
-    // TODO: toast/flash sau
+    if (response.data.success) {
+      // 1. Cập nhật số lượng giỏ hàng
+      window.dispatchEvent(new CustomEvent('cart-updated'));
+      
+      // 2. Tự động MỞ dropdown giỏ hàng
+      const cartDropdown = document.querySelector('#cartDropdown');
+      if (cartDropdown && typeof bootstrap !== 'undefined') {
+        const bsDropdown = new bootstrap.Dropdown(cartDropdown);
+        bsDropdown.show();
+      }
+      
+      // 3. Load cart items (gọi function từ cart.js)
+      if (typeof window.loadCartItems === 'function') {
+        setTimeout(() => window.loadCartItems(), 100);
+      }
+      
+      // 4. Hiển thị thông báo
+      if (typeof window.showNotification === 'function') {
+        window.showNotification('Đã thêm vào giỏ hàng!', 'success');
+      }
+    }
   } catch (e) { 
-    // ignore for now
+    console.error('Error adding to cart:', e);
+    if (typeof window.showNotification === 'function') {
+      window.showNotification('Có lỗi xảy ra!', 'error');
+    }
   }
 }
 

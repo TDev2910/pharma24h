@@ -440,3 +440,8 @@ function showNotification(message, type = 'success') {
         alert(message);
     }
 }
+
+window.addToCart = addToCart;
+window.updateCartCount = updateCartCount;
+window.loadCartItems = loadCartItems;
+window.showNotification = showNotification;

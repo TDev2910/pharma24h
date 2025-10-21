@@ -111,7 +111,7 @@
               :key="product.id + '-' + product.type"
               class="col-lg-3 col-md-4 col-sm-6">
               <div class="product-card-modern">
-                <div class="product-img-wrapper">
+                <div class="product-img-wrapper"@click="goToProductDetail(product)">
                   <img
                     :src="product.image || 'https://via.placeholder.com/150'"
                     class="product-img"
@@ -123,7 +123,9 @@
                   <div class="product-price-modern">
                     {{ product.gia_ban_formatted }}
                   </div>
-                  <button class="btn btn-primary product-btn">Thêm vào giỏ</button>
+                  <button class="btn btn-primary product-btn" @click="addToCart({ id: product.id, type: product.type })">
+                    Thêm vào giỏ
+                  </button>
                 </div>
               </div>
             </div>
@@ -137,13 +139,55 @@
 <script setup>
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
-import { computed, onMounted } from 'vue';  
+import { computed, onMounted } from 'vue';
+import { router } from '@inertiajs/vue3'; // ✅ Sửa: import router thay vì Link
+import axios from 'axios'; 
 
 const props = defineProps({
   auth: { type: Object, default: () => ({ user: null }) },
   products: { type: Array, default: () => [] }
 })
 
+async function addToCart({ id, type }) {
+  try {
+    const response = await axios.post('/cart/add', { 
+      item_id: id, 
+      item_type: type, 
+      quantity: 1 
+    });
+    
+    if (response.data.success) {
+      // 1. Cập nhật số lượng giỏ hàng
+      window.dispatchEvent(new CustomEvent('cart-updated'));
+      
+      // 2. Tự động mở dropdown giỏ hàng
+      const cartDropdown = document.querySelector('#cartDropdown');
+      if (cartDropdown && typeof bootstrap !== 'undefined') {
+        const bsDropdown = new bootstrap.Dropdown(cartDropdown);
+        bsDropdown.show();
+      }
+      
+      // 3. Load cart items (gọi function từ cart.js)
+      if (typeof window.loadCartItems === 'function') {
+        setTimeout(() => window.loadCartItems(), 100);
+      }
+      
+      // 4. Hiển thị thông báo sau khi thêm vào giỏ hàng
+      if (typeof window.showNotification === 'function') {
+        window.showNotification('Đã thêm vào giỏ hàng!', 'success');
+      }
+    }
+  } catch (e) { 
+    console.error('Error adding to cart:', e);
+    if (typeof window.showNotification === 'function') {
+      window.showNotification('Có lỗi xảy ra!', 'error');
+    }
+  }
+}
+
+function goToProductDetail(product) {
+  router.visit(`/products/${product.type}/${product.id}`)
+}
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
@@ -276,6 +320,7 @@ onMounted(() => {
 }
 .product-card-modern:hover {
   box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+  cursor: pointer;
 }
 .product-label {
   position: absolute;
