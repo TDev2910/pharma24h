@@ -68,7 +68,7 @@ class Medicine extends Model
         return $this->belongsTo(Position::class, 'position_id');
     }
 
-    public function reviews()
+    public function reviews() //tạo quan hệ với bảng product_reviews
     {
         return $this->morphMany(ProductReview::class, 'product');
     }

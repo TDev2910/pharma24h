@@ -17,7 +17,7 @@ class ReviewController extends Controller
         $reviews = ProductReview::where('product_id', $id)
             ->where('product_type', $type)
             ->approved()
-            ->with('user:id,name')
+            ->with('user:id,name') //lấy thông tin user đã đánh giá
             ->latest()
             ->get();
 
@@ -34,7 +34,8 @@ class ReviewController extends Controller
      */
     public function store(Request $request)
     {
-        // Kiểm tra đã đăng nhập chưa
+        // Kiểm tra người dùng đã đăng nhập chưa 
+        //chỉ áp dụng cho user có tài khoản , nếu chưa có sẽ bắt đăng nhập
         if (!auth()->check()) {
             return response()->json([
                 'success' => false,
@@ -56,7 +57,7 @@ class ReviewController extends Controller
             ->where('product_type', $request->product_type)
             ->first();
 
-        if ($existingReview) {
+        if ($existingReview) { //nếu user đã bình luận rồi thì không được bình luận lại
             return response()->json([
                 'success' => false,
                 'message' => 'Bạn đã đánh giá sản phẩm này rồi!'

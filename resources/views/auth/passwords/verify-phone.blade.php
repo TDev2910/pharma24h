@@ -14,7 +14,7 @@
         <h2 class="verify-title">Nhập mã OTP</h2>
         <p class="verify-subtitle">
             Chúng tôi đã gửi mã OTP đến:<br>
-            <strong class="email-highlight">{{ $email }}</strong>
+            <strong class="phone-highlight">{{ $phone }}</strong>
         </p>
 
         <!-- Error Messages -->
@@ -34,18 +34,19 @@
         @endif
 
         <!-- OTP Form -->
-        <form method="POST" action="{{ route('password.verify.post') }}" id="otpForm">
+        <form method="POST" action="{{ route('password.verify.phone.post') }}" id="otpForm">
             @csrf
-            <input type="hidden" name="email" value="{{ $email }}">
+            <input type="hidden" name="phone" value="{{ $phone }}">
             <input type="hidden" name="otp" id="hiddenOtp">
 
-            <!-- 5 OTP Input Boxes -->
+            <!-- 6 OTP Input Boxes -->
             <div class="otp-inputs-container mb-4">
                 <input type="text" class="otp-input" maxlength="1" data-index="0" autocomplete="off">
                 <input type="text" class="otp-input" maxlength="1" data-index="1" autocomplete="off">
                 <input type="text" class="otp-input" maxlength="1" data-index="2" autocomplete="off">
                 <input type="text" class="otp-input" maxlength="1" data-index="3" autocomplete="off">
                 <input type="text" class="otp-input" maxlength="1" data-index="4" autocomplete="off">
+                <input type="text" class="otp-input" maxlength="1" data-index="5" autocomplete="off">
             </div>
 
             <button type="submit" class="btn btn-primary w-100 mb-4" id="verifyBtn">
@@ -57,14 +58,13 @@
         <div class="text-center">
             <p class="footer-text">
                 Chưa nhận được mã OTP? 
-                <form method="POST" action="{{ route('password.email') }}" style="display: inline;">
-                    @csrf
-                    <input type="hidden" name="email" value="{{ $email }}">
-                    <button type="submit" class="resend-link">Gửi lại mã OTP</button>
-                </form>
+                <button type="button" class="resend-link" id="resendBtn" disabled>
+                    <span id="resendText">Gửi lại mã OTP</span>
+                    <span id="countdownText" class="d-none">Gửi lại sau <span id="countdown">60</span>s</span>
+                </button>
             </p>
             <p class="footer-text">
-                <a href="{{ route('password.request') }}" class="footer-link">Quay lại email</a>
+                <a href="{{ route('password.request') }}" class="footer-link">Quay lại</a>
             </p>
         </div>
     </div>
@@ -117,7 +117,7 @@
     line-height: 1.5;
 }
 
-.email-highlight {
+.phone-highlight {
     color: #667eea;
     font-weight: 600;
 }
@@ -126,13 +126,13 @@
 .otp-inputs-container {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
+    gap: 8px;
     margin-bottom: 32px;
 }
 
 /* Individual OTP Input */
 .otp-input {
-    width: 60px;
+    width: 50px;
     height: 60px;
     border: 2px solid #e5e7eb;
     border-radius: 12px;
@@ -226,8 +226,14 @@
     font-size: 14px;
 }
 
-.resend-link:hover {
+.resend-link:hover:not(:disabled) {
     color: #5a67d8;
+}
+
+.resend-link:disabled {
+    color: #9ca3af;
+    cursor: not-allowed;
+    text-decoration: none;
 }
 
 /* Alert Styling */
@@ -264,13 +270,13 @@
     }
     
     .otp-input {
-        width: 50px;
+        width: 45px;
         height: 50px;
         font-size: 20px;
     }
     
     .otp-inputs-container {
-        gap: 8px;
+        gap: 6px;
     }
 }
 </style>
@@ -281,9 +287,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('otpForm');
     const hiddenOtp = document.getElementById('hiddenOtp');
     const verifyBtn = document.getElementById('verifyBtn');
+    const resendBtn = document.getElementById('resendBtn');
+    const resendText = document.getElementById('resendText');
+    const countdownText = document.getElementById('countdownText');
+    const countdown = document.getElementById('countdown');
+    
+    let countdownTimer = null;
+    let countdownValue = 60;
     
     // Focus first input
     otpInputs[0].focus();
+    
+    // Start countdown
+    startCountdown();
     
     // Handle input events
     otpInputs.forEach((input, index) => {
@@ -330,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('paste', function(e) {
             e.preventDefault();
             const paste = e.clipboardData.getData('text');
-            const numbers = paste.replace(/\D/g, '').slice(0, 5);
+            const numbers = paste.replace(/\D/g, '').slice(0, 6);
             
             // Fill inputs with pasted numbers
             numbers.split('').forEach((num, i) => {
@@ -353,11 +369,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const otp = Array.from(otpInputs).map(input => input.value).join('');
         hiddenOtp.value = otp;
         
-        // Auto submit when 5 digits entered
-        if (otp.length === 5) {
+        // Auto submit when 6 digits entered
+        if (otp.length === 6) {
             setTimeout(() => {
-                if (hiddenOtp.value.length === 5) {
-                    verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verifying...';
+                if (hiddenOtp.value.length === 6) {
+                    verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xác thực...';
                     verifyBtn.disabled = true;
                     form.submit();
                 }
@@ -369,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function(e) {
         const otp = hiddenOtp.value;
         
-        if (otp.length !== 5) {
+        if (otp.length !== 6) {
             e.preventDefault();
             
             // Show error on empty inputs
@@ -388,9 +404,59 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verifying...';
+        verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xác thực...';
         verifyBtn.disabled = true;
     });
+    
+    // Resend functionality
+    resendBtn.addEventListener('click', async function() {
+        if (!this.disabled) {
+            try {
+                // Import Firebase service
+                const { default: firebasePhoneAuth } = await import('{{ Vite::asset("resources/js/services/firebasePhoneAuth.js") }}');
+                
+                // Initialize reCAPTCHA
+                firebasePhoneAuth.initRecaptcha('recaptcha-container');
+                
+                // Get phone from hidden input
+                const phone = document.querySelector('input[name="phone"]').value;
+                
+                // Send OTP again
+                const result = await firebasePhoneAuth.sendOTP(phone);
+                
+                if (result.success) {
+                    // Show success message
+                    showMessage('Mã OTP đã được gửi lại', 'success');
+                    startCountdown();
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Resend error:', error);
+                showMessage('Có lỗi xảy ra, vui lòng thử lại', 'error');
+            }
+        }
+    });
+    
+    // Countdown functionality
+    function startCountdown() {
+        resendBtn.disabled = true;
+        resendText.classList.add('d-none');
+        countdownText.classList.remove('d-none');
+        
+        countdownTimer = setInterval(() => {
+            countdownValue--;
+            countdown.textContent = countdownValue;
+            
+            if (countdownValue <= 0) {
+                clearInterval(countdownTimer);
+                resendBtn.disabled = false;
+                resendText.classList.remove('d-none');
+                countdownText.classList.add('d-none');
+                countdownValue = 60;
+            }
+        }, 1000);
+    }
     
     // Clear errors on focus
     otpInputs.forEach(input => {
@@ -398,6 +464,31 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.remove('error');
         });
     });
+    
+    // Helper function to show messages
+    function showMessage(message, type) {
+        // Remove existing alerts
+        const existingAlerts = document.querySelectorAll('.alert');
+        existingAlerts.forEach(alert => alert.remove());
+        
+        // Create new alert
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type === 'error' ? 'danger' : 'success'} mb-3`;
+        alert.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'} me-2"></i>${message}`;
+        
+        // Insert before form
+        form.parentNode.insertBefore(alert, form);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.parentNode.removeChild(alert);
+            }
+        }, 5000);
+    }
 });
 </script>
+
+<!-- reCAPTCHA Container -->
+<div id="recaptcha-container"></div>
 @endsection

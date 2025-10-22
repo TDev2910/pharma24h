@@ -7,6 +7,10 @@ import 'primeicons/primeicons.css'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import PublicLayout from '@/Layouts/PublicLayout.vue'
 
+// Import Firebase modules
+import './config/firebase'
+import './services/FirebasePhoneAuth'
+
 const primevueOptions = {
   ripple: true,
   inputVariant: 'outlined', // hoặc 'filled'

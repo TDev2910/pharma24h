@@ -27,7 +27,7 @@ class ProductReview extends Model
     /**
      * Relationship: Review thuộc về User
      */
-    public function user()
+    public function user() //tạo quan hệ với bảng users
     {
         return $this->belongsTo(User::class);
     }
@@ -35,7 +35,7 @@ class ProductReview extends Model
     /**
      * Polymorphic relationship: Review thuộc về Product (Medicine hoặc Goods)
      */
-    public function product()
+    public function product() //tạo quan hệ với bảng medicines và goods
     {
         return $this->morphTo();
     }
@@ -43,7 +43,7 @@ class ProductReview extends Model
     /**
      * Scopes - Để query dễ dàng
      */
-    public function scopeApproved($query)
+    public function scopeApproved($query) 
     {
         return $query->where('status', 'approved');
     }

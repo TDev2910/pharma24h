@@ -95,14 +95,14 @@ class HomeController extends Controller
         
         $user = auth()->user();
         
+        //lấy thông tin tất cả review của sản phẩm
         $reviews = ProductReview::where('product_id', $id)
             ->where('product_type', $type)
             ->approved()
             ->with('user:id,name')
             ->latest()
             ->get();
-
-        // Tính toán averageRating và reviewCount
+       
         $reviewCount = $reviews->count();
         $averageRating = $reviewCount > 0 ? $reviews->avg('rating') : 0;
 

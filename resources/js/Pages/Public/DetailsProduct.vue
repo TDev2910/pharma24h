@@ -316,7 +316,7 @@ async function addToCart() {
 const submitReview = async () => {
   if (!reviewForm.value.rating || !reviewForm.value.comment) {
     if (typeof window.showNotification === 'function') {
-      window.showNotification('Vui lòng chọn số sao và viết nhận xét!', 'error');
+      window.showNotification('Vui lòng chọn số sao và viết nhận2 xét!', 'error');
     }
     return;
   }

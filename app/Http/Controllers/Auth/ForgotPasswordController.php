@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 
 class ForgotPasswordController extends Controller
@@ -143,11 +144,101 @@ class ForgotPasswordController extends Controller
     }
 
     /**
+     * Hiển thị form xác thực OTP qua phone
+     */
+    public function showPhoneVerifyForm(Request $request)
+    {
+        $phone = $request->query('phone');
+        
+        if (!$phone) {
+            return redirect()->route('password.request')
+                           ->withErrors(['phone' => 'Số điện thoại không hợp lệ']);
+        }
+
+        return view('auth.passwords.verify-phone', compact('phone'));
+    }
+
+    /**
+     * Xử lý xác thực OTP qua phone (Firebase)
+     */
+    public function verifyPhoneOtp(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|string',
+            'otp' => 'required|string|size:6'
+        ]);
+
+        $phone = $request->phone;
+        $otp = $request->otp;
+
+        // Lưu thông tin vào session để backend xử lý
+        session([
+            'phone_verification' => [
+                'phone' => $phone,
+                'otp' => $otp,
+                'verified' => false
+            ]
+        ]);
+
+        return redirect()->route('password.reset')
+                       ->with('success', 'Xác thực thành công! Vui lòng đặt mật khẩu mới.');
+    }
+
+    /**
+     * Xử lý xác thực phone từ Firebase (AJAX)
+     */
+    public function handlePhoneVerification(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|string',
+            'uid' => 'required|string',
+            'idToken' => 'required|string'
+        ]);
+
+        try {
+            // Tìm user theo phone number
+            $user = User::where('phone', $request->phone)->first();
+            
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Số điện thoại chưa được đăng ký tài khoản'
+                ], 404);
+            }
+
+            // Lưu thông tin xác thực vào session
+            session([
+                'phone_verification' => [
+                    'phone' => $request->phone,
+                    'uid' => $request->uid,
+                    'idToken' => $request->idToken,
+                    'verified' => true,
+                    'user_id' => $user->id
+                ]
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Xác thực thành công',
+                'redirect_url' => route('password.reset')
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Phone verification error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra, vui lòng thử lại'
+            ], 500);
+        }
+    }
+
+    /**
      * Hiển thị form đặt lại mật khẩu
      */
     public function showResetForm(Request $request)
     {
         $email = session('reset_email');
+        $phoneVerification = session('phone_verification');
         
         if (!$email) {
             return redirect()->route('password.request')->withErrors(['email' => 'Phiên làm việc đã hết hạn. Vui lòng thử lại!']);

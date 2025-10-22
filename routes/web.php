@@ -21,7 +21,7 @@ Route::get('/co-so-kham-benh', function () {
     ]);
 })->name('cosokhambenh');
 Route::get('/products', [HomeController::class, 'products'])->name('products');
-Route::get('/products/{type}/{id}', [HomeController::class, 'productDetail'])->name('products.detail'); // ✅ Route chi tiết sản phẩm
+Route::get('/products/{type}/{id}', [HomeController::class, 'productDetail'])->name('products.detail');
 Route::get('/services', fn () => Inertia::render('Public/Services'))->name('services');
 Route::get('/contact', fn () => Inertia::render('Public/Contact'))->name('contact');
 
@@ -38,7 +38,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/logout', [AuthController::class, 'logout']); 
 
-// Forgot Password Routes
+// Forgot Password Routes (Email + Phone)
 Route::prefix('password')->name('password.')->group(function () {
     Route::get('/reset', [ForgotPasswordController::class, 'showEmailForm'])->name('request');
     Route::post('/email', [ForgotPasswordController::class, 'sendOtp'])->name('email');
@@ -46,6 +46,11 @@ Route::prefix('password')->name('password.')->group(function () {
     Route::post('/verify', [ForgotPasswordController::class, 'verifyOtp'])->name('verify.post');
     Route::get('/reset-password', [ForgotPasswordController::class, 'showResetForm'])->name('reset');
     Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('reset.post');
+    
+    // Phone verification routes
+    Route::get('/verify-phone', [ForgotPasswordController::class, 'showPhoneVerifyForm'])->name('verify.phone');
+    Route::post('/verify-phone', [ForgotPasswordController::class, 'verifyPhoneOtp'])->name('verify.phone.post');
+    Route::post('/auth/phone-verify', [ForgotPasswordController::class, 'handlePhoneVerification'])->name('phone.verify');
 });
 
 // Include user routes

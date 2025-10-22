@@ -69,7 +69,7 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    public function reviews()
+    public function reviews() //tạo quan hệ với bảng product_reviews
     {
         return $this->hasMany(ProductReview::class);
     }

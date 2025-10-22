@@ -35,7 +35,20 @@
         <form method="POST" action="{{ route('password.email') }}" id="forgotPasswordForm">
             @csrf
             
-            <div class="form-group mb-4">
+            <!-- Toggle between Email and Phone -->
+            <div class="auth-toggle mb-4">
+                <div class="toggle-buttons">
+                    <button type="button" class="toggle-btn active" data-type="email">
+                        <i class="fas fa-envelope me-2"></i>Email
+                    </button>
+                    <button type="button" class="toggle-btn" data-type="phone">
+                        <i class="fas fa-phone me-2"></i>Số điện thoại
+                    </button>
+                </div>
+            </div>
+
+            <!-- Email Input -->
+            <div class="form-group mb-4" id="email-group">
                 <label for="email" class="form-label">Email</label>
                 <input 
                     id="email" 
@@ -43,18 +56,37 @@
                     class="form-control @error('email') is-invalid @enderror" 
                     name="email" 
                     value="{{ old('email') }}" 
-                    required 
                     autocomplete="email" 
                     autofocus
-                    placeholder=""
+                    placeholder="Nhập địa chỉ email"
                 >
                 @error('email')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 mb-4">
-                Quên mật khẩu
+            <!-- Phone Input -->
+            <div class="form-group mb-4 d-none" id="phone-group">
+                <label for="phone" class="form-label">Số điện thoại</label>
+                <div class="input-group">
+                    <span class="input-group-text">+84</span>
+                    <input 
+                        id="phone" 
+                        type="tel" 
+                        class="form-control @error('phone') is-invalid @enderror" 
+                        name="phone" 
+                        value="{{ old('phone') }}" 
+                        autocomplete="tel"
+                        placeholder="Nhập số điện thoại"
+                    >
+                </div>
+                @error('phone')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mb-4" id="submitBtn">
+                Gửi mã xác thực
             </button>
         </form>
 
@@ -225,6 +257,73 @@
     transform: none;
 }
 
+/* Toggle Buttons */
+.auth-toggle {
+    margin-bottom: 24px;
+}
+
+.toggle-buttons {
+    display: flex;
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 4px;
+    gap: 4px;
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-btn:hover {
+    color: #374151;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.toggle-btn.active {
+    background: white;
+    color: #667eea;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-btn i {
+    font-size: 16px;
+}
+
+/* Input Group */
+.input-group-text {
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-right: none;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.input-group .form-control {
+    border-left: none;
+}
+
+.input-group .form-control:focus {
+    border-left: none;
+    box-shadow: none;
+}
+
+.input-group:focus-within .input-group-text {
+    border-color: #667eea;
+    background: white;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
     .forgot-password-container {
@@ -237,6 +336,11 @@
         font-size: 24px;
         margin-bottom: 24px;
     }
+    
+    .toggle-btn {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
 }
 </style>
 
@@ -244,9 +348,42 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('forgotPasswordForm');
     const emailInput = document.getElementById('email');
-    const submitBtn = form.querySelector('button[type="submit"]');
+    const phoneInput = document.getElementById('phone');
+    const emailGroup = document.getElementById('email-group');
+    const phoneGroup = document.getElementById('phone-group');
+    const submitBtn = document.getElementById('submitBtn');
+    const toggleBtns = document.querySelectorAll('.toggle-btn');
     
-    // Enhanced form validation
+    let currentType = 'email';
+    
+    // Toggle between email and phone
+    toggleBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const type = this.dataset.type;
+            
+            // Update active state
+            toggleBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show/hide inputs
+            if (type === 'email') {
+                emailGroup.classList.remove('d-none');
+                phoneGroup.classList.add('d-none');
+                emailInput.focus();
+                currentType = 'email';
+            } else {
+                emailGroup.classList.add('d-none');
+                phoneGroup.classList.remove('d-none');
+                phoneInput.focus();
+                currentType = 'phone';
+            }
+            
+            // Clear validation states
+            clearValidation();
+        });
+    });
+    
+    // Email validation
     emailInput.addEventListener('input', function() {
         const email = this.value;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -262,25 +399,123 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Form submission with loading state
+    // Phone validation
+    phoneInput.addEventListener('input', function() {
+        const phone = this.value.replace(/\D/g, '');
+        this.value = phone;
+        
+        if (phone && phone.length >= 10) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else if (phone) {
+            this.classList.remove('is-valid');
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-valid', 'is-invalid');
+        }
+    });
+    
+    // Form submission
     form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (currentType === 'email') {
+            handleEmailSubmission();
+        } else {
+            handlePhoneSubmission();
+        }
+    });
+    
+    // Handle email submission (existing logic)
+    function handleEmailSubmission() {
         const email = emailInput.value.trim();
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         
         if (!email || !emailRegex.test(email)) {
-            e.preventDefault();
             emailInput.focus();
             emailInput.classList.add('is-invalid');
             return;
         }
         
-        // Loading state
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+        // Submit form normally for email
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi...';
         submitBtn.disabled = true;
-    });
+        form.submit();
+    }
     
-    // Auto-focus and smooth animations
+    // Handle phone submission (Firebase)
+    async function handlePhoneSubmission() {
+        const phone = phoneInput.value.replace(/\D/g, '');
+        
+        if (!phone || phone.length < 10) {
+            phoneInput.focus();
+            phoneInput.classList.add('is-invalid');
+            return;
+        }
+        
+        try {
+            // Import Firebase service
+            const { default: firebasePhoneAuth } = await import('{{ Vite::asset("resources/js/services/firebasePhoneAuth.js") }}');
+            
+            // Initialize reCAPTCHA
+            firebasePhoneAuth.initRecaptcha('recaptcha-container');
+            
+            // Format phone number
+            const formattedPhone = '+84' + phone;
+            
+            // Send OTP
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi SMS...';
+            submitBtn.disabled = true;
+            
+            const result = await firebasePhoneAuth.sendOTP(formattedPhone);
+            
+            if (result.success) {
+                // Redirect to verify page with phone
+                window.location.href = `/password/verify-phone?phone=${encodeURIComponent(formattedPhone)}`;
+            } else {
+                showError(result.message);
+                resetButton();
+            }
+        } catch (error) {
+            console.error('Firebase error:', error);
+            showError('Có lỗi xảy ra, vui lòng thử lại');
+            resetButton();
+        }
+    }
+    
+    // Helper functions
+    function clearValidation() {
+        emailInput.classList.remove('is-valid', 'is-invalid');
+        phoneInput.classList.remove('is-valid', 'is-invalid');
+    }
+    
+    function showError(message) {
+        // Create error alert
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-danger mb-3';
+        alert.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>${message}`;
+        
+        // Insert before form
+        form.parentNode.insertBefore(alert, form);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.parentNode.removeChild(alert);
+            }
+        }, 5000);
+    }
+    
+    function resetButton() {
+        submitBtn.innerHTML = 'Gửi mã xác thực';
+        submitBtn.disabled = false;
+    }
+    
+    // Auto-focus
     emailInput.focus();
 });
 </script>
+
+<!-- reCAPTCHA Container -->
+<div id="recaptcha-container"></div>
 @endsection
