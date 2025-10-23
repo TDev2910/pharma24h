@@ -408,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
         verifyBtn.disabled = true;
     });
     
-    // Resend functionality
+    // Gửi lại mã OTP
     resendBtn.addEventListener('click', async function() {
         if (!this.disabled) {
             try {
@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Countdown functionality
+    // Đếm ngược thời gian 1 phút
     function startCountdown() {
         resendBtn.disabled = true;
         resendText.classList.add('d-none');
@@ -458,7 +458,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
     }
     
-    // Clear errors on focus
+    // Xóa lỗi khi focus vào input
     otpInputs.forEach(input => {
         input.addEventListener('focus', function() {
             this.classList.remove('error');

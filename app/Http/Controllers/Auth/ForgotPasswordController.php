@@ -152,7 +152,7 @@ class ForgotPasswordController extends Controller
         
         if (!$phone) {
             return redirect()->route('password.request')
-                           ->withErrors(['phone' => 'Số điện thoại không hợp lệ']);
+                ->withErrors(['phone' => 'Số điện thoại không hợp lệ']);
         }
 
         return view('auth.passwords.verify-phone', compact('phone'));
@@ -181,7 +181,7 @@ class ForgotPasswordController extends Controller
         ]);
 
         return redirect()->route('password.reset')
-                       ->with('success', 'Xác thực thành công! Vui lòng đặt mật khẩu mới.');
+             ->with('success', 'Xác thực thành công! Vui lòng đặt mật khẩu mới.');
     }
 
     /**

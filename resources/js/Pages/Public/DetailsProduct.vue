@@ -519,75 +519,75 @@ const scrollToReviewForm = () => {
   color: #495057;
 }
 
-.html-content >>> p {
+.html-content :deep(p) {
   margin-bottom: 1rem;
 }
 
-.html-content >>> strong,
-.html-content >>> b {
+.html-content :deep(strong),
+.html-content :deep(b) {
   font-weight: 600;
   color: #2c3e50;
 }
 
-.html-content >>> em,
-.html-content >>> i {
+.html-content :deep(em),
+.html-content :deep(i) {
   font-style: italic;
 }
 
-.html-content >>> u {
+.html-content :deep(u) {
   text-decoration: underline;
 }
 
-.html-content >>> h1,
-.html-content >>> h2,
-.html-content >>> h3,
-.html-content >>> h4,
-.html-content >>> h5,
-.html-content >>> h6 {
+.html-content :deep(h1),
+.html-content :deep(h2),
+.html-content :deep(h3),
+.html-content :deep(h4),
+.html-content :deep(h5),
+.html-content :deep(h6) {
   margin-top: 1.5rem;
   margin-bottom: 1rem;
   font-weight: 600;
   color: #2c3e50;
 }
 
-.html-content >>> h1 { font-size: 2rem; }
-.html-content >>> h2 { font-size: 1.75rem; }
-.html-content >>> h3 { font-size: 1.5rem; }
-.html-content >>> h4 { font-size: 1.25rem; }
+.html-content :deep(h1) { font-size: 2rem; }
+.html-content :deep(h2) { font-size: 1.75rem; }
+.html-content :deep(h3) { font-size: 1.5rem; }
+.html-content :deep(h4) { font-size: 1.25rem; }
 
-.html-content >>> ul,
-.html-content >>> ol {
+.html-content :deep(ul),
+.html-content :deep(ol) {
   margin-left: 1.5rem;
   margin-bottom: 1rem;
 }
 
-.html-content >>> ul li {
+.html-content :deep(ul li) {
   list-style-type: disc;
   margin-bottom: 0.5rem;
 }
 
-.html-content >>> ol li {
+.html-content :deep(ol li) {
   list-style-type: decimal;
   margin-bottom: 0.5rem;
 }
 
-.html-content >>> a {
+.html-content :deep(a) {
   color: #1a56db;
   text-decoration: underline;
 }
 
-.html-content >>> a:hover {
+.html-content :deep(a:hover) {
   color: #1650cf;
 }
 
-.html-content >>> img {
+.html-content :deep(img) {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
   margin: 1rem 0;
 }
 
-.html-content >>> blockquote {
+.html-content :deep(blockquote) {
   border-left: 4px solid #1a56db;
   padding-left: 1rem;
   margin: 1rem 0;
@@ -595,7 +595,7 @@ const scrollToReviewForm = () => {
   color: #6c757d;
 }
 
-.html-content >>> code {
+.html-content :deep(code) {
   background: #f8f9fa;
   padding: 2px 6px;
   border-radius: 4px;
@@ -603,7 +603,7 @@ const scrollToReviewForm = () => {
   font-size: 0.9em;
 }
 
-.html-content >>> pre {
+.html-content :deep(pre) {
   background: #f8f9fa;
   padding: 1rem;
   border-radius: 8px;
@@ -611,7 +611,7 @@ const scrollToReviewForm = () => {
   margin: 1rem 0;
 }
 
-.html-content >>> pre code {
+.html-content :deep(pre code) {
   background: none;
   padding: 0;
 }
@@ -629,9 +629,9 @@ const scrollToReviewForm = () => {
     width: 100%;
   }
   
-  .html-content >>> h1 { font-size: 1.5rem; }
-  .html-content >>> h2 { font-size: 1.35rem; }
-  .html-content >>> h3 { font-size: 1.2rem; }
+  .html-content :deep(h1) { font-size: 1.5rem; }
+  .html-content :deep(h2) { font-size: 1.35rem; }
+  .html-content :deep(h3) { font-size: 1.2rem; }
 }
 
 /* ==================== REVIEWS SECTION ==================== */

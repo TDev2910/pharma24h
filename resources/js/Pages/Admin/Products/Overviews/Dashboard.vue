@@ -428,10 +428,18 @@
         @created="onMedicineCreated"
       />
 
+      <!-- Modal Tạo hàng hóa -->
       <CreateGoods
         :visible="showCreateGoodsModal"
         @close="showCreateGoodsModal = false"
         @created="onGoodsCreated"
+      />
+
+      <!-- Modal Tạo dịch vụ -->
+      <CreateService
+        :visible="showCreateServiceModal"
+        @close="showCreateServiceModal = false"
+        @created="onServiceCreated"
       />
 
       <MedicineEditModal
@@ -460,6 +468,7 @@
   import EditCategoryCommodity from './Modals/EditCategoryCommodity.vue'
   import CreateMedicine from './Create/Medicine.vue'
   import CreateGoods from './Create/Goods.vue'
+  import CreateService from './Create/Services.vue'
   import MedicineEditModal from './Edit/Medicine.vue'
   import GoodsEditModal from './Edit/Goods.vue'
   import axios from 'axios'
@@ -475,6 +484,7 @@
       EditCategoryCommodity,
       CreateMedicine,
       CreateGoods,
+      CreateService,
       MedicineEditModal,
       GoodsEditModal,
       DatePicker
@@ -511,6 +521,7 @@
         showEditCategoryModal: false,
         showCreateMedicineModal: false,
         showCreateGoodsModal: false,
+        showCreateServiceModal: false,
         showEditMedicineModal: false,
         showEditGoodsModal: false,
         editingCategory: {},
@@ -641,7 +652,7 @@
       createService() {
         console.log('Tạo dịch vụ mới')
         this.showDropdown = false
-        // Logic tạo dịch vụ sẽ được thêm sau
+        this.showCreateServiceModal = true
       },
       
       // Import file
@@ -825,6 +836,11 @@
       },
       filterProducts() {
         // Logic lọc sẽ được thêm sau
+      },
+
+      async onServiceCreated(serviceData) {
+        this.showCreateServiceModal = false
+        await this.loadProducts() // Reload danh sách
       },
 
       //edit

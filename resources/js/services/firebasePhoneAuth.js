@@ -4,10 +4,13 @@ import {
     RecaptchaVerifier,
     PhoneAuthProvider,
     signInWithCredential
-} from 'firebase/auth';
+} 
+from 'firebase/auth';
 
-class FirebasePhoneAuthService {
-    constructor() {
+class FirebasePhoneAuthService 
+{
+    constructor() 
+    {
         this.recaptchaVerifier = null;
         this.confirmationResult = null;
     }
@@ -27,8 +30,7 @@ class FirebasePhoneAuthService {
             }
         });
 
-        // *** THÊM 3 DÒNG NÀY VÀO ***
-        // Ép reCAPTCHA phải render (vẽ ra) ngay lập tức
+        // Ép reCAPTCHA phải render  ngay lập tức
         this.recaptchaVerifier.render().then((widgetId) => {
           console.log('reCAPTCHA widget đã render, ID:', widgetId);
         });
@@ -93,7 +95,7 @@ class FirebasePhoneAuthService {
     }
 
     /**
-     * Format số điện thoại Việt Nam (Sửa lại)
+     * Format số điện thoại Việt Nam 
      * @param {string} phoneNumber - Số điện thoại
      * @returns {string} - Số điện thoại đã format
      */
@@ -111,7 +113,7 @@ class FirebasePhoneAuthService {
     }
 
     /**
-     * Lấy thông báo lỗi thân thiện
+     * Lấy thông báo lỗi 
      * @param {string} errorCode - Mã lỗi Firebase
      * @returns {string} - Thông báo lỗi
      */

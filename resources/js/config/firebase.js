@@ -1,3 +1,4 @@
+//Set up key và config theo firebase cung cấp
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 

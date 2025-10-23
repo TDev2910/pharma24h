@@ -53,7 +53,6 @@
           </div>
         </div>
         <a href="#" class="nav-item">Nhân viên</a>
-        <a href="#" class="nav-item">Sổ quỹ</a>
         <a href="/logout" class="nav-item">Đăng xuất</a>
       </div>
       <button class="sell-btn">
