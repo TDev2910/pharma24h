@@ -14,7 +14,8 @@
         <h2 class="verify-title">Nhập mã OTP</h2>
         <p class="verify-subtitle">
             Chúng tôi đã gửi mã OTP đến:<br>
-            <strong class="phone-highlight">{{ $phone }}</strong>
+            <strong class="phone-highlight">{{ $phone }}</strong><br>
+            <small class="text-muted">Mã OTP có hiệu lực trong <span id="otp-timer">5:00</span> phút</small>
         </p>
 
         <!-- Error Messages -->
@@ -294,12 +295,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let countdownTimer = null;
     let countdownValue = 60;
+    let otpTimer = null;
+    let otpTimeLeft = 5 * 60; // 5 phút
     
     // Focus first input
     otpInputs[0].focus();
     
     // Start countdown
     startCountdown();
+    startOTPTimer();
     
     // Handle input events
     otpInputs.forEach((input, index) => {
@@ -382,7 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Form submission
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
         const otp = hiddenOtp.value;
         
         if (otp.length !== 6) {
@@ -404,8 +408,49 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        e.preventDefault(); // Prevent default form submission
+        
         verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xác thực...';
         verifyBtn.disabled = true;
+        
+        try {
+            // Refresh CSRF token trước khi gửi request
+            await refreshCSRFToken();
+            
+            // Submit form với CSRF token mới
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (response.ok) {
+                // Redirect to next page
+                window.location.href = response.url || '/password/reset-password';
+            } else {
+                // Handle error
+                const data = await response.text();
+                if (data.includes('Phiên làm việc đã hết hạn')) {
+                    showMessage('Phiên làm việc đã hết hạn. Vui lòng thử lại!', 'error');
+                    // Refresh page to get new CSRF token
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    showMessage('Có lỗi xảy ra, vui lòng thử lại', 'error');
+                }
+            }
+        } catch (error) {
+            console.error('Verification error:', error);
+            showMessage('Có lỗi xảy ra, vui lòng thử lại', 'error');
+        } finally {
+            verifyBtn.innerHTML = 'Xác thực mã OTP';
+            verifyBtn.disabled = false;
+        }
     });
     
     // Gửi lại mã OTP
@@ -458,12 +503,51 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
     }
     
+    // Đếm ngược thời gian OTP 5 phút
+    function startOTPTimer() {
+        const otpTimerElement = document.getElementById('otp-timer');
+        if (!otpTimerElement) return;
+        
+        otpTimer = setInterval(() => {
+            otpTimeLeft--;
+            const minutes = Math.floor(otpTimeLeft / 60);
+            const seconds = otpTimeLeft % 60;
+            otpTimerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (otpTimeLeft <= 0) {
+                clearInterval(otpTimer);
+                otpTimerElement.textContent = '0:00';
+                otpTimerElement.style.color = '#dc2626';
+                showMessage('Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới.', 'error');
+            }
+        }, 1000);
+    }
+    
     // Xóa lỗi khi focus vào input
     otpInputs.forEach(input => {
         input.addEventListener('focus', function() {
             this.classList.remove('error');
         });
     });
+    
+    // Helper function to refresh CSRF token
+    async function refreshCSRFToken() {
+        try {
+            const response = await fetch('/sanctum/csrf-cookie', {
+                method: 'GET',
+                credentials: 'same-origin'
+            });
+            
+            if (response.ok) {
+                // Get new CSRF token from meta tag
+                const newToken = document.querySelector('meta[name="csrf-token"]').content;
+                console.log('CSRF token refreshed');
+                return newToken;
+            }
+        } catch (error) {
+            console.error('Failed to refresh CSRF token:', error);
+        }
+    }
     
     // Helper function to show messages
     function showMessage(message, type) {

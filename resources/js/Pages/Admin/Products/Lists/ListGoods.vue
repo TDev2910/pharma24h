@@ -106,17 +106,6 @@
     <!-- Custom Paginator -->
     <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]"style></Paginator>
 
-    <!-- <div class="custom-paginator">
-      <Paginator 
-        :rows="10" 
-        :totalRecords="filteredGoods.length" 
-        :rowsPerPageOptions="[10, 20, 30]"
-        @page="onPageChange"
-        :first="first"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-      ></Paginator>
-    </div> -->
-
     <!-- Toast for notifications -->
     <Toast />
   </div>

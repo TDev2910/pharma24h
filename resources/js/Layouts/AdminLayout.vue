@@ -12,6 +12,7 @@
                 <a href="/admin/products" class="dropdown-link">Tổng quan</a>
                 <a href="/admin/medicines/list" class="dropdown-link">Danh sách thuốc</a>
                 <a href="/admin/goods/list" class="dropdown-link">Danh sách hàng hóa</a>
+                <a href="/admin/services/list" class="dropdown-link">Danh sách dịch vụ</a>
             </div>
             <div class="dropdown-col">
               <div class="dropdown-title">Kho hàng</div>
@@ -26,11 +27,12 @@
           </div>
         </div>
         <div class="nav-item dropdown">
-          <span class="nav-item">Đơn hàng</span>
+          <span class="nav-item">Trung tâm dịch vụ</span>
           <div class="nav-dropdown nav-dropdown-short">
             <div class="dropdown-col">
               <div class="dropdown-title">Tổng quan</div>
               <a href="/admin/orders" class="dropdown-link">Quản lý đơn hàng</a>
+              <a href="/admin/services" class="dropdown-link">Quản lý dịch vụ</a>
             </div>
           </div>
         </div>

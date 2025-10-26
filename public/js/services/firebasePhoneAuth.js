@@ -92,21 +92,18 @@ class FirebasePhoneAuthService {
      * @returns {string} - Số điện thoại đã format
      */
     formatPhoneNumber(phoneNumber) {
-        // Loại bỏ tất cả ký tự không phải số
-        const cleaned = phoneNumber.replace(/\D/g, '');
-        
-        // Nếu bắt đầu bằng 0, thay thế bằng +84
-        if (cleaned.startsWith('0')) {
-            return '+84' + cleaned.substring(1);
+        let cleaned = phoneNumber.replace(/\D/g, '');
+
+        if(cleaned.startsWith('84')) {
+            cleaned = cleaned.substring(2);
         }
-        
-        // Nếu đã có +84, giữ nguyên
-        if (cleaned.startsWith('84')) {
-            return '+' + cleaned;
+
+        else if(cleaned.startsWith('0')) {
+            cleaned = cleaned.substring(1);
         }
-        
-        // Mặc định thêm +84
-        return '+84' + cleaned;
+
+        const last9Digits = cleaned.slice(-9);
+        return '+84' + last9Digits;
     }
 
     /**

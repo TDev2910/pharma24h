@@ -4,10 +4,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ServiceBookingController;
 use Inertia\Inertia;
  
 // 🌐 PUBLIC ROUTES
 Route::get('/',[HomeController::class,'homeInertia'])->name('home');
+
+// CSRF Token refresh route
+Route::get('/sanctum/csrf-cookie', function () {
+    return response()->json(['message' => 'CSRF cookie set']);
+})->name('csrf-cookie');
 Route::get('/co-so-kham-benh', function () {
     return Inertia::render('Public/Facilities', [
         'auth' => [
@@ -22,7 +28,8 @@ Route::get('/co-so-kham-benh', function () {
 })->name('cosokhambenh');
 Route::get('/products', [HomeController::class, 'products'])->name('products');
 Route::get('/products/{type}/{id}', [HomeController::class, 'productDetail'])->name('products.detail');
-Route::get('/services', fn () => Inertia::render('Public/Services'))->name('services');
+Route::get('/services', [HomeController::class, 'services'])->name('services');
+Route::get('/services/{id}', [HomeController::class, 'serviceDetail'])->name('services.detail');
 Route::get('/contact', fn () => Inertia::render('Public/Contact'))->name('contact');
 
 // Review routes
@@ -51,6 +58,7 @@ Route::prefix('password')->name('password.')->group(function () {
     Route::get('/verify-phone', [ForgotPasswordController::class, 'showPhoneVerifyForm'])->name('verify.phone');
     Route::post('/verify-phone', [ForgotPasswordController::class, 'verifyPhoneOtp'])->name('verify.phone.post');
     Route::post('/auth/phone-verify', [ForgotPasswordController::class, 'handlePhoneVerification'])->name('phone.verify');
+    Route::post('/save-phone', [ForgotPasswordController::class, 'savePhoneToSession'])->name('save.phone');
 });
 
 // Include user routes
@@ -66,6 +74,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     })->name('admin.dashboard');    
 });
 
+Route::post('/bookings', [ServiceBookingController::class, 'store'])->name('bookings.store');
 // Include admin routes
 require __DIR__.'/admin.php';
 

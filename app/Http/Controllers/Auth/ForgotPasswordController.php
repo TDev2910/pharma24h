@@ -36,6 +36,9 @@ class ForgotPasswordController extends Controller
 
             $email = $request->email;
             
+            //xử lý clear session cũ trước
+            session()->forget(['phone_verification', 'phone_for_verification']);
+            
             // Kiểm tra cooldown (không cho gửi liên tục)
             $cooldownKey = "otp_cooldown_{$email}";
             if (Cache::has($cooldownKey)) {
@@ -66,7 +69,7 @@ class ForgotPasswordController extends Controller
             session(['otp_email' => $email]);
             
             return redirect()->route('password.verify')
-                           ->with('success', 'Mã OTP đã được gửi đến email của bạn!');
+                ->with('success', 'Mã OTP đã được gửi đến email của bạn!');
 
         } catch (\Exception $e) {
             // Debug: Log chi tiết lỗi
@@ -148,12 +151,23 @@ class ForgotPasswordController extends Controller
      */
     public function showPhoneVerifyForm(Request $request)
     {
-        $phone = $request->query('phone');
+        $phone = $request->query('phone') ?: session('phone_for_verification');
+        
+        // Debug: Log thông tin phone
+        \Log::info('Phone verification debug', [
+            'query_phone' => $request->query('phone'),
+            'session_phone' => session('phone_for_verification'),
+            'final_phone' => $phone,
+            'all_query_params' => $request->query()
+        ]);
         
         if (!$phone) {
             return redirect()->route('password.request')
                 ->withErrors(['phone' => 'Số điện thoại không hợp lệ']);
         }
+
+        // Lưu phone vào session để tránh mất khi redirect
+        session(['phone_for_verification' => $phone]);
 
         return view('auth.passwords.verify-phone', compact('phone'));
     }
@@ -168,20 +182,116 @@ class ForgotPasswordController extends Controller
             'otp' => 'required|string|size:6'
         ]);
 
-        $phone = $request->phone;
+        $phone = $request->phone; // Nhận: "+84376193244"
         $otp = $request->otp;
 
-        // Lưu thông tin vào session để backend xử lý
+        // ✅ SỬA: Chuyển đổi từ +84376193244 thành 0376193244
+        $normalizedPhone = $this->normalizePhoneForDatabase($phone);
+        
+        // ✅ SỬA: Tìm user với số điện thoại đã chuẩn hóa
+        $user = User::where('phone', $normalizedPhone)->first();
+
+        if(!$user) {
+            // Debug log để kiểm tra
+            \Log::info('Phone verification failed', [
+                'original_phone' => $phone,
+                'normalized_phone' => $normalizedPhone,
+                'all_users_phones' => User::pluck('phone')->toArray()
+            ]);
+            
+            return back()->withErrors(['phone' => 'Số điện thoại chưa được đăng ký tài khoản']);
+        }
+
+        // Clear session cũ trước
+        session()->forget(['reset_email', 'phone_verification']);
+
+        // Lưu thông tin vào session
         session([
             'phone_verification' => [
                 'phone' => $phone,
                 'otp' => $otp,
-                'verified' => false
-            ]
+                'verified' => true,
+                'user_id' => $user->id
+            ],
+            // ✅ THÊM: Lưu email của user vào reset_email
+            'reset_email' => $user->email
         ]);
 
+        // Handle AJAX request
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Xác thực thành công!',
+                'redirect_url' => route('password.reset')
+            ]);
+        }
+
         return redirect()->route('password.reset')
-             ->with('success', 'Xác thực thành công! Vui lòng đặt mật khẩu mới.');
+            ->with('success', 'Xác thực thành công! Vui lòng đặt mật khẩu mới.');
+    }
+
+    private function normalizePhoneForDatabase($phone)
+    {
+        // Loại bỏ tất cả ký tự không phải số
+        $cleaned = preg_replace('/[^0-9]/', '', $phone);
+        
+        // Nếu bắt đầu bằng 84 (từ +84), loại bỏ 84 và thêm 0
+        if (substr($cleaned, 0, 2) === '84') {
+            $cleaned = '0' . substr($cleaned, 2);
+        }
+        
+        // Nếu không bắt đầu bằng 0, thêm 0
+        if (substr($cleaned, 0, 1) !== '0') {
+            $cleaned = '0' . $cleaned;
+        }
+        
+        return $cleaned;
+    }
+
+    /**
+     * Lưu phone vào session với rate limiting
+     */
+    public function savePhoneToSession(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|string'
+        ]);
+
+        $phone = $request->phone;
+        $rateLimitKey = "phone_otp_rate_limit_{$phone}";
+        
+        // Kiểm tra rate limiting (3 lần trong 1 giờ)
+        if (Cache::has($rateLimitKey)) {
+            $attempts = Cache::get($rateLimitKey);
+            if ($attempts >= 3) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Quá nhiều yêu cầu. Vui lòng thử lại sau 1 giờ.',
+                    'rate_limited' => true
+                ], 429);
+            }
+        }
+
+        // Tăng số lần thử
+        $attempts = Cache::get($rateLimitKey, 0) + 1;
+        Cache::put($rateLimitKey, $attempts, 3600); // 1 giờ
+
+        session()->forget(['reset_email', 'phone_verification']);
+
+        // Lưu phone vào session
+        session(['phone_for_verification' => $phone]);
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Phone saved to session',
+            'attempts_remaining' => 3 - $attempts
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Phone saved to session',
+            'attempts_remaining' => 3 - $attempts
+        ]);
     }
 
     /**
@@ -196,8 +306,11 @@ class ForgotPasswordController extends Controller
         ]);
 
         try {
-            // Tìm user theo phone number
-            $user = User::where('phone', $request->phone)->first();
+            // ✅ SỬA: Chuẩn hóa số điện thoại
+            $normalizedPhone = $this->normalizePhoneForDatabase($request->phone);
+            
+            // Tìm user theo phone number đã chuẩn hóa
+            $user = User::where('phone', $normalizedPhone)->first();
             
             if (!$user) {
                 return response()->json([
@@ -205,6 +318,9 @@ class ForgotPasswordController extends Controller
                     'message' => 'Số điện thoại chưa được đăng ký tài khoản'
                 ], 404);
             }
+
+            // Clear session cũ trước
+            session()->forget(['reset_email', 'phone_verification']);
 
             // Lưu thông tin xác thực vào session
             session([
@@ -214,7 +330,9 @@ class ForgotPasswordController extends Controller
                     'idToken' => $request->idToken,
                     'verified' => true,
                     'user_id' => $user->id
-                ]
+                ],
+                // ✅ THÊM: Lưu email của user vào reset_email
+                'reset_email' => $user->email
             ]);
 
             return response()->json([
@@ -239,9 +357,29 @@ class ForgotPasswordController extends Controller
     {
         $email = session('reset_email');
         $phoneVerification = session('phone_verification');
+
+           // ✅ THÊM: Debug logging
+            \Log::info('Reset form debug', [
+                'reset_email' => $email,
+                'phone_verification' => $phoneVerification,
+                'all_session' => session()->all()
+            ]);
         
-        if (!$email) {
+        //xử lý email và xác thực số điện thoại
+        if (!$email && !$phoneVerification) {
             return redirect()->route('password.request')->withErrors(['email' => 'Phiên làm việc đã hết hạn. Vui lòng thử lại!']);
+        }
+
+        if (!$email && $phoneVerification && isset($phoneVerification['user_id'])) {
+            $user = User::find($phoneVerification['user_id']);
+            if ($user) {
+                $email = $user->email;
+                session(['reset_email' => $email]);
+            }
+        }
+
+        if ($phoneVerification && !isset($phoneVerification['verified'])) {
+            return redirect()->route('password.request')->withErrors(['phone' => 'Xác thực phone chưa hoàn thành. Vui lòng thử lại!']);
         }
 
         return view('auth.passwords.reset', compact('email'));

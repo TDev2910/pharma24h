@@ -140,7 +140,7 @@
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
 import { computed, onMounted } from 'vue';
-import { router } from '@inertiajs/vue3'; // ✅ Sửa: import router thay vì Link
+import { router } from '@inertiajs/vue3'; 
 import axios from 'axios'; 
 
 const props = defineProps({
@@ -148,6 +148,7 @@ const props = defineProps({
   products: { type: Array, default: () => [] }
 })
 
+//thêm sản phẩm vào giỏ hàng
 async function addToCart({ id, type }) {
   try {
     const response = await axios.post('/cart/add', { 
@@ -185,9 +186,11 @@ async function addToCart({ id, type }) {
   }
 }
 
+//chuyển hướng đến trang chi tiết sản phẩm
 function goToProductDetail(product) {
   router.visit(`/products/${product.type}/${product.id}`)
 }
+
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });

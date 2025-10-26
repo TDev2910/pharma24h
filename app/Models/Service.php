@@ -10,14 +10,20 @@ class Service extends Model
     use HasFactory;
 
     protected $fillable = [
-        'ma_hang',    
-        'ma_vach',
+        'ma_dich_vu',          // Mã dịch vụ (thay thế ma_hang, ma_vach)
         'ten_dich_vu',          
-        'nhom_hang_id',      
+        'nhom_hang_id',
+        'doctor_id',      
         'gia_dich_vu',
         'mo_ta',               
         'image',             
-        'ban_truc_tiep'            
+        'ban_truc_tiep',
+        'hinh_thuc',
+        'thoi_gian_thuc_hien',
+        'trang_thai',
+        'ghi_chu',
+        'created_by',
+        'updated_by'
     ];
 
     protected $casts = [
@@ -35,6 +41,14 @@ class Service extends Model
     }
 
     /**
+     * Relationship to Doctor
+     */
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class);
+    }
+
+    /**
      * Relationship to User who created the service
      */
     public function creator()
@@ -42,6 +56,7 @@ class Service extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    
     /**
      * Relationship to User who last updated the service
      */

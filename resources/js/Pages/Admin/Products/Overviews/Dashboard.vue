@@ -218,7 +218,6 @@
                 </div>
               </template>
             </Column>
-            <Column field="ma_hang" header="Mã hàng"></Column>
             <Column field="ten_thuoc" header="Tên sản phẩm">
               <template #body="slotProps">
                 {{ slotProps.data.ten_thuoc || slotProps.data.ten_hang_hoa || '-' }}

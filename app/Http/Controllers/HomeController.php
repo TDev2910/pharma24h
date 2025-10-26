@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Medicine;
 use App\Models\Goods;
+use App\Models\Service;
 use Inertia\Inertia;
 use App\Models\ProductReview;
 
@@ -133,9 +134,67 @@ class HomeController extends Controller
         ]);
     }
 
-    public function services() //trang dịch vụ
+    /**
+     * Hiển thị trang dịch vụ công cộng
+     */
+    public function services(Request $request)
     {
-        return Inertia::render('public/services');
+        $query = Service::with(['category'])
+            ->where('trang_thai', 'kich_hoat'); // Chỉ hiển thị dịch vụ đang kích hoạt
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('ten_dich_vu', 'LIKE', "%{$search}%")
+                ->orWhere('ma_dich_vu', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Filter by category
+        if ($request->filled('category_id')) {
+            $query->where('nhom_hang_id', $request->category_id);
+        }
+
+        $services = $query->latest()->get();
+
+        $user = auth()->user();
+
+        return Inertia::render('Public/Services', [
+            'services' => $services,
+            'auth' => [
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                ] : null,
+            ],
+        ]);
+    }
+
+    /**
+     * Hiển thị chi tiết dịch vụ
+     */
+    public function serviceDetail($id)
+    {
+        $service = Service::with(['category'])
+            ->where('trang_thai', 'kich_hoat')
+            ->findOrFail($id);
+
+        $user = auth()->user();
+
+        return Inertia::render('Public/DetailsServices', [
+            'service' => $service,
+            'auth' => [
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                ] : null,
+            ],
+        ]);
     }
 
     public function contact()

@@ -445,37 +445,81 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle phone submission (Firebase)
     async function handlePhoneSubmission() {
-        const phone = phoneInput.value.replace(/\D/g, '');
+    const phone = phoneInput.value.replace(/\D/g, '');
+    
+    if (!phone || phone.length < 10) {
+        phoneInput.focus();
+        phoneInput.classList.add('is-invalid');
+        return;
+    }
+    
+    try {
+        // Import Firebase service
+        const { default: firebasePhoneAuth } = await import('{{ Vite::asset("resources/js/services/firebasePhoneAuth.js") }}');
         
-        if (!phone || phone.length < 10) {
-            phoneInput.focus();
-            phoneInput.classList.add('is-invalid');
-            return;
+        // Initialize reCAPTCHA
+        firebasePhoneAuth.initRecaptcha('recaptcha-container');
+        
+        // ✅ FORMAT ĐÚNG: Bỏ số 0 đầu nếu có
+        let cleanedPhone = phone;
+        if (cleanedPhone.startsWith('0')) {
+            cleanedPhone = cleanedPhone.substring(1);
         }
         
-        try {
-            // Import Firebase service
-            const { default: firebasePhoneAuth } = await import('{{ Vite::asset("resources/js/services/firebasePhoneAuth.js") }}');
-            
-            // Initialize reCAPTCHA
-            firebasePhoneAuth.initRecaptcha('recaptcha-container');
-            
-            // Format phone number
-            const formattedPhone = '+84' + phone;
-            
-            // Send OTP
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi SMS...';
-            submitBtn.disabled = true;
-            
-            const result = await firebasePhoneAuth.sendOTP(formattedPhone);
-            
-            if (result.success) {
-                // Redirect to verify page with phone
-                window.location.href = `/password/verify-phone?phone=${encodeURIComponent(formattedPhone)}`;
-            } else {
-                showError(result.message);
-                resetButton();
+        const formattedPhone = '+84' + cleanedPhone; // +84376193244 (không có số 0)
+        
+        console.log('Original input:', phone);
+        console.log('Formatted phone:', formattedPhone);
+        
+        // Send OTP
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi SMS...';
+        submitBtn.disabled = true;
+        
+        const result = await firebasePhoneAuth.sendOTP(formattedPhone);
+        
+        // ✅ CHỈ CHUYỂN TRANG KHI THỰC SỰ THÀNH CÔNG
+        if (result.success && firebasePhoneAuth.confirmationResult) {
+            // Lưu phone vào session trước khi redirect
+            try {
+                await fetch('/password/save-phone', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ phone: formattedPhone })
+                });
+            } catch (error) {
+                console.error('Failed to save phone to session:', error);
             }
+            
+            showSuccess(result.message);
+            
+            // Redirect với format đúng
+            setTimeout(() => {
+                window.location.href = `/password/verify-phone?phone=${encodeURIComponent(formattedPhone)}`;
+            }, 1000);
+        } else {
+            const errorMessage = result.message || 'Không thể gửi OTP. Vui lòng thử lại!';
+            showError(errorMessage);
+            
+            if (result.error && (result.error.code === 'auth/error-code:-39' || 
+                result.error.message.includes('503') || 
+                result.error.code === 'auth/quota-exceeded')) {
+                
+                setTimeout(() => {
+                    showError('Firebase service tạm thời không khả dụng. Vui lòng sử dụng email để đặt lại mật khẩu.');
+                    
+                    setTimeout(() => {
+                        const emailTab = document.querySelector('[data-type="email"]');
+                        if (emailTab) {
+                            emailTab.click();
+                        }
+                    }, 2000);
+                }, 1000);
+            }
+            resetButton();
+        }
         } catch (error) {
             console.error('Firebase error:', error);
             showError('Có lỗi xảy ra, vui lòng thử lại');
@@ -490,6 +534,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function showError(message) {
+        // Remove existing alerts
+        const existingAlerts = document.querySelectorAll('.alert');
+        existingAlerts.forEach(alert => alert.remove());
+        
         // Create error alert
         const alert = document.createElement('div');
         alert.className = 'alert alert-danger mb-3';
@@ -504,6 +552,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert.parentNode.removeChild(alert);
             }
         }, 5000);
+    }
+    
+    function showSuccess(message) {
+        // Remove existing alerts
+        const existingAlerts = document.querySelectorAll('.alert');
+        existingAlerts.forEach(alert => alert.remove());
+        
+        // Create success alert
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-success mb-3';
+        alert.innerHTML = `<i class="fas fa-check-circle me-2"></i>${message}`;
+        
+        // Insert before form
+        form.parentNode.insertBefore(alert, form);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.parentNode.removeChild(alert);
+            }
+        }, 3000);
     }
     
     function resetButton() {

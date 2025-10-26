@@ -37,6 +37,14 @@ class Doctor extends Model
     {
         return $query->where('status', 'active');
     }
+
+    /**
+     * Relationship to Services
+     */
+    public function services()
+    {
+        return $this->hasMany(Service::class);
+    }
     
      // Accessor to display full address
      public function getFullAddressAttribute()

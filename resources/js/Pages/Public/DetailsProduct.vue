@@ -265,7 +265,7 @@ const sanitizedDescription = computed(() => {
   })
 })
 
-// Format currency
+// định dạng tiền tệ
 function formatCurrency(amount) {
   if (!amount) return '0 VNĐ'
   return new Intl.NumberFormat('vi-VN', {
@@ -274,7 +274,7 @@ function formatCurrency(amount) {
   }).format(amount)
 }
 
-// Add to cart function
+// thêm sản phẩm vào giỏ hàng
 async function addToCart() {
   try {
     const response = await axios.post('/cart/add', { 
@@ -312,7 +312,7 @@ async function addToCart() {
   }
 }
 
-// Submit review
+// gửi đánh giá
 const submitReview = async () => {
   if (!reviewForm.value.rating || !reviewForm.value.comment) {
     if (typeof window.showNotification === 'function') {
@@ -349,7 +349,7 @@ const submitReview = async () => {
   }
 }
 
-// Delete review
+// xóa đánh giá
 const deleteReview = async (reviewId) => {
   if (!confirm('Bạn có chắc chắn muốn xóa đánh giá này?')) {
     return;
@@ -374,7 +374,7 @@ const deleteReview = async (reviewId) => {
   }
 }
 
-// Format review date
+// định dạng ngày đánh giá
 const formatReviewDate = (dateString) => {
   const date = new Date(dateString);
   const now = new Date();
@@ -389,7 +389,7 @@ const formatReviewDate = (dateString) => {
   return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
-// Scroll to review form
+// scroll to review form
 const scrollToReviewForm = () => {
   const reviewFormCard = document.querySelector('.review-form-card') || document.querySelector('.login-prompt-card');
   if (reviewFormCard) {

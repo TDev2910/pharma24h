@@ -63,6 +63,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::prefix('services')->name('services.')->group(function () {
         Route::get('/', [ServiceController::class, 'index'])->name('index');
         Route::get('/list', [ServiceController::class, 'listServices'])->name('list');
+        Route::get('products/services/list', [ServiceController::class,'listServices'])->name('products.services.list');
         Route::post('/', [ServiceController::class, 'store'])->name('store');
         Route::get('/{service}/edit', [ServiceController::class, 'edit'])->name('edit');
         Route::put('/{service}', [ServiceController::class, 'update'])->name('update');
