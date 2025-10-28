@@ -96,6 +96,8 @@
         <i class="fab fa-facebook-messenger"></i>
       </a>
 
+      <ChatbotFloatingButton />
+
       
       <VchatWidget :auth="auth" />
     </div>
@@ -107,6 +109,7 @@
   <script setup>
   import { computed, ref } from 'vue'
   import VchatWidget from '@/Components/VchatWidget.vue'
+  import ChatbotFloatingButton from '@/Components/ChatbotFloatingButton.vue'
   
   // Props từ Inertia
   const props = defineProps({

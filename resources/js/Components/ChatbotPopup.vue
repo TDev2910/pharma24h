@@ -1,16 +1,10 @@
 <template>
   <div class="chatbot-container">
-    <!-- Chat Header -->
-    <div class="chat-header">
-      <h3>🤖 Chatbot Pharma PCT</h3>
-      <button @click="clearChat" class="clear-btn">🗑️ Xóa</button>
-    </div>
-
     <!-- Chat Messages -->
     <div class="chat-messages" ref="messagesContainer">
       <div v-if="messages.length === 0" class="welcome-message">
         <p>👋 Xin chào! Tôi là trợ lý AI của nhà thuốc Pharma PCT.</p>
-        <p>Hãy hỏi tôi về:</p>
+        <p>Hãy hỏi tôi về các thông tin sau:</p>
         <ul>
           <li>💊 Thông tin thuốc</li>
           <li>🏥 Dịch vụ khám bệnh</li>
@@ -29,7 +23,7 @@
       <!-- Loading indicator -->
       <div v-if="isLoading" class="message bot">
         <div class="message-content">
-          <span class="typing-indicator">🤖 Đang gõ...</span>
+          <span class="typing-indicator">🤖 Đang trả lời...</span>
         </div>
       </div>
     </div>
@@ -57,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch } from 'vue'
+import { ref, onMounted, nextTick, watch, onUnmounted } from 'vue'
 
 // Reactive data
 const messages = ref([])
@@ -127,52 +121,66 @@ const sendMessage = async () => {
       eventSource.close()
     }
 
-    // Create new EventSource connection
-    eventSource = new EventSource(`/api/chatbot/chat?message=${encodeURIComponent(userMessage)}`)
+    // Create new EventSource connection with POST data
+    const formData = new FormData()
+    formData.append('message', userMessage)
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'))
+    
+    // Use fetch with POST method
+    const response = await fetch('/api/chatbot/chat', {
+      method: 'POST',
+      body: formData
+    })
+    
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+    
+    // Read the stream
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder()
     
     let botResponse = ''
     let isFirstChunk = true
-
-    eventSource.addEventListener('update', (event) => {
-      if (event.data === '</stream>') {
-        eventSource.close()
-        isLoading.value = false
-        return
-      }
-
-      if (isFirstChunk) {
-        // Add bot message container
-        messages.value.push({
-          type: 'bot',
-          content: '',
-          time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
-        })
-        isFirstChunk = false
-      }
-
-      // Append to bot response
-      botResponse += event.data
+    
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
       
-      // Update the last message (bot message)
-      const lastMessage = messages.value[messages.value.length - 1]
-      if (lastMessage && lastMessage.type === 'bot') {
-        lastMessage.content = botResponse
+      const chunk = decoder.decode(value)
+      const lines = chunk.split('\n')
+      
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6)
+          
+          if (data === '</stream>') {
+            isLoading.value = false
+            return
+          }
+          
+          if (isFirstChunk) {
+            // Add bot message container
+            messages.value.push({
+              type: 'bot',
+              content: '',
+              time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+            })
+            isFirstChunk = false
+          }
+          
+          // Append to bot response
+          botResponse += data
+          
+          // Update the last message (bot message)
+          const lastMessage = messages.value[messages.value.length - 1]
+          if (lastMessage && lastMessage.type === 'bot') {
+            lastMessage.content = botResponse
+          }
+          
+          scrollToBottom()
+        }
       }
-      
-      scrollToBottom()
-    })
-
-    eventSource.onerror = (error) => {
-      console.error('EventSource failed:', error)
-      isLoading.value = false
-      eventSource.close()
-      
-      // Add error message
-      messages.value.push({
-        type: 'bot',
-        content: '❌ Lỗi kết nối. Vui lòng thử lại sau.',
-        time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
-      })
     }
 
   } catch (error) {
@@ -201,6 +209,9 @@ onMounted(() => {
   if (messageInput.value) {
     messageInput.value.focus()
   }
+  
+  // Listen for clear chat event
+  window.addEventListener('clear-chat', clearChat)
 })
 
 // Cleanup on unmount
@@ -208,6 +219,9 @@ onUnmounted(() => {
   if (eventSource) {
     eventSource.close()
   }
+  
+  // Remove event listener
+  window.removeEventListener('clear-chat', clearChat)
 })
 </script>
 
@@ -215,66 +229,37 @@ onUnmounted(() => {
 .chatbot-container {
   display: flex;
   flex-direction: column;
-  height: 600px;
-  max-width: 800px;
-  margin: 0 auto;
+  height: 100%;
+  width: 100%;
   background: white;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-}
-
-.chat-header {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: white;
-  padding: 15px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.chat-header h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.clear-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.3s;
-}
-
-.clear-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  flex: 1;
 }
 
 .chat-messages {
   flex: 1;
-  padding: 20px;
+  padding: 15px;
   overflow-y: auto;
   background: #f8f9fa;
+  min-height: 0;
 }
 
 .welcome-message {
   text-align: center;
   color: #666;
-  padding: 20px;
+  padding: 15px;
+  font-size: 14px;
 }
 
 .welcome-message ul {
   text-align: left;
   display: inline-block;
-  margin-top: 15px;
+  margin-top: 10px;
+  font-size: 13px;
 }
 
 .message {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   display: flex;
   flex-direction: column;
 }
@@ -288,11 +273,12 @@ onUnmounted(() => {
 }
 
 .message-content {
-  max-width: 70%;
-  padding: 12px 16px;
-  border-radius: 18px;
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 15px;
   word-wrap: break-word;
-  line-height: 1.4;
+  line-height: 1.3;
+  font-size: 14px;
 }
 
 .message.user .message-content {
@@ -325,14 +311,15 @@ onUnmounted(() => {
 }
 
 .chat-input {
-  padding: 20px;
+  padding: 15px;
   background: white;
   border-top: 1px solid #e9ecef;
+  flex-shrink: 0;
 }
 
 .input-group {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: flex-end;
 }
 
@@ -340,14 +327,14 @@ onUnmounted(() => {
   flex: 1;
   border: 2px solid #e9ecef;
   border-radius: 20px;
-  padding: 12px 16px;
-  font-size: 14px;
+  padding: 10px 14px;
+  font-size: 13px;
   font-family: inherit;
   resize: none;
   outline: none;
   transition: border-color 0.3s;
-  min-height: 44px;
-  max-height: 120px;
+  min-height: 40px;
+  max-height: 100px;
 }
 
 .input-group textarea:focus {
@@ -363,13 +350,13 @@ onUnmounted(() => {
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   border: none;
   color: white;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   transition: transform 0.3s;
-  min-width: 44px;
-  height: 44px;
+  min-width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
