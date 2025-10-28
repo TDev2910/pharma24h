@@ -6,10 +6,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\StreamedResponse;
 use Illuminate\Http\StreamedEvent;
+use App\Services\Chatbot\ProductSearchService;
 use Illuminate\Support\Facades\Http;
 
 class ChatbotController extends Controller
 {
+    protected $productSearch;
+
+    public function __construct()
+    {
+        $this->productSearch = new ProductSearchService();
+    }
+
     public function chat(Request $request)
     {
         $request->validate([
@@ -20,11 +28,21 @@ class ChatbotController extends Controller
         
         return response()->eventStream(function () use ($userMessage) {
             try {
-                // Gemini 2.5 Flash - code giữ nguyên 100%
-                $apiKey = config('services.gemini.api_key');
-                $prompt = "Bạn là trợ lý AI của nhà thuốc Pharma PCT. Hãy trả lời bằng tiếng Việt một cách thân thiện và hữu ích về các vấn đề sức khỏe, thuốc men, và dịch vụ nhà thuốc. Câu hỏi: " . $userMessage;
+                // ========== THÊM MỚI: SEARCH PRODUCTS ==========
+                $searchResults = $this->productSearch->search($userMessage);
+                $productInfo = $this->productSearch->formatForGemini($searchResults);
+                // ===============================================
                 
-                $response = Http::timeout(30)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey, [
+                //lấy api key từ config đã set up sẵn trong file service.php 
+                $apiKey = config('services.gemini.api_key');
+                
+                // ========== THAY ĐỔI: BUILD ENHANCED PROMPT ==========
+                $prompt = $this->buildEnhancedPrompt($userMessage, $productInfo);
+                // ====================================================
+                
+                //Gửi POST request đến Gemini API
+                $response = Http::timeout(30)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey, 
+                [
                     'contents' => [
                         [
                             'parts' => [
@@ -65,11 +83,11 @@ class ChatbotController extends Controller
                     if ($index % 3 === 0) {
                         usleep(100000); // 100ms delay
                     }
-                }
-                
+                }               
                 yield new StreamedEvent(event: 'update', data: "\n\n");
             }
-        }, headers: [
+        }, 
+        headers: [
             'Content-Type' => 'text/event-stream',
             'Cache-Control' => 'no-cache',
             'Connection' => 'keep-alive',
@@ -78,9 +96,29 @@ class ChatbotController extends Controller
 
     public function index()
     {
-        return view('chatbot');
+        
     }
 
+    private function buildEnhancedPrompt(string $userMessage, string $productInfo): string
+    {
+        return <<<PROMPT
+        Bạn là trợ lý AI của nhà thuốc Pharma PCT (địa chỉ: 12 Đô Lương, Phường 11, Vũng Tàu).
+
+        {$productInfo}
+
+        CÂU HỎI KHÁCH HÀNG: {$userMessage}
+
+        HƯỚNG DẪN TRẢ LỜI:
+        1. Nếu có thông tin sản phẩm/dịch vụ ở trên, hãy tư vấn cụ thể dựa trên dữ liệu đó (tên, giá, tồn kho, mô tả).
+        2. Trả lời bằng tiếng Việt, thân thiện và chuyên nghiệp.
+        3. Nếu không có thông tin sản phẩm, hãy tư vấn chung về sức khỏe và đề xuất khách hàng liên hệ hotline 0901645269.
+        4. Luôn kết thúc bằng câu hỏi để tương tác với khách hàng.
+
+        Trả lời:
+        PROMPT;
+    }
+
+    //phản hồi dữ liệu được set cố định để tránh lỗi khi Gemini lỗi
     private function getFallbackResponse($message)
     {
         $message = strtolower($message);

@@ -78,7 +78,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::post('/bookings', [ServiceBookingController::class, 'store'])->name('bookings.store');
 
 // Chatbot routes
-Route::get('/chatbot', [ChatbotController::class, 'index'])->name('chatbot');
 Route::post('/api/chatbot/chat', [ChatbotController::class, 'chat'])->name('chatbot.chat');
 
 // Include admin routes
