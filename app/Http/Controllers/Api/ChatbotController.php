@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\StreamedResponse;
 use Illuminate\Http\StreamedEvent;
 use Illuminate\Support\Facades\Http;
-use OpenAI\Laravel\Facades\OpenAI;
 
 class ChatbotController extends Controller
 {
@@ -21,86 +20,54 @@ class ChatbotController extends Controller
         
         return response()->eventStream(function () use ($userMessage) {
             try {
-                // Thử OpenAI trước
-                $stream = OpenAI::chat()->createStreamed([
-                    'model' => 'gpt-3.5-turbo',
-                    'messages' => [
-                        [
-                            'role' => 'system',
-                            'content' => 'Bạn là trợ lý AI của nhà thuốc Pharma PCT. Hãy trả lời bằng tiếng Việt một cách thân thiện và hữu ích về các vấn đề sức khỏe, thuốc men, và dịch vụ nhà thuốc. Nếu câu hỏi không liên quan đến y tế, hãy trả lời ngắn gọn và chuyển hướng về chủ đề nhà thuốc.'
-                        ],
-                        [
-                            'role' => 'user',
-                            'content' => $userMessage
-                        ]
-                    ],
-                    'max_tokens' => 300,
-                    'temperature' => 0.7,
-                ]);
-
-                // Stream response từ OpenAI
-                foreach ($stream as $response) {
-                    $content = $response->choices[0]->delta->content ?? '';
-                    
-                    if (!empty($content)) {
-                        yield new StreamedEvent(event: 'update', data: $content);
-                    }
-                }
+                // Gemini 2.5 Flash - code giữ nguyên 100%
+                $apiKey = config('services.gemini.api_key');
+                $prompt = "Bạn là trợ lý AI của nhà thuốc Pharma PCT. Hãy trả lời bằng tiếng Việt một cách thân thiện và hữu ích về các vấn đề sức khỏe, thuốc men, và dịch vụ nhà thuốc. Câu hỏi: " . $userMessage;
                 
-                // Kết thúc stream
-                yield new StreamedEvent(event: 'update', data: "\n\n");
-                
-            } catch (\Exception $e) {
-                // Nếu OpenAI lỗi, thử Gemini API
-                try {
-                    $apiKey = config('services.gemini.api_key');
-                    $prompt = "Bạn là trợ lý AI của nhà thuốc Pharma PCT. Hãy trả lời bằng tiếng Việt một cách thân thiện và hữu ích về các vấn đề sức khỏe, thuốc men, và dịch vụ nhà thuốc. Câu hỏi: " . $userMessage;
-                    
-                    $response = Http::timeout(30)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey, [
-                        'contents' => [
-                            [
-                                'parts' => [
-                                    ['text' => $prompt]
-                                ]
+                $response = Http::timeout(30)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey, [
+                    'contents' => [
+                        [
+                            'parts' => [
+                                ['text' => $prompt]
                             ]
                         ]
-                    ]);
+                    ]
+                ]);
+                
+                if ($response->successful()) {
+                    $responseData = $response->json();
+                    $content = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? 'Không thể kết nối Gemini';
                     
-                    if ($response->successful()) {
-                        $responseData = $response->json();
-                        $content = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? 'Không thể kết nối Gemini';
-                        
-                        // Stream Gemini response
-                        $words = explode(' ', $content);
-                        foreach ($words as $index => $word) {
-                            yield new StreamedEvent(event: 'update', data: $word . ' ');
-                            
-                            if ($index % 3 === 0) {
-                                usleep(50000); // 50ms delay
-                            }
-                        }
-                        
-                        yield new StreamedEvent(event: 'update', data: "\n\n");
-                    } else {
-                        throw new \Exception('Gemini API failed: ' . $response->status());
-                    }
-                    
-                } catch (\Exception $geminiError) {
-                    // Fallback response khi cả OpenAI và Gemini đều lỗi
-                    $fallbackResponse = $this->getFallbackResponse($userMessage);
-                    
-                    // Stream fallback response
-                    $words = explode(' ', $fallbackResponse);
+                    // Stream Gemini response
+                    $words = explode(' ', $content);
                     foreach ($words as $index => $word) {
                         yield new StreamedEvent(event: 'update', data: $word . ' ');
                         
                         if ($index % 3 === 0) {
-                            usleep(100000); // 100ms delay
+                            usleep(50000); // 50ms delay
                         }
                     }
                     
                     yield new StreamedEvent(event: 'update', data: "\n\n");
+                } else {
+                    throw new \Exception('Gemini API failed: ' . $response->status());
                 }
+                
+            } catch (\Exception $e) {
+                // Fallback response khi Gemini lỗi
+                $fallbackResponse = $this->getFallbackResponse($userMessage);
+                
+                // Stream fallback response
+                $words = explode(' ', $fallbackResponse);
+                foreach ($words as $index => $word) {
+                    yield new StreamedEvent(event: 'update', data: $word . ' ');
+                    
+                    if ($index % 3 === 0) {
+                        usleep(100000); // 100ms delay
+                    }
+                }
+                
+                yield new StreamedEvent(event: 'update', data: "\n\n");
             }
         }, headers: [
             'Content-Type' => 'text/event-stream',
