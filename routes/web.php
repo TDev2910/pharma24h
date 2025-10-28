@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ServiceBookingController;
+use App\Http\Controllers\Api\ChatbotController;
 use Inertia\Inertia;
  
 // 🌐 PUBLIC ROUTES
@@ -75,7 +76,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 Route::post('/bookings', [ServiceBookingController::class, 'store'])->name('bookings.store');
+
+// Chatbot routes
+Route::get('/chatbot', [ChatbotController::class, 'index'])->name('chatbot');
+Route::post('/api/chatbot/chat', [ChatbotController::class, 'chat'])->name('chatbot.chat');
+
 // Include admin routes
 require __DIR__.'/admin.php';
-
- 

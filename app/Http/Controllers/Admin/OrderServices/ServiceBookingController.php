@@ -10,43 +10,64 @@ use Illuminate\Support\Facades\Validator;
 
 class ServiceBookingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         //lấy dữ liệu từ db và relationship của service và user
+        // Lấy dữ liệu từ db và relationship của service và user
         $query = ServiceBooking::with(['service', 'user']);
         
-        //lọc theo trạng thái
+        // Lọc theo trạng thái
         if($request->has('status') && $request->status !== '')
         {
             $query->where('status', $request->status);
         }
 
-        //lọc trạng thái thanh toán
+        // Lọc trạng thái thanh toán
         if ($request->has('payment_status') && $request->payment_status !== '') 
         {
             $query->where('payment_status', $request->payment_status);
         }
 
-        //loc theo ngay
-        if ($request->has('date') && $request->date !== '') 
+        // Lọc theo ngày
+        if ($request->has('date_from') && $request->date_from !== '') 
         {
-            $query->whereDate('booking_date', $request->date);
+            $query->where('booking_date', '>=', $request->date_from);
+        }
+        
+        if ($request->has('date_to') && $request->date_to !== '') 
+        {
+            $query->where('booking_date', '<=', $request->date_to);
         }
 
-        //tìm kiếm theo so dien thoai
-        if ($request->has('phone') && $request->phone !== '') {
-            $query->where('customer_phone', 'like', '%' . $request->phone . '%');
+        // Tìm kiếm theo tên khách hàng hoặc SĐT
+        if ($request->has('search') && $request->search !== '') 
+        {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('customer_name', 'like', "%{$search}%")
+                ->orWhere('customer_phone', 'like', "%{$search}%");
+            });
         }
-        // Sắp xếp theo thời gian tạo mới nhất
+
+        // Sắp xếp theo ngày đặt mới nhất
         $query->orderBy('created_at', 'desc');
 
-        // Pagination 20 items/page
-        $bookings = $query->paginate(20);
+        // Phân trang
+        $perPage = $request->get('per_page', 10);
+        $bookings = $query->paginate($perPage);
 
         return response()->json([
             'success' => true,
-            'data' => $bookings
-        ]);
+            'data' => $bookings->items(),
+            'pagination' => [
+                'current_page' => $bookings->currentPage(),
+                'last_page' => $bookings->lastPage(),
+                'per_page' => $bookings->perPage(),
+                'total' => $bookings->total(),
+                'from' => $bookings->firstItem(),
+                'to' => $bookings->lastItem()
+            ]
+        ]); 
     }
 
     public function show(Request $request, $id)

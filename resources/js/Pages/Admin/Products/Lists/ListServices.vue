@@ -83,7 +83,7 @@
           </Column>
 
           <!-- Ghi chú -->
-          <Column field="ghi_chu" header="Thao tác" style="width: 8%">
+          <Column field="ghi_chu" header="Ghi chú" style="width: 8%">
           </Column>
         </DataTable>
       </div>  

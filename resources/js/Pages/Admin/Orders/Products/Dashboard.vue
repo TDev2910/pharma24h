@@ -12,5 +12,4 @@
   
   <style scoped>
   /* Thêm CSS tùy ý tại đây */
-  </style>
-  
+</style>

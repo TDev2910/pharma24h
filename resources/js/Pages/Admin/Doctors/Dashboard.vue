@@ -325,7 +325,7 @@ export default {
         this.$toast.add({
           severity: 'error',
           summary: 'Lỗi',
-          detail: error.response?.data?.message || 'Không thể tải danh sách bác sĩ',
+          detail: error.response?.data?.message || 'Không thể tải danh sách',
           life: 5000
         })
       } finally {

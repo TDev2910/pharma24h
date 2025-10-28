@@ -11,6 +11,16 @@ import PublicLayout from '@/Layouts/PublicLayout.vue'
 import './config/firebase'
 import './services/FirebasePhoneAuth'
 
+// Import axios - QUAN TRỌNG
+import axios from 'axios'
+window.axios = axios
+
+// Setup CSRF token
+const token = document.head.querySelector('meta[name="csrf-token"]')
+if (token) {
+    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content
+}
+
 const primevueOptions = {
   ripple: true,
   inputVariant: 'outlined', // hoặc 'filled'

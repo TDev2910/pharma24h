@@ -335,17 +335,18 @@ export default {
         { label: 'Nữ', value: 'female' }
       ],
       specialtyOptions: [
-        { label: 'Nội tổng quát', value: 'general' },
-        { label: 'Y học dự phòng', value: 'pediatrics' },
-        { label: 'Nội tổng quát', value: 'cardiology' },
-        { label: 'Xét nghiệm y học', value: 'dermatology' },
+        { label: 'Nội tổng quát', value: 'Nội tổng quát' },
+        { label: 'Y học dự phòng', value: 'Y học dự phòng' },
+        { label: 'Tim mạch', value: 'Tim mạch' },
+        { label: 'Xét nghiệm y học', value: 'Xét nghiệm y học' },
+        { label: 'Khoa nhi', value: 'Khoa nhi' },
       ],
       degreeOptions: [
-        { label: 'Đại học', value: 'doctor' },
-        { label: 'Thạc sĩ', value: 'master' },
-        { label: 'Tiến sĩ', value: 'phd' },
-        { label: 'Bác sĩ chuyên khoa I', value: 'professor' },
-        { label: 'Bác sĩ chuyên khoa II', value: 'professor' }
+        { label: 'Đại học', value: 'Đại học' },
+        { label: 'Thạc sĩ', value: 'Thạc sĩ' },
+        { label: 'Tiến sĩ', value: 'Tiến sĩ' },
+        { label: 'Bác sĩ chuyên khoa I', value: 'Bác sĩ chuyên khoa I' },
+        { label: 'Bác sĩ chuyên khoa II', value: 'Bác sĩ chuyên khoa II' }
       ]
     }
   },

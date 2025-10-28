@@ -95,15 +95,17 @@
       <a href="https://www.facebook.com/dat.hocongthien" target="_blank" class="floating-btn floating-facebook">
         <i class="fab fa-facebook-messenger"></i>
       </a>
+
       
       <VchatWidget :auth="auth" />
     </div>
 
+    
     <!-- vChat Widget -->
   </template>
   
   <script setup>
-  import { computed } from 'vue'
+  import { computed, ref } from 'vue'
   import VchatWidget from '@/Components/VchatWidget.vue'
   
   // Props từ Inertia
@@ -116,6 +118,7 @@
   
   // Computed property for current year
   const currentYear = computed(() => new Date().getFullYear())
+
   </script>
 
 <style scoped>
@@ -183,6 +186,7 @@
   animation: pulse-phone 2s infinite;
 }
 
+
 .floating-btn:hover {
   transform: scale(1.1);
   color: #fff;
@@ -198,6 +202,7 @@
     transform: scale(1.05);
   }
 }
+
 
 /* Responsive Design */
 @media (max-width: 991.98px) {

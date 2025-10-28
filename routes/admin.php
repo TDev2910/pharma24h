@@ -14,23 +14,29 @@ use App\Http\Controllers\Admin\Doctor\DoctorController;
 use App\Http\Controllers\Admin\Supplier\PruchaseImportController;
 use App\Http\Controllers\Admin\Supplier\PurchaseReturnsController;
 use App\Http\Controllers\Admin\ImportController;
-// use App\Http\Controllers\Admin\ExportController;
+use App\Http\Controllers\Admin\OrderServices\ServiceBookingController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::prefix('admin')->name('admin.')->group(function () 
 {
-    // API endpoint cho purchase orders
-    Route::get('purchase-orders/api', [PruchaseImportController::class, 'apiIndex'])->name('purchase-orders.api')->middleware('auth');
+    // ========================================
+    // DASHBOARD & OVERVIEW ROUTES
+    // ========================================
     
-    // Xuất file excel
-    Route::get('purchase-orders/export', [PruchaseImportController::class, 'export'])->name('purchase-orders.export')->middleware('auth');
-    Route::get('purchase-returns/export', [PurchaseReturnsController::class, 'export'])->name('purchase-returns.export')->middleware('auth');
     // Dashboard - Vue Component
     Route::get('products', function () {
         return Inertia::render('Admin/Products/Overviews/Dashboard');
     })->name('products.index');
 
+    Route::get('/services-dashboard', function () {
+        return Inertia::render('Admin/Orders/Services/Dashboard');
+    })->name('admin.services.dashboard');
+
+    // ========================================
+    // PRODUCT MANAGEMENT ROUTES
+    // ========================================
+    
     // Medicines
     Route::prefix('medicines')->name('medicines.')->group(function () {
         Route::get('/', [MedicineController::class, 'index'])->name('index');
@@ -71,41 +77,13 @@ Route::prefix('admin')->name('admin.')->group(function ()
         Route::get('/{service}/detail', [ServiceController::class, 'detail'])->name('detail');
         Route::get('/{service}', [ServiceController::class, 'show'])->name('show');
         Route::patch('/{service}/status', [ServiceController::class, 'updateStatus'])->name('updateStatus');
-    });  
-
-    // Legacy medicine routes (for backward compatibility)
-    Route::get('products/create-medicine', [ProductController::class, 'createMedicine'])->name('products.createMedicine');
-    Route::post('products/store-medicine', [ProductController::class, 'storeMedicine'])->name('products.storeMedicine');
-    Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
-    Route::post('products/store', [ProductController::class, 'store'])->name('products.store');
-    Route::get('products/{id}/detail', [ProductController::class, 'showDetail'])->name('products.detail');
-    
-    // Legacy goods routes (for backward compatibility)
-    Route::get('products/create-goods', [ProductController::class,'createGoods'])->name('products.createGoods');
-    Route::post('products/store-goods', [ProductController::class,'storeGoods'])->name('products.storeGoods');
-    Route::get('products/goods', [ProductController::class,'listGoods'])->name('products.goods.list');
-    Route::get('products/goods/{goods}/edit', [ProductController::class,'editGoods'])->name('products.goods.edit');
-    Route::put('products/goods/{goods}', [ProductController::class,'updateGoods'])->name('products.goods.update');
-    Route::delete('products/goods/{goods}', [ProductController::class,'deleteGoods'])->name('products.goods.delete');
-    Route::get('products/goods/{goods}/detail', [ProductController::class,'showGoodsDetail'])->name('products.goods.detail');
-    
-    // Suppliers / Imports / Returns
-    Route::resource('suppliers', SupplierController::class)->names('suppliers');
-    Route::resource('import', PruchaseImportController::class)->names('import');
-    Route::resource('purchase-orders', PruchaseImportController::class)->names('purchase-orders');
-    Route::resource('purchase-returns', PurchaseReturnsController::class)->names('purchase-returns');
-    Route::get('generate-import-code', [PruchaseImportController::class, 'generateImportCode'])->name('generate-import-code');
-    Route::get('generate-return-code', [PurchaseReturnsController::class, 'generateReturnCode'])->name('generate-return-code');
-    Route::post('process-excel', [PruchaseImportController::class, 'processExcel'])->name('process-excel');
-    Route::post('purchase-returns/process-excel', [PurchaseReturnsController::class, 'processExcel'])->name('purchase-returns.process-excel');
-    Route::get('purchase-returns/create-sample', [PurchaseReturnsController::class, 'createSampleData'])->name('purchase-returns.create-sample');
-    // Supplier Categories
-    Route::prefix('supplier-categories')->name('supplier-categories.')->group(function () {
-        Route::get('/', [SupplierCategoryController::class, 'index'])->name('index');
-        Route::post('/', [SupplierCategoryController::class, 'store'])->name('store');
-        Route::put('/{supplierCategory}', [SupplierCategoryController::class, 'update'])->name('update');
-        Route::delete('/{supplierCategory}', [SupplierCategoryController::class, 'destroy'])->name('destroy');
     });
+
+    // Categories
+    Route::resource('categories', ProductCategoryController::class)->except(['index', 'create', 'edit'])->names('categories');
+    Route::get('categories/modal/data', [ProductCategoryController::class, 'getCategoriesForModal'])->name('categories.modal.data');
+    Route::post('categories', [ProductCategoryController::class, 'store'])->name('categories.store');
+    Route::resource('products', ProductController::class)->except(['index'])->names('products');
 
     // Supporting entities
     // Drug Route
@@ -126,35 +104,39 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::put('products/position/{id}', [SupportingEntityController::class, 'updatePosition'])->name('products.position.update');
     Route::delete('products/position/{id}', [SupportingEntityController::class, 'destroyPosition'])->name('products.position.destroy');
 
-    // Categories
-    Route::resource('categories', ProductCategoryController::class)->except(['index', 'create', 'edit'])->names('categories');
-    Route::get('categories/modal/data', [ProductCategoryController::class, 'getCategoriesForModal'])->name('categories.modal.data');
-    Route::post('categories', [ProductCategoryController::class, 'store'])->name('categories.store');
-    Route::resource('products', ProductController::class)->except(['index'])->names('products');
-
+    // ========================================
+    // ORDER MANAGEMENT ROUTES
+    // ========================================
+    
     // Orders
     Route::resource('orders', OrdersController::class)->names('orders');
     Route::post('orders/{order}/update-status', [OrdersController::class, 'updateStatus'])->name('orders.update-status');
     Route::get('orders/{order}/invoice', [OrdersController::class, 'printInvoice'])->name('orders.invoice');
     Route::post('/orders/{id}/complete', [OrdersController::class, 'markCompleted'])->name('orders.complete');
 
-    // Customers
-    Route::resource('customers', CustomerController::class)->names('customers');
-
-    // Import/Export Excel
-    Route::prefix('import')->name('import.')->group(function () {
-        Route::post('stock-import', [ImportController::class, 'processStockImportExcel'])->name('stock-import');
-        Route::post('orders', [ImportController::class, 'processOrderExcel'])->name('orders');
-        Route::post('products', [ImportController::class, 'processProductExcel'])->name('products');
+    // Service Bookings
+    Route::prefix('service-bookings')->name('service-bookings.')->group(function () {
+        Route::get('/', [ServiceBookingController::class, 'index'])->name('index');
+        Route::get('/{id}', [ServiceBookingController::class, 'show'])->name('show');
+        Route::post('/{id}/confirm', [ServiceBookingController::class, 'confirm'])->name('confirm');
+        Route::post('/{id}/cancel', [ServiceBookingController::class, 'cancel'])->name('cancel');
+        Route::post('/{id}/mark-paid', [ServiceBookingController::class, 'markAsPaid'])->name('mark-paid');
+        Route::post('/{id}/complete', [ServiceBookingController::class, 'complete'])->name('complete');
     });
 
-    // Route::prefix('export')->name('export.')->group(function () {
-    //     Route::get('stock-import', [ExportController::class, 'exportStockImport'])->name('stock-import');
-    //     Route::get('orders', [ExportController::class, 'exportOrders'])->name('orders');
-    //     Route::get('products', [ExportController::class, 'exportProducts'])->name('products');
-    // });
+    // ========================================
+    // CUSTOMER & USER MANAGEMENT ROUTES
+    // ========================================
+    
+    // Customers
+    Route::resource('customers', CustomerController::class)->names('customers');
+    Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+    Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+    Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
+    Route::get('/customers/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
+    Route::delete('/customers/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 
-    // Quản lý bác sĩ
+    // Doctors
     Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
     Route::get('/doctors/api', [DoctorController::class, 'getDoctors'])->name('doctors.api');
     Route::post('/doctors', [DoctorController::class, 'store'])->name('doctors.store');
@@ -164,15 +146,60 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::get('/doctors/generate-code', [DoctorController::class, 'generateDoctorCode'])->name('doctors.generate-code');
     Route::post('/doctors/upload-avatar', [DoctorController::class, 'uploadAvatar'])->name('doctors.upload-avatar');
 
-    // Quản lý khách hàng
-    Route::get('/customers', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'index'])->name('customers.index');
-    Route::post('/customers', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'store'])->name('customers.store');
-    Route::put('/customers/{customer}', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'update'])->name('customers.update');
-    Route::get('/customers/{customer}/edit', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'edit'])->name('customers.edit');
-    Route::delete('/customers/{id}', [\App\Http\Controllers\Admin\Customer\CustomerController::class, 'destroy'])->name('customers.destroy');
+    // ========================================
+    // SUPPLIER & PURCHASE MANAGEMENT ROUTES
+    // ========================================
+    
+    // Suppliers
+    Route::resource('suppliers', SupplierController::class)->names('suppliers');
 
-    // Demo route for Vue Product Management
-    Route::get('/demo', function () {
-        return Inertia::render('Admin/Products/Demo');
-    })->name('demo');
+    // Supplier Categories
+    Route::prefix('supplier-categories')->name('supplier-categories.')->group(function () {
+        Route::get('/', [SupplierCategoryController::class, 'index'])->name('index');
+        Route::post('/', [SupplierCategoryController::class, 'store'])->name('store');
+        Route::put('/{supplierCategory}', [SupplierCategoryController::class, 'update'])->name('update');
+        Route::delete('/{supplierCategory}', [SupplierCategoryController::class, 'destroy'])->name('destroy');
+    });
+
+    // Purchase Orders
+    Route::resource('purchase-orders', PruchaseImportController::class)->names('purchase-orders');
+    Route::get('purchase-orders/api', [PruchaseImportController::class, 'apiIndex'])->name('purchase-orders.api')->middleware('auth');
+    Route::get('purchase-orders/export', [PruchaseImportController::class, 'export'])->name('purchase-orders.export')->middleware('auth');
+    Route::get('generate-import-code', [PruchaseImportController::class, 'generateImportCode'])->name('generate-import-code');
+    Route::post('process-excel', [PruchaseImportController::class, 'processExcel'])->name('process-excel');
+
+    // Purchase Returns
+    Route::resource('purchase-returns', PurchaseReturnsController::class)->names('purchase-returns');
+    Route::get('purchase-returns/export', [PurchaseReturnsController::class, 'export'])->name('purchase-returns.export')->middleware('auth');
+    Route::get('generate-return-code', [PurchaseReturnsController::class, 'generateReturnCode'])->name('generate-return-code');
+    Route::post('purchase-returns/process-excel', [PurchaseReturnsController::class, 'processExcel'])->name('purchase-returns.process-excel');
+    Route::get('purchase-returns/create-sample', [PurchaseReturnsController::class, 'createSampleData'])->name('purchase-returns.create-sample');
+
+    // Import/Export
+    Route::resource('import', PruchaseImportController::class)->names('import');
+    Route::prefix('import')->name('import.')->group(function () {
+        Route::post('stock-import', [ImportController::class, 'processStockImportExcel'])->name('stock-import');
+        Route::post('orders', [ImportController::class, 'processOrderExcel'])->name('orders');
+        Route::post('products', [ImportController::class, 'processProductExcel'])->name('products');
+    });
+
+    // ========================================
+    // LEGACY ROUTES (for backward compatibility)
+    // ========================================
+    
+    // Legacy medicine routes
+    Route::get('products/create-medicine', [ProductController::class, 'createMedicine'])->name('products.createMedicine');
+    Route::post('products/store-medicine', [ProductController::class, 'storeMedicine'])->name('products.storeMedicine');
+    Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('products/store', [ProductController::class, 'store'])->name('products.store');
+    Route::get('products/{id}/detail', [ProductController::class, 'showDetail'])->name('products.detail');
+    
+    // Legacy goods routes
+    Route::get('products/create-goods', [ProductController::class,'createGoods'])->name('products.createGoods');
+    Route::post('products/store-goods', [ProductController::class,'storeGoods'])->name('products.storeGoods');
+    Route::get('products/goods', [ProductController::class,'listGoods'])->name('products.goods.list');
+    Route::get('products/goods/{goods}/edit', [ProductController::class,'editGoods'])->name('products.goods.edit');
+    Route::put('products/goods/{goods}', [ProductController::class,'updateGoods'])->name('products.goods.update');
+    Route::delete('products/goods/{goods}', [ProductController::class,'deleteGoods'])->name('products.goods.delete');
+    Route::get('products/goods/{goods}/detail', [ProductController::class,'showGoodsDetail'])->name('products.goods.detail');
 });

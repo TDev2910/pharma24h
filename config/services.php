@@ -1,6 +1,7 @@
 <?php
 
 return [
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -13,12 +14,15 @@ return [
     |
     */
 
-    'postmark' => [
-        'token' => env('POSTMARK_TOKEN'),
+    'mailgun' => [
+        'domain' => env('MAILGUN_DOMAIN'),
+        'secret' => env('MAILGUN_SECRET'),
+        'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
+        'scheme' => 'https',
     ],
 
-    'resend' => [
-        'key' => env('RESEND_KEY'),
+    'postmark' => [
+        'token' => env('POSTMARK_TOKEN'),
     ],
 
     'ses' => [
@@ -27,15 +31,7 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'slack' => [
-        'notifications' => [
-            'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
-            'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
-        ],
-    ],
-
-    'vnpay' => [
-        'tmn_code' => env('VNPAY_TMN_CODE', 'DEMO'),
-        'hash_secret' => env('VNPAY_HASH_SECRET', 'FVEHQVMRRZSUMIMZMGTVRBSMPTGNGPPO'),
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
     ],
 ];

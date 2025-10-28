@@ -32,7 +32,7 @@
             <div class="dropdown-col">
               <div class="dropdown-title">Tổng quan</div>
               <a href="/admin/orders" class="dropdown-link">Quản lý đơn hàng</a>
-              <a href="/admin/services" class="dropdown-link">Quản lý dịch vụ</a>
+              <a href="/admin/services-dashboard" class="dropdown-link">Quản lý dịch vụ</a>
             </div>
           </div>
         </div>
@@ -74,6 +74,7 @@
 
 <script setup>
 import Toast from 'primevue/toast'
+
 
 // Admin layout component - có thể đặt provide/inject, breadcrumb… ở đây
 </script>
