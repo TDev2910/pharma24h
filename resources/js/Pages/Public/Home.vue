@@ -121,31 +121,25 @@
           </div>
         </div>
       </div>
-      <div class="row g-4 mb-5">
-        <div class="col-6 col-md-6 col-lg-3" v-for="m in medicines" :key="`m-` + m.id">
-          <div class="product-card h-100 d-flex flex-column">
-            <div class="product-image-wrapper">
-              <img :src="m.image_url" :alt="m.ten_thuoc" class="product-image" @error="handleImageError" />
-              <div class="product-badge">
-                <span class="badge-text medicine-badge">Thuốc</span>
-              </div>
-              <div class="product-overlay">
-                <button class="btn-quick-view"><i class="fas fa-eye"></i></button>
-                <button class="btn-add-cart" @click="addToCart({ id: m.id, type: 'medicine' })"><i class="fas fa-shopping-cart"></i></button>
-              </div>
+      <div class="row g-4 product-grid mb-5">
+        <div class="col-lg-3 col-md-4 col-sm-6" v-for="m in medicines" :key="`m-` + m.id">
+          <div class="product-card-modern">
+            <div class="product-img-wrapper" @click="goToProductDetail({ id: m.id, type: 'medicine' })">
+              <img
+                :src="m.image_url || 'https://via.placeholder.com/150'"
+                class="product-img"
+                :alt="m.ten_thuoc"
+                @error="handleImageError"
+              />
             </div>
-            <div class="product-info d-flex flex-column flex-grow-1">
-              <div class="product-category">{{ m.category?.name ?? 'Thuốc' }}</div>
-              <h5 class="product-name">{{ m.ten_thuoc }}</h5>
-              <div class="product-manufacturer"><i class="fas fa-building"></i> {{ m.manufacturer?.name ?? 'Chưa rõ' }}</div>
-              <div class="product-pricing">
-                <span class="current-price">{{ m.gia_ban_formatted ?? '0 VND' }}</span>
+            <div class="product-body">
+              <div class="product-title-modern">{{ m.ten_thuoc }}</div>
+              <div class="product-price-modern">
+                {{ m.gia_ban_formatted }}
               </div>
-              <div class="product-actions mt-auto">
-                <button class="btn-primary-action" @click="addToCart({ id: m.id, type: 'medicine' })">
-                  <i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ
-                </button>
-              </div>
+              <button class="btn btn-primary product-btn" @click="addToCart({ id: m.id, type: 'medicine' })">
+                Thêm vào giỏ
+              </button>
             </div>
           </div>
         </div>
@@ -158,35 +152,29 @@
         <div class="col-12">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="product-section-title mb-0">Vật tư y tế nổi bật</h4>
-              <Link href="/products" class="text-primary text-decoration-none" style="font-size: 18px;">Xem thêm</Link>
+            <Link href="/products" class="text-primary text-decoration-none" style="font-size: 18px;">Xem thêm</Link>
           </div>
         </div>
       </div>
-      <div class="row g-4">
-        <div class="col-6 col-md-6 col-lg-3" v-for="g in goods" :key="`g-` + g.id">
-          <div class="product-card h-100 d-flex flex-column">
-            <div class="product-image-wrapper">
-              <img :src="g.image_url" :alt="g.ten_hang_hoa" class="product-image" @error="handleImageError" />
-              <div class="product-badge">
-                <span class="badge-text goods-badge">Hàng hóa</span>
-              </div>
-              <div class="product-overlay">
-                <button class="btn-quick-view"><i class="fas fa-eye"></i></button>
-                <button class="btn-add-cart" @click="addToCart({ id: g.id, type: 'goods' })"><i class="fas fa-shopping-cart"></i></button>
-              </div>
+      <div class="row g-4 product-grid">
+        <div class="col-lg-3 col-md-4 col-sm-6" v-for="g in goods" :key="`g-` + g.id">
+          <div class="product-card-modern">
+            <div class="product-img-wrapper" @click="goToProductDetail({ id: g.id, type: 'goods' })">
+              <img
+                :src="g.image_url || 'https://via.placeholder.com/150'"
+                class="product-img"
+                :alt="g.ten_hang_hoa"
+                @error="handleImageError"
+              />
             </div>
-            <div class="product-info d-flex flex-column flex-grow-1">
-              <div class="product-category">{{ g.category?.name ?? 'Hàng hóa' }}</div>
-              <h5 class="product-name">{{ g.ten_hang_hoa }}</h5>
-              <div class="product-manufacturer"><i class="fas fa-building"></i> {{ g.manufacturer?.name ?? 'Chưa rõ' }}</div>
-              <div class="product-pricing">
-                <span class="current-price">{{ g.gia_ban_formatted ?? '0 VND' }}</span>
+            <div class="product-body">
+              <div class="product-title-modern">{{ g.ten_hang_hoa }}</div>
+              <div class="product-price-modern">
+                {{ g.gia_ban_formatted }}
               </div>
-              <div class="product-actions mt-auto">
-                <button class="btn-primary-action" @click="addToCart({ id: g.id, type: 'goods' })">
-                  <i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ
-                </button>
-              </div>
+              <button class="btn btn-primary product-btn" @click="addToCart({ id: g.id, type: 'goods' })">
+                Thêm vào giỏ
+              </button>
             </div>
           </div>
         </div>
@@ -243,7 +231,7 @@
 
 <script setup>
 import axios from 'axios'
-import { Link } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
 
 
 const props = defineProps({
@@ -293,6 +281,11 @@ function handleImageError(event) {
   // Fallback image
   event.target.src = '/images/products/đạt.jpg';
 }
+
+//chuyển hướng đến trang chi tiết sản phẩm
+function goToProductDetail(product) {
+  router.visit(`/products/${product.type}/${product.id}`)
+}
 </script>
 
 <style scoped>
@@ -322,5 +315,120 @@ function handleImageError(event) {
 /* Nếu muốn giới hạn tối đa chiều cao (tuỳ chọn) */
 @media (min-width: 1400px) {
   .banner-image { max-height: 520px; } /* chỉnh con số bạn muốn */
+}
+
+/* Product grid styles từ Products.vue */
+.product-grid {
+  margin-bottom: 0;
+}
+
+.product-card-modern {
+  background: #fff;
+  border: 1px solid #e3e6ef;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 16px 16px 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 340px;
+  position: relative;
+  transition: box-shadow 0.2s;
+}
+
+.product-card-modern:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+  cursor: pointer;
+}
+
+.product-img-wrapper {
+  width: 100%;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.product-img {
+  max-width: 100%;
+  max-height: 140px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #f8f9fb;
+}
+
+.product-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.product-title-modern {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #222;
+  margin-bottom: 6px;
+  min-height: 2.4em;
+  max-height: 2.4em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+  line-clamp: 2;
+}
+
+.product-price-modern {
+  color: #1a56db;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.product-btn {
+  width: 100%;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  background: #1a56db;
+  border: none;
+  color: #fff;
+  padding: 8px 0;
+  transition: background 0.2s;
+}
+
+.product-btn:hover {
+  background: #1650cf;
+}
+
+@media (max-width: 991px) {
+  .product-card-modern {
+    min-height: 320px;
+    padding: 12px 8px 10px 8px;
+  }
+  .product-img-wrapper {
+    height: 120px;
+  }
+}
+
+@media (max-width: 767px) {
+  .product-card-modern {
+    min-height: 280px;
+  }
+  .product-img-wrapper {
+    height: 90px;
+  }
+  .product-title-modern {
+    font-size: 0.95rem;
+    min-height: 36px;
+  }
+  .product-price-modern {
+    font-size: 1rem;
+  }
 }
 </style>

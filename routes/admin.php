@@ -33,6 +33,25 @@ Route::prefix('admin')->name('admin.')->group(function ()
         return Inertia::render('Admin/Orders/Services/Dashboard');
     })->name('admin.services.dashboard');
 
+    // Supporting entities
+    // Drug Route
+    Route::get('products/drugroute', [SupportingEntityController::class, 'indexDrugRoute'])->name('products.drugroute.index');
+    Route::post('products/drugroute', [SupportingEntityController::class, 'storeDrugRoute'])->name('products.drugroute.store');
+    Route::put('products/drugroute/{id}', [SupportingEntityController::class, 'updateDrugRoute'])->name('products.drugroute.update');
+    Route::delete('products/drugroute/{id}', [SupportingEntityController::class, 'destroyDrugRoute'])->name('products.drugroute.destroy');
+    
+    // Manufacturer
+    Route::get('products/manufacturer', [SupportingEntityController::class, 'indexManufacturer'])->name('products.manufacturer.index');
+    Route::post('products/manufacturer', [SupportingEntityController::class, 'storeManufacturer'])->name('products.manufacturer.store');
+    Route::put('products/manufacturer/{id}', [SupportingEntityController::class, 'updateManufacturer'])->name('products.manufacturer.update');
+    Route::delete('products/manufacturer/{id}', [SupportingEntityController::class, 'destroyManufacturer'])->name('products.manufacturer.destroy');
+    
+    // Position
+    Route::get('products/position', [SupportingEntityController::class, 'indexPosition'])->name('products.position.index');
+    Route::post('products/position', [SupportingEntityController::class, 'storePosition'])->name('products.position.store');
+    Route::put('products/position/{id}', [SupportingEntityController::class, 'updatePosition'])->name('products.position.update');
+    Route::delete('products/position/{id}', [SupportingEntityController::class, 'destroyPosition'])->name('products.position.destroy');
+
     // ========================================
     // PRODUCT MANAGEMENT ROUTES
     // ========================================
@@ -85,24 +104,7 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::post('categories', [ProductCategoryController::class, 'store'])->name('categories.store');
     Route::resource('products', ProductController::class)->except(['index'])->names('products');
 
-    // Supporting entities
-    // Drug Route
-    Route::get('products/drugroute', [SupportingEntityController::class, 'indexDrugRoute'])->name('products.drugroute.index');
-    Route::post('products/drugroute', [SupportingEntityController::class, 'storeDrugRoute'])->name('products.drugroute.store');
-    Route::put('products/drugroute/{id}', [SupportingEntityController::class, 'updateDrugRoute'])->name('products.drugroute.update');
-    Route::delete('products/drugroute/{id}', [SupportingEntityController::class, 'destroyDrugRoute'])->name('products.drugroute.destroy');
-    
-    // Manufacturer
-    Route::get('products/manufacturer', [SupportingEntityController::class, 'indexManufacturer'])->name('products.manufacturer.index');
-    Route::post('products/manufacturer', [SupportingEntityController::class, 'storeManufacturer'])->name('products.manufacturer.store');
-    Route::put('products/manufacturer/{id}', [SupportingEntityController::class, 'updateManufacturer'])->name('products.manufacturer.update');
-    Route::delete('products/manufacturer/{id}', [SupportingEntityController::class, 'destroyManufacturer'])->name('products.manufacturer.destroy');
-    
-    // Position
-    Route::get('products/position', [SupportingEntityController::class, 'indexPosition'])->name('products.position.index');
-    Route::post('products/position', [SupportingEntityController::class, 'storePosition'])->name('products.position.store');
-    Route::put('products/position/{id}', [SupportingEntityController::class, 'updatePosition'])->name('products.position.update');
-    Route::delete('products/position/{id}', [SupportingEntityController::class, 'destroyPosition'])->name('products.position.destroy');
+  ;
 
     // ========================================
     // ORDER MANAGEMENT ROUTES
