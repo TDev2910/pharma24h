@@ -58,29 +58,43 @@ class HomeController extends Controller
      */
     public function products()
     {
+        //lấy sản phẩm thuộc loại danh mục thuốc
         $medicines = Medicine::with(['category', 'manufacturer'])
             ->where('ban_truc_tiep', true)
             ->latest()
-            ->get();
-
-        $goods = Goods::with(['category', 'manufacturer'])
-            ->where('ban_truc_tiep', true)
-            ->latest()
-            ->get();
-
-        $allProducts = $medicines->merge($goods)
-            ->sortByDesc('created_at')
+            ->get()
             ->map(function ($item) {
                 return [
                     'id' => $item->id,
-                    'name' => $item->ten_thuoc ?? $item->ten_hang_hoa, // medicines dùng ten_thuoc, goods dùng ten_hang_hoa
+                    'name' => $item->ten_thuoc,
                     'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? ''): '',
-                    'unit'  => $item->don_vi_tinh, // đơn vị tính
-                    'image' => $item->image ? asset('storage/' . $item->image) : null,       // cột image trong DB
-                    'type'  => isset($item->ten_thuoc) ? 'medicine' : 'goods'
-            ];
-        })
-        ->values();
+                    'unit'  => $item->don_vi_tinh,
+                    'image' => $item->image ? asset('storage/' . $item->image) : null,
+                    'type'  => 'medicine',
+                    'created_at' => $item->created_at
+                ];
+            });
+
+        //lấy sản phẩm thuộc loại danh mục vật tư y tế
+        $goods = Goods::with(['category', 'manufacturer'])
+            ->where('ban_truc_tiep', true)
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->ten_hang_hoa,
+                    'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? ''): '',
+                    'unit'  => $item->don_vi_tinh,
+                    'image' => $item->image ? asset('storage/' . $item->image) : null,
+                    'type'  => 'goods',
+                    'created_at' => $item->created_at
+                ];
+            });
+
+        $allProducts = $medicines->merge($goods)
+            ->sortByDesc('created_at')
+            ->values();
 
         return Inertia::render('Public/Products', [
             'products' => $allProducts
