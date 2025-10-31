@@ -243,9 +243,11 @@ class GoodsController extends Controller
             'nhom_hang_id'      => 'nullable|exists:product_categories,id',
             'gia_von'           => 'nullable|numeric|min:0',
             'gia_ban'           => 'nullable|numeric|min:0',
+            'gia_khuyen_mai'    => 'nullable|numeric|min:0',
             'quy_cach_dong_goi' => 'nullable|string|max:255',
             'manufacturer_id'   => 'nullable|exists:manufacturers,id',
             'nuoc_san_xuat'     => 'nullable|string|max:100',
+            'ton_khuyen_mai'    => 'nullable|integer|min:0',
             'ton_thap_nhat'     => 'nullable|integer|min:0',
             'ton_cao_nhat'      => 'nullable|integer|min:0',
             'position_id'       => 'nullable|exists:positions,id',
@@ -264,6 +266,18 @@ class GoodsController extends Controller
                 'success' => false,
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
+            ], 422);
+        }
+
+        if (
+            $request->has('ton_khuyen_mai') &&
+            $request->has('ton_kho') &&
+            ((int)$request->input('ton_khuyen_mai') > (int)$request->input('ton_kho'))
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tồn khuyến mãi không được lớn hơn tổng tồn kho',
+                'errors' => ['ton_khuyen_mai' => ['Tồn khuyến mãi không được lớn hơn tổng tồn kho']]
             ], 422);
         }
 

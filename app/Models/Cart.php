@@ -14,7 +14,8 @@ class Cart extends Model
         'quantity',
         'price',
         'name',
-        'image'
+        'image',
+        'is_promotion',
     ];
     
     // Quan hệ với user

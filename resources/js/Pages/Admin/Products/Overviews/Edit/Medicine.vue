@@ -356,6 +356,38 @@
            </div>
          </fieldset>
 
+         <!-- Chương trình khuyến mãi -->
+         <fieldset class="mb-4 border rounded p-3">
+           <legend class="float-none w-auto px-2 fs-6">Chương trình khuyến mãi</legend>
+           <div class="form-row">
+             <div class="form-field">
+               <label class="field-label">Giá khuyến mãi</label>
+               <InputNumber
+                 v-model="formData.gia_khuyen_mai"
+                 mode="currency"
+                 currency="VND"
+                 locale="vi-VN"
+                 class="price-input"
+                 :class="{ 'p-invalid': errors.gia_khuyen_mai }"
+                 :min="0"
+               />
+               <small v-if="errors.gia_khuyen_mai" class="p-error">{{ errors.gia_khuyen_mai[0] }}</small>
+             </div>
+             <div class="form-field">
+               <label class="field-label">Tồn khuyến mãi</label>
+               <InputNumber
+                 v-model="formData.ton_khuyen_mai"
+                 :min="0"
+                 :max="formData.ton_kho"
+                 class="field-input"
+                 :class="{ 'p-invalid': formData.ton_khuyen_mai > formData.ton_kho || errors.ton_khuyen_mai }"
+               />
+               <small v-if="formData.ton_khuyen_mai > formData.ton_kho" class="p-error">Tồn khuyến mãi không vượt tồn kho!</small>
+               <small v-if="errors.ton_khuyen_mai" class="p-error">{{ errors.ton_khuyen_mai[0] }}</small>
+             </div>
+           </div>
+         </fieldset>
+
          <!-- Vị trí, trọng lượng -->
          <div class="form-section" style="margin-top: 20px;">
            <div class="section-header">
@@ -597,7 +629,9 @@ import axios from 'axios'
        don_vi_tinh: '',
        ban_truc_tiep: false,
        mo_ta: '',
-       image: null
+       image: null,
+       gia_khuyen_mai: null,
+       ton_khuyen_mai: 0
      },
      errors: {},
      imagePreview: null,
@@ -768,7 +802,9 @@ import axios from 'axios'
         don_vi_tinh: medicineData.don_vi_tinh || '',
         ban_truc_tiep: medicineData.ban_truc_tiep || false,
         mo_ta: medicineData.mo_ta || '',
-        image: medicineData.image || null
+        image: medicineData.image || null,
+        gia_khuyen_mai: medicineData.gia_khuyen_mai ?? null,
+        ton_khuyen_mai: medicineData.ton_khuyen_mai ?? 0
       }
       
       // Set category selection
@@ -1058,7 +1094,9 @@ import axios from 'axios'
         don_vi_tinh: '',
         ban_truc_tiep: false,
         mo_ta: '',
-        image: null
+        image: null,
+        gia_khuyen_mai: null,
+        ton_khuyen_mai: 0
       }
       this.errors = {}
       this.imagePreview = null

@@ -18,6 +18,8 @@ class Medicine extends Model
         'gia_von',
         'ton_kho',
         'gia_ban',
+        'gia_khuyen_mai',
+        'ton_khuyen_mai',
         'so_dang_ky',
         'hoat_chat',
         'ham_luong',

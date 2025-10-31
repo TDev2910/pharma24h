@@ -23,7 +23,16 @@
             <h1 class="product-name" style="font-style:bold">{{ product.ten_thuoc || product.ten_hang_hoa }}</h1>
             
             <div class="product-price mb-4">
-              <span class="current-price">{{ formatCurrency(product.gia_ban) }}</span>
+              <template v-if="isPromotionActive">
+                <span class="current-price text-danger">{{ formatCurrency(product.gia_khuyen_mai) }}</span>
+                <span class="badge bg-warning text-dark ms-2">KM</span>
+                <span class="original-price ms-3" style="text-decoration:line-through; color:#999; font-size:1rem;">
+                  {{ formatCurrency(product.gia_ban) }}
+                </span>
+              </template>
+              <template v-else>
+                <span class="current-price">{{ formatCurrency(product.gia_ban) }}</span>
+              </template>
               <span class="unit">/{{ product.don_vi_tinh || 'Đơn vị' }}</span>
             </div>
             <h6>Thông tin sản phẩm</h6>
@@ -68,10 +77,11 @@
             <div class="product-actions">
               <button 
                 class="btn btn-primary btn-lg"
-                @click="addToCart"
-                :disabled="!product.ton_kho || product.ton_kho <= 0">
+                @click="addToCartHandler"
+                :disabled="isButtonDisabled"
+                :class="{ 'btn-secondary': isOutOfStock, 'btn-success': isPromotionActive }">
                 <i class="fas fa-cart-plus me-2"></i>
-                {{ product.ton_kho > 0 ? 'Thêm vào giỏ hàng' : 'Hết hàng' }} 
+                {{ buttonLabel }}
               </button>
             </div>
           </div>
@@ -274,32 +284,45 @@ function formatCurrency(amount) {
   }).format(amount)
 }
 
-// thêm sản phẩm vào giỏ hàng
-async function addToCart() {
+const isPromotionActive = computed(() => {
+  return props.product.ton_khuyen_mai > 0 && props.product.gia_khuyen_mai > 0;
+});
+const isOutOfStock = computed(() => {
+  return props.product.ton_kho == 0;
+});
+const displayPrice = computed(() => {
+  return isPromotionActive.value ? props.product.gia_khuyen_mai : props.product.gia_ban;
+});
+const isButtonDisabled = computed(() => {
+  if (isOutOfStock.value) return true;
+  if (isPromotionActive.value && props.product.ton_khuyen_mai == 0) return true;
+  return false;
+});
+const buttonLabel = computed(() => {
+  if (isOutOfStock.value) return 'Hết hàng';
+  if (isPromotionActive.value) return 'Mua với giá khuyến mãi';
+  return 'Thêm vào giỏ hàng';
+});
+
+// Xử lý hàm thêm vào giỏ hàng
+async function addToCartHandler() {
   try {
     const response = await axios.post('/cart/add', { 
       item_id: props.product.id, 
       item_type: props.type, 
-      quantity: 1 
+      quantity: 1,
+      is_promotion: isPromotionActive.value
     });
-    
     if (response.data.success) {
-      // Cập nhật số lượng giỏ hàng
       window.dispatchEvent(new CustomEvent('cart-updated'));
-      
-      // Mở dropdown giỏ hàng
       const cartDropdown = document.querySelector('#cartDropdown');
       if (cartDropdown && typeof bootstrap !== 'undefined') {
         const bsDropdown = new bootstrap.Dropdown(cartDropdown);
         bsDropdown.show();
       }
-      
-      // Load cart items
       if (typeof window.loadCartItems === 'function') {
         setTimeout(() => window.loadCartItems(), 100);
       }
-      
-      // Hiển thị thông báo
       if (typeof window.showNotification === 'function') {
         window.showNotification('Đã thêm vào giỏ hàng!', 'success');
       }

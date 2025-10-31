@@ -30,7 +30,8 @@ class CartController extends Controller
                 $validated = $request->validate([
                     'item_id' => 'required|integer',
                     'item_type' => 'required|in:medicine,goods',
-                    'quantity' => 'integer|min:1|nullable'
+                    'quantity' => 'integer|min:1|nullable',
+                    'is_promotion' => 'boolean|nullable'
                 ]);
             } catch (\Illuminate\Validation\ValidationException $e) {
                 if ($isAjax) {
@@ -49,7 +50,8 @@ class CartController extends Controller
             $result = $this->cartService->addToCart(
                 $validated['item_id'],
                 $validated['item_type'],
-                $quantity
+                $quantity,
+                $validated['is_promotion'] ?? false
             );
             
             if ($isAjax) {

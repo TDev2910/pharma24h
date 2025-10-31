@@ -20,65 +20,80 @@ class CartService
     }
     
     // Thêm sản phẩm vào giỏ hàng
-    public function addToCart($itemId, $itemType, $quantity = 1)
+    public function addToCart($itemId, $itemType, $quantity = 1, $isPromotion = false)
     {
         // Xác định loại sản phẩm và lấy thông tin
-        if ($itemType === 'medicine') // thuốc
-        {
+        if ($itemType === 'medicine') {
             $item = Medicine::find($itemId);
             $itemName = $item->ten_thuoc ?? '';
-        } 
-        elseif ($itemType === 'goods') // hàng hóa
-        {
+        } elseif ($itemType === 'goods') {
             $item = Goods::find($itemId);
             $itemName = $item->ten_hang_hoa ?? '';
-        } 
-        else 
-        {
+        } else {
             return ['success' => false, 'message' => 'Loại sản phẩm không hợp lệ'];
         }
-        
+
         if (!$item) {
             return ['success' => false, 'message' => 'Sản phẩm không tồn tại'];
         }
-        
+
         // Xác định giỏ hàng hiện tại
         $userId = Auth::id();
-        $sessionId = $userId ? null : $this->getSessionId(); //sessionid nếu chưa đăng nhập
-        
-        // Kiểm tra sản phẩm đã có trong giỏ chưa
+        $sessionId = $userId ? null : $this->getSessionId();
+
+        // Tìm cart item cùng loại KM/không KM
         $cartItem = Cart::where([
             'user_id' => $userId,
             'session_id' => $sessionId,
             'item_id' => $itemId,
-            'item_type' => $itemType
+            'item_type' => $itemType,
+            'is_promotion' => $isPromotion,
         ])->first();
-        
-        if ($cartItem) 
-        {
-            // Đã có trong giỏ, tăng số lượng
-            $cartItem->quantity += $quantity;
+
+        // Tính tổng số lượng sau khi cộng dồn
+        $currentQty = $cartItem ? (int)$cartItem->quantity : 0;
+        $requested = $currentQty + (int)$quantity;
+
+        if ($isPromotion) {
+            // Kiểm tra tồn KM và tồn kho tổng theo cộng dồn
+            if ($requested > ($item->ton_khuyen_mai ?? 0)) {
+                $remain = max(0, ($item->ton_khuyen_mai ?? 0) - $currentQty);
+                return ['success' => false, 'message' => "Chỉ còn $remain suất khuyến mãi."];
+            }
+            if ($requested > ($item->ton_kho ?? 0)) {
+                $remain = max(0, ($item->ton_kho ?? 0) - $currentQty);
+                return ['success' => false, 'message' => "Không đủ tồn kho. Chỉ thêm được $remain."];
+            }
+            $price = ($item->gia_khuyen_mai ?? 0) > 0 ? $item->gia_khuyen_mai : $item->gia_ban;
+        } else {
+            // Kiểm tra tồn tổng theo cộng dồn
+            if ($requested > ($item->ton_kho ?? 0)) {
+                $remain = max(0, ($item->ton_kho ?? 0) - $currentQty);
+                return ['success' => false, 'message' => "Không đủ tồn kho. Chỉ thêm được $remain."];
+            }
+            $price = $item->gia_ban;
+        }
+
+        if ($cartItem) {
+            $cartItem->quantity = $requested;
             $cartItem->save();
-        } 
-        else 
-        {
-            // Chưa có trong giỏ, thêm mới
+        } else {
             Cart::create([
                 'user_id' => $userId,
                 'session_id' => $sessionId,
                 'item_id' => $itemId,
                 'item_type' => $itemType,
-                'quantity' => $quantity,
-                'price' => $item->gia_ban,
+                'quantity' => (int)$quantity,
+                'is_promotion' => $isPromotion,
+                'price' => $price,
                 'name' => $itemName,
                 'image' => $item->image
             ]);
         }
-        
-        // tính số lượng && tổng tiền của giỏ hàng
+
         $cartCount = $this->getCartCount();
         $cartTotal = $this->getCartTotal();
-        
+
         return [
             'success' => true,
             'message' => 'Đã thêm vào giỏ hàng',
@@ -178,21 +193,47 @@ class CartService
     public function updateQuantity($cartId, $quantity)
     {
         $cart = Cart::find($cartId);
-        
+
         // Kiểm tra quyền truy cập
         $userId = Auth::id();
         $sessionId = $userId ? null : session('cart_session_id');
-        
+
         if (!$cart || ($cart->user_id != $userId && $cart->session_id != $sessionId)) {
             return [
                 'success' => false,
                 'message' => 'Không tìm thấy sản phẩm trong giỏ hàng'
             ];
         }
-        
-        $cart->quantity = $quantity;
+
+        // Lấy sản phẩm tương ứng
+        if ($cart->item_type === 'medicine') {
+            $p = Medicine::find($cart->item_id);
+        } else {
+            $p = Goods::find($cart->item_id);
+        }
+
+        if (!$p) {
+            return ['success' => false, 'message' => 'Sản phẩm không tồn tại'];
+        }
+
+        $qty = (int)$quantity;
+
+        if ($cart->is_promotion) {
+            if ($qty > ($p->ton_khuyen_mai ?? 0)) {
+                return ['success' => false, 'message' => 'Vượt quá số lượng khuyến mãi hiện còn.'];
+            }
+            if ($qty > ($p->ton_kho ?? 0)) {
+                return ['success' => false, 'message' => 'Không đủ tồn kho tổng.'];
+            }
+        } else {
+            if ($qty > ($p->ton_kho ?? 0)) {
+                return ['success' => false, 'message' => 'Không đủ tồn kho.'];
+            }
+        }
+
+        $cart->quantity = $qty;
         $cart->save();
-        
+
         return [
             'success' => true,
             'message' => 'Cập nhật số lượng thành công',

@@ -17,7 +17,9 @@ class Goods extends Model
         'nhom_hang_id',
         'gia_von',
         'gia_ban',
+        'gia_khuyen_mai',
         'ton_kho',
+        'ton_khuyen_mai',
         'ton_thap_nhat',
         'ton_cao_nhat',
         'quan_ly_theo_lo',
@@ -31,6 +33,8 @@ class Goods extends Model
         'mo_ta',
         'image',
         'khach_dat',
+        'gia_khuyen_mai',
+        'ton_khuyen_mai',
     ];
 
     protected $appends = ['image_url', 'gia_ban_formatted'];

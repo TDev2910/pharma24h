@@ -69,6 +69,8 @@ class CheckoutService
                     'price' => $item->price,
                     'quantity' => $item->quantity,
                     'subtotal' => $item->price * $item->quantity,
+                    'is_promotion' => $item->is_promotion ?? false,
+                    'price_at_purchase' => $item->price,
                 ]);
             }
 
@@ -109,12 +111,24 @@ class CheckoutService
                         throw new \Exception('Không đủ tồn để hoàn thành: '.$p->ten_thuoc);
                     }
                     $p->decrement('ton_kho', $qty);
+                    if (!empty($it->is_promotion)) {
+                        if (($p->ton_khuyen_mai ?? 0) < $qty) {
+                            throw new \Exception('Không đủ tồn KM: '.$p->ten_thuoc);
+                        }
+                        $p->decrement('ton_khuyen_mai', $qty);
+                    }
                 } elseif ($it->item_type === 'goods') {
                     $p = Goods::where('id', $it->item_id)->lockForUpdate()->firstOrFail();
                     if (($p->ton_kho ?? 0) < $qty) {
                         throw new \Exception('Không đủ tồn để hoàn thành: '.$p->ten_hang_hoa);
                     }
                     $p->decrement('ton_kho', $qty);
+                    if (!empty($it->is_promotion)) {
+                        if (($p->ton_khuyen_mai ?? 0) < $qty) {
+                            throw new \Exception('Không đủ tồn KM: '.$p->ten_hang_hoa);
+                        }
+                        $p->decrement('ton_khuyen_mai', $qty);
+                    }
                 }
             }
     

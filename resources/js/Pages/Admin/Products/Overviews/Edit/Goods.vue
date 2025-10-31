@@ -17,7 +17,7 @@
              class="tab-button" 
              :class="{ active: activeTab === 'info' }"
              @click="activeTab = 'info'"
-           >
+>
              Thông tin
            </button>
            <button 
@@ -206,6 +206,38 @@
            </div>
          </fieldset>
 
+        <!-- Chương trình khuyến mãi -->
+        <fieldset class="mb-4 border rounded p-3">
+          <legend class="float-none w-auto px-2 fs-6">Chương trình khuyến mãi</legend>
+          <div class="form-row">
+            <div class="form-field">
+              <label class="field-label">Giá khuyến mãi</label>
+              <InputNumber
+                v-model="formData.gia_khuyen_mai"
+                mode="currency"
+                currency="VND"
+                locale="vi-VN"
+                class="price-input"
+                :class="{ 'p-invalid': errors.gia_khuyen_mai }"
+                :min="0"
+              />
+              <small v-if="errors.gia_khuyen_mai" class="p-error">{{ errors.gia_khuyen_mai[0] }}</small>
+            </div>
+            <div class="form-field">
+              <label class="field-label">Tồn khuyến mãi</label>
+              <InputNumber
+                v-model="formData.ton_khuyen_mai"
+                :min="0"
+                :max="formData.ton_kho"
+                class="field-input"
+                :class="{ 'p-invalid': formData.ton_khuyen_mai > formData.ton_kho || errors.ton_khuyen_mai }"
+              />
+              <small v-if="formData.ton_khuyen_mai > formData.ton_kho" class="p-error">Tồn khuyến mãi không vượt tồn kho!</small>
+              <small v-if="errors.ton_khuyen_mai" class="p-error">{{ errors.ton_khuyen_mai[0] }}</small>
+            </div>
+          </div>
+        </fieldset>
+
          <!-- Thông tin chung -->
          <div class="form-section" style="margin-top: 20px;" >
            <div class="section-header">
@@ -252,8 +284,7 @@
                    class="field-input" style="width: 220px; margin-left: 160px;margin-bottom: -10px;"
                  />
              </div>
-             </div>
-           
+             </div>      
            </div>
 
          </div>
@@ -397,65 +428,65 @@
             </div>
           </div>
         </div>
-     </div>
-   </div>
+      </div>
+    </div>
 
-   <!-- Unit of Calculation Modal -->
-   <UnitOfCalculation 
-     :visible="showUnitModal"
-     @close="showUnitModal = false"
-     @saved="onUnitSaved"
-   />
+    <!-- Unit of Calculation Modal -->
+    <UnitOfCalculation 
+      :visible="showUnitModal"
+      @close="showUnitModal = false"
+      @saved="onUnitSaved"
+    />
 
-   <!-- Manufacturer Modal -->
-   <ModalManufacturer 
-     :visible="showManufacturerModal"
-     @close="showManufacturerModal = false"
-     @manufacturer-added="onManufacturerUpdated"
-     @manufacturer-updated="onManufacturerUpdated"
-   />
+    <!-- Manufacturer Modal -->
+    <ModalManufacturer 
+      :visible="showManufacturerModal"
+      @close="showManufacturerModal = false"
+      @manufacturer-added="onManufacturerUpdated"
+      @manufacturer-updated="onManufacturerUpdated"
+    />
 
-   <!-- Position Modal -->
-   <ModalPosition 
-     :visible="showPositionModal"
-     @close="showPositionModal = false"
-     @position-added="onPositionUpdated"
-     @position-updated="onPositionUpdated"
-   />
+    <!-- Position Modal -->
+    <ModalPosition 
+      :visible="showPositionModal"
+      @close="showPositionModal = false"
+      @position-added="onPositionUpdated"
+      @position-updated="onPositionUpdated"
+    />
 
-   <!-- Error Messages -->
-   <div v-if="Object.keys(errors).length > 0" class="error-messages">
-     <div class="error-title">Vui lòng kiểm tra lại thông tin:</div>
-     <ul class="error-list">
-       <li v-for="(errorMessages, field) in errors" :key="field" class="error-item">
-         {{ errorMessages[0] }}
-       </li>
-     </ul>
-   </div>
+    <!-- Error Messages -->
+    <div v-if="Object.keys(errors).length > 0" class="error-messages">
+      <div class="error-title">Vui lòng kiểm tra lại thông tin:</div>
+      <ul class="error-list">
+        <li v-for="(errorMessages, field) in errors" :key="field" class="error-item">
+          {{ errorMessages[0] }}
+        </li>
+      </ul>
+    </div>
 
-   <template #footer>
-     <div class="flex justify-end gap-2">
-       <Button 
-         type="button" 
-         label="Hủy" 
-         severity="secondary" 
-         @click="closeModal"
-       />
-       <Button 
-         type="button" 
-         label="Lưu hàng hóa" 
-         @click="saveGoods"
-         :loading="loading"
-       />
-     </div>
-   </template>
- </Dialog>
- 
- <!-- Toast for notifications -->
- <Toast />
- </template>
- 
- <script>
+    <template #footer>
+      <div class="flex justify-end gap-2">
+        <Button 
+          type="button" 
+          label="Hủy" 
+          severity="secondary" 
+          @click="closeModal"
+        />
+        <Button 
+          type="button" 
+          label="Lưu hàng hóa" 
+          @click="saveGoods"
+          :loading="loading"
+        />
+      </div>
+    </template>
+  </Dialog>
+  
+  <!-- Toast for notifications -->
+  <Toast />
+  </template>
+  
+  <script>
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
@@ -522,7 +553,9 @@ import axios from 'axios'
        don_vi_tinh: '',
        ban_truc_tiep: false,
        mo_ta: '',
-       image: null
+       image: null,
+       gia_khuyen_mai: null,
+       ton_khuyen_mai: 0,
      },
      errors: {},
      imagePreview: null,
@@ -578,11 +611,25 @@ import axios from 'axios'
         event.preventDefault()
         event.stopPropagation()
       }
-      
+
       this.loading = true
       this.errors = {}
-      
+
       try {
+        // Validate client tồn khuyến mãi
+        if (
+          this.formData.ton_khuyen_mai &&
+          Number(this.formData.ton_khuyen_mai) > Number(this.formData.ton_kho)
+        ) {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Lỗi dữ liệu',
+            detail: 'Tồn khuyến mãi không vượt quá tồn kho!',
+            life: 4000
+          })
+          this.loading = false
+          return
+        }
         
         // Sử dụng FormData giống hệt Create (đồng bộ logic)
         const formData = new FormData()
@@ -687,7 +734,9 @@ import axios from 'axios'
         don_vi_tinh: goodsData.don_vi_tinh || '',
         ban_truc_tiep: goodsData.ban_truc_tiep || false,
         mo_ta: goodsData.mo_ta || '',
-        image: goodsData.image || null
+        image: goodsData.image || null,
+        gia_khuyen_mai: goodsData.gia_khuyen_mai ?? null,
+        ton_khuyen_mai: goodsData.ton_khuyen_mai ?? 0,
       }
       
       // Set category selection
@@ -950,7 +999,9 @@ import axios from 'axios'
         don_vi_tinh: '',
         ban_truc_tiep: false,
         mo_ta: '',
-        image: null
+        image: null,
+        gia_khuyen_mai: null,
+        ton_khuyen_mai: 0,
       }
       this.errors = {}
       this.imagePreview = null

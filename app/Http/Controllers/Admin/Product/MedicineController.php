@@ -232,6 +232,8 @@ class MedicineController extends Controller
             'trong_luong'       => 'nullable|numeric|min:0',
             'don_vi_tinh'       => 'nullable|string',
             'ban_truc_tiep'     => 'nullable',
+            'gia_khuyen_mai'    => 'nullable|numeric|min:0',
+            'ton_khuyen_mai'    => 'nullable|integer|min:0',
         ], [
             'ma_hang.unique'    => 'Mã hàng bạn nhập đang trùng với một sản phẩm khác.',
             'ma_vach.unique'    => 'Mã vạch bạn nhập đang trùng với một sản phẩm khác.',
@@ -243,6 +245,19 @@ class MedicineController extends Controller
                 'success' => false,
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Bắt buộc tồn_khuyen_mai không lớn hơn tồn_kho (nếu tồn_tồn_khuyen_mai có)
+        if (
+            $request->has('ton_khuyen_mai') && 
+            $request->has('ton_kho') && 
+            ((int)$request->input('ton_khuyen_mai') > (int)$request->input('ton_kho'))
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tồn khuyến mãi không được lớn hơn tổng tồn kho',
+                'errors' => ['ton_khuyen_mai' => ['Tồn khuyến mãi không được lớn hơn tổng tồn kho']]
             ], 422);
         }
 
