@@ -92,20 +92,27 @@ class OrdersController extends Controller
             'status' => 'required|in:pending,completed,cancelled',
         ]);
         $order = Order::findOrFail($order);
-        // Nếu chọn Hoàn thành từ modal, gọi service để trừ tồn + set trạng thái
-        if ($request->status === 'completed') {
+        // Nếu cập nhật đơn hàng Hoàn thành từ modal, gọi service để trừ tồn + set trạng thái
+        if ($request->status === 'completed') 
+        {
             $order = $checkout->completeOrder((int) $order->id);
-        } else {
+        } 
+        elseif ($request->status === 'cancelled') 
+        {
+            // Nếu hủy đơn, gọi service để restore tồn kho chính (nếu đã completed)
+            $order = $checkout->cancelOrder((int) $order->id);
+        } 
+        else 
+        {
             // Cập nhật các trạng thái khác không trừ tồn
             $order->order_status = $request->status;
             if ($request->status === 'pending') {
                 $order->payment_status = 'unpaid';
-            } elseif ($request->status === 'cancelled') {
-                $order->payment_status = 'cancelled';
             }
             $order->save();
         }
-        if ($request->ajax() || $request->wantsJson()) {
+        if ($request->ajax() || $request->wantsJson()) 
+        {
             return response()->json([
                 'success' => true,
                 'message' => 'Trạng thái đơn hàng đã được cập nhật thành công!',

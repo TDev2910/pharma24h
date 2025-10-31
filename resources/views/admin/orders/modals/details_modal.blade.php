@@ -245,7 +245,6 @@
             toast.show();
             setTimeout(function(){ $('#'+toastId).remove(); }, 2500);
         }
-
     });
 </script>
 @endpush

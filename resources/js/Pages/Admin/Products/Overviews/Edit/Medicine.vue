@@ -375,7 +375,7 @@
              </div>
              <div class="form-field">
                <label class="field-label">Tồn khuyến mãi</label>
-               <InputNumber
+               <InputText
                  v-model="formData.ton_khuyen_mai"
                  :min="0"
                  :max="formData.ton_kho"
@@ -544,7 +544,7 @@
        />
        <Button 
          type="button" 
-         label="Lưu thuốc" 
+         label="Lưu thông tin" 
          @click="saveMedicine"
          :loading="loading"
        />

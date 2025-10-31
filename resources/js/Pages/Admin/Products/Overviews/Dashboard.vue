@@ -364,6 +364,10 @@
                               <td class="fw-bold">Tồn kho hiện tại:</td>
                               <td><span class="badge bg-primary">{{ slotProps.data.ton_kho || 0 }}</span></td>
                             </tr>
+                            <tr> 
+                              <td class="fw-bold">Tồn khuyến mãi:</td>
+                              <td>{{ slotProps.data.ton_khuyen_mai || '-' }}</td>
+                            </tr>
                             <tr>
                               <td class="fw-bold">Tồn thấp nhất:</td>
                               <td>{{ slotProps.data.ton_thap_nhat || '-' }}</td>

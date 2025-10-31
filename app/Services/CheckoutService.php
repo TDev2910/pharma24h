@@ -72,13 +72,41 @@ class CheckoutService
                     'is_promotion' => $item->is_promotion ?? false,
                     'price_at_purchase' => $item->price,
                 ]);
+
+                // Trừ tồn khuyến mãi ngay khi checkout (nếu là sản phẩm khuyến mãi)
+                if (!empty($item->is_promotion)) {
+                    $qty = (int) $item->quantity;
+                    
+                    if ($item->item_type === 'medicine') 
+                    {
+                        $product = Medicine::where('id', $item->item_id)->lockForUpdate()->firstOrFail();
+                        if (($product->ton_khuyen_mai ?? 0) < $qty) 
+                        {
+                            throw new \Exception('Không đủ tồn khuyến mãi để đặt hàng: '.$product->ten_thuoc);
+                        }
+                        $product->decrement('ton_khuyen_mai', $qty);
+                    } 
+                    elseif ($item->item_type === 'goods') 
+                    {
+                        $product = Goods::where('id', $item->item_id)->lockForUpdate()->firstOrFail();
+                        if (($product->ton_khuyen_mai ?? 0) < $qty) 
+                        {
+                            throw new \Exception('Không đủ tồn khuyến mãi để đặt hàng: '.$product->ten_hang_hoa);
+                        }
+                        $product->decrement('ton_khuyen_mai', $qty);
+                    }
+                }
             }
 
             // Xóa giỏ hàng
-            Cart::where(function($query) use ($userId, $sessionId) {
-                if ($userId) {
+            Cart::where(function($query) use ($userId, $sessionId) 
+            {
+                if ($userId) 
+                {
                     $query->where('user_id', $userId);
-                } else {
+                } 
+                else 
+                {
                     $query->where('session_id', $sessionId);
                 }
             })->delete();
@@ -101,7 +129,8 @@ class CheckoutService
             if ($order->order_status === 'completed') {
                 return $order;
             }
-    
+            
+            //áp dụng chỉ trừ tồn kho chính
             foreach ($order->items as $it) {
                 $qty = (int) $it->quantity;
     
@@ -111,24 +140,13 @@ class CheckoutService
                         throw new \Exception('Không đủ tồn để hoàn thành: '.$p->ten_thuoc);
                     }
                     $p->decrement('ton_kho', $qty);
-                    if (!empty($it->is_promotion)) {
-                        if (($p->ton_khuyen_mai ?? 0) < $qty) {
-                            throw new \Exception('Không đủ tồn KM: '.$p->ten_thuoc);
-                        }
-                        $p->decrement('ton_khuyen_mai', $qty);
-                    }
+                    // KHÔNG trừ ton_khuyen_mai nữa vì đã trừ ở createOrder()
                 } elseif ($it->item_type === 'goods') {
                     $p = Goods::where('id', $it->item_id)->lockForUpdate()->firstOrFail();
                     if (($p->ton_kho ?? 0) < $qty) {
                         throw new \Exception('Không đủ tồn để hoàn thành: '.$p->ten_hang_hoa);
                     }
                     $p->decrement('ton_kho', $qty);
-                    if (!empty($it->is_promotion)) {
-                        if (($p->ton_khuyen_mai ?? 0) < $qty) {
-                            throw new \Exception('Không đủ tồn KM: '.$p->ten_hang_hoa);
-                        }
-                        $p->decrement('ton_khuyen_mai', $qty);
-                    }
                 }
             }
     
@@ -141,7 +159,37 @@ class CheckoutService
         });
     }
 
+    // Restore tồn kho chính khi hủy đơn đã completed
+    public function cancelOrder(int $orderId): Order
+    {
+        return DB::transaction(function () use ($orderId) {
+            $order = Order::with('items')->lockForUpdate()->findOrFail($orderId);
     
+            // Chỉ restore tồn kho chính nếu đơn đã completed
+            if ($order->order_status === 'completed') {
+                foreach ($order->items as $it) {
+                    $qty = (int) $it->quantity;
+        
+                    if ($it->item_type === 'medicine') {
+                        $p = Medicine::where('id', $it->item_id)->lockForUpdate()->firstOrFail();
+                        $p->increment('ton_kho', $qty); // Restore tồn kho chính
+                        // KHÔNG restore ton_khuyen_mai (giữ nguyên)
+                    } elseif ($it->item_type === 'goods') {
+                        $p = Goods::where('id', $it->item_id)->lockForUpdate()->firstOrFail();
+                        $p->increment('ton_kho', $qty); // Restore tồn kho chính
+                        // KHÔNG restore ton_khuyen_mai (giữ nguyên)
+                    }
+                }
+            }
+    
+            // Cập nhật trạng thái đơn hàng
+            $order->order_status = 'cancelled';
+            $order->payment_status = 'cancelled';
+            $order->save();
+    
+            return $order;
+        });
+    }
 
     public function generateVnpayPaymentUrl(Order $order): string
     {
