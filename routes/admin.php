@@ -104,8 +104,6 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::post('categories', [ProductCategoryController::class, 'store'])->name('categories.store');
     Route::resource('products', ProductController::class)->except(['index'])->names('products');
 
-  ;
-
     // ========================================
     // ORDER MANAGEMENT ROUTES
     // ========================================
@@ -164,18 +162,26 @@ Route::prefix('admin')->name('admin.')->group(function ()
     });
 
     // Purchase Orders
-    Route::resource('purchase-orders', PruchaseImportController::class)->names('purchase-orders');
+    // Đặt route export và các route cụ thể TRƯỚC route resource để tránh xung đột
     Route::get('purchase-orders/api', [PruchaseImportController::class, 'apiIndex'])->name('purchase-orders.api')->middleware('auth');
     Route::get('purchase-orders/export', [PruchaseImportController::class, 'export'])->name('purchase-orders.export')->middleware('auth');
+    Route::get('purchase-orders/{id}/export', [PruchaseImportController::class, 'exportSingle'])
+      ->name('purchase-orders.export-single')
+      ->middleware('auth');
+    Route::resource('purchase-orders', PruchaseImportController::class)->names('purchase-orders');
     Route::get('generate-import-code', [PruchaseImportController::class, 'generateImportCode'])->name('generate-import-code');
     Route::post('process-excel', [PruchaseImportController::class, 'processExcel'])->name('process-excel');
 
     // Purchase Returns
-    Route::resource('purchase-returns', PurchaseReturnsController::class)->names('purchase-returns');
+    // Đặt route export và các route cụ thể trước route resource để tránh xung đột
     Route::get('purchase-returns/export', [PurchaseReturnsController::class, 'export'])->name('purchase-returns.export')->middleware('auth');
-    Route::get('generate-return-code', [PurchaseReturnsController::class, 'generateReturnCode'])->name('generate-return-code');
+    Route::get('purchase-returns/{id}/export', [PurchaseReturnsController::class, 'exportSingle'])
+      ->name('purchase-returns.export-single')
+      ->middleware('auth');
     Route::post('purchase-returns/process-excel', [PurchaseReturnsController::class, 'processExcel'])->name('purchase-returns.process-excel');
     Route::get('purchase-returns/create-sample', [PurchaseReturnsController::class, 'createSampleData'])->name('purchase-returns.create-sample');
+    Route::resource('purchase-returns', PurchaseReturnsController::class)->names('purchase-returns');
+    Route::get('generate-return-code', [PurchaseReturnsController::class, 'generateReturnCode'])->name('generate-return-code');
 
     // Import/Export
     Route::resource('import', PruchaseImportController::class)->names('import');

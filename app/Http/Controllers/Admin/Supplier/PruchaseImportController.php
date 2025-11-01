@@ -466,4 +466,62 @@ class PruchaseImportController extends Controller
         $importController = app(\App\Http\Controllers\Admin\ImportController::class);
         return $importController->processStockImportExcel($request);
     }
+
+    /**
+     * Xuất file Excel cho một phiếu đặt hàng cụ thể
+     */
+    public function exportSingle(string $id)
+    {
+        try {
+            // Load với items và product relationship
+            $stockImport = StockImport::with(['supplier', 'items.product'])->findOrFail($id);
+            
+            // Format dữ liệu với chi tiết items
+            $formattedImport = [
+                'import_code' => $stockImport->import_code,
+                'supplier_name' => $stockImport->supplier->ten_nha_cung_cap ?? 'N/A',
+                'ma_nha_cung_cap' => $stockImport->supplier->ma_nha_cung_cap ?? '',
+                'created_at' => $stockImport->created_at,
+                'status' => $stockImport->status,
+                'total_amount' => $stockImport->total_amount,
+                'discount' => $stockImport->discount ?? 0,
+                'supplier_pay' => $stockImport->supplier_pay ?? 0,
+                'supplier_paid' => $stockImport->supplier_paid ?? 0,
+                'note' => $stockImport->note,
+                'items' => $stockImport->items->map(function($item) {
+                    // Sử dụng accessor product_name có sẵn trong model
+                    $productName = 'N/A';
+                    
+                    if ($item->product) {
+                        if ($item->product_type === 'medicine') {
+                            $productName = $item->product->ten_thuoc ?? 'N/A';
+                        } else {
+                            $productName = $item->product->ten_hang_hoa ?? 'N/A';
+                        }
+                    }
+                    
+                    return [
+                        'product_name' => $productName,
+                        'product_type' => $item->product_type === 'medicine' ? 'Thuốc' : 'Hàng hóa',
+                        'quantity' => $item->quantity,
+                        'unit_price' => $item->unit_price,
+                        'discount' => $item->discount ?? 0,
+                        'total_price' => $item->total_price,
+                        'note' => $item->note ?? ''
+                    ];
+                })
+            ];
+            
+            // Export file
+            $exportService = new StockImportExport();
+            return $exportService->downloadSingle($formattedImport, $stockImport->import_code);
+            
+        } catch (\Exception $e) {
+            \Log::error('Export Single Purchase Order Error: ' . $e->getMessage(), [
+                'id' => $id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['message' => 'Lỗi: ' . $e->getMessage()], 500);
+        }
+    }
 }

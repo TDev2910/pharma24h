@@ -233,14 +233,15 @@
                                         
                                         <!-- Action buttons chỉnh sửa và xóa-->
                                         <div class="mt-3">
-                                            <Button 
-                                                icon="pi pi-pencil" 
-                                              label="Chỉnh sửa"
-                                              @click="editPurchaseOrder(slotProps.data)"
+                                          <Button 
+                                              icon="pi pi-file-excel"
+                                              :label="isExporting ? 'Đang xuất...' : 'Xuất file'"
+                                              :disabled="isExporting"
+                                              @click="exportSinglePurchaseOrder(slotProps.data)"
                                               severity="secondary"
-                                              style="background:#007bff; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"/>       
+                                              style="background:#3A6F43; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"/>                                           
                                             <Button 
-                                                icon="pi pi-trash" 
+                                              icon="pi pi-trash" 
                                               label="Xóa"
                                               @click="deletePurchaseOrder(slotProps.data)"
                                               severity="secondary"
@@ -491,6 +492,58 @@ export default {
         this.toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã tải Excel', life: 3000 });
       } catch (error) {
         this.toast.add({ severity: 'error', summary: 'Lỗi', detail: error.message || 'Xuất file thất bại', life: 5000 });
+      } finally {
+        this.isExporting = false;
+      }
+    },
+
+    // Export single purchase order to Excel
+    async exportSinglePurchaseOrder(purchaseOrder) {
+      try {
+        this.isExporting = true;
+        
+        this.toast.add({ 
+          severity: 'info', 
+          summary: 'Đang xuất file...', 
+          detail: 'Vui lòng chờ', 
+          life: 2000 
+        });
+        
+        const url = `/admin/purchase-orders/${purchaseOrder.id}/export`;
+        const res = await axios.get(url, { 
+          responseType: 'blob',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+          }
+        });
+        
+        // Tạo và download file
+        const blob = new Blob([res.data], { 
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+        });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `phieu_dat_hang_${purchaseOrder.order_code}_${new Date().toISOString().split('T')[0]}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(a.href);
+        a.remove();
+        
+        this.toast.add({ 
+          severity: 'success', 
+          summary: 'Thành công', 
+          detail: 'Đã tải Excel', 
+          life: 3000 
+        });
+      } catch (error) {
+        this.toast.add({ 
+          severity: 'error', 
+          summary: 'Lỗi', 
+          detail: error.message || 'Xuất file thất bại', 
+          life: 5000 
+        });
       } finally {
         this.isExporting = false;
       }

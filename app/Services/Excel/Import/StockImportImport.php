@@ -61,6 +61,7 @@ class StockImportImport extends BaseImport
 
     protected function transformData(array $row): array
     {
+        //format dữ liệu vào
         return [
             'import_code' => $row['ma_phieu_nhap'] ?? $row['import_code'] ?? '',
             'supplier_id' => $row['nha_cung_cap_id'] ?? $row['supplier_id'] ?? null,

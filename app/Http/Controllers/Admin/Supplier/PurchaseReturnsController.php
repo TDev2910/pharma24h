@@ -218,7 +218,9 @@ class PurchaseReturnsController extends Controller
             return redirect()->route('admin.purchase-returns.index')
                 ->with('success', 'Phiếu trả hàng đã được xóa thành công!');
                 
-        } catch (\Exception $e) {
+        } 
+        catch (\Exception $e) 
+        {
             return redirect()->route('admin.purchase-returns.index')
                 ->with('error', 'Có lỗi xảy ra khi xóa phiếu trả hàng: ' . $e->getMessage());
         }
@@ -339,5 +341,61 @@ class PurchaseReturnsController extends Controller
             'message' => 'Đã tạo dữ liệu mẫu thành công!',
             'data' => $purchaseReturn
         ]);
+    }
+
+    public function exportSingle(string $id)
+    {
+        try {
+            // SỬA: items.product thay vì items.medicine và items.goods
+            $purchaseReturn = PurchaseReturn::with(['supplier', 'items.product'])->findOrFail($id);
+            
+            // Format dữ liệu với chi tiết items
+            $formattedReturn = [
+                'return_code' => $purchaseReturn->return_code,
+                'supplier_name' => $purchaseReturn->supplier->ten_nha_cung_cap ?? 'N/A',
+                'return_date' => $purchaseReturn->return_date,
+                'status' => $purchaseReturn->status,
+                'total_amount' => $purchaseReturn->total_amount,
+                'total_discount' => $purchaseReturn->total_discount,
+                'remaining_amount' => $purchaseReturn->remaining_amount,
+                'paid_amount' => $purchaseReturn->paid_amount ?? 0,
+                'note' => $purchaseReturn->note,
+                'created_at' => $purchaseReturn->created_at,
+                'items' => $purchaseReturn->items->map(function($item) {
+                    // SỬA: Khởi tạo biến trước, sau đó kiểm tra
+                    $productName = 'N/A';
+                    
+                    if ($item->product) {
+                        if ($item->product_type === 'medicine') {
+                            $productName = $item->product->ten_thuoc ?? 'N/A';
+                        } else {
+                            $productName = $item->product->ten_hang_hoa ?? 'N/A';
+                        }
+                    }
+                    
+                    return [
+                        'product_name' => $productName,
+                        'product_type' => $item->product_type === 'medicine' ? 'Thuốc' : 'Hàng hóa',
+                        'quantity' => $item->quantity,
+                        'unit_price' => $item->unit_price,
+                        'discount' => $item->discount ?? 0,
+                        'total_price' => $item->total_price,
+                        'note' => $item->note ?? ''
+                    ];
+                })
+            ];
+            
+            // Export file
+            $exportService = new PurchaseReturnExport();
+            return $exportService->downloadSingle($formattedReturn, $purchaseReturn->return_code);
+            
+        } catch (\Exception $e) {
+            // Cải thiện error handling để debug
+            \Log::error('Export Single Purchase Return Error: ' . $e->getMessage(), [
+                'id' => $id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['message' => 'Lỗi: ' . $e->getMessage()], 500);
+        }
     }
 }

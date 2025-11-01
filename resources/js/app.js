@@ -15,6 +15,7 @@ import './services/FirebasePhoneAuth'
 import axios from 'axios'
 window.axios = axios
 
+
 // Setup CSRF token
 const token = document.head.querySelector('meta[name="csrf-token"]')
 if (token) {
@@ -76,3 +77,5 @@ document.addEventListener('click', (event) => {
   event.preventDefault()
   router.visit(href)
 })
+
+

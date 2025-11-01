@@ -36,7 +36,6 @@ class ChatbotController extends Controller
                 //lấy api key từ config đã set up sẵn trong file service.php 
                 $apiKey = config('services.gemini.api_key');
                 
-                // ========== THAY ĐỔI: BUILD ENHANCED PROMPT ==========
                 $prompt = $this->buildEnhancedPrompt($userMessage, $productInfo);
                 // ====================================================
                 
@@ -99,6 +98,7 @@ class ChatbotController extends Controller
         
     }
 
+    //xây dựng prompt cho Gemini API trả lời đúng
     private function buildEnhancedPrompt(string $userMessage, string $productInfo): string
     {
         return <<<PROMPT
@@ -109,10 +109,12 @@ class ChatbotController extends Controller
         CÂU HỎI KHÁCH HÀNG: {$userMessage}
 
         HƯỚNG DẪN TRẢ LỜI:
-        1. Nếu có thông tin sản phẩm/dịch vụ ở trên, hãy tư vấn cụ thể dựa trên dữ liệu đó (tên, giá, tồn kho, mô tả).
-        2. Trả lời bằng tiếng Việt, thân thiện và chuyên nghiệp.
-        3. Nếu không có thông tin sản phẩm, hãy tư vấn chung về sức khỏe và đề xuất khách hàng liên hệ hotline 0901645269.
-        4. Luôn kết thúc bằng câu hỏi để tương tác với khách hàng.
+        1. CHỈ trả lời các câu hỏi về lĩnh vực Y TẾ, SỨC KHỎE, THUỐC MEN, DỊCH VỤ Y TẾ, hoặc thông tin nhà thuốc (giờ làm việc, địa chỉ).
+        2. Nếu câu hỏi KHÔNG liên quan đến y tế (ví dụ: thời tiết, thể thao, giải trí, tin tức, v.v.), hãy từ chối một cách lịch sự và đề xuất khách hàng hỏi về sức khỏe hoặc thuốc men.
+        3. Nếu có thông tin sản phẩm/dịch vụ ở trên, hãy tư vấn cụ thể dựa trên dữ liệu đó (tên, giá, tồn kho, mô tả).
+        4. Trả lời bằng tiếng Việt, thân thiện và chuyên nghiệp.
+        5. Nếu không có thông tin sản phẩm, hãy tư vấn chung về sức khỏe và đề xuất khách hàng liên hệ hotline 0901645269.
+        6. Luôn kết thúc bằng câu hỏi để tương tác với khách hàng.
 
         Trả lời:
         PROMPT;
