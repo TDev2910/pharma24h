@@ -174,21 +174,26 @@ class ForgotPasswordController extends Controller
 
     /**
      * Xử lý xác thực OTP qua phone (Firebase)
+     * Nhận uid/idToken nếu OTP đúng, hoặc otp nếu OTP sai để đếm attempts
      */
     public function verifyPhoneOtp(Request $request)
     {
         $request->validate([
             'phone' => 'required|string',
-            'otp' => 'required|string|size:6'
+            'uid' => 'nullable|string',
+            'idToken' => 'nullable|string',
+            'otp' => 'nullable|string|size:6'
         ]);
 
         $phone = $request->phone; // Nhận: "+84376193244"
+        $uid = $request->uid;
+        $idToken = $request->idToken;
         $otp = $request->otp;
 
-        // ✅ SỬA: Chuyển đổi từ +84376193244 thành 0376193244
+        // ✅ Chuyển đổi từ +84376193244 thành 0376193244
         $normalizedPhone = $this->normalizePhoneForDatabase($phone);
         
-        // ✅ SỬA: Tìm user với số điện thoại đã chuẩn hóa
+        // ✅ Tìm user với số điện thoại đã chuẩn hóa
         $user = User::where('phone', $normalizedPhone)->first();
 
         if(!$user) {
@@ -199,35 +204,114 @@ class ForgotPasswordController extends Controller
                 'all_users_phones' => User::pluck('phone')->toArray()
             ]);
             
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Số điện thoại chưa được đăng ký tài khoản'
+                ], 404);
+            }
+            
             return back()->withErrors(['phone' => 'Số điện thoại chưa được đăng ký tài khoản']);
         }
 
-        // Clear session cũ trước
-        session()->forget(['reset_email', 'phone_verification']);
+        // ✅ Nếu có uid và idToken -> OTP đúng (đã verify với Firebase thành công)
+        if ($uid && $idToken) {
+            // Xóa attempts counter và cache cũ
+            $otpKey = "phone_otp_attempts_{$phone}";
+            Cache::forget($otpKey);
+            
+            // Clear session cũ trước
+            session()->forget(['reset_email', 'phone_verification']);
 
-        // Lưu thông tin vào session
-        session([
-            'phone_verification' => [
-                'phone' => $phone,
-                'otp' => $otp,
-                'verified' => true,
-                'user_id' => $user->id
-            ],
-            // ✅ THÊM: Lưu email của user vào reset_email
-            'reset_email' => $user->email
-        ]);
-
-        // Handle AJAX request
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Xác thực thành công!',
-                'redirect_url' => route('password.reset')
+            // Lưu thông tin vào session
+            session([
+                'phone_verification' => [
+                    'phone' => $phone,
+                    'uid' => $uid,
+                    'idToken' => $idToken,
+                    'verified' => true,
+                    'user_id' => $user->id
+                ],
+                // ✅ Lưu email của user vào reset_email
+                'reset_email' => $user->email
             ]);
+
+            // Handle AJAX request - Kiểm tra header để đảm bảo trả về JSON
+            if ($request->ajax() || 
+                $request->wantsJson() || 
+                $request->header('X-Requested-With') === 'XMLHttpRequest' ||
+                $request->header('Accept') === 'application/json' ||
+                str_contains($request->header('Accept', ''), 'application/json')) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Xác thực thành công!',
+                    'redirect_url' => route('password.reset')
+                ]);
+            }
+
+            return redirect()->route('password.reset')
+                ->with('success', 'Xác thực thành công! Vui lòng đặt mật khẩu mới.');
         }
 
-        return redirect()->route('password.reset')
-            ->with('success', 'Xác thực thành công! Vui lòng đặt mật khẩu mới.');
+        // ✅ Nếu không có uid/idToken nhưng có otp -> OTP sai, cần đếm attempts
+        if ($otp) {
+            $otpKey = "phone_otp_attempts_{$phone}";
+            
+            // Lấy số lần thử hiện tại từ cache
+            $otpData = Cache::get($otpKey, [
+                'attempts' => 0,
+                'created_at' => now()
+            ]);
+            
+            // Tăng số lần thử
+            $otpData['attempts']++;
+            
+            // Kiểm tra số lần thử
+            if ($otpData['attempts'] >= 3) {
+                // Xóa cache và yêu cầu gửi lại OTP
+                Cache::forget($otpKey);
+                
+                $errorMessage = 'Bạn đã nhập sai quá 3 lần. Vui lòng yêu cầu mã OTP mới!';
+                
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $errorMessage,
+                        'max_attempts_reached' => true
+                    ], 422);
+                }
+                
+                return back()->withErrors(['otp' => $errorMessage]);
+            }
+            
+            // Lưu lại số lần thử vào cache (5 phút)
+            Cache::put($otpKey, $otpData, 300);
+            
+            $remainingAttempts = 3 - $otpData['attempts'];
+            $errorMessage = "Mã OTP không đúng. Còn {$remainingAttempts} lần thử!";
+            
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $errorMessage,
+                    'remaining_attempts' => $remainingAttempts
+                ], 422);
+            }
+            
+            return back()->withErrors(['otp' => $errorMessage]);
+        }
+
+        // Nếu không có cả uid/idToken và otp -> Lỗi request
+        $errorMessage = 'Thiếu thông tin xác thực. Vui lòng thử lại!';
+        
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => $errorMessage
+            ], 422);
+        }
+        
+        return back()->withErrors(['otp' => $errorMessage]);
     }
 
     private function normalizePhoneForDatabase($phone)
@@ -291,6 +375,27 @@ class ForgotPasswordController extends Controller
             'success' => true,
             'message' => 'Phone saved to session',
             'attempts_remaining' => 3 - $attempts
+        ]);
+    }
+
+    /**
+     * Reset attempts counter khi gửi lại OTP
+     */
+    public function resetPhoneOtpAttempts(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|string'
+        ]);
+
+        $phone = $request->phone;
+        $otpKey = "phone_otp_attempts_{$phone}";
+        
+        // Xóa attempts counter
+        Cache::forget($otpKey);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã reset số lần thử'
         ]);
     }
 

@@ -60,6 +60,7 @@ Route::prefix('password')->name('password.')->group(function () {
     Route::post('/verify-phone', [ForgotPasswordController::class, 'verifyPhoneOtp'])->name('verify.phone.post');
     Route::post('/auth/phone-verify', [ForgotPasswordController::class, 'handlePhoneVerification'])->name('phone.verify');
     Route::post('/save-phone', [ForgotPasswordController::class, 'savePhoneToSession'])->name('save.phone');
+    Route::post('/reset-phone-otp-attempts', [ForgotPasswordController::class, 'resetPhoneOtpAttempts'])->name('phone.otp.reset.attempts');
 });
 
 // Include user routes

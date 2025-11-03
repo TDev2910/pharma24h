@@ -15,7 +15,7 @@
         <p class="verify-subtitle">
             Chúng tôi đã gửi mã OTP đến:<br>
             <strong class="phone-highlight">{{ $phone }}</strong><br>
-            <small class="text-muted">Mã OTP có hiệu lực trong <span id="otp-timer">5:00</span> phút</small>
+                <small class="text-muted">Mã OTP có hiệu lực trong <span id="otp-timer">2:00</span> phút</small>
         </p>
 
         <!-- Error Messages -->
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let countdownTimer = null;
     let countdownValue = 60;
     let otpTimer = null;
-    let otpTimeLeft = 5 * 60; // 5 phút
+    let otpTimeLeft = 2 * 60; // 2 phút (Firebase thực tế chỉ cho phép 1-2 phút)
     
     // Focus first input
     otpInputs[0].focus();
@@ -379,7 +379,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (hiddenOtp.value.length === 6) {
                     verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xác thực...';
                     verifyBtn.disabled = true;
-                    form.submit();
+                    // Use dispatchEvent to ensure event listener is triggered
+                    const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                    form.dispatchEvent(submitEvent);
                 }
             }, 500);
         }
@@ -414,42 +416,184 @@ document.addEventListener('DOMContentLoaded', function() {
         verifyBtn.disabled = true;
         
         try {
-            // Refresh CSRF token trước khi gửi request
-            await refreshCSRFToken();
+            let firebasePhoneAuth;
+            try {
+                const module = await import('{{ Vite::asset("resources/js/services/firebasePhoneAuth.js") }}');
+                firebasePhoneAuth = module.default;
+            } catch (importError) {
+                console.error('Failed to import Firebase service:', importError);
+                throw new Error('Không thể tải Firebase service: ' + importError.message);
+            }
             
-            // Submit form với CSRF token mới
-            const formData = new FormData(form);
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'X-Requested-With': 'XMLHttpRequest'
+            if (!firebasePhoneAuth || typeof firebasePhoneAuth.verifyOTP !== 'function') {
+                throw new Error('Firebase service không hợp lệ: verifyOTP method không tồn tại');
+            }
+            
+            const verifyResult = await firebasePhoneAuth.verifyOTP(otp);
+            
+            if (!verifyResult.success) {
+                // OTP sai - hiển thị lỗi từ Firebase
+                verifyBtn.innerHTML = 'Xác thực mã OTP';
+                verifyBtn.disabled = false;
+                
+                // Show error animation
+                otpInputs.forEach(input => {
+                    input.classList.add('error');
+                });
+                
+                // Refresh CSRF token và gửi thông báo lỗi lên backend để đếm attempts
+                await refreshCSRFToken();
+                
+                // Gửi request lên backend để đếm số lần thử sai
+                const formData = new FormData();
+                formData.append('phone', document.querySelector('input[name="phone"]').value);
+                formData.append('otp', otp);
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+                
+                const errorResponse = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                // Parse error response để lấy thông báo về số lần thử còn lại
+                try {
+                    if (errorResponse.headers.get('content-type')?.includes('application/json')) {
+                        const errorData = await errorResponse.json();
+                        if (errorData.message) {
+                            showMessage(errorData.message, 'error');
+                        } else {
+                            showMessage(verifyResult.message || 'Mã OTP không đúng. Vui lòng thử lại!', 'error');
+                        }
+                    } else {
+                        const errorText = await errorResponse.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(errorText, 'text/html');
+                        const errorElement = doc.querySelector('.alert-danger, .error');
+                        
+                        if (errorElement) {
+                            showMessage(errorElement.textContent.trim(), 'error');
+                        } else {
+                            showMessage(verifyResult.message || 'Mã OTP không đúng. Vui lòng thử lại!', 'error');
+                        }
+                    }
+                } catch (parseError) {
+                    console.error('Error parsing response:', parseError);
+                    showMessage(verifyResult.message || 'Mã OTP không đúng. Vui lòng thử lại!', 'error');
                 }
-            });
+                
+                return;
+            }
             
-            if (response.ok) {
-                // Redirect to next page
-                window.location.href = response.url || '/password/reset-password';
-            } else {
-                // Handle error
-                const data = await response.text();
-                if (data.includes('Phiên làm việc đã hết hạn')) {
-                    showMessage('Phiên làm việc đã hết hạn. Vui lòng thử lại!', 'error');
-                    // Refresh page to get new CSRF token
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
+            // ✅ BƯỚC 2: OTP đúng - Lấy uid và idToken từ Firebase
+            const user = verifyResult.user;
+
+            if (!user) {
+                console.error('User is null after verification');
+                showMessage('Lỗi xác thực: Không thể lấy thông tin người dùng', 'error');
+                verifyBtn.innerHTML = 'Xác thực mã OTP';
+                verifyBtn.disabled = false;
+                return;
+            }
+
+            try {
+                // Lấy idToken
+                const idToken = await user.getIdToken();
+                
+                if (!idToken) {
+                    throw new Error('Không thể lấy idToken từ Firebase');
+                }
+                
+                // ✅ BƯỚC 3: Gửi uid và idToken lên backend
+                await refreshCSRFToken();
+                
+                const formData = new FormData();
+                formData.append('phone', document.querySelector('input[name="phone"]').value);
+                formData.append('uid', user.uid);
+                formData.append('idToken', idToken);
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+                
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const contentType = response.headers.get('content-type') || '';
+                    
+                    if (contentType.includes('application/json')) {
+                        const data = await response.json();
+                        
+                        if (data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                            return;
+                        }
+                    }
+                    
+                    // Fallback: redirect đến trang reset password
+                    window.location.href = '/password/reset-password';
+                    
                 } else {
-                    showMessage('Có lỗi xảy ra, vui lòng thử lại', 'error');
+                    // Handle error
+                    const contentType = response.headers.get('content-type') || '';
+                    
+                    let errorMessage = 'Có lỗi xảy ra, vui lòng thử lại';
+                    
+                    try {
+                        if (contentType.includes('application/json')) {
+                            const errorData = await response.json();
+                            errorMessage = errorData.message || errorMessage;
+                        } else {
+                            const responseText = await response.text();
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(responseText, 'text/html');
+                            const errorElement = doc.querySelector('.alert-danger, .error');
+                            
+                            if (errorElement) {
+                                errorMessage = errorElement.textContent.trim();
+                            }
+                        }
+                    } catch (parseError) {
+                        console.error('Error parsing error response:', parseError);
+                    }
+                    
+                    showMessage(errorMessage, 'error');
+                    verifyBtn.innerHTML = 'Xác thực mã OTP';
+                    verifyBtn.disabled = false;
                 }
+                
+            } catch (tokenError) {
+                console.error('Error getting idToken:', tokenError);
+                showMessage('Lỗi xác thực: ' + (tokenError.message || 'Không thể lấy token'), 'error');
+                verifyBtn.innerHTML = 'Xác thực mã OTP';
+                verifyBtn.disabled = false;
             }
         } catch (error) {
             console.error('Verification error:', error);
-            showMessage('Có lỗi xảy ra, vui lòng thử lại', 'error');
-        } finally {
+            
+            // Hiển thị lỗi chi tiết hơn
+            let errorMessage = 'Có lỗi xảy ra, vui lòng thử lại';
+            if (error.message) {
+                errorMessage = error.message;
+            }
+            
+            showMessage(errorMessage, 'error');
             verifyBtn.innerHTML = 'Xác thực mã OTP';
             verifyBtn.disabled = false;
+            
+            // Clear OTP inputs on error để user có thể nhập lại
+            otpInputs.forEach(input => {
+                input.classList.add('error');
+            });
         }
     });
     
@@ -466,12 +610,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Get phone from hidden input
                 const phone = document.querySelector('input[name="phone"]').value;
                 
+                // ✅ Reset attempts counter trước khi gửi lại OTP
+                try {
+                    await fetch('/password/reset-phone-otp-attempts', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ phone: phone })
+                    });
+                } catch (error) {
+                    console.error('Failed to reset attempts:', error);
+                    // Continue anyway
+                }
+                
                 // Send OTP again
                 const result = await firebasePhoneAuth.sendOTP(phone);
                 
                 if (result.success) {
+                    // Clear OTP inputs
+                    otpInputs.forEach(input => {
+                        input.value = '';
+                        input.classList.remove('filled', 'error');
+                    });
+                    hiddenOtp.value = '';
+                    
+                    // Reset OTP timer
+                    otpTimeLeft = 2 * 60;
+                    const otpTimerElement = document.getElementById('otp-timer');
+                    if (otpTimerElement) {
+                        otpTimerElement.textContent = '2:00';
+                        otpTimerElement.style.color = '';
+                    }
+                    
                     // Show success message
-                    showMessage('Mã OTP đã được gửi lại', 'success');
+                    showMessage('Mã OTP đã được gửi lại. Bạn có 3 lần thử mới.', 'success');
                     startCountdown();
                 } else {
                     showMessage(result.message, 'error');
@@ -503,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
     }
     
-    // Đếm ngược thời gian OTP 5 phút
+    // Đếm ngược thời gian OTP 2 phút
     function startOTPTimer() {
         const otpTimerElement = document.getElementById('otp-timer');
         if (!otpTimerElement) return;
@@ -541,7 +716,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 // Get new CSRF token from meta tag
                 const newToken = document.querySelector('meta[name="csrf-token"]').content;
-                console.log('CSRF token refreshed');
+                // CSRF token refreshed
                 return newToken;
             }
         } catch (error) {

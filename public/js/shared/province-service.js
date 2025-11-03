@@ -5,10 +5,44 @@
 class ProvinceService {
     constructor() {
         this.baseUrl = 'https://provinces.open-api.vn/api';
+        this.baseUrlHttp = 'http://provinces.open-api.vn/api'; // Fallback HTTP endpoint
         this.cache = {
             provinces: null,
             wards: new Map() // Cache wards by province code
         };
+    }
+
+    /**
+     * Helper function để fetch với fallback HTTP khi HTTPS bị lỗi SSL
+     * @param {string} url - URL HTTPS
+     * @returns {Promise<Response>}
+     */
+    async fetchWithFallback(url) {
+        try {
+            // Thử HTTPS trước
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response;
+        } catch (error) {
+            // Nếu lỗi SSL hoặc network, thử HTTP fallback
+            if (error.message.includes('CERT') || error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+                console.warn('HTTPS failed, trying HTTP fallback...', error.message);
+                const httpUrl = url.replace('https://', 'http://');
+                try {
+                    const response = await fetch(httpUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response;
+                } catch (fallbackError) {
+                    console.error('HTTP fallback also failed:', fallbackError);
+                    throw new Error(`Cả HTTPS và HTTP đều thất bại: ${fallbackError.message}`);
+                }
+            }
+            throw error;
+        }
     }
 
     /**
@@ -24,11 +58,7 @@ class ProvinceService {
             }
 
             console.log('Loading provinces from API...');
-            const response = await fetch(`${this.baseUrl}/?depth=1`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            const response = await this.fetchWithFallback(`${this.baseUrl}/?depth=1`);
             
             const data = await response.json();
             
@@ -62,11 +92,7 @@ class ProvinceService {
             }
 
             console.log(`Loading wards for province: ${provinceCode}`);
-            const response = await fetch(`${this.baseUrl}/p/${provinceCode}?depth=3`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            const response = await this.fetchWithFallback(`${this.baseUrl}/p/${provinceCode}?depth=3`);
             
             const data = await response.json();
             

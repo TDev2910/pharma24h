@@ -332,6 +332,35 @@ export default {
       this.wardOptions = []
     },
     
+    // Helper function để fetch với fallback HTTP khi HTTPS bị lỗi SSL
+    async fetchWithFallback(url) {
+      try {
+        // Thử HTTPS trước
+        const response = await fetch(url)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        return response
+      } catch (error) {
+        // Nếu lỗi SSL hoặc network, thử HTTP fallback
+        if (error.message.includes('CERT') || error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+          console.warn('HTTPS failed, trying HTTP fallback...', error.message)
+          const httpUrl = url.replace('https://', 'http://')
+          try {
+            const response = await fetch(httpUrl)
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            return response
+          } catch (fallbackError) {
+            console.error('HTTP fallback also failed:', fallbackError)
+            throw new Error(`Cả HTTPS và HTTP đều thất bại: ${fallbackError.message}`)
+          }
+        }
+        throw error
+      }
+    },
+    
     // API tỉnh thành 
     async loadProvinces() {
       try {
@@ -343,8 +372,8 @@ export default {
             code: province.code
           }))
         } else {
-          //gọi API trực tiếp
-          const response = await fetch('https://provinces.open-api.vn/api/?depth=1')
+          //gọi API trực tiếp với fallback
+          const response = await this.fetchWithFallback('https://provinces.open-api.vn/api/?depth=1')
           const data = await response.json()
           
           this.provinceOptions = data.map(province => ({
@@ -373,7 +402,7 @@ export default {
       }
       
       try {
-        const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+        const response = await this.fetchWithFallback(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
         const data = await response.json()
         
         this.districtOptions = data.districts.map(district => ({
@@ -404,7 +433,7 @@ export default {
       }
       
       try {
-        const response = await fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+        const response = await this.fetchWithFallback(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
         const data = await response.json()
         
         this.wardOptions = data.wards.map(ward => ({

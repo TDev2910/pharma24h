@@ -152,7 +152,8 @@ Route::prefix('admin')->name('admin.')->group(function ()
     
     // Suppliers
     Route::resource('suppliers', SupplierController::class)->names('suppliers');
-
+    Route::get('suppliers/{supplier}/imports', [SupplierController::class, 'getImports'])->name('suppliers.imports');
+    Route::get('suppliers/{supplier}/returns', [SupplierController::class, 'getReturns'])->name('suppliers.returns');
     // Supplier Categories
     Route::prefix('supplier-categories')->name('supplier-categories.')->group(function () {
         Route::get('/', [SupplierCategoryController::class, 'index'])->name('index');

@@ -10,11 +10,11 @@ class FirebasePhoneAuthService {
     constructor() {
         this.recaptchaVerifier = null;
         this.confirmationResult = null;
+        this.otpSentTime = null; // Thêm để track thời gian gửi OTP
     }
 
     /**
      * Khởi tạo reCAPTCHA verifier
-     * @param {string} containerId - ID của element chứa reCAPTCHA
      */
     initRecaptcha(containerId) {
         this.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
@@ -30,20 +30,20 @@ class FirebasePhoneAuthService {
 
     /**
      * Gửi mã OTP đến số điện thoại
-     * @param {string} phoneNumber - Số điện thoại (format: +84xxxxxxxxx)
-     * @returns {Promise} - Promise với confirmation result
      */
     async sendOTP(phoneNumber) {
         try {
-            // Đảm bảo phone number có format đúng
             const formattedPhone = this.formatPhoneNumber(phoneNumber);
             
-            // Gửi OTP
             this.confirmationResult = await signInWithPhoneNumber(
                 auth, 
                 formattedPhone, 
                 this.recaptchaVerifier
             );
+            
+            // Lưu thời gian gửi OTP
+            this.otpSentTime = Date.now();
+            localStorage.setItem('otp_sent_time', this.otpSentTime.toString());
             
             return {
                 success: true,
@@ -59,46 +59,130 @@ class FirebasePhoneAuthService {
     }
 
     /**
-     * Xác thực mã OTP
-     * @param {string} otpCode - Mã OTP người dùng nhập
-     * @returns {Promise} - Promise với kết quả xác thực
+     * Xác thực mã OTP với kiểm tra đầy đủ
      */
     async verifyOTP(otpCode) {
         try {
+            // Trim và validate OTP code
+            const trimmedOtp = String(otpCode).trim();
+            
+            if (!trimmedOtp || trimmedOtp.length === 0) {
+                return {
+                    success: false,
+                    message: 'Vui lòng nhập mã OTP',
+                    error: new Error('Empty OTP code')
+                };
+            }
+            
+            console.log('🔍 Verifying OTP:', {
+                otpLength: trimmedOtp.length,
+                hasConfirmationResult: !!this.confirmationResult,
+                hasVerificationId: !!(this.confirmationResult?.verificationId)
+            });
+            
+            // Kiểm tra confirmationResult tồn tại
+            if (!this.confirmationResult) {
+                console.error('❌ confirmationResult is null');
+                return {
+                    success: false,
+                    message: 'Phiên xác thực đã hết hạn. Vui lòng gửi lại mã OTP!',
+                    expired: true
+                };
+            }
+            
+            if (!this.confirmationResult.verificationId) {
+                console.error('❌ verificationId is missing');
+                return {
+                    success: false,
+                    message: 'Phiên xác thực không hợp lệ. Vui lòng gửi lại mã OTP!',
+                    expired: true
+                };
+            }
+
+            // Kiểm tra OTP có hết hạn không (5 phút)
+            if (this.isOTPExpired()) {
+                console.warn('⚠️ OTP expired');
+                return {
+                    success: false,
+                    message: 'Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới.',
+                    expired: true
+                };
+            }
+
+            console.log('✅ Creating credential with verificationId:', this.confirmationResult.verificationId.substring(0, 20) + '...');
+            
+            // Tạo credential và verify
             const credential = PhoneAuthProvider.credential(
                 this.confirmationResult.verificationId,
-                otpCode
+                trimmedOtp
             );
             
+            console.log('✅ Credential created, signing in...');
+            
             const result = await signInWithCredential(auth, credential);
+            
+            console.log('✅ Firebase signInWithCredential successful');
+            console.log('✅ User UID:', result.user?.uid);
+            
+            // Xóa thời gian OTP sau khi xác thực thành công
+            localStorage.removeItem('otp_sent_time');
+            this.otpSentTime = null;
             
             return {
                 success: true,
                 user: result.user,
                 message: 'Xác thực thành công'
             };
+            
         } catch (error) {
-            console.error('Error verifying OTP:', error);
+            console.error('❌ Error verifying OTP:', error);
+            console.error('❌ Error details:', {
+                code: error.code,
+                message: error.message,
+                stack: error.stack
+            });
+            
+            // Log chi tiết để debug
+            console.log('🔍 OTP Verification Debug:', {
+                otpCode: otpCode,
+                trimmedOtp: String(otpCode).trim(),
+                confirmationResult: !!this.confirmationResult,
+                verificationId: this.confirmationResult?.verificationId?.substring(0, 20) + '...',
+                errorCode: error.code,
+                errorMessage: error.message
+            });
+            
             return {
                 success: false,
-                message: this.getErrorMessage(error.code)
+                message: this.getErrorMessage(error.code),
+                error: error
             };
         }
     }
 
     /**
+     * Kiểm tra OTP có hết hạn không
+     */
+    isOTPExpired() {
+        const sentTime = this.otpSentTime || localStorage.getItem('otp_sent_time');
+        if (!sentTime) return false;
+        
+        const now = Date.now();
+        const timeDiff = now - parseInt(sentTime);
+        const fiveMinutes = 5 * 60 * 1000; // 5 phút
+        
+        return timeDiff > fiveMinutes;
+    }
+
+    /**
      * Format số điện thoại Việt Nam
-     * @param {string} phoneNumber - Số điện thoại
-     * @returns {string} - Số điện thoại đã format
      */
     formatPhoneNumber(phoneNumber) {
         let cleaned = phoneNumber.replace(/\D/g, '');
 
         if(cleaned.startsWith('84')) {
             cleaned = cleaned.substring(2);
-        }
-
-        else if(cleaned.startsWith('0')) {
+        } else if(cleaned.startsWith('0')) {
             cleaned = cleaned.substring(1);
         }
 
@@ -108,8 +192,6 @@ class FirebasePhoneAuthService {
 
     /**
      * Lấy thông báo lỗi thân thiện
-     * @param {string} errorCode - Mã lỗi Firebase
-     * @returns {string} - Thông báo lỗi
      */
     getErrorMessage(errorCode) {
         const errorMessages = {
@@ -120,10 +202,20 @@ class FirebasePhoneAuthService {
             'auth/credential-already-in-use': 'Số điện thoại đã được sử dụng',
             'auth/phone-number-already-exists': 'Số điện thoại đã tồn tại',
             'auth/operation-not-allowed': 'Thao tác không được phép',
-            'auth/network-request-failed': 'Lỗi kết nối mạng'
+            'auth/network-request-failed': 'Lỗi kết nối mạng',
+            'auth/session-expired': 'Phiên làm việc đã hết hạn'
         };
         
         return errorMessages[errorCode] || 'Có lỗi xảy ra, vui lòng thử lại';
+    }
+
+    /**
+     * Reset trạng thái để gửi OTP mới
+     */
+    reset() {
+        this.confirmationResult = null;
+        this.otpSentTime = null;
+        localStorage.removeItem('otp_sent_time');
     }
 
     /**
@@ -134,6 +226,7 @@ class FirebasePhoneAuthService {
             this.recaptchaVerifier.clear();
             this.recaptchaVerifier = null;
         }
+        this.reset();
     }
 }
 
