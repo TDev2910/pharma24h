@@ -15,6 +15,9 @@ use App\Http\Controllers\Admin\Supplier\PruchaseImportController;
 use App\Http\Controllers\Admin\Supplier\PurchaseReturnsController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\OrderServices\ServiceBookingController;
+use App\Http\Controllers\Admin\Employee\EmployeeController;
+use App\Http\Controllers\Admin\Employee\ScheduleController;
+use App\Http\Controllers\Admin\Employee\ShiftController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -145,6 +148,41 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::delete('/doctors/{doctor}', [DoctorController::class, 'destroy'])->name('doctors.destroy');
     Route::get('/doctors/generate-code', [DoctorController::class, 'generateDoctorCode'])->name('doctors.generate-code');
     Route::post('/doctors/upload-avatar', [DoctorController::class, 'uploadAvatar'])->name('doctors.upload-avatar');
+
+    // ========================================
+    // EMPLOYEE MANAGEMENT ROUTES
+    // ========================================
+    
+    // Employees
+    Route::prefix('employees')->name('employees.')->group(function () {
+        Route::get('/', [EmployeeController::class, 'index'])->name('index');
+        Route::get('/api', [EmployeeController::class, 'apiIndex'])->name('api');
+        Route::post('/', [EmployeeController::class, 'store'])->name('store');
+        Route::get('/{employee}', [EmployeeController::class, 'show'])->name('show');
+        Route::get('/{employee}/edit', [EmployeeController::class, 'edit'])->name('edit');
+        Route::put('/{employee}', [EmployeeController::class, 'update'])->name('update');
+        Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->name('destroy');
+        Route::get('/resources/data', [EmployeeController::class, 'getResources'])->name('resources');
+        Route::get('/generate/code', [EmployeeController::class, 'generateCode'])->name('generate-code');
+    });
+
+    // Employee Schedules
+    Route::prefix('employee-schedules')->name('employee-schedules.')->group(function () {
+        Route::get('/', [ScheduleController::class, 'index'])->name('index');
+        Route::get('/api', [ScheduleController::class, 'getSchedules'])->name('api');
+        Route::post('/', [ScheduleController::class, 'store'])->name('store');
+        Route::put('/{schedule}', [ScheduleController::class, 'update'])->name('update');
+        Route::delete('/{schedule}', [ScheduleController::class, 'destroy'])->name('destroy');
+    });
+
+    // Shifts
+    Route::prefix('shifts')->name('shifts.')->group(function () {
+        Route::get('/', [ShiftController::class, 'index'])->name('index');
+        Route::get('/api', [ShiftController::class, 'apiIndex'])->name('api');
+        Route::post('/', [ShiftController::class, 'store'])->name('store');
+        Route::put('/{shift}', [ShiftController::class, 'update'])->name('update');
+        Route::delete('/{shift}', [ShiftController::class, 'destroy'])->name('destroy');
+    });
 
     // ========================================
     // SUPPLIER & PURCHASE MANAGEMENT ROUTES
