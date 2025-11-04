@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ServiceBookingController;
 use App\Http\Controllers\Api\ChatbotController;
+use App\Http\Controllers\Admin\AdminController;
 use Inertia\Inertia;
  
 // 🌐 PUBLIC ROUTES
@@ -71,9 +72,7 @@ require __DIR__.'/store.php';
 
 // Admin routes
 Route::middleware(['auth', 'admin'])->group(function () {   
-    Route::get('/admin/admindashboard', function () {
-        return view('admin.admindashboard');
-    })->name('admin.dashboard');    
+    Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');    
 });
 
 Route::post('/bookings', [ServiceBookingController::class, 'store'])->name('bookings.store');

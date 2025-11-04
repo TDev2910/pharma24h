@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin; 
 
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
-class AdminController extends Controller
+class AdminController extends \App\Http\Controllers\Controller
 {
     public function dashboard()
     {
-        return view('admin.admindashboard');
+        return Inertia::render('Admin/AdminDashboard');
     }
 }

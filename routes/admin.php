@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\Supplier\PruchaseImportController;
 use App\Http\Controllers\Admin\Supplier\PurchaseReturnsController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\OrderServices\ServiceBookingController;
+use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 

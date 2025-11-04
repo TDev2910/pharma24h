@@ -3,7 +3,7 @@
     <!-- Admin Navigation - Giữ nguyên cấu trúc navbar phức tạp -->
     <nav class="navbar">
       <div class="nav-menu">
-        <a href="/admin/dashboard" class="nav-item active">Tổng Quan</a>
+        <a href="/admin/admindashboard" class="nav-item active">Tổng Quan</a>
         <div class="nav-item dropdown">
           <span class="nav-item">Hàng hóa</span>
           <div class="nav-dropdown">
