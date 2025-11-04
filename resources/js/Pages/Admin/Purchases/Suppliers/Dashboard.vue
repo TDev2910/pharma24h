@@ -304,7 +304,7 @@
                       </Column>
                       <Column field="ActionReturn" header="Hành động" style="min-width: 120px;">
                         <template #body="slotProps">
-                          <Button icon="pi pi-eye" label="Xem" @click="viewReturn(slotProps.data)"
+                          <Button icon="pi pi-eye" label="Xem" @click="viewImportDetails(slotProps.data)"
                             severity="info" size="small" class="me-2" />
                         </template>
                       </Column>                    
@@ -350,7 +350,7 @@
                       </Column>
                       <Column field="ActionReturn" header="Hành động" style="min-width: 120px;">
                         <template #body="slotProps">
-                          <Button icon="pi pi-eye" label="Xem" @click="viewReturn(slotProps.data)"
+                          <Button icon="pi pi-eye" label="Xem" @click="viewReturnDetails(slotProps.data)"
                             severity="info" size="small" class="me-2" />
                         </template>
                       </Column>
@@ -375,6 +375,12 @@
     <SupplierCategoryCreateModal :visible="showCreateCategoryModal" @update:visible="showCreateCategoryModal = $event"
       @category-created="handleCategoryCreated" />
 
+    <!-- Import Details Modal -->
+    <ImportDetails :visible="showImportDetails" :importData="selectedImport" @update:visible="showImportDetails = $event" />
+
+    <!-- Return Details Modal -->
+    <ReturnDetails :visible="showReturnDetails" :returnData="selectedReturn" @update:visible="showReturnDetails = $event" />
+
   </div>
 </template>
 
@@ -387,6 +393,8 @@ import Column from 'primevue/column'
 import SupplierCreateModal from './partials/supplier-create-modal.vue'
 import SupplierCategoryCreateModal from './partials/modal-category.vue'
 import SupplierEditModal from './partials/supplier-edit-modal.vue'
+import ImportDetails from './details/ImportDetails.vue'
+import ReturnDetails from './details/ReturnDetails.vue'
 import 'primeicons/primeicons.css'
 import axios from 'axios'
 
@@ -398,6 +406,8 @@ export default {
     Column,
     SupplierCreateModal,
     SupplierEditModal,
+    ImportDetails,
+    ReturnDetails,
     SupplierCategoryCreateModal
   },
 
@@ -424,6 +434,8 @@ export default {
       showCreateModal: false,
       showEditModal: false,
       showCreateCategoryModal: false,
+      showImportDetails: false,
+      showReturnDetails: false,
       editingSupplier: null,
       products: [], // Danh sách imports
       returns: [], // Danh sách returns
@@ -638,6 +650,16 @@ export default {
     openEditModal(supplier) {
       this.editingSupplier = supplier
       this.showEditModal = true
+    },
+
+    viewImportDetails(importData) {
+      this.selectedImport = importData
+      this.showImportDetails = true
+    },
+
+    viewReturnDetails(returnData) {
+      this.selectedReturn = returnData
+      this.showReturnDetails = true
     },
 
     handleSupplierCreated(pageProps = null) {
@@ -1213,6 +1235,20 @@ export default {
 .detail-content .p-button-sm {
   padding: 6px 12px;
   font-size: 12px;
+}
+
+:deep(.p-datatable .p-button),
+:deep(.p-datatable .p-button .p-button-icon),
+:deep(.p-datatable .p-button .p-button-label) {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: inline-flex !important;
+}
+
+/* Đảm bảo button trong DataTable luôn hiển thị */
+:deep(.p-datatable tbody tr td .p-button) {
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 /* Responsive */

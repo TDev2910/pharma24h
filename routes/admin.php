@@ -154,6 +154,8 @@ Route::prefix('admin')->name('admin.')->group(function ()
     Route::resource('suppliers', SupplierController::class)->names('suppliers');
     Route::get('suppliers/{supplier}/imports', [SupplierController::class, 'getImports'])->name('suppliers.imports');
     Route::get('suppliers/{supplier}/returns', [SupplierController::class, 'getReturns'])->name('suppliers.returns');
+    Route::get('imports/{importCode}/items', [SupplierController::class, 'getImportItems'])->name('imports.items'); // ← Thêm dòng này
+    Route::get('returns/{returnCode}/items', [SupplierController::class, 'getReturnItems'])->name('returns.items'); // ← Thêm dòng này
     // Supplier Categories
     Route::prefix('supplier-categories')->name('supplier-categories.')->group(function () {
         Route::get('/', [SupplierCategoryController::class, 'index'])->name('index');

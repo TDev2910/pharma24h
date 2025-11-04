@@ -1075,7 +1075,7 @@
   .products-page {
     padding: 20px;
   }
-  
+
   /* Header Control Bar */
   .header-control-bar {
     background: #fff;
@@ -1085,31 +1085,31 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #e9ecef;
   }
-  
+
   .controls-section {
     display: flex;
     align-items: center;
     gap: 16px;
   }
-  
+
   .title-section h3 {
     color: #2c3e50;
     margin: 0;
     font-weight: 600;
     font-size: 18px;
   }
-  
+
   /* Search Box */
   .search-wrapper {
     flex: 1;
     max-width: 465px;
     min-width: 280px;
   }
-  
+
   .search-wrapper .input-group {
     position: relative;
   }
-  
+
   .search-wrapper .input-group-text {
     position: absolute;
     left: 12px;
@@ -1121,7 +1121,7 @@
     z-index: 2;
     pointer-events: none;
   }
-  
+
   .search-wrapper .form-control {
     padding-left: 40px !important;
     padding-right: 16px !important;
@@ -1132,25 +1132,25 @@
     background: #fff !important;
     transition: all 0.2s ease !important;
   }
-  
+
   .search-wrapper .form-control:focus {
     border-color: #007bff !important;
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1) !important;
     outline: none !important;
   }
-  
+
   /* Utility Options */
   .ultility-options {
     display: flex;
     align-items: center;
     gap: 12px;
   }
-  
+
   .utility-icons {
     display: flex;
     gap: 8px;
   }
-  
+
   .btn {
     background: #f8f9fa;
     border: 1px solid #e9ecef;
@@ -1163,22 +1163,22 @@
     align-items: center;
     justify-content: center;
   }
-  
+
   .btn:hover {
     background: #e9ecef;
     color: #495057;
   }
-  
+
   .btn i {
     font-size: 14px;
   }
-  
+
   /* Dropdown Styles */
   .dropdown {
     position: relative;
     display: inline-block;
   }
-  
+
   .dropdown-menu {
     position: absolute;
     top: 100%;
@@ -1195,13 +1195,13 @@
     transition: all 0.2s ease;
     pointer-events: none;
   }
-  
+
   .dropdown-menu.show {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
   }
-  
+
   .dropdown-item {
     padding: 12px 16px;
     cursor: pointer;
@@ -1213,28 +1213,28 @@
     transition: background-color 0.2s ease;
     border-bottom: 1px solid #f8f9fa;
   }
-  
+
   .dropdown-item:last-child {
     border-bottom: none;
   }
-  
+
   .dropdown-item:hover {
     background-color: #f8f9fa;
     color: #007bff;
   }
-  
+
   .dropdown-item i {
     font-size: 14px;
     width: 16px;
   }
-  
+
   /* Main Content Layout */
   .main-content {
     display: flex;
     gap: 20px;
     margin-top: 20px;
   }
-  
+
   /* Left Sidebar */
   .left-sidebar {
     width: 300px;
@@ -1245,11 +1245,11 @@
     border: 1px solid #e9ecef;
     height: fit-content;
   }
-  
+
   .filter-section {
     margin-bottom: 25px;
   }
-  
+
   .filter-section label {
     color: #2c3e50;
     margin-bottom: 15px;
@@ -1257,18 +1257,18 @@
     font-size: 16px;
     display: block;
   }
-  
+
   .create-link {
     color: #007bff;
     text-decoration: none;
     font-size: 12px;
     margin-left: 10px;
   }
-  
+
   .create-link:hover {
     text-decoration: underline;
   }
-  
+
   /* Category Tree */
   .category-tree-container {
     border: 1px solid #dee2e6;
@@ -1277,43 +1277,57 @@
     max-height: 300px;
     overflow-y: auto;
   }
-  
+
+  :deep(.p-datatable .p-button),
+  :deep(.p-datatable .p-button .p-button-icon),
+  :deep(.p-datatable .p-button .p-button-label) {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-flex !important;
+  }
+
+  /* Đảm bảo button trong DataTable luôn hiển thị */
+  :deep(.p-datatable tbody tr td .p-button) {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
   .category-tree {
     border: none !important;
     background: transparent !important;
   }
-  
+
   /* Tree node styling */
   :deep(.p-tree .p-treenode) {
     border: none;
   }
-  
+
   :deep(.p-tree .p-treenode-content) {
     padding: 8px 12px;
     border-radius: 4px;
     margin: 2px 0;
     transition: all 0.2s ease;
   }
-  
-  
+
+
   :deep(.p-tree .p-treenode-content.p-highlight) {
     background-color: #e3f2fd;
     color: #007bff;
   }
-  
+
   .category-tree-node {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
   }
-  
+
   .category-tree-name {
     font-size: 14px;
     color: #495057;
     flex: 1;
   }
-  
+
   .category-tree-edit {
     background: none;
     border: none;
@@ -1325,16 +1339,16 @@
     opacity: 0;
     margin-left: 8px;
   }
-  
+
   .category-tree-node:hover .category-tree-edit {
     opacity: 1;
   }
-  
+
   .category-tree-edit:hover {
     background: #e9ecef;
     color: #007bff;
   }
-  
+
   /* Selected category info */
   .selected-category-info {
     display: flex;
@@ -1345,7 +1359,7 @@
     border-top: 1px solid #dee2e6;
     border-radius: 0 0 6px 6px;
   }
-  
+
   .btn-reset-category {
     background: none;
     border: none;
@@ -1355,12 +1369,12 @@
     border-radius: 3px;
     transition: all 0.2s ease;
   }
-  
+
   .btn-reset-category:hover {
     background: #e9ecef;
     color: #dc3545;
   }
-  
+
   /* Form Selects */
   .form-select {
     width: 100%;
@@ -1371,18 +1385,18 @@
     background: #fff;
     transition: border-color 0.2s ease;
   }
-  
+
   .form-select:focus {
     border-color: #007bff;
     outline: none;
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
   }
-  
+
   .form-select-sm {
     padding: 6px 10px;
     font-size: 13px;
   }
-  
+
   /* Right Content */
   .right-content {
     flex: 1;
@@ -1393,7 +1407,7 @@
     border: 1px solid #e9ecef;
     min-height: 400px;
   }
-  
+
   /* DataTable Styling */
   :deep(.p-datatable) {
     border-radius: 8px;
@@ -1521,8 +1535,15 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .detail-content .table {
@@ -1573,11 +1594,30 @@
     font-weight: 500;
   }
 
-  .bg-primary { background-color: #007bff !important; color: white; }
-  .bg-success { background-color: #28a745 !important; color: white; }
-  .bg-info { background-color: #17a2b8 !important; color: white; }
-  .bg-warning { background-color: #ffc107 !important; color: black; }
-  .bg-secondary { background-color: #6c757d !important; color: white; }
+  .bg-primary {
+    background-color: #007bff !important;
+    color: white;
+  }
+
+  .bg-success {
+    background-color: #28a745 !important;
+    color: white;
+  }
+
+  .bg-info {
+    background-color: #17a2b8 !important;
+    color: white;
+  }
+
+  .bg-warning {
+    background-color: #ffc107 !important;
+    color: black;
+  }
+
+  .bg-secondary {
+    background-color: #6c757d !important;
+    color: white;
+  }
 
   /* Inventory Input styling */
   .inventory-input {
@@ -1616,7 +1656,7 @@
     .main-content {
       flex-direction: column;
     }
-    
+
     .left-sidebar {
       width: 100%;
     }
@@ -1626,7 +1666,7 @@
       padding: 12px 8px;
       font-size: 13px;
     }
-    
+
     .product-image,
     .no-image {
       width: 32px;
@@ -1669,7 +1709,8 @@
     gap: 10px;
   }
 
-  .checkbox-item, .radio-item {
+  .checkbox-item,
+  .radio-item {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1698,5 +1739,5 @@
   .date-picker-container {
     margin-top: 15px;
   }
-  </style>
+</style>
   

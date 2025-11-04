@@ -834,6 +834,19 @@ export default {
   }
 }
 
+:deep(.p-datatable .p-button),
+:deep(.p-datatable .p-button .p-button-icon),
+:deep(.p-datatable .p-button .p-button-label) {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: inline-flex !important;
+}
+
+/* Đảm bảo button trong DataTable luôn hiển thị */
+:deep(.p-datatable tbody tr td .p-button) {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
 /* Table Container */
 .table-container {
   width: 100%;

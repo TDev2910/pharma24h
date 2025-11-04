@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Inertia\Inertia;
 
 class OrdersController extends Controller
 {
@@ -17,20 +18,70 @@ class OrdersController extends Controller
      */
     public function index(Request $request)
     {
+        // Tính stats
+        $totalOrders = Order::count();
+        $pendingOrders = Order::whereIn('order_status', ['new', 'pending'])->count();
+        $completedOrders = Order::where('order_status', 'completed')->count();
+        
+        // Query với filters
         $query = Order::with('user')->latest();
+        
         if ($request->filled('order_code')) {
             $query->where('order_code', $request->order_code);
         }
+        
         // Lọc theo trạng thái nếu có
         if ($request->filled('status')) {
             $query->where('order_status', $request->status);
         }
+        
         // Lọc theo ngày đặt hàng nếu có
         $from = $request->input('from_date');
         $to = $request->input('to_date');
         $query->filterByDate($from, $to);
-        $orders = $query->get();
-        return view('admin.orders.index', compact('orders'));
+        
+        // Pagination
+        $orders = $query->paginate(10);
+        
+        // Format dữ liệu orders
+        $ordersData = $orders->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'order_code' => $order->order_code,
+                'customer_name' => $order->customer_name ?? 'N/A',
+                'customer_email' => $order->customer_email ?? null,
+                'customer_phone' => $order->customer_phone ?? null,
+                'order_status' => $order->order_status ?? 'pending',
+                'payment_status' => $order->payment_status ?? 'pending',
+                'payment_method' => $order->payment_method ?? 'N/A',
+                'total_amount' => $order->total_amount ?? 0,
+                'created_at' => $order->created_at ? $order->created_at->format('Y-m-d H:i:s') : null,
+                'created_at_formatted' => $order->created_at ? $order->created_at->format('d/m/Y') : 'N/A',
+            ];
+        });
+        
+        return Inertia::render('Admin/Orders/Products/Dashboard', [
+            'stats' => [
+                'totalOrders' => $totalOrders,
+                'pendingOrders' => $pendingOrders,
+                'completedOrders' => $completedOrders
+            ],
+            'orders' => $ordersData,
+            'pagination' => [
+                'current_page' => $orders->currentPage(),
+                'last_page' => $orders->lastPage(),
+                'per_page' => $orders->perPage(),
+                'total' => $orders->total(),
+                'from' => $orders->firstItem(),
+                'to' => $orders->lastItem()
+            ],
+            'filters' => [
+                'order_code' => $request->input('order_code', ''),
+                'status' => $request->input('status', ''),
+                'from_date' => $request->input('from_date', ''),
+                'to_date' => $request->input('to_date', '')
+            ]
+        ]);
     }
 
     /**

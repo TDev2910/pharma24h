@@ -2,248 +2,215 @@
   <div class="services-page">
     <!-- Header Control Bar -->
     <div class="header-control-bar">
-        <div class="controls-section" style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
-            <!-- Title Section -->
-            <div class="title-section">
-                <h4>Danh sách đặt lịch dịch vụ</h4>
+      <div class="controls-section"
+        style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
+        <!-- Title Section -->
+        <div class="title-section">
+          <h4>Danh sách đặt lịch dịch vụ</h4>
+        </div>
+        <!-- Search Section -->
+        <div style="flex:1; display:flex; justify-content:center;">
+          <div class="search-wrapper">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="pi pi-search"></i>
+              </span>
+              <input type="text" class="form-control" style="border-radius:8px;" placeholder="Theo tên khách hàng, SĐT"
+                v-model="searchQuery" @input="debounceSearch">
             </div>
-            <!-- Search Section -->
-            <div style="flex:1; display:flex; justify-content:center;">
-                <div class="search-wrapper">
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="pi pi-search"></i>
-                        </span>
-                        <input type="text" class="form-control" style="border-radius:8px;" placeholder="Theo tên khách hàng, SĐT" v-model="searchQuery" @input="debounceSearch">
-                    </div>
-                </div>
-            </div>
-    <!-- Utility Options -->
-    <div class="ultility-options">
-      <!-- Filter Status -->
-        <Button 
-          icon="pi pi-filter"
-          label="Lọc trạng thái"
-          @click="showFilterModal"
-          severity="secondary"
-          style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"/>
-                <!-- Utility Icons -->
-                <div class="utility-icons">
-                    <button class="btn" title="Chế độ xem">
-                        <i class="pi pi-list"></i>
-                    </button>
-                    <button class="btn" title="Xuất Excel">
-                        <i class="pi pi-file-excel"></i>
-                    </button>
-                    <button class="btn" title="Trợ giúp">
-                        <i class="pi pi-question-circle"></i>
-                    </button>
-                </div>
-            </div>
+          </div>
+        </div>
+        <!-- Utility Options -->
+        <div class="ultility-options">
+          <!-- Filter Status -->
+          <Button icon="pi pi-filter" label="Lọc trạng thái" @click="showFilterModal" severity="secondary"
+            style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
+          <!-- Utility Icons -->
+          <div class="utility-icons">
+            <button class="btn" title="Chế độ xem">
+              <i class="pi pi-list"></i>
+            </button>
+            <button class="btn" title="Xuất Excel">
+              <i class="pi pi-file-excel"></i>
+            </button>
+            <button class="btn" title="Trợ giúp">
+              <i class="pi pi-question-circle"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- DataTable -->
     <div class="table-container">
-        <DataTable 
-            :value="filteredBookings" 
-            v-model:expandedRows="expandedRows"
-            stripedRows
-            responsiveLayout="scroll"
-            tableStyle="min-width: 50rem"
-            :paginator="true"
-            :row="5"
-            :rows="pagination.per_page"
-            :totalRecords="pagination.total"
-            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            :rowsPerPageOptions="[5,10,25]"
-            currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} đặt lịch"
-            dataKey="id"
-            loadingIcon="pi pi-spinner"
-            emptyMessage="Không có dữ liệu đặt lịch">
-            <Column expander style="width: 3rem" />
-            <Column field="customer_name" header="Tên khách hàng"></Column>
-            <Column field="customer_phone" header="Số điện thoại"></Column>
-            <Column field="service_name" header="Dịch vụ">
-                <template #body="slotProps">
-                    <span class="service-name">{{ slotProps.data.service?.ten_dich_vu || '-' }}</span>
-                </template>
-            </Column>
-            <Column field="booking_date" header="Ngày đặt">
-                <template #body="slotProps">
-                    {{ formatDate(slotProps.data.booking_date) }}
-                </template>
-            </Column>
-            <Column field="booking_time" header="Giờ đặt"></Column>
-            <Column field="price" header="Giá">
-                <template #body="slotProps">
-                    {{ formatCurrency(slotProps.data.price) }}
-                </template>
-            </Column>
-            <Column field="status" header="Trạng thái">
-                <template #body="slotProps">
-                    <span :class="getStatusClass(slotProps.data.status)">
-                        {{ getStatusText(slotProps.data.status) }}
-                    </span>
-                </template>
-            </Column>
-            <Column field="payment_status" header="Thanh toán">
-                <template #body="slotProps">
-                    <span :class="getPaymentStatusClass(slotProps.data.payment_status)">
-                        {{ getPaymentStatusText(slotProps.data.payment_status) }}
-                    </span>
-                </template>
-            </Column>
-            
-            <!-- Hiển thị chi tiết thông tin khi nhấn vào dropdown-->
-            <template #expansion="slotProps">
-                <div class="booking-detail-container">
-                  <!-- 2 danh mục thông tin và hành động-->
-                    <div class="detail-tabs">  
-                        <button class="tab active" @click="switchTab('info')">Thông tin</button>
-                        <button class="tab" @click="switchTab('actions')">Hành động</button>
-                    </div>
-                    
-                    <!-- Danh mục thông tin và hành động-->
-                    <div class="detail-content">
-                        <!-- Tab Thông tin -->
-                        <div v-if="activeTab === 'info'" class="tab-content">
-                            <div class="row">
-                                <!-- Thông tin khách hàng -->
-                                <div class="col-md-6">
-                                    <h6 class="text-primary mb-3">
-                                        <i class="pi pi-user"></i>Thông tin khách hàng
-                                    </h6>
-                                    <table class="table table-sm table-borderless">
-                                        <tbody>
-                                            <tr>
-                                                <td class="fw-bold" style="width: 140px;">Tên khách hàng:</td>
-                                                <td>{{ slotProps.data.customer_name }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Số điện thoại:</td>
-                                                <td>{{ slotProps.data.customer_phone }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Email:</td>
-                                                <td>{{ slotProps.data.customer_email || '-' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Ngày đặt:</td>
-                                                <td>{{ formatDate(slotProps.data.booking_date) }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Giờ đặt:</td>
-                                                <td>{{ slotProps.data.booking_time }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                
-                                <!-- Thông tin dịch vụ -->
-                                <div class="col-md-6">
-                                    <h6 class="text-primary mb-3">
-                                        <i class="pi pi-calendar"></i>Thông tin dịch vụ
-                                    </h6>
-                                    <table class="table table-sm table-borderless">
-                                        <tbody>
-                                            <tr>
-                                                <td class="fw-bold">Dịch vụ:</td>
-                                                <td>{{ slotProps.data.service?.ten_dich_vu || '-' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Giá dịch vụ:</td>
-                                                <td>{{ formatCurrency(slotProps.data.price) }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Phương thức thanh toán:</td>
-                                                <td>{{ getPaymentMethodText(slotProps.data.payment_method) }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Trạng thái:</td>
-                                                <td>
-                                                    <span :class="getStatusClass(slotProps.data.status)">
-                                                        {{ getStatusText(slotProps.data.status) }}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Thanh toán:</td>
-                                                <td>
-                                                    <span :class="getPaymentStatusClass(slotProps.data.payment_status)">
-                                                        {{ getPaymentStatusText(slotProps.data.payment_status) }}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Ghi chú:</td>
-                                                <td>{{ slotProps.data.notes || '-' }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Tab Hành động -->
-                        <div v-if="activeTab === 'actions'" class="tab-content">
-                            <div class="action-buttons-container">
-                                <h6 class="text-primary mb-3">
-                                    <i></i>Quản lý đặt lịch
-                                </h6>
-                                
-                                <!-- Action buttons dựa trên trạng thái -->
-                                <div class="action-buttons">
-                                    <Button 
-                                        v-if="slotProps.data.status === 'pending'"
-                                        label="Xác nhận" 
-                                        icon="pi pi-check" 
-                                        class="p-button-success p-button-sm me-2"
-                                        @click="confirmBooking(slotProps.data)" />
-                                    
-                                    <Button 
-                                        v-if="slotProps.data.status === 'confirmed' && slotProps.data.payment_status === 'unpaid'"
-                                        label="Đánh dấu đã thanh toán" 
-                                        icon="pi pi-money-bill" 
-                                        class="p-button-warning p-button-sm me-2"
-                                        @click="markAsPaid(slotProps.data)" />
-                                    
-                                    <Button 
-                                        v-if="slotProps.data.status === 'confirmed' && slotProps.data.payment_status === 'paid'"
-                                        label="Hoàn thành" 
-                                        icon="pi pi-check-circle" 
-                                        class="p-button-success p-button-sm me-2"
-                                        @click="completeBooking(slotProps.data)" />
-                                    
-                                    <Button 
-                                        v-if="['pending', 'confirmed'].includes(slotProps.data.status)"
-                                        label="Hủy" 
-                                        icon="pi pi-times" 
-                                        class="p-button-danger p-button-sm me-2"
-                                        @click="cancelBooking(slotProps.data)" />
-                                    
-                                    <Button 
-                                        label="Xem chi tiết" 
-                                        icon="pi pi-eye" 
-                                        class="p-button-info p-button-sm"
-                                        @click="viewBookingDetail(slotProps.data)" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+      <DataTable :value="filteredBookings" v-model:expandedRows="expandedRows" stripedRows responsiveLayout="scroll"
+        tableStyle="min-width: 50rem" :paginator="true" :row="5" :rows="pagination.per_page"
+        :totalRecords="pagination.total"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+        :rowsPerPageOptions="[5, 10, 25]"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} đặt lịch" dataKey="id"
+        loadingIcon="pi pi-spinner" emptyMessage="Không có dữ liệu đặt lịch">
+        <Column expander style="width: 3rem" />
+        <Column field="customer_name" header="Tên khách hàng"></Column>
+        <Column field="customer_phone" header="Số điện thoại"></Column>
+        <Column field="service_name" header="Dịch vụ">
+          <template #body="slotProps">
+            <span class="service-name">{{ slotProps.data.service?.ten_dich_vu || '-' }}</span>
+          </template>
+        </Column>
+        <Column field="booking_date" header="Ngày đặt">
+          <template #body="slotProps">
+            {{ formatDate(slotProps.data.booking_date) }}
+          </template>
+        </Column>
+        <Column field="booking_time" header="Giờ đặt"></Column>
+        <Column field="price" header="Giá">
+          <template #body="slotProps">
+            {{ formatCurrency(slotProps.data.price) }}
+          </template>
+        </Column>
+        <Column field="status" header="Trạng thái">
+          <template #body="slotProps">
+            <span :class="getStatusClass(slotProps.data.status)">
+              {{ getStatusText(slotProps.data.status) }}
+            </span>
+          </template>
+        </Column>
+        <Column field="payment_status" header="Thanh toán">
+          <template #body="slotProps">
+            <span :class="getPaymentStatusClass(slotProps.data.payment_status)">
+              {{ getPaymentStatusText(slotProps.data.payment_status) }}
+            </span>
+          </template>
+        </Column>
+
+        <!-- Hiển thị chi tiết thông tin khi nhấn vào dropdown-->
+        <template #expansion="slotProps">
+          <div class="booking-detail-container">
+            <!-- 2 danh mục thông tin và hành động-->
+            <div class="detail-tabs">
+              <button class="tab active" @click="switchTab('info')">Thông tin</button>
+              <button class="tab" @click="switchTab('actions')">Hành động</button>
+            </div>
+
+            <!-- Danh mục thông tin và hành động-->
+            <div class="detail-content">
+              <!-- Tab Thông tin -->
+              <div v-if="activeTab === 'info'" class="tab-content">
+                <div class="row">
+                  <!-- Thông tin khách hàng -->
+                  <div class="col-md-6">
+                    <h6 class="text-primary mb-3">
+                      <i class="pi pi-user"></i>Thông tin khách hàng
+                    </h6>
+                    <table class="table table-sm table-borderless">
+                      <tbody>
+                        <tr>
+                          <td class="fw-bold" style="width: 140px;">Tên khách hàng:</td>
+                          <td>{{ slotProps.data.customer_name }}</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Số điện thoại:</td>
+                          <td>{{ slotProps.data.customer_phone }}</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Email:</td>
+                          <td>{{ slotProps.data.customer_email || '-' }}</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Ngày đặt:</td>
+                          <td>{{ formatDate(slotProps.data.booking_date) }}</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Giờ đặt:</td>
+                          <td>{{ slotProps.data.booking_time }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Thông tin dịch vụ -->
+                  <div class="col-md-6">
+                    <h6 class="text-primary mb-3">
+                      <i class="pi pi-calendar"></i>Thông tin dịch vụ
+                    </h6>
+                    <table class="table table-sm table-borderless">
+                      <tbody>
+                        <tr>
+                          <td class="fw-bold">Dịch vụ:</td>
+                          <td>{{ slotProps.data.service?.ten_dich_vu || '-' }}</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Giá dịch vụ:</td>
+                          <td>{{ formatCurrency(slotProps.data.price) }}</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Phương thức thanh toán:</td>
+                          <td>{{ getPaymentMethodText(slotProps.data.payment_method) }}</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Trạng thái:</td>
+                          <td>
+                            <span :class="getStatusClass(slotProps.data.status)">
+                              {{ getStatusText(slotProps.data.status) }}
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Thanh toán:</td>
+                          <td>
+                            <span :class="getPaymentStatusClass(slotProps.data.payment_status)">
+                              {{ getPaymentStatusText(slotProps.data.payment_status) }}
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Ghi chú:</td>
+                          <td>{{ slotProps.data.notes || '-' }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-            </template>
-        </DataTable>
+              </div>
+
+              <!-- Tab Hành động -->
+              <div v-if="activeTab === 'actions'" class="tab-content">
+                <div class="action-buttons-container">
+                  <h6 class="text-primary mb-3">
+                    <i></i>Quản lý đặt lịch
+                  </h6>
+
+                  <!-- Action buttons dựa trên trạng thái -->
+                  <div class="action-buttons">
+                    <Button v-if="slotProps.data.status === 'pending'" label="Xác nhận" icon="pi pi-check"
+                      class="p-button-success p-button-sm me-2" @click="confirmBooking(slotProps.data)" />
+
+                    <Button v-if="slotProps.data.status === 'confirmed' && slotProps.data.payment_status === 'unpaid'"
+                      label="Đánh dấu đã thanh toán" icon="pi pi-money-bill" class="p-button-warning p-button-sm me-2"
+                      @click="markAsPaid(slotProps.data)" />
+
+                    <Button v-if="slotProps.data.status === 'confirmed' && slotProps.data.payment_status === 'paid'"
+                      label="Hoàn thành" icon="pi pi-check-circle" class="p-button-success p-button-sm me-2"
+                      @click="completeBooking(slotProps.data)" />
+
+                    <Button v-if="['pending', 'confirmed'].includes(slotProps.data.status)" label="Hủy"
+                      icon="pi pi-times" class="p-button-danger p-button-sm me-2"
+                      @click="cancelBooking(slotProps.data)" />
+
+                    <Button label="Xem chi tiết" icon="pi pi-eye" class="p-button-info p-button-sm"
+                      @click="viewBookingDetail(slotProps.data)" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </DataTable>
     </div>
 
     <!-- Filter Modal -->
-    <Dialog 
-      v-model:visible="showFilterDialog"
-      header="Lọc theo trạng thái"
-      :style="{ width: '500px' }"
-      modal
-      closable
-    >
+    <Dialog v-model:visible="showFilterDialog" header="Lọc theo trạng thái" :style="{ width: '500px' }" modal closable>
       <div class="filter-content">
         <div class="mb-3">
           <label class="form-label">Trạng thái đặt lịch:</label>
@@ -255,7 +222,7 @@
             <option value="cancelled">Đã hủy</option>
           </select>
         </div>
-        
+
         <div class="mb-3">
           <label class="form-label">Trạng thái thanh toán:</label>
           <select v-model="paymentStatusFilter" class="form-select">
@@ -265,23 +232,23 @@
           </select>
         </div>
       </div>
-      
+
       <template #footer>
         <Button label="Hủy" icon="pi pi-times" @click="showFilterDialog = false" severity="secondary" />
         <Button label="Áp dụng" icon="pi pi-check" @click="applyFilter" />
       </template>
     </Dialog>
-    </div>
-  </template>
-  
-  <script>
+  </div>
+</template>
+
+<script>
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Dialog from 'primevue/dialog'
 import axios from 'axios'
 
-  export default {
+export default {
   name: 'ServicesDashboard',
   components: {
     Button,
@@ -289,7 +256,7 @@ import axios from 'axios'
     Column,
     Dialog
   },
-  
+
   data() {
     return {
       showFilterDialog: false,
@@ -316,8 +283,7 @@ import axios from 'axios'
     filteredBookings() {
       let filtered = this.bookings
 
-      if (this.searchQuery && this.searchQuery.trim()) 
-      {
+      if (this.searchQuery && this.searchQuery.trim()) {
         const term = this.searchQuery.toLowerCase().trim()
         filtered = filtered.filter(booking => {
           const name = (booking.customer_name || '').toLowerCase()
@@ -344,7 +310,7 @@ import axios from 'axios'
   mounted() {
     this.loadBookings()
   },
-  
+
   methods: {
     // Load danh sách booking từ API
     async loadBookings() {
@@ -357,7 +323,7 @@ import axios from 'axios'
             page: this.pagination.current_page
           }
         })
-        
+
         if (response.data.success) {
           this.bookings = response.data.data
           this.pagination = response.data.pagination
@@ -389,7 +355,7 @@ import axios from 'axios'
     showFilterModal() {
       this.showFilterDialog = true
     },
-    
+
     applyFilter() {
       this.showFilterDialog = false
       // Filter sẽ tự động áp dụng thông qua computed property
@@ -569,9 +535,9 @@ import axios from 'axios'
     }
   }
 }
-  </script>
-  
-  <style scoped>
+</script>
+
+<style scoped>
 .services-page {
   padding: 20px;
 }
@@ -671,6 +637,21 @@ import axios from 'axios'
 
 .btn i {
   font-size: 14px;
+}
+
+
+:deep(.p-datatable .p-button),
+:deep(.p-datatable .p-button .p-button-icon),
+:deep(.p-datatable .p-button .p-button-label) {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: inline-flex !important;
+}
+
+/* Đảm bảo button trong DataTable luôn hiển thị */
+:deep(.p-datatable tbody tr td .p-button) {
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 /* Table Container */
@@ -791,8 +772,15 @@ import axios from 'axios'
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .detail-content .table {
@@ -868,7 +856,7 @@ import axios from 'axios'
     padding: 10px;
     margin-top: 10px;
   }
-  
+
   :deep(.p-datatable .p-datatable-thead > tr > th),
   :deep(.p-datatable .p-datatable-tbody > tr > td) {
     padding: 12px 8px;

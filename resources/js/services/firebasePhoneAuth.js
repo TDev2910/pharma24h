@@ -80,7 +80,7 @@ class FirebasePhoneAuthService
             }
         });
 
-        // ✅ THÊM: Xử lý lỗi reCAPTCHA Enterprise với fallback
+        //Xử lý lỗi reCAPTCHA Enterprise với fallback
         this.recaptchaVerifier.render().catch(error => {
             // Fallback to v2
             this.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
@@ -136,7 +136,7 @@ class FirebasePhoneAuthService
             // Đảm bảo phone number có format đúng
             const formattedPhone = this.formatPhoneNumber(phoneNumber);
             
-            // ✅ THÊM: Retry logic cho Firebase 503 errors
+            // Retry logic cho Firebase 503 errors
             let retryCount = 0;
             const maxRetries = 3;
             let lastError;
@@ -172,12 +172,12 @@ class FirebasePhoneAuthService
                 }
             }
             
-            // ✅ THÊM: Kiểm tra confirmationResult sau khi retry
+            //Kiểm tra confirmationResult sau khi retry
             if (!this.confirmationResult) {
                 throw new Error('Không thể kết nối đến Firebase sau nhiều lần thử');
             }
             
-            // ✅ THÊM: Lưu verificationId vào localStorage để khôi phục sau khi reload
+            // Lưu verificationId vào localStorage để khôi phục sau khi reload
             if (this.confirmationResult && this.confirmationResult.verificationId) {
                 this.saveConfirmationResult(
                     this.confirmationResult.verificationId,
@@ -196,7 +196,7 @@ class FirebasePhoneAuthService
         } catch (error) {
             console.error('Error sending OTP:', error);
             
-            // ✅ THÊM: Xử lý lỗi cụ thể
+            //Xử lý lỗi và thông báo các lỗi trong console
             let errorMessage = 'Có lỗi xảy ra khi gửi OTP';
             
             if (error.code === 'auth/error-code:-39' || error.message.includes('503')) {
@@ -235,12 +235,12 @@ class FirebasePhoneAuthService
                 };
             }
             
-            // ✅ THÊM: Khôi phục confirmationResult nếu chưa có
+            // Khôi phục confirmationResult nếu chưa có
             if (!this.confirmationResult || !this.confirmationResult.verificationId) {
                 this.restoreConfirmationResult();
             }
             
-            // ✅ THÊM: Kiểm tra confirmationResult tồn tại
+            //Kiểm tra confirmationResult tồn tại
             if (!this.confirmationResult) {
                 return {
                     success: false,
@@ -310,7 +310,7 @@ class FirebasePhoneAuthService
         // Ví dụ: "840901645269" -> "901645269"
         const last9Digits = cleaned.slice(-9);
 
-        // ✅ THÊM: Validation phone number
+        //Validation phone number
         if (last9Digits.length !== 9) {
             throw new Error('Số điện thoại không hợp lệ. Vui lòng nhập đúng 10 số.');
         }

@@ -7,8 +7,11 @@ use Illuminate\Http\Request;
 use App\Models\SupplierCategory;
 use App\Models\Supplier;
 use App\Models\StockImport;
+use App\Models\StockImportItem;
 use App\Models\Inventory\PurchaseReturn;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Medicine;
+use App\Models\Goods;
 use Inertia\Inertia;
 
 class SupplierController extends Controller
@@ -98,103 +101,103 @@ class SupplierController extends Controller
      * Store a newly created supplier
      */
     public function store(Request $request)
-{
-    try {
-        $validated = $request->validate([
-            'ten_nha_cung_cap' => 'required|string|max:255',
-            'ma_nha_cung_cap' => 'required|string|max:50|unique:suppliers',
-            'dien_thoai' => 'required|string|max:20',
-            'email' => 'nullable|email|max:100|unique:suppliers',
-            'dia_chi' => 'required|string',
-            'khu_vuc' => 'required|string|max:100',
-            'phuong_xa' => 'required|string|max:100',
-            'nhom_nha_cung_cap_id' => 'required|exists:supplier_categories,id',
-            'ghi_chu' => 'nullable|string',
-            'ten_cong_ty' => 'nullable|string|max:255|unique:suppliers',
-            'ma_so_thue' => 'nullable|string|max:20|unique:suppliers',   
-            'trang_thai' => 'nullable|in:active,inactive'
-        ], [
-            'ma_nha_cung_cap.unique' => 'Mã nhà cung cấp đã tồn tại!',
-            'email.unique' => 'Email đã được sử dụng!',
-            'ten_cong_ty.unique' => 'Tên công ty đã tồn tại trong hệ thống!',
-            'ma_so_thue.unique' => 'Mã số thuế đã được đăng ký!'
-        ]);
+    {
+        try {
+            $validated = $request->validate([
+                'ten_nha_cung_cap' => 'required|string|max:255',
+                'ma_nha_cung_cap' => 'required|string|max:50|unique:suppliers',
+                'dien_thoai' => 'required|string|max:20',
+                'email' => 'nullable|email|max:100|unique:suppliers',
+                'dia_chi' => 'required|string',
+                'khu_vuc' => 'required|string|max:100',
+                'phuong_xa' => 'required|string|max:100',
+                'nhom_nha_cung_cap_id' => 'required|exists:supplier_categories,id',
+                'ghi_chu' => 'nullable|string',
+                'ten_cong_ty' => 'nullable|string|max:255|unique:suppliers',
+                'ma_so_thue' => 'nullable|string|max:20|unique:suppliers',   
+                'trang_thai' => 'nullable|in:active,inactive'
+            ], [
+                'ma_nha_cung_cap.unique' => 'Mã nhà cung cấp đã tồn tại!',
+                'email.unique' => 'Email đã được sử dụng!',
+                'ten_cong_ty.unique' => 'Tên công ty đã tồn tại trong hệ thống!',
+                'ma_so_thue.unique' => 'Mã số thuế đã được đăng ký!'
+            ]);
 
-        // Cảnh báo nếu tên nhà cung cấp trùng nhau
-        $existingName = Supplier::where('ten_nha_cung_cap', $validated['ten_nha_cung_cap'])->first();
-        if ($existingName) {
-            session()->flash('warning', 'Đã có nhà cung cấp cùng tên: ' . $existingName->ma_nha_cung_cap);
-        }
+            // Cảnh báo nếu tên nhà cung cấp trùng nhau
+            $existingName = Supplier::where('ten_nha_cung_cap', $validated['ten_nha_cung_cap'])->first();
+            if ($existingName) {
+                session()->flash('warning', 'Đã có nhà cung cấp cùng tên: ' . $existingName->ma_nha_cung_cap);
+            }
 
-        // Set default status nếu không có
-        if (!isset($validated['trang_thai'])) {
-            $validated['trang_thai'] = 'active';
-        }
+            // Set default status nếu không có
+            if (!isset($validated['trang_thai'])) {
+                $validated['trang_thai'] = 'active';
+            }
 
-        // Load relationship để trả về đầy đủ thông tin
-        $supplier = Supplier::with('category')->create($validated);
+            // Load relationship để trả về đầy đủ thông tin
+            $supplier = Supplier::with('category')->create($validated);
 
-        // Kiểm tra nếu là Inertia request
-        if ($request->header('X-Inertia')) {
-            // Trả về redirect cho Inertia (sẽ trigger onSuccess callback trong Vue)
-            // Supplier mới sẽ được load lại trong index() method
+            // Kiểm tra nếu là Inertia request
+            if ($request->header('X-Inertia')) {
+                // Trả về redirect cho Inertia (sẽ trigger onSuccess callback trong Vue)
+                // Supplier mới sẽ được load lại trong index() method
+                return redirect()->route('admin.suppliers.index')
+                    ->with('success', 'Nhà cung cấp đã được thêm thành công');
+            }
+
+            // Nếu là AJAX request thông thường (không phải Inertia)
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Nhà cung cấp đã được thêm thành công',
+                    'data' => $supplier
+                ], 201);
+            }
+
+            // Default: redirect với flash message
             return redirect()->route('admin.suppliers.index')
                 ->with('success', 'Nhà cung cấp đã được thêm thành công');
-        }
-
-        // Nếu là AJAX request thông thường (không phải Inertia)
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Nhà cung cấp đã được thêm thành công',
-                'data' => $supplier
-            ], 201);
-        }
-
-        // Default: redirect với flash message
-        return redirect()->route('admin.suppliers.index')
-            ->with('success', 'Nhà cung cấp đã được thêm thành công');
+                
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Validation errors - Inertia tự động xử lý và trigger onError
+            if ($request->header('X-Inertia')) {
+                throw $e; // Inertia sẽ tự động handle validation errors
+            }
             
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        // Validation errors - Inertia tự động xử lý và trigger onError
-        if ($request->header('X-Inertia')) {
-            throw $e; // Inertia sẽ tự động handle validation errors
-        }
-        
-        // AJAX validation error
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Dữ liệu không hợp lệ',
-                'errors' => $e->errors()
-            ], 422);
-        }
-        
-        throw $e;
-        
-    } catch (\Exception $e) {
-        \Log::error('Error creating supplier: ' . $e->getMessage());
-        
-        // Inertia request - trả về redirect với errors
-        if ($request->header('X-Inertia')) {
+            // AJAX validation error
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Dữ liệu không hợp lệ',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            
+            throw $e;
+            
+        } catch (\Exception $e) {
+            \Log::error('Error creating supplier: ' . $e->getMessage());
+            
+            // Inertia request - trả về redirect với errors
+            if ($request->header('X-Inertia')) {
+                return redirect()->back()
+                    ->withErrors(['general' => 'Có lỗi xảy ra: ' . $e->getMessage()])
+                    ->withInput();
+            }
+            
+            // AJAX error
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi thêm nhà cung cấp: ' . $e->getMessage()
+                ], 500);
+            }
+            
             return redirect()->back()
-                ->withErrors(['general' => 'Có lỗi xảy ra: ' . $e->getMessage()])
+                ->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
                 ->withInput();
         }
-        
-        // AJAX error
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Có lỗi xảy ra khi thêm nhà cung cấp: ' . $e->getMessage()
-            ], 500);
-        }
-        
-        return redirect()->back()
-            ->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
-            ->withInput();
     }
-}
 
     /**
      * Display the specified supplier
@@ -299,5 +302,152 @@ class SupplierController extends Controller
             'success' => true,
             'data' => $formattedReturns
         ]);
+    }
+
+    //import details
+    public function getImportItems($importCode)
+    {
+        try {
+            // Tìm StockImport theo import_code
+            $stockImport = StockImport::where('import_code', $importCode)
+                ->with('items')
+                ->first();
+            
+            if (!$stockImport) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không tìm thấy phiếu nhập hàng'
+                ], 404);
+            }
+            
+            // Load products manually cho mỗi item
+            $medicineIds = [];
+            $goodsIds = [];
+            
+            foreach ($stockImport->items as $item) {
+                if ($item->product_type === 'medicine') {
+                    $medicineIds[] = $item->product_id;
+                } else {
+                    $goodsIds[] = $item->product_id;
+                }
+            }
+            
+            // Load tất cả products một lần
+            $medicines = Medicine::whereIn('id', array_unique($medicineIds))->get()->keyBy('id');
+            $goods = Goods::whereIn('id', array_unique($goodsIds))->get()->keyBy('id');
+            
+            // Format items cho DataTable
+            $items = $stockImport->items->map(function($item) use ($medicines, $goods) {
+                $productName = 'N/A';
+                $productCode = 'N/A';
+                
+                if ($item->product_type === 'medicine') {
+                    $product = $medicines->get($item->product_id);
+                    if ($product) {
+                        $productCode = $product->ma_hang ?? 'N/A';
+                        $productName = $product->ten_thuoc ?? 'N/A';
+                    }
+                } else {
+                    $product = $goods->get($item->product_id);
+                    if ($product) {
+                        $productCode = $product->ma_hang ?? 'N/A';
+                        $productName = $product->ten_hang_hoa ?? 'N/A';
+                    }
+                }
+                
+                return [
+                    'code' => $productCode,
+                    'name' => $productName,
+                    'category' => $item->product_type === 'medicine' ? 'Thuốc' : 'Hàng hóa',
+                    'quantity' => $item->quantity ?? 0,
+                    'unit_price' => $item->unit_price ?? 0,
+                    'total_price' => $item->total_price ?? 0
+                ];
+            });
+            
+            return response()->json([
+                'success' => true,
+                'data' => $items
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi khi lấy dữ liệu: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getReturnItems($returnCode)
+    {
+        try {
+            // Tìm PurchaseReturn theo return_code
+            $purchaseReturn = PurchaseReturn::where('return_code', $returnCode)
+                ->with('items')
+                ->first();
+            
+            if (!$purchaseReturn) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không tìm thấy phiếu trả hàng'
+                ], 404);
+            }
+            
+            // Load products manually cho mỗi item
+            $medicineIds = [];
+            $goodsIds = [];
+            
+            foreach ($purchaseReturn->items as $item) {
+                if ($item->product_type === 'medicine') {
+                    $medicineIds[] = $item->product_id;
+                } else {
+                    $goodsIds[] = $item->product_id;
+                }
+            }
+            
+            // Load tất cả products một lần
+            $medicines = Medicine::whereIn('id', array_unique($medicineIds))->get()->keyBy('id');
+            $goods = Goods::whereIn('id', array_unique($goodsIds))->get()->keyBy('id');
+            
+            // Format items cho DataTable
+            $items = $purchaseReturn->items->map(function($item) use ($medicines, $goods) 
+            {
+                $productName = 'N/A';
+                $productCode = 'N/A';
+                
+                if ($item->product_type === 'medicine') 
+                {
+                    $product = $medicines->get($item->product_id);
+                    if ($product) {
+                        $productCode = $product->ma_hang ?? 'N/A';
+                        $productName = $product->ten_thuoc ?? 'N/A';
+                    }
+                } else {
+                    $product = $goods->get($item->product_id);
+                    if ($product) {
+                        $productCode = $product->ma_hang ?? 'N/A';
+                        $productName = $product->ten_hang_hoa ?? 'N/A';
+                    }
+                }
+                
+                return [
+                    'code' => $productCode,
+                    'name' => $productName,
+                    'category' => $item->product_type === 'medicine' ? 'Thuốc' : 'Hàng hóa',
+                    'quantity' => $item->quantity ?? 0,
+                    'unit_price' => $item->unit_price ?? 0,
+                    'total_price' => $item->total_price ?? 0
+                ];
+            });
+            
+            return response()->json([
+                'success' => true,
+                'data' => $items
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi khi lấy dữ liệu: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
