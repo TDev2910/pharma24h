@@ -28,9 +28,10 @@ Chức năng **Quản lý Nhân viên** đã được triển khai hoàn chỉnh
 
 ### 🗄️ Database (Migrations & Models)
 
-#### Migrations (8 files)
+#### Migrations (9 files)
 ```
 database/migrations/
+├── 2025_11_04_173510_create_positions_table.php
 ├── 2025_11_04_173512_create_departments_table.php
 ├── 2025_11_04_173513_create_branches_table.php
 ├── 2025_11_04_173514_create_employees_table.php
@@ -41,9 +42,10 @@ database/migrations/
 └── 2025_11_04_173519_create_employee_schedules_table.php
 ```
 
-#### Models (8 files)
+#### Models (9 files)
 ```
 app/Models/
+├── Position.php
 ├── Department.php
 ├── Branch.php
 ├── Employee.php
@@ -128,6 +130,12 @@ Tạo một số phòng ban, chức vụ, chi nhánh mẫu:
 // Trong tinker hoặc seeder
 php artisan tinker
 
+// Tạo chức vụ
+\App\Models\Position::create(['name' => 'Dược sĩ bán thuốc', 'description' => 'Nhân viên tư vấn và bán thuốc']);
+\App\Models\Position::create(['name' => 'Thu ngân', 'description' => 'Nhân viên thu ngân']);
+\App\Models\Position::create(['name' => 'Nhân viên kho', 'description' => 'Quản lý kho hàng']);
+\App\Models\Position::create(['name' => 'Quản lý', 'description' => 'Quản lý cửa hàng']);
+
 // Tạo phòng ban
 \App\Models\Department::create(['name' => 'Kinh doanh', 'description' => 'Phòng kinh doanh']);
 \App\Models\Department::create(['name' => 'Kỹ thuật', 'description' => 'Phòng kỹ thuật']);
@@ -188,7 +196,7 @@ http://your-domain/admin/employees
 
 ✅ **Kết quả:**
 - Tạo User với role='staff', password mặc định '123456'
-- Tạo Employee với đầy đủ thông tin
+- Tạo Employee với đầy đủ thông tin (liên kết với Chức vụ, Phòng ban, Chi nhánh)
 - Tạo các phụ cấp, thưởng, giảm trừ nếu có
 - Tất cả được xử lý trong 1 Transaction (đảm bảo tính toàn vẹn dữ liệu)
 
@@ -243,6 +251,23 @@ GET /admin/employees
 ### Lấy resources (Phòng ban, Chức vụ, Chi nhánh)
 ```
 GET /admin/employees/resources/data
+
+Response:
+{
+  "positions": [
+    { "id": 1, "name": "Dược sĩ bán thuốc" },
+    { "id": 2, "name": "Thu ngân" },
+    { "id": 3, "name": "Nhân viên kho" }
+  ],
+  "departments": [
+    { "id": 1, "name": "Kinh doanh" },
+    { "id": 2, "name": "Kỹ thuật" }
+  ],
+  "branches": [
+    { "id": 1, "name": "Chi nhánh Hà Nội" },
+    { "id": 2, "name": "Chi nhánh TP.HCM" }
+  ]
+}
 ```
 
 ### Tạo nhân viên mới
@@ -335,8 +360,9 @@ $employee->schedules
 ### Lỗi: "Nhân viên đã có lịch làm việc cho ca này"
 → Unique constraint: 1 nhân viên không thể có 2 ca giống nhau trong 1 ngày.
 
-### Không thấy Phòng ban/Chức vụ trong dropdown
+### Không thấy Chức vụ/Phòng ban/Chi nhánh trong dropdown
 → Chạy seeder hoặc tạo dữ liệu mẫu (xem Bước 2 ở trên).
+→ Kiểm tra API `/admin/employees/resources/data` có trả về dữ liệu không.
 
 ---
 
@@ -352,12 +378,18 @@ Nếu gặp vấn đề, vui lòng:
 ## 🎉 Kết Luận
 
 Chức năng **Quản lý Nhân viên** đã được triển khai hoàn chỉnh với:
-- ✅ 8 Migrations
-- ✅ 8 Models với relationships
-- ✅ 1 Service layer với Transaction
-- ✅ 3 Controllers
-- ✅ 4 Request validations
-- ✅ 4 Vue components (Index + 3 Modals)
-- ✅ Routes đầy đủ
+- ✅ **9 Migrations** (positions, departments, branches, employees, allowances, targets, deductions, shifts, schedules)
+- ✅ **9 Models** với relationships đầy đủ
+- ✅ **1 Service layer** với Transaction đảm bảo tính toàn vẹn dữ liệu
+- ✅ **3 Controllers** (Employee, Schedule, Shift)
+- ✅ **4 Request validations** với messages tiếng Việt
+- ✅ **4 Vue components** (Index + 3 Modals: Create, Edit, Schedule)
+- ✅ **Routes đầy đủ** cho tất cả chức năng
+
+### 📊 Các bảng phụ trợ bắt buộc:
+- `positions` - Chức vụ (Dược sĩ, Thu ngân, Nhân viên kho...)
+- `departments` - Phòng ban (Kinh doanh, Kỹ thuật, Hành chính...)
+- `branches` - Chi nhánh (Hà Nội, TP.HCM, Đà Nẵng...)
+- `shifts` - Ca làm việc (Ca sáng, Ca chiều, Ca tối...)
 
 Chúc bạn sử dụng hiệu quả! 🚀
