@@ -21,7 +21,7 @@ use App\Http\Controllers\Admin\Employee\ShiftController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::prefix('admin')->name('admin.')->group(function () 
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () 
 {
     // ========================================
     // DASHBOARD & OVERVIEW ROUTES
