@@ -17,7 +17,7 @@ class Employee extends Model
         'salary_type',
         'salary_level',
         'department_id',
-        'position_id',
+        'job_title_id',
         'branch_id',
         'start_date',
         'dob',
@@ -49,11 +49,11 @@ class Employee extends Model
     }
 
     /**
-     * Quan hệ với Position
+     * Quan hệ với JobTitle (Chức danh)
      */
-    public function position()
+    public function jobTitle()
     {
-        return $this->belongsTo(Position::class);
+        return $this->belongsTo(JobTitle::class);
     }
 
     /**

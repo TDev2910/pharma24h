@@ -44,7 +44,7 @@ class EmployeeService
                 'salary_type' => $data['salary_type'],
                 'salary_level' => $data['salary_level'],
                 'department_id' => $data['department_id'] ?? null,
-                'position_id' => $data['position_id'] ?? null,
+                'job_title_id' => $data['job_title_id'] ?? null,
                 'branch_id' => $data['branch_id'] ?? null,
                 'start_date' => $data['start_date'] ?? null,
                 'dob' => $data['dob'] ?? null,
@@ -74,7 +74,7 @@ class EmployeeService
             $employee->load([
                 'user', 
                 'department', 
-                'position', 
+                'jobTitle', 
                 'branch',
                 'allowances',
                 'targets',
@@ -123,7 +123,7 @@ class EmployeeService
                 'salary_type' => $data['salary_type'],
                 'salary_level' => $data['salary_level'],
                 'department_id' => $data['department_id'] ?? null,
-                'position_id' => $data['position_id'] ?? null,
+                'job_title_id' => $data['job_title_id'] ?? null,
                 'branch_id' => $data['branch_id'] ?? null,
                 'start_date' => $data['start_date'] ?? null,
                 'dob' => $data['dob'] ?? null,
@@ -157,7 +157,7 @@ class EmployeeService
             $employee->load([
                 'user', 
                 'department', 
-                'position', 
+                'jobTitle', 
                 'branch',
                 'allowances',
                 'targets',
@@ -205,7 +205,7 @@ class EmployeeService
      */
     public function getEmployees(array $filters = [], int $perPage = 15)
     {
-        $query = Employee::with(['user', 'department', 'position', 'branch']);
+        $query = Employee::with(['user', 'department', 'jobTitle', 'branch']);
 
         // Filter theo tên hoặc mã nhân viên
         if (!empty($filters['search'])) {
@@ -222,9 +222,9 @@ class EmployeeService
             $query->where('department_id', $filters['department_id']);
         }
 
-        // Filter theo vị trí
-        if (!empty($filters['position_id'])) {
-            $query->where('position_id', $filters['position_id']);
+        // Filter theo chức danh
+        if (!empty($filters['job_title_id'])) {
+            $query->where('job_title_id', $filters['job_title_id']);
         }
 
         // Filter theo chi nhánh
@@ -246,7 +246,7 @@ class EmployeeService
         return Employee::with([
             'user',
             'department',
-            'position',
+            'jobTitle',
             'branch',
             'allowances',
             'targets',

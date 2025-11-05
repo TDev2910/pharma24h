@@ -7,7 +7,7 @@ use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Employee;
 use App\Models\Department;
-use App\Models\Position;
+use App\Models\JobTitle;
 use App\Models\Branch;
 use App\Services\EmployeeService;
 use Illuminate\Http\Request;
@@ -31,7 +31,7 @@ class EmployeeController extends Controller
         $filters = [
             'search' => $request->get('search'),
             'department_id' => $request->get('department_id'),
-            'position_id' => $request->get('position_id'),
+            'job_title_id' => $request->get('job_title_id'),
             'branch_id' => $request->get('branch_id'),
         ];
 
@@ -48,7 +48,7 @@ class EmployeeController extends Controller
      */
     public function apiIndex(Request $request)
     {
-        $employees = Employee::with(['user', 'position', 'department'])
+        $employees = Employee::with(['user', 'jobTitle', 'department'])
             ->when($request->search, function($query, $search) {
                 $query->where('full_name', 'LIKE', "%{$search}%")
                       ->orWhere('employee_code', 'LIKE', "%{$search}%");
@@ -98,7 +98,7 @@ class EmployeeController extends Controller
         return Inertia::render('Admin/Employees/Edit', [
             'employee' => $employee,
             'departments' => Department::all(),
-            'positions' => Position::all(),
+            'job_titles' => JobTitle::all(),
             'branches' => Branch::all(),
         ]);
     }
@@ -144,7 +144,7 @@ class EmployeeController extends Controller
     {
         return response()->json([
             'departments' => Department::all(),
-            'positions' => Position::all(),
+            'job_titles' => JobTitle::all(),
             'branches' => Branch::all(),
         ]);
     }

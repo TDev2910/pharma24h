@@ -28,7 +28,7 @@ class StoreEmployeeRequest extends FormRequest
             
             // Thông tin công việc
             'department_id' => 'nullable|exists:departments,id',
-            'position_id' => 'nullable|exists:positions,id',
+            'job_title_id' => 'nullable|exists:job_titles,id',
             'branch_id' => 'nullable|exists:branches,id',
             'start_date' => 'nullable|date',
             
