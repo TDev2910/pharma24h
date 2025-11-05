@@ -36,15 +36,10 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->boolean('remember'))) {
-            $user = Auth::user();
+            // QUAN TRỌNG: Regenerate session để tránh session fixation attacks
+            $request->session()->regenerate();
             
-            // Debug log
-            \Log::info('Login successful for user:', [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role
-            ]);
+            $user = Auth::user();
             
             // kiểm tra role trực tiếp
             if ($user->role === 'admin') {

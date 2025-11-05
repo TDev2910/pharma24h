@@ -18,14 +18,6 @@ class HandleInertiaRequests extends Middleware
     {
         $user = $request->user();
         
-        // Debug log
-        \Log::info('HandleInertiaRequests - User check:', [
-            'user_id' => $user ? $user->id : null,
-            'user_name' => $user ? $user->name : null,
-            'user_role' => $user ? $user->role : null,
-            'session_id' => $request->session()->getId(),
-        ]);
-        
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $user ? [
