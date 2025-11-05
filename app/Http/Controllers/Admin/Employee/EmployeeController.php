@@ -67,12 +67,17 @@ class EmployeeController extends Controller
         try {
             $employee = $this->employeeService->createEmployee($request->validated());
 
-            return redirect()->back()->with('success', 'Thêm nhân viên thành công!');
+            return response()->json([
+                'success' => true,
+                'message' => 'Thêm nhân viên thành công!',
+                'employee' => $employee,
+            ], 201);
 
         } catch (Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
-                ->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
