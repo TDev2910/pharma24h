@@ -57,8 +57,8 @@
           <div class="form-group">
             <label>Chức vụ</label>
             <Dropdown 
-              v-model="form.position_id" 
-              :options="resources.positions" 
+              v-model="form.job_title_id" 
+              :options="resources.job_titles" 
               optionLabel="name" 
               optionValue="id"
               placeholder="Chọn chức vụ"
@@ -287,7 +287,7 @@ const form = ref({
   phone_number: '',
   employee_code: '',
   department_id: null,
-  position_id: null,
+  job_title_id: null,
   branch_id: null,
   start_date: null,
   dob: null,
@@ -306,7 +306,7 @@ const form = ref({
 
 const resources = ref({
   departments: [],
-  positions: [],
+  job_titles: [],
   branches: []
 });
 
@@ -391,7 +391,7 @@ const resetForm = () => {
     phone_number: '',
     employee_code: '',
     department_id: null,
-    position_id: null,
+    job_title_id: null,
     branch_id: null,
     start_date: null,
     dob: null,

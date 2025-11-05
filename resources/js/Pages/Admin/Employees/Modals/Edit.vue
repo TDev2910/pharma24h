@@ -44,8 +44,8 @@
           <div class="form-group">
             <label>Chức vụ</label>
             <Dropdown 
-              v-model="form.position_id" 
-              :options="resources.positions" 
+              v-model="form.job_title_id" 
+              :options="resources.job_titles" 
               optionLabel="name" 
               optionValue="id"
               placeholder="Chọn chức vụ"
@@ -131,7 +131,7 @@ const dialogVisible = computed({
 });
 
 const form = ref({});
-const resources = ref({ departments: [], positions: [], branches: [] });
+const resources = ref({ departments: [], job_titles: [], branches: [] });
 const loading = ref(false);
 const submitting = ref(false);
 
@@ -149,7 +149,7 @@ const loadEmployee = () => {
       phone_number: props.employee.phone_number,
       employee_code: props.employee.employee_code,
       department_id: props.employee.department_id,
-      position_id: props.employee.position_id,
+      job_title_id: props.employee.job_title_id,
       branch_id: props.employee.branch_id,
       start_date: props.employee.start_date ? new Date(props.employee.start_date) : null,
       salary_type: props.employee.salary_type,

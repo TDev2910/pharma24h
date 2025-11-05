@@ -64,9 +64,9 @@
             {{ slotProps.data.department?.name || '-' }}
           </template>
         </Column>
-        <Column field="position.name" header="Chức vụ">
+        <Column field="job_title.name" header="Chức vụ">
           <template #body="slotProps">
-            {{ slotProps.data.position?.name || '-' }}
+            {{ slotProps.data.job_title?.name || '-' }}
           </template>
         </Column>
         <Column field="branch.name" header="Chi nhánh">

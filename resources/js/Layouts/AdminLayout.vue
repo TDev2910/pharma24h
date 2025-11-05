@@ -54,7 +54,17 @@
             </div>
           </div>
         </div>
-        <a href="#" class="nav-item">Nhân viên</a>
+        <div class="nav-item dropdown">
+          <span class="nav-item">Nhân viên</span>
+          <div class="nav-dropdown nav-dropdown-short">
+            <div class="dropdown-col">
+              <div class="dropdown-title">Tổng quan</div>
+              <a href="/admin/employees" class="dropdown-link">Quản lý nhân viên</a>
+              <a href="/admin/employee-schedules" class="dropdown-link">Lịch làm việc</a>
+              <a href="/admin/shifts" class="dropdown-link">Quản lý ca làm</a>
+            </div>
+          </div>
+        </div>
         <a href="/logout" class="nav-item">Đăng xuất</a>
       </div>
       <button class="sell-btn">
