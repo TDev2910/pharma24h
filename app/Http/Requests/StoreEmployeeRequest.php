@@ -25,6 +25,7 @@ class StoreEmployeeRequest extends FormRequest
             // Thông tin cơ bản
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'password' => 'nullable|string|min:6|max:255',
             'phone_number' => 'nullable|string|max:20|unique:employees,phone_number',
             'employee_code' => 'nullable|string|max:50|unique:employees,employee_code',
             // Thông tin công việc
@@ -67,6 +68,8 @@ class StoreEmployeeRequest extends FormRequest
             'email.required' => 'Email là bắt buộc',
             'email.email' => 'Email không đúng định dạng',
             'email.unique' => 'Email đã tồn tại trong hệ thống',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự',
+            'password.max' => 'Mật khẩu không được vượt quá 255 ký tự',
             'phone_number.unique' => 'Số điện thoại đã được sử dụng',
             'employee_code.unique' => 'Mã nhân viên đã tồn tại',
             'salary_type.required' => 'Loại lương là bắt buộc',

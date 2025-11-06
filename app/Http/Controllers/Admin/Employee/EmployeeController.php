@@ -43,6 +43,13 @@ class EmployeeController extends Controller
         ]);
     }
 
+    public function salaryDashboard(Request $request)
+    {
+        return Inertia::render('Admin/Employee/Salary/Dashboard', [
+            'employees' => Employee::all(),
+        ]);
+    }
+
     /**
      * API: Lấy danh sách nhân viên
      */

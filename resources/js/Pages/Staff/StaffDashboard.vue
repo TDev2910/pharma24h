@@ -1,12 +1,12 @@
 <template>
     <div>
-      Xin chào bạn
+      Xin chào bạn staff
     </div>
   </template>
   
   <script>
   export default {
-    name: 'AdminDashboard',
+    name: 'StaffDashboard',
   };
   </script>
   

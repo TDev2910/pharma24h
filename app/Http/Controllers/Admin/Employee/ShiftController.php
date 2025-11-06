@@ -14,20 +14,19 @@ class ShiftController extends Controller
 {
     /**
      * Hiển thị danh sách ca làm việc
+     * Note: Frontend component đã bị xóa, method này chỉ để tương thích với routes
+     * Nếu cần sử dụng, có thể trả về JSON hoặc redirect
      */
     public function index(Request $request)
     {
-        $shifts = Shift::with('branch')
-            ->when($request->branch_id, function ($query, $branchId) {
-                $query->where('branch_id', $branchId);
-            })
-            ->orderBy('start_time', 'asc')
-            ->get();
-
-        return Inertia::render('Admin/Employees/Shifts/Index', [
-            'shifts' => $shifts,
-            'branches' => Branch::all(),
-        ]);
+        // Frontend component đã bị xóa, trả về JSON nếu là API request
+        if ($request->expectsJson() || $request->ajax()) {
+            return $this->apiIndex($request);
+        }
+        
+        // Hoặc redirect về trang khác
+        return redirect()->route('admin.employees.index')
+            ->with('info', 'Trang quản lý ca làm việc chưa được triển khai');
     }
 
     /**

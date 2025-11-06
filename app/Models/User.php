@@ -73,4 +73,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(ProductReview::class);
     }
+
+    /**
+     * Quan hệ: 1 User có 1 Employee (nếu là staff)
+     */
+    public function employee()
+    {
+        return $this->hasOne(Employee::class);
+    }
+
+    /**
+     * Check if user is staff
+     */
+    public function isStaff()
+    {
+        return $this->role === 'staff';
+    }
 }

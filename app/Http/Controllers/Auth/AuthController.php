@@ -40,21 +40,23 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->boolean('remember'))) {
             $user = Auth::user();
 
-            // Debug log
-            \Log::info('Login successful for user:', [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role
-            ]);
-
             // kiểm tra role trực tiếp
             if ($user->role === 'admin') {
                 return redirect('/admin/admindashboard')->with('success', 'Chào mừng Admin!');
             }
 
+            // Redirect staff về trang quản lý nhân viên hoặc dashboard riêng
+            if ($user->role === 'staff') {
+                // Kiểm tra xem user có liên kết với employee không
+                $employee = $user->employee ?? null;
+                if ($employee) {
+                    return redirect('/staff/dashboard')->with('success', 'Chào mừng ' . $user->name . '!');
+                }
+                return redirect('/')->with('success', 'Đăng nhập thành công!');
+            }
+
             // Redirect về Inertia route với Inertia response
-            return redirect('/')->with('success', 'Đăng nhập thành công!');
+            return redirect('/admin/admindashboard')->with('success', 'Đăng nhập thành công!');
         }
 
         return back()->withErrors([

@@ -8,6 +8,7 @@ use App\Http\Controllers\Public\ServiceBookingController;
 use App\Http\Controllers\Public\ReviewController;
 use App\Http\Controllers\Api\ChatbotController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Staff\StaffController;
 use Inertia\Inertia;
  
 // 🌐 PUBLIC ROUTES
@@ -76,6 +77,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');    
 });
 
+// Staff routes
+Route::middleware(['auth', 'staff'])->group(function () {
+    Route::get('/staff/dashboard', [StaffController::class, 'dashboard'])->name('staff.dashboard');
+});
+
 Route::post('/bookings', [ServiceBookingController::class, 'store'])->name('bookings.store');
 
 // Chatbot routes
@@ -83,3 +89,6 @@ Route::post('/api/chatbot/chat', [ChatbotController::class, 'chat'])->name('chat
 
 // Include admin routes
 require __DIR__.'/admin.php';
+
+// Include staff routes
+require __DIR__.'/staff.php';

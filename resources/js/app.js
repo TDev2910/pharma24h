@@ -6,6 +6,7 @@ import ToastService from 'primevue/toastservice'
 import 'primeicons/primeicons.css'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import PublicLayout from '@/Layouts/PublicLayout.vue'
+import StaffLayout from '@/Layouts/StaffLayout.vue'
 
 // Import Firebase modules
 import './config/firebase'
@@ -53,6 +54,11 @@ createInertiaApp({
     // Gán layout mặc định cho các trang Public nếu page chưa set layout
     if (name.startsWith('Public/') && !page.layout) {
       page.layout = PublicLayout
+    }
+    
+    // Gán layout mặc định cho các trang Staff nếu page chưa set layout
+    if (name.startsWith('Staff/') && !page.layout) {
+      page.layout = StaffLayout
     }
     
     return page

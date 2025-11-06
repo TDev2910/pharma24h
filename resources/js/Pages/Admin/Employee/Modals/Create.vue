@@ -22,6 +22,33 @@
             <small v-if="errors.email" class="p-error">{{ errors.email[0] }}</small>
           </div>
 
+          <!-- Password -->
+          <div class="form-field">
+            <label for="password" class="field-label">Mật khẩu</label>
+            <div class="input-group">
+              <Password 
+                id="password" 
+                v-model="formData.password" 
+                placeholder="Để trống sẽ tự động tạo"
+                :toggleMask="true"
+                :feedback="false"
+                class="field-input" 
+                :class="{ 'p-invalid': errors.password }"
+                inputClass="w-full"
+              />
+              <Button 
+                icon="pi pi-refresh" 
+                @click="generatePassword" 
+                :loading="generatingPassword"
+                class="generate-btn"
+                title="Tạo mật khẩu tự động"
+                severity="secondary"
+              />
+            </div>
+            <small v-if="errors.password" class="p-error">{{ errors.password[0] }}</small>
+            <small class="text-muted">Nếu để trống, hệ thống sẽ tự động tạo mật khẩu mặc định</small>
+          </div>
+
           <!-- Số điện thoại -->
           <div class="form-field">
             <label for="phone" class="field-label">Số điện thoại</label>
@@ -222,6 +249,7 @@ import Dropdown from 'primevue/dropdown'
 import Calendar from 'primevue/calendar'
 import Textarea from 'primevue/textarea'
 import InputSwitch from 'primevue/inputswitch'
+import Password from 'primevue/password'
 import axios from 'axios'
 
 export default {
@@ -236,7 +264,8 @@ export default {
     Dropdown,
     Calendar,
     Textarea,
-    InputSwitch
+    InputSwitch,
+    Password
   },
   props: {
     visible: {
@@ -250,9 +279,11 @@ export default {
     return {
       loading: false,
       generating: false,
+      generatingPassword: false,
       formData: {
         full_name: '',
         email: '',
+        password: '',
         phone_number: '',
         employee_code: '',
         department_id: null,
@@ -358,6 +389,25 @@ export default {
       } finally {
         this.generating = false
       }
+    },
+
+    generatePassword() {
+      this.generatingPassword = true
+      // Tạo password ngẫu nhiên: 8 ký tự gồm chữ hoa, chữ thường, số
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+      let password = ''
+      for (let i = 0; i < 8; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length))
+      }
+      this.formData.password = password
+      this.generatingPassword = false
+      
+      this.$toast.add({
+        severity: 'info',
+        summary: 'Thông báo',
+        detail: 'Mật khẩu đã được tạo tự động',
+        life: 2000
+      })
     },
 
     // Dynamic arrays methods
@@ -473,6 +523,7 @@ export default {
       this.formData = {
         full_name: '',
         email: '',
+        password: '',
         phone_number: '',
         employee_code: '',
         department_id: null,
@@ -609,6 +660,12 @@ export default {
 
 .p-invalid {
   border-color: #ef4444 !important;
+}
+
+.text-muted {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 4px;
 }
 
 /* Footer */

@@ -160,6 +160,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/{shift}', [ShiftController::class, 'update'])->name('update');
         Route::delete('/{shift}', [ShiftController::class, 'destroy'])->name('destroy');
     });
+
+    // Employee Salary
+    Route::prefix('employee-salary')->name('employee-salary.')->group(function () {
+        Route::get('/', [EmployeeController::class, 'salaryDashboard'])->name('index');
+    });
     // Doctors
     Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
     Route::get('/doctors/api', [DoctorController::class, 'getDoctors'])->name('doctors.api');
