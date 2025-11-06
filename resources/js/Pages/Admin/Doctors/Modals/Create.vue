@@ -1,264 +1,157 @@
 <template>
-    <Dialog 
-      :visible="visible" 
-      @update:visible="$emit('close')"
-      header="Thêm Bác sĩ" 
-      :style="{ width: '800px' }"
-      modal
-      :closable="true"
-    >
+  <Dialog :visible="visible" @update:visible="$emit('close')" header="Thêm Bác sĩ" :style="{ width: '800px' }" modal
+    :closable="true">
     <div class="flex gap-6">
-        <!-- Left Section: Form Fields Grid -->
-        <div class="form-grid" style="flex: 1;">
-            <!-- Tên bác sĩ -->
-            <div class="form-field">
-                <label for="name" class="field-label">Tên bác sĩ</label>
-                <InputText
-                    id="name"
-                    v-model="formData.name"
-                    type="text"
-                    placeholder="Bắt buộc"
-                    class="field-input"
-                    :class="{ 'p-invalid': errors.name }"
-                />
-                <small v-if="errors.name" class="p-error">{{ errors.name[0] }}</small>
-            </div>
+      <!-- Left Section: Form Fields Grid -->
+      <div class="form-grid" style="flex: 1;">
+        <!-- Tên bác sĩ -->
+        <div class="form-field">
+          <label for="name" class="field-label">Tên bác sĩ</label>
+          <InputText id="name" v-model="formData.name" type="text" placeholder="Bắt buộc" class="field-input"
+            :class="{ 'p-invalid': errors.name }" />
+          <small v-if="errors.name" class="p-error">{{ errors.name[0] }}</small>
+        </div>
 
-            <!-- Mã bác sĩ -->
-            <div class="form-field">
-                <label for="doctorCode" class="field-label" style="margin-left: -145px;">Mã bác sĩ</label>
-                <InputText
-                    id="doctorCode"
-                    v-model="formData.doctorCode"
-                    type="text" 
-                    placeholder="Tự động"
-                    readonly
-                    class="field-input readonly-input" 
-                    :class="{ 'p-invalid': errors.doctorCode }"
-                    style="margin-left: -145px;"
-                />
-                <small v-if="errors.doctorCode" class="p-error">{{ errors.doctorCode[0] }}</small>
-            </div>
-              <!-- Right Section: Tải ảnh -->
-            <div class="upload-section">
-                <div class="image-upload-container"style="margin-left: 1100px;margin-top: -155px;">
-                    <div class="image-upload-circle" @click="handleImageUpload"> <!-- Tạo hình tròn -->
-                        <!-- Hiển thị nút upload khi không có ảnh -->
-                        <div v-if="!imagePreview" class="upload-content"> <!-- Hiển thị nút upload -->
-                            <Button 
-                                label="Thêm ảnh"
-                                severity="secondary"
-                                class="upload-btn"
-                                @click.stop="handleImageUpload"
-                            />
-                        </div>
-                        
-                        <!-- Hiển thị ảnh preview khi đã có ảnh -->
-                        <div v-if="imagePreview" class="image-preview-content"> 
-                            <img :src="imagePreview" alt="Preview" class="preview-image" /> 
-                            <div class="image-overlay">
-                                <Button 
-                                    label="Xóa" 
-                                    @click.stop="removeImage" 
-                                    size="small" 
-                                    severity="danger"
-                                    class="remove-btn"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <p class="upload-text">Ảnh không được vượt quá 2MB</p>
+        <!-- Mã bác sĩ -->
+        <div class="form-field">
+          <label for="doctorCode" class="field-label" style="margin-left: -145px;">Mã bác sĩ</label>
+          <InputText id="doctorCode" v-model="formData.doctorCode" type="text" placeholder="Tự động" readonly
+            class="field-input readonly-input" :class="{ 'p-invalid': errors.doctorCode }"
+            style="margin-left: -145px;" />
+          <small v-if="errors.doctorCode" class="p-error">{{ errors.doctorCode[0] }}</small>
+        </div>
+        <!-- Right Section: Tải ảnh -->
+        <div class="upload-section">
+          <div class="image-upload-container" style="margin-left: 1100px;margin-top: -155px;">
+            <div class="image-upload-circle" @click="handleImageUpload"> <!-- Tạo hình tròn -->
+              <!-- Hiển thị nút upload khi không có ảnh -->
+              <div v-if="!imagePreview" class="upload-content"> <!-- Hiển thị nút upload -->
+                <Button label="Thêm ảnh" severity="secondary" class="upload-btn" @click.stop="handleImageUpload" />
+              </div>
+
+              <!-- Hiển thị ảnh preview khi đã có ảnh -->
+              <div v-if="imagePreview" class="image-preview-content">
+                <img :src="imagePreview" alt="Preview" class="preview-image" />
+                <div class="image-overlay">
+                  <Button label="Xóa" @click.stop="removeImage" size="small" severity="danger" class="remove-btn" />
                 </div>
+              </div>
+            </div>
+            <p class="upload-text">Ảnh không được vượt quá 2MB</p>
+          </div>
+        </div>
+
+        <!-- Giới tính -->
+        <div class="form-field">
+          <label for="gender" class="field-label" style="margin-left: -380px;">Giới tính</label>
+          <Dropdown id="gender" v-model="formData.gender" :options="genderOptions" optionLabel="label"
+            optionValue="value" placeholder="Chọn giới tính" class="field-input" :class="{ 'p-invalid': errors.gender }"
+            style="margin-left: -380px;" />
+          <small v-if="errors.gender" class="p-error">{{ errors.gender[0] }}</small>
+        </div>
+
+        <!-- Điện thoại -->
+        <div class="form-field">
+          <label for="phone" class="field-label" style="margin-left: 235px;margin-top: -210px;">Điện thoại</label>
+          <InputText id="phone" v-model="formData.phone" type="tel" placeholder="Nhập số điện thoại" class="field-input"
+            :class="{ 'p-invalid': errors.phone }" style="margin-left: 235px;margin-top: -6px;" />
+          <small v-if="errors.phone" class="p-error">{{ errors.phone[0] }}</small>
+        </div>
+
+        <!-- Email (span 2 columns) -->
+        <div class="form-field email-field">
+          <label for="email" class="field-label" style="margin-top:-150px;width:60%;">Email</label>
+          <InputText id="email" v-model="formData.email" type="email" placeholder="email@gmail.com" class="field-input"
+            :class="{ 'p-invalid': errors.email }" style="width: 440px !important;" />
+          <small v-if="errors.email" class="p-error">{{ errors.email[0] }}</small>
+        </div>
+
+        <!-- Địa chỉ Section -->
+        <div class="address-section" style="margin-top: -60px;">
+          <div class="address-container">
+            <!-- Địa chỉ Input -->
+            <div class="form-field address-input">
+              <label for="address" class="field-label">Địa chỉ</label>
+              <InputText id="address" v-model="formData.address" type="text" placeholder="Nhập địa chỉ"
+                class="field-input" :class="{ 'p-invalid': errors.address }" style="width: 100% !important;" />
+              <small v-if="errors.address" class="p-error">{{ errors.address[0] }}</small>
             </div>
 
-            <!-- Giới tính -->
-            <div class="form-field">
-                <label for="gender" class="field-label" style="margin-left: -380px;">Giới tính</label>
-                <Dropdown
-                    id="gender"
-                    v-model="formData.gender"
-                    :options="genderOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder= "Chọn giới tính"
-                    class="field-input" 
-                    :class="{ 'p-invalid': errors.gender }"
-                    style="margin-left: -380px;"
-                />
-                <small v-if="errors.gender" class="p-error">{{ errors.gender[0] }}</small>
+            <!-- Tỉnh/Thành phố và Quận/Huyện -->
+            <div class="address-row">
+              <!-- Tỉnh/Thành phố -->
+              <div class="form-field">
+                <label for="province" class="field-label">Tỉnh/Thành phố *</label>
+                <Dropdown id="province" v-model="formData.province" :options="provinceOptions" optionLabel="name"
+                  placeholder="-- Chọn tỉnh/thành --" class="field-input" :class="{ 'p-invalid': errors.province }"
+                  style="width: 350px !important;" />
+                <small v-if="errors.province" class="p-error">{{ errors.province[0] }}</small>
+              </div>
+
+              <!-- Quận/Huyện -->
+              <div class="form-field">
+                <label for="ward" class="field-label">Quận/Huyện *</label>
+                <Dropdown id="ward" v-model="formData.ward" :options="wardOptions" optionLabel="name"
+                  placeholder="-- Chọn tỉnh/thành trước --" class="field-input" :class="{ 'p-invalid': errors.ward }"
+                  style="width: 350px !important;" :disabled="!formData.province" />
+                <small v-if="errors.ward" class="p-error">{{ errors.ward[0] }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Thông tin chuyên môn -->
+        <div class="specialty-section">
+          <div class="specialty-container">
+            <!-- Header với icon -->
+            <div class="specialty-header">
+              <span class="specialty-title">Thông tin chuyên môn</span>
+              <i class="pi pi-chevron-up specialty-icon"></i>
             </div>
 
-            <!-- Điện thoại -->
-            <div class="form-field">
-                <label for="phone" class="field-label" style="margin-left: 235px;margin-top: -210px;">Điện thoại</label>
-                <InputText
-                    id="phone"
-                    v-model="formData.phone"
-                    type="tel"
-                    placeholder="Nhập số điện thoại"
-                    class="field-input" 
-                    :class="{ 'p-invalid': errors.phone }"
-                    style="margin-left: 235px;margin-top: -6px;"
-                />
-                <small v-if="errors.phone" class="p-error">{{ errors.phone[0] }}</small>
+            <!-- Chuyên khoa và Trình độ -->
+            <div class="specialty-row">
+              <!-- Chuyên khoa -->
+              <div class="form-field">
+                <label for="specialty" class="field-label">Chuyên khoa</label>
+                <Dropdown id="specialty" v-model="formData.specialty" :options="specialtyOptions" optionLabel="label"
+                  optionValue="value" placeholder="Chọn chuyên khoa" class="field-input"
+                  :class="{ 'p-invalid': errors.specialty }" style="width: 350px !important;" />
+                <small v-if="errors.specialty" class="p-error">{{ errors.specialty[0] }}</small>
+              </div>
+
+              <!-- Trình độ -->
+              <div class="form-field">
+                <label for="degree" class="field-label">Trình độ</label>
+                <Dropdown id="degree" v-model="formData.degree" :options="degreeOptions" optionLabel="label"
+                  optionValue="value" placeholder="Chọn trình độ" class="field-input"
+                  :class="{ 'p-invalid': errors.degree }" style="width: 350px !important;" />
+                <small v-if="errors.degree" class="p-error">{{ errors.degree[0] }}</small>
+              </div>
             </div>
+          </div>
+        </div>
 
-            <!-- Email (span 2 columns) -->
-            <div class="form-field email-field">
-                <label for="email" class="field-label"style="margin-top:-150px;width:60%;">Email</label>
-                <InputText
-                    id="email"
-                    v-model="formData.email"
-                    type="email"
-                    placeholder="email@gmail.com"
-                    class="field-input" 
-                    :class="{ 'p-invalid': errors.email }"
-                    style="width: 440px !important;"
-                />
-                <small v-if="errors.email" class="p-error">{{ errors.email[0] }}</small>
+        <!-- Ghi chú -->
+        <div class="notes-section">
+          <div class="notes-container">
+            <!-- Ghi chú Input -->
+            <div class="form-field notes-input">
+              <label for="notes" class="field-label">Ghi chú</label>
+              <Textarea id="notes" v-model="formData.notes" rows="4" placeholder="Nhập ghi chú" class="field-textarea"
+                :class="{ 'p-invalid': errors.notes }" style="width: 100% !important;" />
+              <small v-if="errors.notes" class="p-error">{{ errors.notes[0] }}</small>
             </div>
-
-            <!-- Địa chỉ Section -->
-            <div class="address-section" style="margin-top: -60px;">
-                <div class="address-container">
-                    <!-- Địa chỉ Input -->
-                    <div class="form-field address-input">
-                        <label for="address" class="field-label">Địa chỉ</label>
-                        <InputText
-                            id="address"
-                            v-model="formData.address"
-                            type="text"
-                            placeholder="Nhập địa chỉ"
-                            class="field-input" 
-                            :class="{ 'p-invalid': errors.address }"
-                            style="width: 100% !important;"
-                        />
-                        <small v-if="errors.address" class="p-error">{{ errors.address[0] }}</small>
-                    </div>
-
-                    <!-- Tỉnh/Thành phố và Quận/Huyện -->
-                    <div class="address-row">
-                        <!-- Tỉnh/Thành phố -->
-                        <div class="form-field">
-                            <label for="province" class="field-label">Tỉnh/Thành phố *</label>
-                            <Dropdown
-                                id="province"
-                                v-model="formData.province"
-                                :options="provinceOptions"
-                                optionLabel="name"
-                                placeholder="-- Chọn tỉnh/thành --"
-                                class="field-input"
-                                :class="{ 'p-invalid': errors.province }"
-                                style="width: 350px !important;"
-                            />
-                            <small v-if="errors.province" class="p-error">{{ errors.province[0] }}</small>
-                        </div>
-
-                        <!-- Quận/Huyện -->
-                        <div class="form-field">
-                            <label for="ward" class="field-label">Quận/Huyện *</label>
-                            <Dropdown
-                                id="ward"
-                                v-model="formData.ward"
-                                :options="wardOptions"
-                                optionLabel="name"
-                                placeholder="-- Chọn tỉnh/thành trước --"
-                                class="field-input"
-                                :class="{ 'p-invalid': errors.ward }"
-                                style="width: 350px !important;"
-                                :disabled="!formData.province"
-                            />
-                            <small v-if="errors.ward" class="p-error">{{ errors.ward[0] }}</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-             <!-- Thông tin chuyên môn -->
-             <div class="specialty-section">
-                 <div class="specialty-container">
-                     <!-- Header với icon -->
-                     <div class="specialty-header">
-                         <span class="specialty-title">Thông tin chuyên môn</span>
-                         <i class="pi pi-chevron-up specialty-icon"></i>
-                     </div>
-
-                     <!-- Chuyên khoa và Trình độ -->
-                     <div class="specialty-row">
-                         <!-- Chuyên khoa -->
-                         <div class="form-field">
-                             <label for="specialty" class="field-label">Chuyên khoa</label>
-                         <Dropdown
-                             id="specialty"
-                             v-model="formData.specialty"
-                             :options="specialtyOptions"
-                             optionLabel="label"
-                             optionValue="value"
-                             placeholder="Chọn chuyên khoa"
-                             class="field-input"
-                             :class="{ 'p-invalid': errors.specialty }"
-                             style="width: 350px !important;"
-                         />
-                         <small v-if="errors.specialty" class="p-error">{{ errors.specialty[0] }}</small>
-                         </div>
-
-                         <!-- Trình độ -->
-                         <div class="form-field">
-                             <label for="degree" class="field-label">Trình độ</label>
-                             <Dropdown
-                                 id="degree"
-                                 v-model="formData.degree"
-                                 :options="degreeOptions"
-                                 optionLabel="label"
-                                 optionValue="value"
-                                 placeholder="Chọn trình độ"
-                                 class="field-input"
-                                 :class="{ 'p-invalid': errors.degree }"
-                                 style="width: 350px !important;"
-                             />
-                             <small v-if="errors.degree" class="p-error">{{ errors.degree[0] }}</small>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-
-             <!-- Ghi chú -->
-             <div class="notes-section">
-                 <div class="notes-container">
-                     <!-- Ghi chú Input -->
-                     <div class="form-field notes-input">
-                         <label for="notes" class="field-label">Ghi chú</label>
-                         <Textarea
-                             id="notes"
-                             v-model="formData.notes"
-                             rows="4"
-                             placeholder="Nhập ghi chú"
-                             class="field-textarea"
-                             :class="{ 'p-invalid': errors.notes }"
-                             style="width: 100% !important;"
-                         />
-                         <small v-if="errors.notes" class="p-error">{{ errors.notes[0] }}</small>
-                     </div>
-                 </div>
-             </div>            
+          </div>
+        </div>
       </div>
     </div>
     <template #footer>
-    <div class="flex justify-end gap-2">
-          <Button 
-            type="button" 
-            label="Hủy" 
-            severity="secondary" 
-            @click="closeModal"
-          />
-          <Button 
-            type="button" 
-            label="Lưu" 
-            @click="saveDoctor"
-            :loading="loading"
-          />
-    </div>
-      </template>
-    </Dialog>
+      <div class="flex justify-end gap-2">
+        <Button type="button" label="Hủy" severity="secondary" @click="closeModal" />
+        <Button type="button" label="Lưu" @click="saveDoctor" :loading="loading" />
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <script>
@@ -305,8 +198,7 @@ export default {
       }
     }
   },
-  data() 
-  {
+  data() {
     return {
       loading: false,
       formData: {
@@ -355,10 +247,10 @@ export default {
     async saveDoctor() {
       this.loading = true
       this.errors = {}
-      
+
       try {
         const response = await axios.post('/admin/doctors', this.formData)
-        
+
         if (response.data.success) {
           // Hiển thị thông báo thành công
           this.$toast.add({
@@ -367,13 +259,13 @@ export default {
             detail: response.data.message,
             life: 3000
           })
-          
+
           this.$emit('created', response.data.data)
           this.closeModal()
         }
       } catch (error) {
         console.error('Error creating doctor:', error)
-        
+
         if (error.response && error.response.status === 422) {
           // Validation errors
           this.errors = error.response.data.errors
@@ -414,7 +306,7 @@ export default {
       }
     },
 
-    resetForm() { 
+    resetForm() {
       this.formData = {
         name: '',
         doctorCode: '',
@@ -437,11 +329,11 @@ export default {
       const input = document.createElement('input')
       input.type = 'file'
       input.accept = 'image/*'
-      
+
       input.onchange = async (event) => {
         const file = event.target.files[0]
         if (!file) return
-        
+
         // Validate file
         if (!file.type.startsWith('image/')) {
           this.$toast.add({
@@ -452,7 +344,7 @@ export default {
           })
           return
         }
-        
+
         if (file.size > 2 * 1024 * 1024) { // 2MB
           this.$toast.add({
             severity: 'error',
@@ -462,30 +354,30 @@ export default {
           })
           return
         }
-        
+
         try {
           // Tạo FormData để upload
           const formData = new FormData()
           formData.append('avatar', file)
-          
+
           // Upload lên server
           const response = await axios.post('/admin/doctors/upload-avatar', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
           })
-          
+
           if (response.data.success) {
             // Lưu path vào formData
             this.formData.avatar = response.data.data.path
-            
+
             // Tạo preview
             const reader = new FileReader()
             reader.onload = (e) => {
               this.imagePreview = e.target.result
             }
             reader.readAsDataURL(file)
-            
+
             this.$toast.add({
               severity: 'success',
               summary: 'Thành công',
@@ -493,7 +385,7 @@ export default {
               life: 3000
             })
           }
-          
+
         } catch (error) {
           console.error('Upload error:', error)
           this.$toast.add({
@@ -504,7 +396,7 @@ export default {
           })
         }
       }
-      
+
       input.click()
     },
 
@@ -513,7 +405,7 @@ export default {
       this.formData.avatar = null
       this.imagePreview = null
     },
-    
+
     // API tỉnh thành 
     async loadProvinces() {
       try {
@@ -528,7 +420,7 @@ export default {
           //gọi API trực tiếp
           const response = await fetch('https://provinces.open-api.vn/api/?depth=1')
           const data = await response.json()
-          
+
           this.provinceOptions = data.map(province => ({
             name: province.name,
             code: province.code
@@ -544,14 +436,14 @@ export default {
         })
       }
     },
-    
+
     async onProvinceChange(provinceCode) {
       if (!provinceCode) {
         this.wardOptions = []
         this.formData.ward = null
         return
       }
-      
+
       try {
         // Sử dụng shared ProvinceService nếu có
         if (window.provinceService) {
@@ -564,7 +456,7 @@ export default {
           // Fallback: gọi API trực tiếp
           const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=3`)
           const data = await response.json()
-          
+
           // Collect all wards from all districts in the province
           let allWards = []
           if (data.districts && Array.isArray(data.districts)) {
@@ -579,13 +471,13 @@ export default {
               }
             })
           }
-          
+
           // Sort wards by name
           allWards.sort((a, b) => a.name.localeCompare(b.name))
-          
+
           this.wardOptions = allWards
         }
-        
+
         // Reset ward
         this.formData.ward = null
       } catch (error) {
@@ -618,12 +510,14 @@ export default {
 }
 
 .email-field {
-  grid-column: 1 / -1; /* Span across both columns */
+  grid-column: 1 / -1;
+  /* Span across both columns */
 }
 
 /* Address Section */
 .address-section {
-  grid-column: 1 / -1; /* Span across both columns */
+  grid-column: 1 / -1;
+  /* Span across both columns */
   margin-top: 8px;
 }
 
@@ -666,7 +560,8 @@ export default {
 
 /* Specialty Section */
 .specialty-section {
-  grid-column: 1 / -1; /* Span across both columns */
+  grid-column: 1 / -1;
+  /* Span across both columns */
   margin-top: 8px;
 }
 
@@ -705,7 +600,8 @@ export default {
 
 /* Notes Section */
 .notes-section {
-  grid-column: 1 / -1; /* Span across both columns */
+  grid-column: 1 / -1;
+  /* Span across both columns */
   margin-top: 8px;
 }
 
@@ -769,7 +665,7 @@ export default {
 }
 
 .field-input {
-  width: 55% ;
+  width: 55%;
   height: 32px !important;
   border-radius: 6px !important;
   font-size: 15px !important;
@@ -897,7 +793,7 @@ export default {
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .email-field {
     grid-column: 1;
   }

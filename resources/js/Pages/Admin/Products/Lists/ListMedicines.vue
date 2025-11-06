@@ -1,61 +1,51 @@
-
 <template>
   <div class="medicines-page">
     <!-- Header Control Bar -->
     <div class="header-control-bar">
-        <div class="controls-section" style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
-            <!-- Title Section -->
-            <div class="title-section">
-                <h4>Danh sách thuốc</h4>
-            </div>
-            <!-- Search Section -->
-            <div style="flex:1; display:flex; justify-content:center;">
-                <div class="search-wrapper">
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="pi pi-search"></i>
-                        </span>
-                        <input type="text" class="form-control" style="border-radius:8px;" placeholder="Theo mã, tên hàng" v-model="searchQuery" @input="debounceSearch">
-                    </div>
-                </div>
-            </div>
-            <!-- Utility Options -->
-            <div class="ultility-options">
-                <!-- Xuất file -->
-                <Button 
-                  icon="pi pi-upload"
-                  label="Xuất file"
-                  @click="exportData"
-                  severity="secondary"
-                  style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
-                />
-                <!-- Utility Icons -->
-                <div class="utility-icons">
-                    <button class="btn" title="Chế độ xem">
-                        <i class="pi pi-list"></i>
-                    </button>
-                    <button class="btn" title="Cài đặt">
-                        <i class="pi pi-cog"></i>
-                    </button>
-                    <button class="btn" title="Trợ giúp">
-                        <i class="pi pi-question-circle"></i>
-                    </button>
-                </div>
-            </div>
+      <div class="controls-section"
+        style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
+        <!-- Title Section -->
+        <div class="title-section">
+          <h4>Danh sách thuốc</h4>
         </div>
+        <!-- Search Section -->
+        <div style="flex:1; display:flex; justify-content:center;">
+          <div class="search-wrapper">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="pi pi-search"></i>
+              </span>
+              <input type="text" class="form-control" style="border-radius:8px;" placeholder="Theo mã, tên hàng"
+                v-model="searchQuery" @input="debounceSearch">
+            </div>
+          </div>
+        </div>
+        <!-- Utility Options -->
+        <div class="ultility-options">
+          <!-- Xuất file -->
+          <Button icon="pi pi-upload" label="Xuất file" @click="exportData" severity="secondary"
+            style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
+          <!-- Utility Icons -->
+          <div class="utility-icons">
+            <button class="btn" title="Chế độ xem">
+              <i class="pi pi-list"></i>
+            </button>
+            <button class="btn" title="Cài đặt">
+              <i class="pi pi-cog"></i>
+            </button>
+            <button class="btn" title="Trợ giúp">
+              <i class="pi pi-question-circle"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- PrimeVue DataTable -->
     <div class="table-container">
-      <DataTable 
-        :value="paginatedMedicines" 
-        dataKey="id" 
-        :paginator="false"
-        :loading="loading"
-        :pt="{
-          table: { style: 'min-width: 50rem' }
-        }"
-      >
+      <DataTable :value="paginatedMedicines" dataKey="id" :paginator="false" :loading="loading" :pt="{
+        table: { style: 'min-width: 50rem' }
+      }">
         <!-- Mã thuốc -->
         <Column field="ma_hang" header="Mã thuốc" style="width: 18%">
           <template #body="{ data }">
@@ -86,10 +76,10 @@
         <Column field="don_vi_tinh" header="ĐVT" style="width: 8%">
         </Column>
       </DataTable>
-    </div>  
+    </div>
 
     <!-- Custom Paginator -->
-    <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]"style="margin-top: 50px;"></Paginator>
+    <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]" style="margin-top: 50px;"></Paginator>
     <!-- Toast for notifications -->
     <Toast />
   </div>
@@ -126,9 +116,9 @@ const rows = ref(10)
 // Computed properties
 const filteredMedicines = computed(() => {
   if (!searchQuery.value) return props.medicines
-  
+
   const query = searchQuery.value.toLowerCase()
-  return props.medicines.filter(medicine => 
+  return props.medicines.filter(medicine =>
     medicine.ma_hang?.toLowerCase().includes(query) ||
     medicine.ten_thuoc?.toLowerCase().includes(query) ||
     medicine.hoat_chat?.toLowerCase().includes(query)
@@ -361,13 +351,11 @@ onMounted(() => {
     padding: 10px;
     margin-top: 10px;
   }
-  
+
   :deep(.p-datatable .p-datatable-thead > tr > th),
   :deep(.p-datatable .p-datatable-tbody > tr > td) {
     padding: 12px 8px;
     font-size: 13px;
   }
 }
-
-
 </style>

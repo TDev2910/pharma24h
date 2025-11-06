@@ -2,237 +2,227 @@
   <div class="doctors-page">
     <!-- Header Control Bar -->
     <div class="header-control-bar">
-        <div class="controls-section" style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
-            <!-- Title Section -->
-            <div class="title-section">
-                <h4>Danh sách bác sĩ</h4>
+      <div class="controls-section"
+        style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
+        <!-- Title Section -->
+        <div class="title-section">
+          <h4>Danh sách bác sĩ</h4>
+        </div>
+        <!-- Search Section -->
+        <div style="flex:1; display:flex; justify-content:center;">
+          <div class="search-wrapper">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="pi pi-search"></i>
+              </span>
+              <input type="text" class="form-control" style="border-radius:8px;" placeholder="Theo mã, tên bác sĩ"
+                v-model="searchQuery" @input="debounceSearch">
             </div>
-            <!-- Search Section -->
-            <div style="flex:1; display:flex; justify-content:center;">
-                <div class="search-wrapper">
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="pi pi-search"></i>
-                        </span>
-                        <input type="text" class="form-control" style="border-radius:8px;" placeholder="Theo mã, tên bác sĩ" v-model="searchQuery" @input="debounceSearch">
-                    </div>
-                </div>
-            </div>
-    <!-- Utility Options -->
-    <div class="ultility-options">
-      <!-- Thêm bác sĩ -->
-        <Button 
-          icon="pi pi-plus"
-          label="Bác sĩ"
-          @click="showCreateModal"
-          severity="secondary"
-                  style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
-                />
-                <!-- Utility Icons -->
-                <div class="utility-icons">
-                    <button class="btn" title="Chế độ xem">
-                        <i class="pi pi-list"></i>
-                    </button>
-                    <button class="btn" title="Cài đặt">
-                        <i class="pi pi-cog"></i>
-                    </button>
-                    <button class="btn" title="Trợ giúp">
-                        <i class="pi pi-question-circle"></i>
-                    </button>
-                </div>
-            </div>
+          </div>
+        </div>
+        <!-- Utility Options -->
+        <div class="ultility-options">
+          <!-- Thêm bác sĩ -->
+          <Button icon="pi pi-plus" label="Bác sĩ" @click="showCreateModal" severity="secondary"
+            style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
+          <!-- Utility Icons -->
+          <div class="utility-icons">
+            <button class="btn" title="Chế độ xem">
+              <i class="pi pi-list"></i>
+            </button>
+            <button class="btn" title="Cài đặt">
+              <i class="pi pi-cog"></i>
+            </button>
+            <button class="btn" title="Trợ giúp">
+              <i class="pi pi-question-circle"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- DataTable -->
     <div class="table-container">
-        <DataTable 
-            :value="filteredDoctors" 
-            v-model:expandedRows="expandedRows"
-            stripedRows
-            responsiveLayout="scroll"
-            tableStyle="min-width: 50rem"
-            :paginator="true"
-            :row="5"
-            :rows="pagination.per_page"
-            :totalRecords="pagination.total"
-            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            :rowsPerPageOptions="[5,10,25]"
-            currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bác sĩ"
-            dataKey="id"
-            loadingIcon="pi pi-spinner"
-            emptyMessage="Không có dữ liệu bác sĩ">
-            <Column expander style="width: 3rem" />
-            <Column field="avatar" header="Ảnh">
-                <template #body="slotProps">
-                    <img 
-                        v-if="slotProps.data.avatar" 
-                        :src="getAvatarUrl(slotProps.data.avatar)" 
-                        alt="Avatar" 
-                        class="avatar-image"
-                        @error="handleImageError"
-                    />
-                    <div v-else class="no-avatar">
-                        <i class="pi pi-user"></i>
+      <DataTable :value="filteredDoctors" v-model:expandedRows="expandedRows" stripedRows responsiveLayout="scroll"
+        tableStyle="min-width: 50rem" :paginator="true" :row="5" :rows="pagination.per_page"
+        :totalRecords="pagination.total"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+        :rowsPerPageOptions="[5, 10, 25]"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bác sĩ" dataKey="id"
+        loadingIcon="pi pi-spinner" emptyMessage="Không có dữ liệu bác sĩ">
+        <Column expander style="width: 3rem" />
+        <Column field="avatar" header="Ảnh">
+          <template #body="slotProps">
+            <img v-if="slotProps.data.avatar" :src="getAvatarUrl(slotProps.data.avatar)" alt="Avatar"
+              class="avatar-image" @error="handleImageError" />
+            <div v-else class="no-avatar">
+              <i class="pi pi-user"></i>
+            </div>
+          </template>
+        </Column>
+        <Column field="doctor_code" header="Mã bác sĩ"></Column>
+        <Column field="name" header="Tên bác sĩ"></Column>
+        <Column field="gender" header="Giới tính"></Column>
+        <Column field="phone" header="Điện thoại"></Column>
+        <Column field="email" header="Email"></Column>
+        <Column field="specialty" header="Chuyên khoa">
+          <template #body="slotProps">
+            <span v-if="slotProps.data.specialty === 'General' || slotProps.data.specialty === 'general'">Tổng
+              quát</span>
+            <span v-else-if="slotProps.data.specialty === 'Cardiology' || slotProps.data.specialty === 'cardiology'">Tim
+              mạch</span>
+            <span v-else-if="slotProps.data.specialty === 'Neurology' || slotProps.data.specialty === 'neurology'">Thần
+              kinh</span>
+            <span v-else-if="slotProps.data.specialty === 'Pediatrics' || slotProps.data.specialty === 'pediatrics'">Nhi
+              khoa</span>
+            <span
+              v-else-if="slotProps.data.specialty === 'Orthopedics' || slotProps.data.specialty === 'orthopedics'">Chỉnh
+              hình</span>
+            <span
+              v-else-if="slotProps.data.specialty === 'Dermatology' || slotProps.data.specialty === 'dermatology'">Da
+              liễu</span>
+            <span
+              v-else-if="slotProps.data.specialty === 'Ophthalmology' || slotProps.data.specialty === 'ophthalmology'">Mắt</span>
+            <span v-else-if="slotProps.data.specialty === 'ENT' || slotProps.data.specialty === 'ent'">Tai mũi
+              họng</span>
+            <span v-else-if="slotProps.data.specialty === 'Gynecology' || slotProps.data.specialty === 'gynecology'">Sản
+              phụ khoa</span>
+            <span v-else-if="slotProps.data.specialty === 'Urology' || slotProps.data.specialty === 'urology'">Tiết
+              niệu</span>
+            <span v-else>{{ slotProps.data.specialty || '-' }}</span>
+          </template>
+        </Column>
+        <Column field="qualification" header="Trình độ">
+          <template #body="slotProps">
+            <span v-if="slotProps.data.qualification === 'Master' || slotProps.data.qualification === 'master'">Thạc
+              sĩ</span>
+            <span v-else-if="slotProps.data.qualification === 'Doctor' || slotProps.data.qualification === 'doctor'">Bác
+              sĩ</span>
+            <span
+              v-else-if="slotProps.data.qualification === 'Professor' || slotProps.data.qualification === 'professor'">Giáo
+              sư</span>
+            <span
+              v-else-if="slotProps.data.qualification === 'Specialist' || slotProps.data.qualification === 'specialist'">Chuyên
+              khoa</span>
+            <span
+              v-else-if="slotProps.data.qualification === 'Resident' || slotProps.data.qualification === 'resident'">Nội
+              trú</span>
+            <span v-else>{{ slotProps.data.qualification || '-' }}</span>
+          </template>
+        </Column>
+
+        <!-- Hiển thị chi tiết thông tin khi nhấn vào dropdown-->
+        <template #expansion="slotProps">
+          <div class="doctor-detail-container">
+            <!-- 2 danh mục thông tin và lịch làm việc-->
+            <div class="detail-tabs">
+              <button class="tab active" @click="switchTab('info')">Thông tin</button>
+              <button class="tab" @click="switchTab('schedule')">Lịch làm việc</button>
+            </div>
+
+            <!-- Danh mục thông tin và lịch làm việc-->
+            <div class="detail-content">
+              <!-- Tab Thông tin -->
+              <div v-if="activeTab === 'info'" class="tab-content">
+                <div class="row">
+                  <!-- Thông tin chung -->
+                  <div class="col-md-6">
+                    <h6 class="text-primary mb-3">
+                      <i></i>Thông tin chung
+                    </h6>
+                    <table class="table table-sm table-borderless">
+                      <tbody>
+                        <tr>
+                          <td class="fw-bold" style="width: 140px;">Mã bác sĩ:</td>
+                          <td>{{ slotProps.data.doctor_code }}</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Tên bác sĩ:</td>
+                          <td>{{ slotProps.data.name }}</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Giới tính:</td>
+                          <td>{{ slotProps.data.gender }}</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Điện thoại:</td>
+                          <td>{{ slotProps.data.phone }}</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Email:</td>
+                          <td>{{ slotProps.data.email }}</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Chuyên khoa:</td>
+                          <td>
+                            <span class="badge bg-info">{{ getSpecialtyText(slotProps.data.specialty) }}</span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Trình độ:</td>
+                          <td>
+                            <span class="badge bg-success">{{ getQualificationText(slotProps.data.qualification)
+                              }}</span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Thông tin bổ sung -->
+                  <div class="col-md-6">
+                    <h6 class="text-primary mb-3">
+                      <i></i>Thông tin bổ sung
+                    </h6>
+                    <table class="table table-sm table-borderless">
+                      <tbody>
+                        <tr>
+                          <td class="fw-bold">Địa chỉ:</td>
+                          <td>{{ slotProps.data.address || '-' }}</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Trạng thái:</td>
+                          <td>
+                            <span class="badge bg-success">Đang hoạt động</span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">Ngày tạo:</td>
+                          <td>{{ formatDate(slotProps.data.created_at) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <!-- Action buttons chỉnh sửa và xóa-->
+                    <div class="mt-3">
+                      <Button label="Chỉnh sửa" icon="pi pi-pencil" class="p-button-success p-button-sm me-2"
+                        @click="editDoctor(slotProps.data)" />
+                      <Button label="Xóa" icon="pi pi-trash" class="p-button-danger p-button-sm"
+                        @click="deleteDoctor(slotProps.data)" />
                     </div>
-                </template>
-            </Column>
-            <Column field="doctor_code" header="Mã bác sĩ"></Column>
-            <Column field="name" header="Tên bác sĩ"></Column>
-            <Column field="gender" header="Giới tính"></Column>
-            <Column field="phone" header="Điện thoại"></Column>
-            <Column field="email" header="Email"></Column>
-            <Column field="specialty" header="Chuyên khoa">
-                <template #body="slotProps">
-                    <span v-if="slotProps.data.specialty === 'General' || slotProps.data.specialty === 'general'">Tổng quát</span>
-                    <span v-else-if="slotProps.data.specialty === 'Cardiology' || slotProps.data.specialty === 'cardiology'">Tim mạch</span>
-                    <span v-else-if="slotProps.data.specialty === 'Neurology' || slotProps.data.specialty === 'neurology'">Thần kinh</span>
-                    <span v-else-if="slotProps.data.specialty === 'Pediatrics' || slotProps.data.specialty === 'pediatrics'">Nhi khoa</span>
-                    <span v-else-if="slotProps.data.specialty === 'Orthopedics' || slotProps.data.specialty === 'orthopedics'">Chỉnh hình</span>
-                    <span v-else-if="slotProps.data.specialty === 'Dermatology' || slotProps.data.specialty === 'dermatology'">Da liễu</span>
-                    <span v-else-if="slotProps.data.specialty === 'Ophthalmology' || slotProps.data.specialty === 'ophthalmology'">Mắt</span>
-                    <span v-else-if="slotProps.data.specialty === 'ENT' || slotProps.data.specialty === 'ent'">Tai mũi họng</span>
-                    <span v-else-if="slotProps.data.specialty === 'Gynecology' || slotProps.data.specialty === 'gynecology'">Sản phụ khoa</span>
-                    <span v-else-if="slotProps.data.specialty === 'Urology' || slotProps.data.specialty === 'urology'">Tiết niệu</span>
-                    <span v-else>{{ slotProps.data.specialty || '-' }}</span>
-                </template>
-            </Column>
-            <Column field="qualification" header="Trình độ">
-                <template #body="slotProps">
-                    <span v-if="slotProps.data.qualification === 'Master' || slotProps.data.qualification === 'master'">Thạc sĩ</span>
-                    <span v-else-if="slotProps.data.qualification === 'Doctor' || slotProps.data.qualification === 'doctor'">Bác sĩ</span>
-                    <span v-else-if="slotProps.data.qualification === 'Professor' || slotProps.data.qualification === 'professor'">Giáo sư</span>
-                    <span v-else-if="slotProps.data.qualification === 'Specialist' || slotProps.data.qualification === 'specialist'">Chuyên khoa</span>
-                    <span v-else-if="slotProps.data.qualification === 'Resident' || slotProps.data.qualification === 'resident'">Nội trú</span>
-                    <span v-else>{{ slotProps.data.qualification || '-' }}</span>
-                </template>
-            </Column>
-            
-            <!-- Hiển thị chi tiết thông tin khi nhấn vào dropdown-->
-            <template #expansion="slotProps">
-                <div class="doctor-detail-container">
-                  <!-- 2 danh mục thông tin và lịch làm việc-->
-                    <div class="detail-tabs">  
-                        <button class="tab active" @click="switchTab('info')">Thông tin</button>
-                        <button class="tab" @click="switchTab('schedule')">Lịch làm việc</button>
-                    </div>
-                    
-                    <!-- Danh mục thông tin và lịch làm việc-->
-                    <div class="detail-content">
-                        <!-- Tab Thông tin -->
-                        <div v-if="activeTab === 'info'" class="tab-content">
-                            <div class="row">
-                                <!-- Thông tin chung -->
-                                <div class="col-md-6">
-                                    <h6 class="text-primary mb-3">
-                                        <i></i>Thông tin chung
-                                    </h6>
-                                    <table class="table table-sm table-borderless">
-                                        <tbody>
-                                            <tr>
-                                                <td class="fw-bold" style="width: 140px;">Mã bác sĩ:</td>
-                                                <td>{{ slotProps.data.doctor_code }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Tên bác sĩ:</td>
-                                                <td>{{ slotProps.data.name }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Giới tính:</td>
-                                                <td>{{ slotProps.data.gender }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Điện thoại:</td>
-                                                <td>{{ slotProps.data.phone }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Email:</td>
-                                                <td>{{ slotProps.data.email }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Chuyên khoa:</td>
-                                                <td>
-                                                    <span class="badge bg-info">{{ getSpecialtyText(slotProps.data.specialty) }}</span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Trình độ:</td>
-                                                <td>
-                                                    <span class="badge bg-success">{{ getQualificationText(slotProps.data.qualification) }}</span>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                
-                                <!-- Thông tin bổ sung -->
-                                <div class="col-md-6">
-                                    <h6 class="text-primary mb-3">
-                                        <i></i>Thông tin bổ sung
-                                    </h6>
-                                    <table class="table table-sm table-borderless">
-                                        <tbody>
-                                            <tr>
-                                                <td class="fw-bold">Địa chỉ:</td>
-                                                <td>{{ slotProps.data.address || '-' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Trạng thái:</td>
-                                                <td>
-                                                    <span class="badge bg-success">Đang hoạt động</span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Ngày tạo:</td>
-                                                <td>{{ formatDate(slotProps.data.created_at) }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    
-                                    <!-- Action buttons chỉnh sửa và xóa-->
-                                    <div class="mt-3">
-                                        <Button 
-                                            label="Chỉnh sửa" 
-                                            icon="pi pi-pencil" 
-                                            class="p-button-success p-button-sm me-2"
-                                            @click="editDoctor(slotProps.data)" />                                       
-                                        <Button 
-                                            label="Xóa" 
-                                            icon="pi pi-trash" 
-                                            class="p-button-danger p-button-sm"
-                                            @click="deleteDoctor(slotProps.data)" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Tab Lịch làm việc -->
-                        <div v-if="activeTab === 'schedule'" class="tab-content">
-                            <div class="text-center text-muted py-4">
-                                <i class="pi pi-calendar" style="font-size: 2rem;"></i>
-                                <p class="mt-2">Chức năng lịch làm việc đang được phát triển</p>
-                            </div>
-                        </div>
-                    </div>
+                  </div>
                 </div>
-            </template>
-        </DataTable>
+              </div>
+
+              <!-- Tab Lịch làm việc -->
+              <div v-if="activeTab === 'schedule'" class="tab-content">
+                <div class="text-center text-muted py-4">
+                  <i class="pi pi-calendar" style="font-size: 2rem;"></i>
+                  <p class="mt-2">Chức năng lịch làm việc đang được phát triển</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </DataTable>
     </div>
 
     <!-- Create Doctor Modal -->
-    <CreateDoctorModal 
-      :visible="showModal"
-      @close="closeModal"
-      @created="handleDoctorCreated"
-    />
-    
+    <CreateDoctorModal :visible="showModal" @close="closeModal" @created="handleDoctorCreated" />
+
     <!-- Edit Doctor Modal -->
-    <EditDoctorModal 
-      :visible="showEditModal" 
-      :doctorId="selectedDoctorId" 
-      @close="showEditModal = false" 
-      @edited="handleDoctorEdited"
-    />
+    <EditDoctorModal :visible="showEditModal" :doctorId="selectedDoctorId" @close="showEditModal = false"
+      @edited="handleDoctorEdited" />
   </div>
 </template>
 
@@ -242,7 +232,7 @@ import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import CreateDoctorModal from './Modals/Create.vue'
-import EditDoctorModal from './Modals/Edit.vue' 
+import EditDoctorModal from './Modals/Edit.vue'
 import axios from 'axios'
 
 export default {
@@ -253,14 +243,14 @@ export default {
     DataTable,
     Column,
     CreateDoctorModal,
-    EditDoctorModal  
+    EditDoctorModal
   },
-  
+
   data() {
     return {
       showModal: false,
-      showEditModal: false,  
-      selectedDoctorId: null,  
+      showEditModal: false,
+      selectedDoctorId: null,
       searchQuery: '',
       loading: false,
       selectedDoctors: [],
@@ -282,7 +272,7 @@ export default {
   computed: {
     filteredDoctors() {
       //Nếu không nhập từ khóa , thông tin bác sĩ sẽ hiển thị tất cả
-      if(!this.searchQuery || !this.searchQuery.trim()) {
+      if (!this.searchQuery || !this.searchQuery.trim()) {
         return this.doctors; //Trả về tất cả bác sĩ có trong datatable
       }
 
@@ -300,7 +290,7 @@ export default {
   mounted() {
     this.loadDoctors()
   },
-  
+
   methods: {
     // Load danh sách bác sĩ từ API
     async loadDoctors() {
@@ -313,7 +303,7 @@ export default {
             page: this.pagination.current_page
           }
         })
-        
+
         if (response.data.success) {
           this.doctors = response.data.data
           this.pagination = response.data.pagination
@@ -345,28 +335,28 @@ export default {
     showCreateModal() {
       this.showModal = true
     },
-    
+
     closeModal() {
       this.showModal = false
     },
-    
+
     // Handle doctor created
     async handleDoctorCreated(doctor) {
       console.log('Doctor created:', doctor)
       this.closeModal()
       await this.loadDoctors() // Reload danh sách
     },
-    
+
     // Edit doctor
     editDoctor(doctor) {
-      this.selectedDoctorId = doctor.id  
-      
+      this.selectedDoctorId = doctor.id
+
       // Đảm bảo selectedDoctorId được set trước khi mở modal
       this.$nextTick(() => {
         this.showEditModal = true
       })
     },
-    
+
     // Delete doctor
     async deleteDoctor(doctor) {
       if (confirm(`Bạn có chắc muốn xóa bác sĩ ${doctor.name}?`)) {
@@ -400,7 +390,7 @@ export default {
       if (index !== -1) {
         this.doctors.splice(index, 1, updatedDoctor)
       }
-      
+
       this.showEditModal = false
       this.selectedDoctorId = null
     },
@@ -420,7 +410,7 @@ export default {
       if (confirm(`Bạn có chắc muốn xóa ${this.selectedDoctors.length} bác sĩ đã chọn?`)) {
         try {
           let deletedCount = 0
-          
+
           // Xóa từng doctor một
           for (const doctor of this.selectedDoctors) {
             try {
@@ -432,17 +422,17 @@ export default {
               console.error(`Error deleting doctor ${doctor.id}:`, error)
             }
           }
-          
+
           this.$toast.add({
             severity: 'success',
             summary: 'Thành công',
             detail: `Đã xóa ${deletedCount}/${this.selectedDoctors.length} bác sĩ`,
             life: 3000
           })
-          
+
           this.selectedDoctors = []
           await this.loadDoctors()
-          
+
         } catch (error) {
           console.error('Error deleting doctors:', error)
           this.$toast.add({
@@ -458,12 +448,12 @@ export default {
     // Get avatar URL
     getAvatarUrl(avatarPath) {
       if (!avatarPath) return null
-      
+
       // Nếu đã có full URL thì trả về luôn
       if (avatarPath.startsWith('http')) {
         return avatarPath
       }
-      
+
       // Nếu là relative path thì thêm base URL
       return `/storage/${avatarPath}`
     },
@@ -532,7 +522,7 @@ export default {
   }
 }
 </script>
-  
+
 <style scoped>
 .doctors-page {
   padding: 20px;
@@ -819,8 +809,15 @@ export default {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .detail-content .table {
@@ -869,13 +866,13 @@ export default {
     padding: 10px;
     margin-top: 10px;
   }
-  
+
   :deep(.p-datatable .p-datatable-thead > tr > th),
   :deep(.p-datatable .p-datatable-tbody > tr > td) {
     padding: 12px 8px;
     font-size: 13px;
   }
-  
+
   .avatar-image,
   .no-avatar {
     width: 32px;

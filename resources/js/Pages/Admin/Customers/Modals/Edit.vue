@@ -1,176 +1,105 @@
 <template>
-    <Dialog 
-      :visible="visible" 
-      @update:visible="$emit('close')"
-      header="Cập nhật thông tin khách hàng" 
-      :style="{ width: '690px' }"
-      modal
-      :closable="true"
-    >
+  <Dialog :visible="visible" @update:visible="$emit('close')" header="Cập nhật thông tin khách hàng"
+    :style="{ width: '690px' }" modal :closable="true">
     <div class="flex gap-6">
-        <!-- Left Section: Form Fields Grid -->
-        <div class="form-grid" style="flex: 1;">
-            <!-- Tên khách hàng -->
-            <div class="form-field">
-                <label for="name" class="field-label">Tên khách hàng *</label>
-                <InputText
-                    id="name"
-                    v-model="formData.name"
-                    type="text"
-                    placeholder="Nhập tên khách hàng"
-                    class="field-input"
-                    :class="{ 'p-invalid': errors.name }"
-                />
-                <small v-if="errors.name" class="p-error">{{ errors.name[0] }}</small>
+      <!-- Left Section: Form Fields Grid -->
+      <div class="form-grid" style="flex: 1;">
+        <!-- Tên khách hàng -->
+        <div class="form-field">
+          <label for="name" class="field-label">Tên khách hàng *</label>
+          <InputText id="name" v-model="formData.name" type="text" placeholder="Nhập tên khách hàng" class="field-input"
+            :class="{ 'p-invalid': errors.name }" />
+          <small v-if="errors.name" class="p-error">{{ errors.name[0] }}</small>
+        </div>
+
+        <!-- Email -->
+        <div class="form-field">
+          <label for="email" class="field-label">Email *</label>
+          <InputText id="email" v-model="formData.email" type="email" placeholder="email@gmail.com" class="field-input"
+            :class="{ 'p-invalid': errors.email }" />
+          <small v-if="errors.email" class="p-error">{{ errors.email[0] }}</small>
+        </div>
+
+        <!-- Mật khẩu -->
+        <div class="form-field">
+          <label for="password" class="field-label">Mật khẩu *</label>
+          <InputText id="password" v-model="formData.password" type="password" placeholder="Nhập mật khẩu"
+            class="field-input" :class="{ 'p-invalid': errors.password }" />
+          <small v-if="errors.password" class="p-error">{{ errors.password[0] }}</small>
+        </div>
+
+        <!-- Xác nhận mật khẩu -->
+        <div class="form-field">
+          <label for="password_confirmation" class="field-label">Xác nhận mật khẩu *</label>
+          <InputText id="password_confirmation" v-model="formData.password_confirmation" type="password"
+            placeholder="Nhập lại mật khẩu" class="field-input"
+            :class="{ 'p-invalid': errors.password_confirmation }" />
+          <small v-if="errors.password_confirmation" class="p-error">{{ errors.password_confirmation[0] }}</small>
+        </div>
+
+        <!-- Số điện thoại -->
+        <div class="form-field">
+          <label for="phone" class="field-label">Số điện thoại</label>
+          <InputText id="phone" v-model="formData.phone" type="tel" placeholder="Nhập số điện thoại" class="field-input"
+            :class="{ 'p-invalid': errors.phone }" />
+          <small v-if="errors.phone" class="p-error">{{ errors.phone[0] }}</small>
+        </div>
+
+        <!-- Địa chỉ -->
+        <div class="form-field">
+          <label for="address" class="field-label">Địa chỉ</label>
+          <InputText id="address" v-model="formData.address" type="text" placeholder="Nhập địa chỉ" class="field-input"
+            :class="{ 'p-invalid': errors.address }" />
+          <small v-if="errors.address" class="p-error">{{ errors.address[0] }}</small>
+        </div>
+
+        <!-- Địa chỉ chi tiết Section -->
+        <div class="address-section">
+          <div class="address-container">
+            <div class="address-header">
+              <span class="address-title">Địa chỉ chi tiết (tùy chọn)</span>
             </div>
 
-            <!-- Email -->
-            <div class="form-field">
-                <label for="email" class="field-label">Email *</label>
-                <InputText
-                    id="email"
-                    v-model="formData.email"
-                    type="email"
-                    placeholder="email@gmail.com"
-                    class="field-input" 
-                    :class="{ 'p-invalid': errors.email }"
-                />
-                <small v-if="errors.email" class="p-error">{{ errors.email[0] }}</small>
+            <!-- Tỉnh/Thành phố, Quận/Huyện, Xã/Phường -->
+            <div class="address-row">
+              <!-- Tỉnh/Thành phố -->
+              <div class="form-field">
+                <label for="province" class="field-label">Tỉnh/Thành phố</label>
+                <Dropdown id="province" v-model="formData.province" :options="provinceOptions" optionLabel="name"
+                  placeholder="-- Chọn tỉnh/thành phố --" class="field-input" :class="{ 'p-invalid': errors.province }"
+                  style="width: 185px;" />
+                <small v-if="errors.province" class="p-error">{{ errors.province[0] }}</small>
+              </div>
+
+              <!-- Quận/Huyện -->
+              <div class="form-field">
+                <label for="district" class="field-label">Quận/Huyện</label>
+                <Dropdown id="district" v-model="formData.district" :options="districtOptions" optionLabel="name"
+                  placeholder="-- Chọn quận/huyện --" class="field-input" :class="{ 'p-invalid': errors.district }"
+                  :disabled="!formData.province" style="width: 185px;" />
+                <small v-if="errors.district" class="p-error">{{ errors.district[0] }}</small>
+              </div>
+
+              <!-- Xã/Phường -->
+              <div class="form-field">
+                <label for="ward" class="field-label">Xã/Phường</label>
+                <Dropdown id="ward" v-model="formData.ward" :options="wardOptions" optionLabel="name"
+                  placeholder="-- Chọn xã/phường --" class="field-input" :class="{ 'p-invalid': errors.ward }"
+                  :disabled="!formData.district" style="width: 185px;" />
+                <small v-if="errors.ward" class="p-error">{{ errors.ward[0] }}</small>
+              </div>
             </div>
-
-            <!-- Mật khẩu -->
-            <div class="form-field">
-                <label for="password" class="field-label">Mật khẩu *</label>
-                <InputText
-                    id="password"
-                    v-model="formData.password"
-                    type="password"
-                    placeholder="Nhập mật khẩu"
-                    class="field-input" 
-                    :class="{ 'p-invalid': errors.password }"
-                />
-                <small v-if="errors.password" class="p-error">{{ errors.password[0] }}</small>
-            </div>
-
-            <!-- Xác nhận mật khẩu -->
-            <div class="form-field">
-                <label for="password_confirmation" class="field-label">Xác nhận mật khẩu *</label>
-                <InputText
-                    id="password_confirmation"
-                    v-model="formData.password_confirmation"
-                    type="password"
-                    placeholder="Nhập lại mật khẩu"
-                    class="field-input" 
-                    :class="{ 'p-invalid': errors.password_confirmation }"
-                />
-                <small v-if="errors.password_confirmation" class="p-error">{{ errors.password_confirmation[0] }}</small>
-            </div>
-
-            <!-- Số điện thoại -->
-            <div class="form-field">
-                <label for="phone" class="field-label">Số điện thoại</label>
-                <InputText
-                    id="phone"
-                    v-model="formData.phone"
-                    type="tel"
-                    placeholder="Nhập số điện thoại"
-                    class="field-input" 
-                    :class="{ 'p-invalid': errors.phone }"
-                />
-                <small v-if="errors.phone" class="p-error">{{ errors.phone[0] }}</small>
-            </div>
-
-            <!-- Địa chỉ -->
-            <div class="form-field">
-                <label for="address" class="field-label">Địa chỉ</label>
-                <InputText
-                    id="address"
-                    v-model="formData.address"
-                    type="text"
-                    placeholder="Nhập địa chỉ"
-                    class="field-input" 
-                    :class="{ 'p-invalid': errors.address }"
-                />
-                <small v-if="errors.address" class="p-error">{{ errors.address[0] }}</small>
-            </div>
-
-            <!-- Địa chỉ chi tiết Section -->
-            <div class="address-section">
-                <div class="address-container">
-                    <div class="address-header">
-                        <span class="address-title">Địa chỉ chi tiết (tùy chọn)</span>
-                    </div>
-
-                    <!-- Tỉnh/Thành phố, Quận/Huyện, Xã/Phường -->
-                    <div class="address-row">
-                        <!-- Tỉnh/Thành phố -->
-                        <div class="form-field">
-                            <label for="province" class="field-label">Tỉnh/Thành phố</label>
-                            <Dropdown
-                                id="province"
-                                v-model="formData.province"
-                                :options="provinceOptions"
-                                optionLabel="name"
-                                placeholder="-- Chọn tỉnh/thành phố --"
-                                class="field-input"
-                                :class="{ 'p-invalid': errors.province }" style="width: 185px;"
-                            />
-                            <small v-if="errors.province" class="p-error">{{ errors.province[0] }}</small>
-                        </div>
-
-                        <!-- Quận/Huyện -->
-                        <div class="form-field">
-                            <label for="district" class="field-label">Quận/Huyện</label>
-                            <Dropdown
-                                id="district"
-                                v-model="formData.district"
-                                :options="districtOptions"
-                                optionLabel="name"
-                                placeholder="-- Chọn quận/huyện --"
-                                class="field-input"
-                                :class="{ 'p-invalid': errors.district }"
-                                :disabled="!formData.province" style="width: 185px;"
-                            />
-                            <small v-if="errors.district" class="p-error">{{ errors.district[0] }}</small>
-                        </div>
-
-                        <!-- Xã/Phường -->
-                        <div class="form-field">
-                            <label for="ward" class="field-label">Xã/Phường</label>
-                            <Dropdown
-                                id="ward"
-                                v-model="formData.ward"
-                                :options="wardOptions"
-                                optionLabel="name"
-                                placeholder="-- Chọn xã/phường --"
-                                class="field-input"
-                                :class="{ 'p-invalid': errors.ward }"
-                                :disabled="!formData.district" style="width: 185px;"
-                            />
-                            <small v-if="errors.ward" class="p-error">{{ errors.ward[0] }}</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
+        </div>
       </div>
     </div>
     <template #footer>
-    <div class="flex justify-end gap-2">
-          <Button 
-            type="button" 
-            label="Hủy" 
-            severity="secondary" 
-            @click="closeModal"
-          />
-          <Button 
-            type="button" 
-            label="Lưu khách hàng" 
-            @click="saveCustomer"
-            :loading="loading"
-          />
-    </div>
-      </template>
-    </Dialog>
+      <div class="flex justify-end gap-2">
+        <Button type="button" label="Hủy" severity="secondary" @click="closeModal" />
+        <Button type="button" label="Lưu khách hàng" @click="saveCustomer" :loading="loading" />
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <script>
@@ -182,77 +111,75 @@ import Textarea from 'primevue/textarea'
 import axios from 'axios'
 
 export default {
-    name: 'EditCustomerModal',
-    components: {
-        Dialog,
-        Button,
-        InputText,
-        Dropdown,
-        Textarea
+  name: 'EditCustomerModal',
+  components: {
+    Dialog,
+    Button,
+    InputText,
+    Dropdown,
+    Textarea
+  },
+  props: {
+    visible: {
+      type: Boolean,
+      default: false
     },
-    props: {
-        visible: {
-        type: Boolean,
-        default: false
-        },
-        customer: {
-        type: Object,
-        default: null
-        }
-    },
-    emits: ['close', 'updated'],
-    mounted() {
-        // Load provinces when modal opens
-        if (this.visible) {
-        this.loadProvinces()
-        }
-    },
-    watch: {
+    customer: {
+      type: Object,
+      default: null
+    }
+  },
+  emits: ['close', 'updated'],
+  mounted() {
+    // Load provinces when modal opens
+    if (this.visible) {
+      this.loadProvinces()
+    }
+  },
+  watch: {
     visible(newVal) {
-        if (newVal && this.customer) {
+      if (newVal && this.customer) {
         this.loadCustomerData()
-        }
+      }
     },
     customer(newVal) {
-        if (newVal && this.visible) {
+      if (newVal && this.visible) {
         this.loadCustomerData()
-        }
+      }
     },
     'formData.province'(newProvince) {
-        if (newProvince && newProvince.code) {
+      if (newProvince && newProvince.code) {
         this.onProvinceChange(newProvince.code)
-        }
+      }
     },
     'formData.district'(newDistrict) {
-        if (newDistrict && newDistrict.code) {
+      if (newDistrict && newDistrict.code) {
         this.onDistrictChange(newDistrict.code)
-        }
+      }
     }
-    },
-    data() 
-    {
-        return {
-        loading: false,
-        formData: {
-            name: '',
-            email: '',
-            password: '',
-            password_confirmation: '',
-            phone: '',
-            address: '',
-            province: null,
-            district: null,
-            ward: null
-        },
-        errors: {},
-        provinceOptions: [],
-        districtOptions: [],
-        wardOptions: []
-        }
-    },
+  },
+  data() {
+    return {
+      loading: false,
+      formData: {
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+        phone: '',
+        address: '',
+        province: null,
+        district: null,
+        ward: null
+      },
+      errors: {},
+      provinceOptions: [],
+      districtOptions: [],
+      wardOptions: []
+    }
+  },
   methods: {
-    closeModal() 
-    {
+    closeModal() {
       this.resetForm()
       this.$emit('close')
     },
@@ -260,9 +187,8 @@ export default {
     {
       this.loading = true
       this.errors = {}
-      
-      try 
-      {
+
+      try {
         // Chuẩn bị dữ liệu 
         const dataToSend = {
           name: this.formData.name,
@@ -276,10 +202,10 @@ export default {
           district: this.formData.district?.name || null,
           ward: this.formData.ward?.name || null
         }
-        
+
         //gửi post request đến admin/customers
         const response = await axios.put(`/admin/customers/${this.customer.id}`, dataToSend)
-        
+
         //xử lý dữ liệu đầu vào được nhập trong form
         if (response.data.success) {
           // Hiển thị thông báo thành công
@@ -289,14 +215,14 @@ export default {
             detail: response.data.message,
             life: 3000
           })
-          
+
           this.$emit('updated', response.data.data)
           this.closeModal()
         }
-      } 
+      }
       catch (error) {
         console.error('Error updating customer:', error)
-        
+
         if (error.response && error.response.status === 422) {
           // Lỗi validation
           this.errors = error.response.data.errors
@@ -306,9 +232,8 @@ export default {
             detail: 'Vui lòng kiểm tra lại thông tin nhập vào',
             life: 5000
           })
-        } 
-        else 
-        {
+        }
+        else {
           // Lỗi khác
           this.$toast.add({
             severity: 'error',
@@ -317,22 +242,21 @@ export default {
             life: 5000
           })
         }
-      } 
-      finally 
-      {
+      }
+      finally {
         this.loading = false
       }
     },
-    
+
     loadCustomerData() {
       if (!this.customer) return
-      
+
       // Load dữ liệu cơ bản
       this.formData.name = this.customer.name || ''
       this.formData.email = this.customer.email || ''
       this.formData.phone = this.customer.phone || ''
       this.formData.address = this.customer.address || ''
-      
+
       // Xử lý tỉnh/thành phố hiện tại
       this.loadProvinceData()
     },
@@ -341,25 +265,25 @@ export default {
       try {
         // Load danh sách tỉnh trước
         await this.loadProvinces()
-        
+
         // Tìm tỉnh hiện tại trong danh sách
         if (this.customer.province) {
           const currentProvince = this.provinceOptions.find(p => p.name === this.customer.province)
           if (currentProvince) {
             this.formData.province = currentProvince
-            
+
             // Load districts của tỉnh này
             await this.onProvinceChange(currentProvince.code)
-            
+
             // Tìm district hiện tại
             if (this.customer.district) {
               const currentDistrict = this.districtOptions.find(d => d.name === this.customer.district)
               if (currentDistrict) {
                 this.formData.district = currentDistrict
-                
+
                 // Load wards của district này
                 await this.onDistrictChange(currentDistrict.code)
-                
+
                 // Tìm ward hiện tại
                 if (this.customer.ward) {
                   const currentWard = this.wardOptions.find(w => w.name === this.customer.ward)
@@ -376,7 +300,7 @@ export default {
       }
     },
 
-    resetForm() { 
+    resetForm() {
       this.formData = {
         name: '',
         email: '',
@@ -407,7 +331,7 @@ export default {
           //gọi API trực tiếp
           const response = await fetch('https://provinces.open-api.vn/api/?depth=1')
           const data = await response.json()
-          
+
           this.provinceOptions = data.map(province => ({
             name: province.name,
             code: province.code
@@ -423,7 +347,7 @@ export default {
         })
       }
     },
-    
+
     async onProvinceChange(provinceCode) {
       if (!provinceCode) {
         this.districtOptions = []
@@ -432,16 +356,16 @@ export default {
         this.formData.ward = null
         return
       }
-      
+
       try {
         const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
         const data = await response.json()
-        
+
         this.districtOptions = data.districts.map(district => ({
           name: district.name,
           code: district.code
         }))
-        
+
         // Reset district and ward
         this.formData.district = null
         this.formData.ward = null
@@ -463,16 +387,16 @@ export default {
         this.formData.ward = null
         return
       }
-      
+
       try {
         const response = await fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
         const data = await response.json()
-        
+
         this.wardOptions = data.wards.map(ward => ({
           name: ward.name,
           code: ward.code
         }))
-        
+
         // Reset ward
         this.formData.ward = null
       } catch (error) {
@@ -506,7 +430,8 @@ export default {
 
 /* Address Section */
 .address-section {
-  grid-column: 1 / -1; /* Span across both columns */
+  grid-column: 1 / -1;
+  /* Span across both columns */
   margin-top: 8px;
 }
 
@@ -571,7 +496,7 @@ export default {
 }
 
 .field-input {
-  width: 100% ;
+  width: 100%;
   height: 32px !important;
   border-radius: 6px !important;
   font-size: 15px !important;
@@ -601,7 +526,7 @@ export default {
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .email-field {
     grid-column: 1;
   }

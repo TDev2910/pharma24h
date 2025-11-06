@@ -10,7 +10,7 @@ use App\Models\Inventory\PurchaseReturnItem;
 use App\Models\Inventory\PurchaseReturnPayment;
 use App\Models\Medicine;
 use App\Models\Goods;
-use App\Services\Excel\Export\PurchaseReturnExport; 
+use App\Services\Excel\Export\PurchaseReturnExport;
 use Illuminate\Support\Str;
 
 use Inertia\Inertia;
@@ -24,7 +24,7 @@ class PurchaseReturnsController extends Controller
     {
         $returns = PurchaseReturn::with(['supplier', 'items'])->get();
 
-        $formattedReturns = $returns->map(function($return) {
+        $formattedReturns = $returns->map(function ($return) {
             return [
                 'id' => $return->id,
                 'return_code' => $return->return_code,
@@ -44,10 +44,10 @@ class PurchaseReturnsController extends Controller
                 'reason' => $return->note ?? 'Không có lý do'
             ];
         });
-            
+
         return Inertia::render('Admin/Purchases/Purchase-Returns/Dashboard', [
             'returns' => $formattedReturns
-        ]);    
+        ]);
     }
 
     /**
@@ -56,7 +56,7 @@ class PurchaseReturnsController extends Controller
     public function create()
     {
         $suppliers = Supplier::orderBy('ten_nha_cung_cap')
-            ->get(['id','ten_nha_cung_cap','ma_nha_cung_cap']);
+            ->get(['id', 'ten_nha_cung_cap', 'ma_nha_cung_cap']);
         $medicines = Medicine::all();
         $goods = Goods::all();
         return Inertia::render('Admin/Purchases/Purchase-Returns/Create', [
@@ -86,72 +86,71 @@ class PurchaseReturnsController extends Controller
                 'items.*.discount' => 'nullable|numeric|min:0',
             ]);
 
-        // Tạo phiếu trả hàng
-        $purchaseReturn = PurchaseReturn::create([
-            'return_code' => $request->return_code,
-            'supplier_id' => $request->supplier_id,
-            'return_date' => $request->return_date,
-            'status' => 'returned', // Mặc định là đã trả hàng
-            'total_amount' => 0,
-            'total_discount' => 0,
-            'note' => $request->note
-        ]);
-
-        $totalAmount = 0;
-        $totalDiscount = 0;
-        
-        // Lấy giảm giá tổng từ form (nếu có)
-        $formDiscount = $request->discount ?? 0;
-
-        // Tạo chi tiết trả hàng
-        foreach ($request->items as $item) {
-            $quantity = $item['quantity'];
-            $unitPrice = $item['unit_price'];
-            $discount = $item['discount'] ?? 0;
-            
-            // Tính thành tiền: (số lượng × đơn giá) - giảm giá
-            $totalPrice = ($quantity * $unitPrice) - $discount;
-            
-            $totalAmount += $totalPrice;
-            $totalDiscount += $discount;
-
-            PurchaseReturnItem::create([
-                'purchase_return_id' => $purchaseReturn->id,
-                'product_type' => $item['product_type'],
-                'product_id' => $item['product_id'],
-                'quantity' => $quantity,
-                'unit_price' => $unitPrice,
-                'discount' => $discount,
-                'total_price' => $totalPrice,
-                'note' => $item['note'] ?? null
+            // Tạo phiếu trả hàng
+            $purchaseReturn = PurchaseReturn::create([
+                'return_code' => $request->return_code,
+                'supplier_id' => $request->supplier_id,
+                'return_date' => $request->return_date,
+                'status' => 'returned', // Mặc định là đã trả hàng
+                'total_amount' => 0,
+                'total_discount' => 0,
+                'note' => $request->note
             ]);
 
-            // GIẢM tồn kho (khác với nhập hàng là TĂNG)
-            if($item['product_type'] === 'medicine') {
-                $medicine = Medicine::find($item['product_id']);
-                $medicine->ton_kho -= (int)$quantity; // TRỪ tồn kho
-                $medicine->save();
-            } else {
-                $goods = Goods::find($item['product_id']);
-                $goods->ton_kho -= (int)$quantity; // TRỪ tồn kho
-                $goods->save();
-            }
-        }
+            $totalAmount = 0;
+            $totalDiscount = 0;
 
-        // Áp dụng giảm giá tổng vào tổng tiền
-        $finalAmount = $totalAmount - $formDiscount;
-        
-        // Cập nhật tổng tiền và tổng giảm giá
-        $purchaseReturn->update([
-            'total_amount' => $finalAmount,
-            'total_discount' => $totalDiscount + $formDiscount,
-            'paid_amount' => 0, // Ban đầu chưa trả tiền
-            'remaining_amount' => $finalAmount // Số tiền còn lại = tổng tiền (vì chưa trả)
-        ]);
+            // Lấy giảm giá tổng từ form (nếu có)
+            $formDiscount = $request->discount ?? 0;
+
+            // Tạo chi tiết trả hàng
+            foreach ($request->items as $item) {
+                $quantity = $item['quantity'];
+                $unitPrice = $item['unit_price'];
+                $discount = $item['discount'] ?? 0;
+
+                // Tính thành tiền: (số lượng × đơn giá) - giảm giá
+                $totalPrice = ($quantity * $unitPrice) - $discount;
+
+                $totalAmount += $totalPrice;
+                $totalDiscount += $discount;
+
+                PurchaseReturnItem::create([
+                    'purchase_return_id' => $purchaseReturn->id,
+                    'product_type' => $item['product_type'],
+                    'product_id' => $item['product_id'],
+                    'quantity' => $quantity,
+                    'unit_price' => $unitPrice,
+                    'discount' => $discount,
+                    'total_price' => $totalPrice,
+                    'note' => $item['note'] ?? null
+                ]);
+
+                // GIẢM tồn kho (khác với nhập hàng là TĂNG)
+                if ($item['product_type'] === 'medicine') {
+                    $medicine = Medicine::find($item['product_id']);
+                    $medicine->ton_kho -= (int)$quantity; // TRỪ tồn kho
+                    $medicine->save();
+                } else {
+                    $goods = Goods::find($item['product_id']);
+                    $goods->ton_kho -= (int)$quantity; // TRỪ tồn kho
+                    $goods->save();
+                }
+            }
+
+            // Áp dụng giảm giá tổng vào tổng tiền
+            $finalAmount = $totalAmount - $formDiscount;
+
+            // Cập nhật tổng tiền và tổng giảm giá
+            $purchaseReturn->update([
+                'total_amount' => $finalAmount,
+                'total_discount' => $totalDiscount + $formDiscount,
+                'paid_amount' => 0, // Ban đầu chưa trả tiền
+                'remaining_amount' => $finalAmount // Số tiền còn lại = tổng tiền (vì chưa trả)
+            ]);
 
             return redirect()->route('admin.purchase-returns.index')
                 ->with('success', 'Phiếu trả hàng đã được tạo thành công!');
-                
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'message' => 'Dữ liệu không hợp lệ',
@@ -170,7 +169,7 @@ class PurchaseReturnsController extends Controller
     public function show(string $id)
     {
         $purchaseReturn = PurchaseReturn::with(['supplier', 'items.product'])->findOrFail($id);
-        
+
         return Inertia::render('Admin/Purchases/Purchase-Returns/Show', [
             'purchaseReturn' => $purchaseReturn
         ]);
@@ -182,8 +181,8 @@ class PurchaseReturnsController extends Controller
     public function edit(string $id)
     {
         $purchaseReturn = PurchaseReturn::with(['supplier', 'items.product'])->findOrFail($id);
-        $suppliers = Supplier::orderBy('ten_nha_cung_cap')->get(['id','ten_nha_cung_cap','ma_nha_cung_cap']);
-        
+        $suppliers = Supplier::orderBy('ten_nha_cung_cap')->get(['id', 'ten_nha_cung_cap', 'ma_nha_cung_cap']);
+
         return Inertia::render('Admin/Purchases/Purchase-Returns/Edit', [
             'purchaseReturn' => $purchaseReturn,
             'suppliers' => $suppliers
@@ -205,22 +204,19 @@ class PurchaseReturnsController extends Controller
     {
         try {
             $purchaseReturn = PurchaseReturn::findOrFail($id);
-            
+
             // Xóa các items liên quan
             $purchaseReturn->items()->delete();
-            
+
             // Xóa payments liên quan
             $purchaseReturn->payments()->delete();
-            
+
             // Xóa purchase return
             $purchaseReturn->delete();
-            
+
             return redirect()->route('admin.purchase-returns.index')
                 ->with('success', 'Phiếu trả hàng đã được xóa thành công!');
-                
-        } 
-        catch (\Exception $e) 
-        {
+        } catch (\Exception $e) {
             return redirect()->route('admin.purchase-returns.index')
                 ->with('error', 'Có lỗi xảy ra khi xóa phiếu trả hàng: ' . $e->getMessage());
         }
@@ -234,7 +230,7 @@ class PurchaseReturnsController extends Controller
         do {
             $code = str_pad(rand(1000000, 9999999), 7, '0', STR_PAD_LEFT);
         } while (PurchaseReturn::where('return_code', $code)->exists());
-        
+
         return response()->json(['code' => $code]);
     }
 
@@ -253,43 +249,43 @@ class PurchaseReturnsController extends Controller
         try {
             // Lấy dữ liệu với filter
             $query = PurchaseReturn::with(['supplier', 'items']);
-            
+
             //tìm kiếm theo mã phiếu, tên nhà cung cấp
             if ($request->filled('search')) {
                 $searchTerm = $request->search;
-                $query->where(function($q) use ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
                     $q->where('return_code', 'like', '%' . $searchTerm . '%')
-                      ->orWhereHas('supplier', function($subQ) use ($searchTerm) {
-                          $subQ->where('ten_nha_cung_cap', 'like', '%' . $searchTerm . '%');
-                      })
-                      ->orWhere('note', 'like', '%' . $searchTerm . '%');
+                        ->orWhereHas('supplier', function ($subQ) use ($searchTerm) {
+                            $subQ->where('ten_nha_cung_cap', 'like', '%' . $searchTerm . '%');
+                        })
+                        ->orWhere('note', 'like', '%' . $searchTerm . '%');
                 });
             }
-            
+
             // Filter theo status (có thể là nhiều status)
             if ($request->filled('status')) {
                 $statuses = explode(',', $request->status);
                 $query->whereIn('status', $statuses);
             }
-            
+
             // Filter theo supplier
             if ($request->filled('supplier_id')) {
                 $query->where('supplier_id', $request->supplier_id);
             }
-            
+
             // Filter theo thời gian
             if ($request->filled('date_from')) {
                 $query->where('return_date', '>=', $request->date_from);
             }
-            
+
             if ($request->filled('date_to')) {
                 $query->where('return_date', '<=', $request->date_to);
             }
-            
+
             $returns = $query->get();
-            
+
             // Format dữ liệu
-            $formattedReturns = $returns->map(function($return) {
+            $formattedReturns = $returns->map(function ($return) {
                 return [
                     'return_code' => $return->return_code,
                     'supplier_name' => $return->supplier->ten_nha_cung_cap ?? 'N/A',
@@ -308,11 +304,10 @@ class PurchaseReturnsController extends Controller
                     'reason' => $return->note ?? 'Không có lý do'
                 ];
             });
-            
+
             // Export file
             $exportService = new PurchaseReturnExport();
             return $exportService->download($formattedReturns->toArray());
-            
         } catch (\Exception $e) {
             return response()->json(['message' => 'Lỗi: ' . $e->getMessage()], 500);
         }
@@ -348,7 +343,7 @@ class PurchaseReturnsController extends Controller
         try {
             // SỬA: items.product thay vì items.medicine và items.goods
             $purchaseReturn = PurchaseReturn::with(['supplier', 'items.product'])->findOrFail($id);
-            
+
             // Format dữ liệu với chi tiết items
             $formattedReturn = [
                 'return_code' => $purchaseReturn->return_code,
@@ -361,10 +356,10 @@ class PurchaseReturnsController extends Controller
                 'paid_amount' => $purchaseReturn->paid_amount ?? 0,
                 'note' => $purchaseReturn->note,
                 'created_at' => $purchaseReturn->created_at,
-                'items' => $purchaseReturn->items->map(function($item) {
+                'items' => $purchaseReturn->items->map(function ($item) {
                     // SỬA: Khởi tạo biến trước, sau đó kiểm tra
                     $productName = 'N/A';
-                    
+
                     if ($item->product) {
                         if ($item->product_type === 'medicine') {
                             $productName = $item->product->ten_thuoc ?? 'N/A';
@@ -372,7 +367,7 @@ class PurchaseReturnsController extends Controller
                             $productName = $item->product->ten_hang_hoa ?? 'N/A';
                         }
                     }
-                    
+
                     return [
                         'product_name' => $productName,
                         'product_type' => $item->product_type === 'medicine' ? 'Thuốc' : 'Hàng hóa',
@@ -384,11 +379,10 @@ class PurchaseReturnsController extends Controller
                     ];
                 })
             ];
-            
+
             // Export file
             $exportService = new PurchaseReturnExport();
             return $exportService->downloadSingle($formattedReturn, $purchaseReturn->return_code);
-            
         } catch (\Exception $e) {
             // Cải thiện error handling để debug
             \Log::error('Export Single Purchase Return Error: ' . $e->getMessage(), [

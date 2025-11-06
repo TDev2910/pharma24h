@@ -25,22 +25,22 @@ class DoctorController extends Controller
     {
         try {
             $query = Doctor::query();
-            
+
             // Search functionality
             if ($request->has('search') && $request->search) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('doctor_code', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
+                        ->orWhere('doctor_code', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
                 });
             }
-            
+
             // Pagination
             $doctors = $query->orderBy('created_at', 'desc')
                 ->paginate($request->get('per_page', 10));
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $doctors->items(),
@@ -53,7 +53,6 @@ class DoctorController extends Controller
                     'to' => $doctors->lastItem()
                 ]
             ]);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -68,24 +67,27 @@ class DoctorController extends Controller
     public function store(Request $request)
     {
         // Validate the request
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'doctorCode' => 'required|string|size:6|unique:doctors,doctor_code',
-            'gender' => 'required|in:male,female',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'specialty' => 'nullable|string|max:255',
-            'address' => 'nullable|string|max:500',
-            'province' => 'nullable|array',
-            'ward' => 'nullable|array',
-            'degree' => 'nullable|string|max:255',
-            'notes' => 'nullable|string'
-        ], 
-        
-        [
-            'province.array' => 'Tỉnh/thành phố phải là object',
-            'ward.array' => 'Quận/huyện phải là object'
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required|string|max:255',
+                'doctorCode' => 'required|string|size:6|unique:doctors,doctor_code',
+                'gender' => 'required|in:male,female',
+                'phone' => 'nullable|string|max:20',
+                'email' => 'nullable|email|max:255',
+                'specialty' => 'nullable|string|max:255',
+                'address' => 'nullable|string|max:500',
+                'province' => 'nullable|array',
+                'ward' => 'nullable|array',
+                'degree' => 'nullable|string|max:255',
+                'notes' => 'nullable|string'
+            ],
+
+            [
+                'province.array' => 'Tỉnh/thành phố phải là object',
+                'ward.array' => 'Quận/huyện phải là object'
+            ]
+        );
 
         if ($validator->fails()) {
             return response()->json([
@@ -101,11 +103,11 @@ class DoctorController extends Controller
                 'male' => 'Male',
                 'female' => 'Female'
             ];
-            
+
             // Handle province and ward data (save names instead of codes)
             $provinceName = $request->province['name'] ?? null;
             $wardName = $request->ward['name'] ?? null;
-            
+
             $doctorData = [
                 'doctor_code' => $request->doctorCode,
                 'name' => $request->name,
@@ -130,7 +132,6 @@ class DoctorController extends Controller
                 'message' => 'Bác sĩ đã được thêm thành công',
                 'data' => $doctor
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -162,18 +163,16 @@ class DoctorController extends Controller
             }
 
             $doctor = Doctor::findOrFail($id);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $doctor
             ]);
-            
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Không tìm thấy bác sĩ với ID: ' . $id
             ], 404);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -187,24 +186,27 @@ class DoctorController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'doctorCode' => 'required|string|size:6|unique:doctors,doctor_code,' . $id,
-            'gender' => 'required|in:male,female',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'specialty' => 'nullable|string|max:255',
-            'address' => 'nullable|string|max:500',
-            'province' => 'nullable|array',
-            'ward' => 'nullable|array',
-            'degree' => 'nullable|string|max:255',
-            'notes' => 'nullable|string'
-        ], 
-        
-        [
-            'province.array' => 'Tỉnh/thành phố phải là object',
-            'ward.array' => 'Quận/huyện phải là object'
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required|string|max:255',
+                'doctorCode' => 'required|string|size:6|unique:doctors,doctor_code,' . $id,
+                'gender' => 'required|in:male,female',
+                'phone' => 'nullable|string|max:20',
+                'email' => 'nullable|email|max:255',
+                'specialty' => 'nullable|string|max:255',
+                'address' => 'nullable|string|max:500',
+                'province' => 'nullable|array',
+                'ward' => 'nullable|array',
+                'degree' => 'nullable|string|max:255',
+                'notes' => 'nullable|string'
+            ],
+
+            [
+                'province.array' => 'Tỉnh/thành phố phải là object',
+                'ward.array' => 'Quận/huyện phải là object'
+            ]
+        );
 
         if ($validator->fails()) {
             return response()->json([
@@ -213,8 +215,7 @@ class DoctorController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-        try 
-        {
+        try {
             $doctor = Doctor::findOrFail($id);
             $genderMap = [
                 'male' => 'Male',
@@ -246,18 +247,12 @@ class DoctorController extends Controller
                 'message' => 'Thông tin bác sĩ đã được cập nhật thành công',
                 'data' => $doctor
             ]);
-
-        } 
-        catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) 
-        {
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Không tìm thấy bác sĩ với ID: ' . $id
             ], 404);
-            
-        } 
-        catch (\Exception $e) 
-        {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi cập nhật bác sĩ: ' . $e->getMessage()
@@ -278,13 +273,11 @@ class DoctorController extends Controller
                 'success' => true,
                 'message' => 'Bác sĩ đã được xóa thành công'
             ]);
-            
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Không tìm thấy bác sĩ với ID: ' . $id
             ], 404);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -330,16 +323,16 @@ class DoctorController extends Controller
 
             if ($request->hasFile('avatar')) {
                 $file = $request->file('avatar');
-                
+
                 // Tạo tên file unique
                 $filename = 'doctor_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                
+
                 // Lưu vào storage/app/public/avatars/doctors/
                 $path = $file->storeAs('avatars/doctors', $filename, 'public');
-                
+
                 // Trả về URL để hiển thị
                 $url = asset('storage/' . $path);
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Upload ảnh thành công',
@@ -355,7 +348,6 @@ class DoctorController extends Controller
                 'success' => false,
                 'message' => 'Không tìm thấy file ảnh'
             ], 400);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

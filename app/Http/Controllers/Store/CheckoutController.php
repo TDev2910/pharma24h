@@ -40,7 +40,7 @@ class CheckoutController extends Controller
 
         return view('store.checkout.index', compact('cartItems', 'cartTotal', 'user', 'pharmacyLocations'));
     }
-    
+
     // Xử lý đặt hàng
     public function process(CheckoutRequest $request)
     {

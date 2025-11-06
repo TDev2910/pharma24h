@@ -22,7 +22,7 @@ class PruchaseImportController extends Controller
     public function index()
     {
         $imports = StockImport::with(['supplier', 'items'])->get();
-        
+
         // Transform data to match Vue component expectations
         $orders = $imports->map(function ($import) {
             return [
@@ -39,7 +39,7 @@ class PruchaseImportController extends Controller
                 'note' => $import->note ?? ''
             ];
         });
-        
+
         return inertia('Admin/Purchases/Purchase-Orders/Dashboard', [
             'orders' => $orders
         ]);
@@ -60,11 +60,11 @@ class PruchaseImportController extends Controller
         // Filter theo search nếu có
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('import_code', 'like', "%{$search}%")
-                  ->orWhereHas('supplier', function($subQ) use ($search) {
-                      $subQ->where('ten_nha_cung_cap', 'like', "%{$search}%");
-                  });
+                    ->orWhereHas('supplier', function ($subQ) use ($search) {
+                        $subQ->where('ten_nha_cung_cap', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -115,8 +115,8 @@ class PruchaseImportController extends Controller
     public function create()
     {
         $suppliers = Supplier::orderBy('ten_nha_cung_cap')
-            ->get(['id','ten_nha_cung_cap','ma_nha_cung_cap']);
-        
+            ->get(['id', 'ten_nha_cung_cap', 'ma_nha_cung_cap']);
+
         $medicines = Medicine::all();
         $goods = Goods::all();
 
@@ -176,7 +176,7 @@ class PruchaseImportController extends Controller
 
         $totalAmount = 0;
         $totalDiscount = 0;
-        
+
         // Lấy giảm giá tổng từ form (nếu có)
         $formDiscount = $request->discount ?? 0;
 
@@ -186,7 +186,7 @@ class PruchaseImportController extends Controller
             $quantity = $item['quantity'] ?? $item['so_luong'] ?? 0;
             $unitPrice = $item['unit_price'] ?? $item['don_gia'] ?? 0;
             $discount = $item['discount'] ?? 0;
-            
+
             // Tính tổng tiền: (số lượng × đơn giá) - giảm giá
             if (isset($item['thanh_tien'])) {
                 // Nếu có sẵn thành tiền từ Excel import
@@ -195,7 +195,7 @@ class PruchaseImportController extends Controller
                 // Tính thành tiền: (số lượng × đơn giá) - giảm giá
                 $totalPrice = ($quantity * $unitPrice) - $discount;
             }
-            
+
             $totalAmount += $totalPrice; //tính tổng tiền cho tất cả sản phẩm
             $totalDiscount += $discount; //tính tổng giảm giá
 
@@ -210,14 +210,11 @@ class PruchaseImportController extends Controller
                 'note' => $item['note'] ?? null
             ]);
 
-            if($item['product_type'] === 'medicine')
-            {
+            if ($item['product_type'] === 'medicine') {
                 $medicine = Medicine::find($item['product_id']);
                 $medicine->ton_kho += (int)$quantity;
                 $medicine->save();
-            }
-            else
-            {
+            } else {
                 $goods = Goods::find($item['product_id']);
                 $goods->ton_kho += (int)$quantity;
                 $goods->save();
@@ -226,7 +223,7 @@ class PruchaseImportController extends Controller
 
         // Áp dụng giảm giá tổng vào tổng tiền
         $finalAmount = $totalAmount - $formDiscount;
-        
+
         // Cập nhật tổng tiền và tổng giảm giá
         $stockImport->update([
             'total_amount' => $finalAmount,
@@ -244,7 +241,7 @@ class PruchaseImportController extends Controller
     public function show(StockImport $stockImport)
     {
         $stockImport->load(['supplier', 'items.product', 'payments']);
-        
+
         // Transform data for Vue component
         $order = [
             'id' => $stockImport->id,
@@ -259,7 +256,7 @@ class PruchaseImportController extends Controller
             'note' => $stockImport->note ?? '',
             'items' => $stockImport->items
         ];
-        
+
         return inertia('Admin/Purchases/Purchase-Orders/Show', [
             'order' => $order
         ]);
@@ -271,13 +268,13 @@ class PruchaseImportController extends Controller
     public function edit(StockImport $stockImport)
     {
         $suppliers = Supplier::orderBy('ten_nha_cung_cap')
-            ->get(['id','ten_nha_cung_cap','ma_nha_cung_cap']);
-        
+            ->get(['id', 'ten_nha_cung_cap', 'ma_nha_cung_cap']);
+
         $medicines = Medicine::all();
         $goods = Goods::all();
-        
+
         $stockImport->load(['items']);
-        
+
         // Transform data for Vue component
         $order = [
             'id' => $stockImport->id,
@@ -292,7 +289,7 @@ class PruchaseImportController extends Controller
             'note' => $stockImport->note ?? '',
             'items' => $stockImport->items
         ];
-        
+
         return inertia('Admin/Purchases/Purchase-Orders/Edit', [
             'order' => $order,
             'suppliers' => $suppliers,
@@ -327,7 +324,7 @@ class PruchaseImportController extends Controller
         try {
             // Lấy dữ liệu với filter
             $query = StockImport::with(['supplier', 'items']);
-            
+
             // Filter theo status nếu có
             if ($request->has('status') && $request->status) {
                 $statuses = explode(',', $request->status);
@@ -337,33 +334,33 @@ class PruchaseImportController extends Controller
                     $query->whereIn('status', $validStatuses);
                 }
             }
-            
+
             // Filter theo ngày nếu có (hỗ trợ cả from_date/to_date và date_from/date_to)
             if ($request->filled('from_date') || $request->filled('to_date')) {
                 $query->filterByDate($request->from_date, $request->to_date);
             }
-            
+
             // Filter theo nhà cung cấp nếu có
             if ($request->has('supplier_id') && $request->supplier_id) {
                 $query->where('supplier_id', $request->supplier_id);
             }
-            
+
             // Filter theo search query nếu có
             if ($request->has('search') && $request->search) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('import_code', 'like', "%{$search}%")
-                      ->orWhereHas('supplier', function($subQ) use ($search) {
-                          $subQ->where('ten_nha_cung_cap', 'like', "%{$search}%")
-                               ->orWhere('ma_nha_cung_cap', 'like', "%{$search}%");
-                      });
+                        ->orWhereHas('supplier', function ($subQ) use ($search) {
+                            $subQ->where('ten_nha_cung_cap', 'like', "%{$search}%")
+                                ->orWhere('ma_nha_cung_cap', 'like', "%{$search}%");
+                        });
                 });
             }
-            
+
             $imports = $query->orderBy('created_at', 'desc')->get();
-            
+
             // Format dữ liệu cho export
-            $formattedImports = $imports->map(function($import) {
+            $formattedImports = $imports->map(function ($import) {
                 return [
                     'import_code' => $import->import_code,
                     'supplier_name' => $import->supplier->ten_nha_cung_cap ?? 'N/A',
@@ -378,11 +375,10 @@ class PruchaseImportController extends Controller
                     'created_at' => $import->created_at,
                 ];
             });
-            
+
             // Export file
             $exportService = new StockImportExport();
             return $exportService->download($formattedImports->toArray());
-            
         } catch (\Exception $e) {
             return response()->json(['message' => 'Lỗi: ' . $e->getMessage()], 500);
         }
@@ -396,7 +392,7 @@ class PruchaseImportController extends Controller
         do {
             $code = str_pad(rand(1000000, 9999999), 7, '0', STR_PAD_LEFT);
         } while (StockImport::where('import_code', $code)->exists());
-        
+
         return response()->json(['code' => $code]);
     }
 
@@ -435,15 +431,13 @@ class PruchaseImportController extends Controller
     public function complete(StockImport $stockImport)
     {
         // Cập nhật tồn kho cho các sản phẩm
-        foreach ($stockImport->items as $item) 
-        {
+        foreach ($stockImport->items as $item) {
             if ($item->product_type === 'medicine') //nếu sản phẩm là thuốc
             {
                 $medicine = Medicine::find($item->product_id);
                 $medicine->ton_kho += $item->quantity;
                 $medicine->save();
-            } 
-            else //nếu sản phẩm là hàng hóa
+            } else //nếu sản phẩm là hàng hóa
             {
                 $goods = Goods::find($item->product_id);
                 $goods->ton_kho += $item->quantity;
@@ -475,7 +469,7 @@ class PruchaseImportController extends Controller
         try {
             // Load với items và product relationship
             $stockImport = StockImport::with(['supplier', 'items.product'])->findOrFail($id);
-            
+
             // Format dữ liệu với chi tiết items
             $formattedImport = [
                 'import_code' => $stockImport->import_code,
@@ -488,10 +482,10 @@ class PruchaseImportController extends Controller
                 'supplier_pay' => $stockImport->supplier_pay ?? 0,
                 'supplier_paid' => $stockImport->supplier_paid ?? 0,
                 'note' => $stockImport->note,
-                'items' => $stockImport->items->map(function($item) {
+                'items' => $stockImport->items->map(function ($item) {
                     // Sử dụng accessor product_name có sẵn trong model
                     $productName = 'N/A';
-                    
+
                     if ($item->product) {
                         if ($item->product_type === 'medicine') {
                             $productName = $item->product->ten_thuoc ?? 'N/A';
@@ -499,7 +493,7 @@ class PruchaseImportController extends Controller
                             $productName = $item->product->ten_hang_hoa ?? 'N/A';
                         }
                     }
-                    
+
                     return [
                         'product_name' => $productName,
                         'product_type' => $item->product_type === 'medicine' ? 'Thuốc' : 'Hàng hóa',
@@ -511,11 +505,10 @@ class PruchaseImportController extends Controller
                     ];
                 })
             ];
-            
+
             // Export file
             $exportService = new StockImportExport();
             return $exportService->downloadSingle($formattedImport, $stockImport->import_code);
-            
         } catch (\Exception $e) {
             \Log::error('Export Single Purchase Order Error: ' . $e->getMessage(), [
                 'id' => $id,

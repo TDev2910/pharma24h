@@ -43,10 +43,9 @@ class SupplierCategoryController extends Controller
             }
 
             SupplierCategory::create($validated);
-            
+
             return redirect()->route('admin.suppliers.index')
                 ->with('success', 'Tạo nhóm nhà cung cấp thành công!');
-                
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()
                 ->withErrors($e->validator)
@@ -86,7 +85,7 @@ class SupplierCategoryController extends Controller
         ]);
 
         $supplierCategory->update($validated);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Cập nhật nhóm nhà cung cấp thành công!'
@@ -107,7 +106,7 @@ class SupplierCategoryController extends Controller
         }
 
         $supplierCategory->delete();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Xóa nhóm nhà cung cấp thành công!'

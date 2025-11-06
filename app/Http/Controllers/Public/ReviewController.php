@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Public;
 
+use App\Http\Controllers\Controller;
 use App\Models\ProductReview;
 use App\Models\Medicine;
 use App\Models\Goods;
@@ -104,3 +105,4 @@ class ReviewController extends Controller
         ]);
     }
 }
+

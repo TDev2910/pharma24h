@@ -22,7 +22,7 @@ class ServiceController extends Controller
         $categories = ProductCategory::getCategoriesForSelect();
         $services = Service::with(['category'])->orderBy('created_at', 'desc')->get();
         $doctors = Doctor::all();
-        
+
         return view('admin.products.Danhsachhanghoa.index', compact('categories', 'services', 'doctors'));
     }
 
@@ -46,13 +46,13 @@ class ServiceController extends Controller
         ]);
 
         $data = $request->except(['image']);
-        
-        
+
+
         // Auto generate service code if not provided
         if (empty($data['ma_dich_vu'])) {
             $data['ma_dich_vu'] = 'DV' . date('Ymd') . str_pad(Service::count() + 1, 4, '0', STR_PAD_LEFT);
         }
-        
+
         // Add user tracking
         $data['created_by'] = Auth::id();
         $data['updated_by'] = Auth::id();
@@ -80,7 +80,7 @@ class ServiceController extends Controller
             return redirect()->route('admin.products.index')
                 ->with('success', 'Dịch vụ đã được tạo thành công!');
         } catch (\Exception $e) {
-            
+
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -103,7 +103,7 @@ class ServiceController extends Controller
         $categories = ProductCategory::getCategoriesForSelect();
         $manufacturers = \App\Models\Manufacturer::all();
         $positions = \App\Models\Position::all();
-        
+
         return view('admin.products.Danhsachhanghoa.edit.service', compact('service', 'categories', 'manufacturers', 'positions'));
     }
 
@@ -114,7 +114,7 @@ class ServiceController extends Controller
     {
         try {
             $service = Service::with(['category', 'creator', 'updater'])->findOrFail($id);
-            
+
             return response()->json([
                 'success' => true,
                 'service' => $service
@@ -149,7 +149,7 @@ class ServiceController extends Controller
         ]);
 
         $data = $request->except(['image']);
-        
+
         // No field mapping needed since form fields match database columns
 
         // Xử lý ảnh mới
@@ -169,11 +169,11 @@ class ServiceController extends Controller
             $service->update($data);
 
             return redirect()->route('admin.products.index')
-            ->with('success', 'Dịch vụ đã được cập nhật thành công!');
+                ->with('success', 'Dịch vụ đã được cập nhật thành công!');
         } catch (\Exception $e) {
             return redirect()->back()
-            ->withInput()
-            ->with('error', 'Có lỗi xảy ra khi cập nhật dịch vụ: ' . $e->getMessage());
+                ->withInput()
+                ->with('error', 'Có lỗi xảy ra khi cập nhật dịch vụ: ' . $e->getMessage());
         }
     }
 
@@ -211,7 +211,7 @@ class ServiceController extends Controller
     {
         try {
             $service = Service::with(['category'])->findOrFail($id);
-            
+
             return response()->json([
                 'success' => true,
                 'product' => $service  // Changed from 'service' to 'product' for consistency
@@ -265,7 +265,7 @@ class ServiceController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('ten_dich_vu', 'LIKE', "%{$search}%")
-                ->orWhere('ma_dich_vu', 'LIKE', "%{$search}%");
+                    ->orWhere('ma_dich_vu', 'LIKE', "%{$search}%");
             });
         }
 

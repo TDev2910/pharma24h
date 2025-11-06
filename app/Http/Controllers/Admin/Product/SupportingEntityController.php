@@ -17,7 +17,7 @@ class SupportingEntityController extends Controller
     {
         try {
             $drugRoutes = DrugRoute::orderBy('name')->get();
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $drugRoutes
@@ -86,13 +86,11 @@ class SupportingEntityController extends Controller
                 'description' => $validated['description'] ? trim($validated['description']) : null
             ]);
 
-            return response()->json
-            ([
-                'success'    => true,
-                'drug_route' => $route,
-                'message'    => 'Tạo đường dùng thành công!'
-            ], 201);
-
+            return response()->json([
+                    'success'    => true,
+                    'drug_route' => $route,
+                    'message'    => 'Tạo đường dùng thành công!'
+                ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -135,9 +133,8 @@ class SupportingEntityController extends Controller
                     'name' => $manufacturer->name,
                     'description' => $manufacturer->description
                 ],
-                'message'=> 'Tạo hãng sản xuất thành công!'
+                'message' => 'Tạo hãng sản xuất thành công!'
             ], 201);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -173,7 +170,6 @@ class SupportingEntityController extends Controller
                 'position' => $position,
                 'message'  => 'Tạo vị trí thành công!'
             ], 201);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -195,7 +191,7 @@ class SupportingEntityController extends Controller
     public function getDrugRoutes() //lấy danh sách đường dùng
     {
         $drugRoutes = DrugRoute::all();
-        
+
         return response()->json([
             'success' => true,
             'drug_routes' => $drugRoutes
@@ -208,7 +204,7 @@ class SupportingEntityController extends Controller
     public function getManufacturers() //lấy danh sách hãng sản xuất
     {
         $manufacturers = Manufacturer::all();
-        
+
         return response()->json([
             'success' => true,
             'manufacturers' => $manufacturers
@@ -221,7 +217,7 @@ class SupportingEntityController extends Controller
     public function getPositions() //lấy danh sách vị trí
     {
         $positions = Position::all();
-        
+
         return response()->json([
             'success' => true,
             'positions' => $positions

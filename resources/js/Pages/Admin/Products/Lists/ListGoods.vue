@@ -2,59 +2,50 @@
   <div class="goods-page">
     <!-- Header Control Bar -->
     <div class="header-control-bar">
-        <div class="controls-section" style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
-            <!-- Title Section -->
-            <div class="title-section">
-                <h4>Danh sách hàng hóa</h4>
-            </div>
-            <!-- Search Section -->
-            <div style="flex:1; display:flex; justify-content:center;">
-                <div class="search-wrapper">
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="pi pi-search"></i>
-                        </span>
-                        <input type="text" class="form-control" style="border-radius:8px;" placeholder="Theo mã, tên hàng" v-model="searchQuery" @input="debounceSearch">
-                    </div>
-                </div>
-            </div>
-            <!-- Utility Options -->
-            <div class="ultility-options">
-                <!-- Xuất file -->
-                <Button 
-                  icon="pi pi-upload"
-                  label="Xuất file"
-                  @click="exportData"
-                  severity="secondary"
-                  style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
-                />
-                <!-- Utility Icons -->
-                <div class="utility-icons">
-                    <button class="btn" title="Chế độ xem">
-                        <i class="pi pi-list"></i>
-                    </button>
-                    <button class="btn" title="Cài đặt">
-                        <i class="pi pi-cog"></i>
-                    </button>
-                    <button class="btn" title="Trợ giúp">
-                        <i class="pi pi-question-circle"></i>
-                    </button>
-                </div>
-            </div>
+      <div class="controls-section"
+        style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
+        <!-- Title Section -->
+        <div class="title-section">
+          <h4>Danh sách hàng hóa</h4>
         </div>
+        <!-- Search Section -->
+        <div style="flex:1; display:flex; justify-content:center;">
+          <div class="search-wrapper">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="pi pi-search"></i>
+              </span>
+              <input type="text" class="form-control" style="border-radius:8px;" placeholder="Theo mã, tên hàng"
+                v-model="searchQuery" @input="debounceSearch">
+            </div>
+          </div>
+        </div>
+        <!-- Utility Options -->
+        <div class="ultility-options">
+          <!-- Xuất file -->
+          <Button icon="pi pi-upload" label="Xuất file" @click="exportData" severity="secondary"
+            style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
+          <!-- Utility Icons -->
+          <div class="utility-icons">
+            <button class="btn" title="Chế độ xem">
+              <i class="pi pi-list"></i>
+            </button>
+            <button class="btn" title="Cài đặt">
+              <i class="pi pi-cog"></i>
+            </button>
+            <button class="btn" title="Trợ giúp">
+              <i class="pi pi-question-circle"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- PrimeVue DataTable -->
     <div class="table-container">
-      <DataTable 
-        :value="paginatedGoods" 
-        dataKey="id" 
-        :paginator="false"
-        :loading="loading"
-        :pt="{
-          table: { style: 'min-width: 50rem' }
-        }"
-      >
+      <DataTable :value="paginatedGoods" dataKey="id" :paginator="false" :loading="loading" :pt="{
+        table: { style: 'min-width: 50rem' }
+      }">
         <!-- Mã hàng -->
         <Column field="ma_hang" header="Mã hàng" style="width: 12%">
         </Column>
@@ -92,11 +83,9 @@
         <!-- Trạng thái -->
         <Column field="ban_truc_tiep" header="Trạng thái" style="width: 18%; min-width: 140px">
           <template #body="slotProps">
-            <Tag 
-              :value="slotProps.data.ban_truc_tiep ? 'Bán trực tiếp' : 'Không bán'" 
+            <Tag :value="slotProps.data.ban_truc_tiep ? 'Bán trực tiếp' : 'Không bán'"
               :severity="getStatusSeverity(slotProps.data.ban_truc_tiep)"
-              style="white-space: nowrap; font-size: 12px; padding: 6px 12px;"
-            />
+              style="white-space: nowrap; font-size: 12px; padding: 6px 12px;" />
           </template>
         </Column>
       </DataTable>
@@ -104,7 +93,7 @@
 
 
     <!-- Custom Paginator -->
-    <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]"style></Paginator>
+    <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]" style></Paginator>
 
     <!-- Toast for notifications -->
     <Toast />
@@ -147,9 +136,9 @@ const rows = ref(10)
 // Computed properties
 const filteredGoods = computed(() => {
   if (!searchQuery.value) return props.goods
-  
+
   const query = searchQuery.value.toLowerCase()
-  return props.goods.filter(good => 
+  return props.goods.filter(good =>
     good.ma_hang?.toLowerCase().includes(query) ||
     good.ten_hang_hoa?.toLowerCase().includes(query) ||
     good.category?.name?.toLowerCase().includes(query)
@@ -384,7 +373,7 @@ onMounted(() => {
     padding: 10px;
     margin-top: 10px;
   }
-  
+
   :deep(.p-datatable .p-datatable-thead > tr > th),
   :deep(.p-datatable .p-datatable-tbody > tr > td) {
     padding: 12px 8px;

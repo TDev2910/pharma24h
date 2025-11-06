@@ -36,35 +36,35 @@ class MedicineController extends Controller
     {
         $query = Medicine::with(['category', 'manufacturer', 'drugRoute', 'position']);
 
-        if($request->filled('search')) {
+        if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('ten_thuoc', 'LIKE', "%{$search}%")
-                  ->orWhere('ma_hang', 'LIKE', "%{$search}%")
+                    ->orWhere('ma_hang', 'LIKE', "%{$search}%")
                     ->orWhere('hoat_chat', 'LIKE', "%{$search}%");
             });
         }
-        if($request->filled('category_id')) {
+        if ($request->filled('category_id')) {
             $query->where('nhom_hang_id', $request->category_id);
         }
-        if($request->filled('manufacturer_id')) {
+        if ($request->filled('manufacturer_id')) {
             $query->where('manufacturer_id', $request->manufacturer_id);
         }
-        if($request->filled('drugRoute_id')) {
+        if ($request->filled('drugRoute_id')) {
             $query->where('drugRoute_id', $request->drugRoute_id);
         }
-        
+
         // chức năng lọc theo ngày
-        if($request->filled('from_date')) {
+        if ($request->filled('from_date')) {
             $query->whereDate('created_at', '>=', $request->from_date);
         }
-        if($request->filled('to_date')) {
+        if ($request->filled('to_date')) {
             $query->whereDate('created_at', '<=', $request->to_date);
         }
 
         $perPage = $request->get('per_page', 10);
         $medicines = $query->latest()->paginate($perPage);
-        
+
         return response()->json([
             'success' => true,
             'data' => $medicines->items(),
@@ -89,8 +89,8 @@ class MedicineController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('ten_thuoc', 'LIKE', "%{$search}%")
-                ->orWhere('ma_hang', 'LIKE', "%{$search}%")
-                ->orWhere('hoat_chat', 'LIKE', "%{$search}%");
+                    ->orWhere('ma_hang', 'LIKE', "%{$search}%")
+                    ->orWhere('hoat_chat', 'LIKE', "%{$search}%");
             });
         }
 
@@ -181,7 +181,6 @@ class MedicineController extends Controller
                 'message' => 'Thuốc đã được thêm thành công',
                 'data' => $medicine
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -197,7 +196,7 @@ class MedicineController extends Controller
     {
         $medicine = Medicine::findOrFail($id);
         $data = $this->getFormData();
-        
+
         return view('admin.products.Danhsachhanghoa.edit.medicine', compact('medicine', 'data'));
     }
 
@@ -206,7 +205,7 @@ class MedicineController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
         // Validate the request
         $validator = Validator::make($request->all(), [
             'ten_thuoc'         => 'nullable|string|max:255',
@@ -250,8 +249,8 @@ class MedicineController extends Controller
 
         // Bắt buộc tồn_khuyen_mai không lớn hơn tồn_kho (nếu tồn_tồn_khuyen_mai có)
         if (
-            $request->has('ton_khuyen_mai') && 
-            $request->has('ton_kho') && 
+            $request->has('ton_khuyen_mai') &&
+            $request->has('ton_kho') &&
             ((int)$request->input('ton_khuyen_mai') > (int)$request->input('ton_kho'))
         ) {
             return response()->json([
@@ -263,69 +262,66 @@ class MedicineController extends Controller
 
         try {
             $medicine = Medicine::findOrFail($id);
-            
+
             $data = $request->all();
-                     
+
             // Xử lý checkbox ban_truc_tiep
             $data['ban_truc_tiep'] = $request->has('ban_truc_tiep') ? 1 : 0;
-            
+
             // Xử lý trường bắt buộc khác (nếu có)
             if (!isset($data['khach_dat'])) {
                 $data['khach_dat'] = $medicine->khach_dat ?? 0;
             }
-            
+
             // Xử lý upload ảnh
             if ($request->hasFile('image')) {
                 // Xóa ảnh cũ nếu có
                 if ($medicine->image) {
                     Storage::disk('public')->delete($medicine->image);
                 }
-                
+
                 // Upload ảnh mới (giống Create)
                 $imagePath = $request->file('image')->store('products', 'public');
                 $data['image'] = $imagePath;
-                
             } else {
                 // Không có file mới - giữ nguyên ảnh cũ
                 unset($data['image']);
             }
-            
+
             // Update
             $medicine->update($data);
-            
+
             // Kiểm tra nếu là AJAX request
             if (request()->ajax() || request()->wantsJson()) {
                 // Refresh medicine data từ database để đảm bảo có dữ liệu mới nhất
                 $medicine->refresh();
-                
-                
+
+
                 // Load relationships để trả về đầy đủ thông tin
                 $medicine->load([
                     'category:id,name',
-                    'manufacturer:id,name', 
+                    'manufacturer:id,name',
                     'drugRoute:id,name',
                     'position:id,name'
                 ]);
-                
+
                 // Thêm product_type để datatable hiển thị đúng
                 $medicineData = $medicine->fresh()->toArray();
                 $medicineData['product_type'] = 'medicine';
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Thông tin thuốc đã được cập nhật thành công',
                     'data' => $medicineData // Đảm bảo trả về dữ liệu mới nhất với relationships
                 ]);
             }
-            
+
             return redirect()->route('admin.products.index')->with('success', 'Cập nhật thuốc thành công');
-            
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Không tìm thấy thuốc với ID: ' . $id
             ], 404);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

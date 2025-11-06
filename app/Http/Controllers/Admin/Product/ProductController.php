@@ -111,7 +111,6 @@ class ProductController extends Controller
                 'image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'khach_dat'         => 'nullable|integer|min:0',
             ]);
-            
         } catch (\Illuminate\Validation\ValidationException $e) {
             \Log::error('Validation failed:', $e->errors());
             return redirect()->back()

@@ -9,12 +9,12 @@ use Illuminate\Http\Request;
 class CartController extends Controller
 {
     protected $cartService;
-    
+
     public function __construct(CartService $cartService)
     {
         $this->cartService = $cartService;
     }
-    
+
     /**
      * Thêm sản phẩm vào giỏ hàng
      *
@@ -25,7 +25,7 @@ class CartController extends Controller
     {
         try {
             $isAjax = $request->ajax() || $request->wantsJson();
-            
+
             try {
                 $validated = $request->validate([
                     'item_id' => 'required|integer',
@@ -41,11 +41,11 @@ class CartController extends Controller
                         'errors' => $e->errors()
                     ], 422);
                 }
-                throw $e; 
+                throw $e;
             }
-            
+
             $quantity = $validated['quantity'] ?? 1;
-            
+
             // Thêm vào giỏ hàng
             $result = $this->cartService->addToCart(
                 $validated['item_id'],
@@ -53,11 +53,11 @@ class CartController extends Controller
                 $quantity,
                 $validated['is_promotion'] ?? false
             );
-            
+
             if ($isAjax) {
                 return response()->json($result);
             }
-            
+
             if ($result['success']) {
                 return back()->with('success', $result['message']);
             } else {
@@ -65,7 +65,7 @@ class CartController extends Controller
             }
         } catch (\Exception $e) {
             // Xử lý ngoại lệ chung
-            
+
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
@@ -73,11 +73,11 @@ class CartController extends Controller
                     'error' => $e->getMessage()
                 ], 500);
             }
-            
+
             return back()->with('error', 'Có lỗi xảy ra khi thêm vào giỏ hàng');
         }
     }
-    
+
     /**
      * Lấy thông tin giỏ hàng
      *
@@ -88,14 +88,14 @@ class CartController extends Controller
     {
         try {
             $cartData = $this->cartService->getCartSummary();
-            
+
             if ($request->ajax() || $request->wantsJson() || $request->query('format') === 'json') {
                 return response()->json($cartData);
             }
-            
+
             return view('store.cart.index', compact('cartData'));
         } catch (\Exception $e) {
-            
+
             if ($request->ajax() || $request->wantsJson() || $request->query('format') === 'json') {
                 return response()->json([
                     'success' => false,
@@ -106,7 +106,7 @@ class CartController extends Controller
                     'preview_items' => []
                 ]);
             }
-            
+
             return view('store.cart.index', ['cartData' => [
                 'items' => [],
                 'preview_items' => [],
@@ -116,7 +116,7 @@ class CartController extends Controller
             ]]);
         }
     }
-    
+
     /**
      * Cập nhật số lượng sản phẩm trong giỏ hàng
      *
@@ -130,12 +130,12 @@ class CartController extends Controller
                 'cart_id' => 'required|integer',
                 'quantity' => 'required|integer|min:1'
             ]);
-            
+
             $result = $this->cartService->updateQuantity(
                 $validated['cart_id'],
                 $validated['quantity']
             );
-            
+
             return response()->json($result);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -150,7 +150,7 @@ class CartController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Xóa sản phẩm khỏi giỏ hàng
      *
@@ -163,9 +163,9 @@ class CartController extends Controller
             $validated = $request->validate([
                 'cart_id' => 'required|integer'
             ]);
-            
+
             $result = $this->cartService->removeItem($validated['cart_id']);
-            
+
             return response()->json($result);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([

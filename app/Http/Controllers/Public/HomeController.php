@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Public;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Medicine;
 use App\Models\Goods;
@@ -67,7 +68,7 @@ class HomeController extends Controller
                 return [
                     'id' => $item->id,
                     'name' => $item->ten_thuoc,
-                    'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? ''): '',
+                    'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? '') : '',
                     'unit'  => $item->don_vi_tinh,
                     'image' => $item->image ? asset('storage/' . $item->image) : null,
                     'type'  => 'medicine',
@@ -84,7 +85,7 @@ class HomeController extends Controller
                 return [
                     'id' => $item->id,
                     'name' => $item->ten_hang_hoa,
-                    'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? ''): '',
+                    'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? '') : '',
                     'unit'  => $item->don_vi_tinh,
                     'image' => $item->image ? asset('storage/' . $item->image) : null,
                     'type'  => 'goods',
@@ -102,14 +103,14 @@ class HomeController extends Controller
     }
     public function productDetail($type, $id)
     {
-        if($type === 'medicine') {
+        if ($type === 'medicine') {
             $product = Medicine::with(['category', 'manufacturer', 'drugRoute', 'position'])->findOrFail($id);
         } else {
             $product = Goods::with(['category', 'manufacturer', 'position'])->findOrFail($id);
         }
-        
+
         $user = auth()->user();
-        
+
         //lấy thông tin tất cả review của sản phẩm
         $reviews = ProductReview::where('product_id', $id)
             ->where('product_type', $type)
@@ -117,7 +118,7 @@ class HomeController extends Controller
             ->with('user:id,name')
             ->latest()
             ->get();
-       
+
         $reviewCount = $reviews->count();
         $averageRating = $reviewCount > 0 ? $reviews->avg('rating') : 0;
 
@@ -161,7 +162,7 @@ class HomeController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('ten_dich_vu', 'LIKE', "%{$search}%")
-                ->orWhere('ma_dich_vu', 'LIKE', "%{$search}%");
+                    ->orWhere('ma_dich_vu', 'LIKE', "%{$search}%");
             });
         }
 
@@ -232,3 +233,4 @@ class HomeController extends Controller
     //     return view('public.contact');
     // }
 }
+

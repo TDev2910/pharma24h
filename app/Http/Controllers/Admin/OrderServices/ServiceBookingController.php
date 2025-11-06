@@ -15,37 +15,32 @@ class ServiceBookingController extends Controller
         //lấy dữ liệu từ db và relationship của service và user
         // Lấy dữ liệu từ db và relationship của service và user
         $query = ServiceBooking::with(['service', 'user']);
-        
+
         // Lọc theo trạng thái
-        if($request->has('status') && $request->status !== '')
-        {
+        if ($request->has('status') && $request->status !== '') {
             $query->where('status', $request->status);
         }
 
         // Lọc trạng thái thanh toán
-        if ($request->has('payment_status') && $request->payment_status !== '') 
-        {
+        if ($request->has('payment_status') && $request->payment_status !== '') {
             $query->where('payment_status', $request->payment_status);
         }
 
         // Lọc theo ngày
-        if ($request->has('date_from') && $request->date_from !== '') 
-        {
+        if ($request->has('date_from') && $request->date_from !== '') {
             $query->where('booking_date', '>=', $request->date_from);
         }
-        
-        if ($request->has('date_to') && $request->date_to !== '') 
-        {
+
+        if ($request->has('date_to') && $request->date_to !== '') {
             $query->where('booking_date', '<=', $request->date_to);
         }
 
         // Tìm kiếm theo tên khách hàng hoặc SĐT
-        if ($request->has('search') && $request->search !== '') 
-        {
+        if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('customer_name', 'like', "%{$search}%")
-                ->orWhere('customer_phone', 'like', "%{$search}%");
+                    ->orWhere('customer_phone', 'like', "%{$search}%");
             });
         }
 
@@ -67,7 +62,7 @@ class ServiceBookingController extends Controller
                 'from' => $bookings->firstItem(),
                 'to' => $bookings->lastItem()
             ]
-        ]); 
+        ]);
     }
 
     public function show(Request $request, $id)
@@ -176,7 +171,7 @@ class ServiceBookingController extends Controller
     public function needConfirmation(Request $request)
     {
         $date = $request->get('date', today());
-        
+
         $bookings = ServiceBooking::needConfirmation()
             ->with('service')
             ->whereDate('booking_date', $date)
@@ -193,7 +188,7 @@ class ServiceBookingController extends Controller
     public function needPayment(Request $request)
     {
         $date = $request->get('date', today());
-        
+
         $bookings = ServiceBooking::needPayment()
             ->with('service')
             ->whereDate('booking_date', $date)

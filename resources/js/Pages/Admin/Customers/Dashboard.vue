@@ -2,11 +2,12 @@
   <div class="customers-page">
     <!-- Header Control Bar -->
     <div class="header-control-bar">
-      <div class="controls-section" style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
+      <div class="controls-section"
+        style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
         <!-- Title Section -->
         <div class="title-section">
           <h3>Danh sách khách hàng</h3>
-        </div>      
+        </div>
         <!-- Search Section -->
         <div style="flex:1; display:flex; justify-content:center;">
           <div class="search-wrapper">
@@ -14,27 +15,17 @@
               <span class="input-group-text">
                 <i class="pi pi-search"></i>
               </span>
-              <input 
-                type="text" 
-                class="form-control" 
-                style="border-radius:8px;" 
-                placeholder="Tìm kiếm theo tên, email, số điện thoại khách hàng" 
-                v-model="searchQuery" 
-                @input="debounceSearch"
-              >
-            </div>         
+              <input type="text" class="form-control" style="border-radius:8px;"
+                placeholder="Tìm kiếm theo tên, email, số điện thoại khách hàng" v-model="searchQuery"
+                @input="debounceSearch">
+            </div>
           </div>
         </div>
         <!-- Utility Options -->
         <div class="ultility-options">
           <!-- Thêm khách hàng -->
-          <Button 
-            icon="pi pi-plus"
-            label="Khách hàng"
-            @click="openCreateModal"
-            severity="secondary"
-            style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
-          />
+          <Button icon="pi pi-plus" label="Khách hàng" @click="openCreateModal" severity="secondary"
+            style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
           <!-- Utility Icons -->
           <div class="utility-icons">
             <button class="btn" title="Chế độ xem">
@@ -54,136 +45,110 @@
     <!-- Content Area -->
     <div class="content-area">
       <!-- Stats Cards -->
-    <div class="stats-row">
+      <div class="stats-row">
         <div class="stats-card">
-            <div class="stats-card-inner">
-                <div class="stats-icon" style="background: #4F46E5;">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div>
-                    <div class="stats-label">Tổng khách hàng có tài khoản</div>
-                    <div class="stats-number">{{ stats.totalCustomers }}</div>
-                </div>
+          <div class="stats-card-inner">
+            <div class="stats-icon" style="background: #4F46E5;">
+              <i class="fas fa-users"></i>
             </div>
+            <div>
+              <div class="stats-label">Tổng khách hàng có tài khoản</div>
+              <div class="stats-number">{{ stats.totalCustomers }}</div>
+            </div>
+          </div>
         </div>
-    </div>
-     <div>
-       <div class="table-header">
-             <h3 class="table-title">Danh sách dữ liệu khách hàng</h3>
-         </div>
-         
-         <!-- Customer Data Table -->
-         <div class="table-container">
-           <DataTable 
-             :value="filteredCustomers" 
-             removableSort 
-             tableStyle="min-width: 50rem"
-             class="customers-table"
-             :paginator="true"
-             :row="5"
-             :rows="pagination.per_page"
-             :totalRecords="pagination.total"
-             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-             :rowsPerPageOptions="[5,10,25]"
-             currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} khách hàng"
-           >
-             <!-- Avatar Column -->
-             <Column field="avatar" header="Avatar" style="width: 10%">
-               <template #body="slotProps">
-                 <div class="customer-avatar">
-                   <img v-if="slotProps.data.avatar_url" 
-                        :src="slotProps.data.avatar_url" 
-                        :alt="slotProps.data.name"
-                        style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
-                   <div v-else class="avatar-placeholder">
-                     {{ slotProps.data.name ? slotProps.data.name.substring(0, 2).toUpperCase() : 'N/A' }}
-                   </div>
-                 </div>
-               </template>
-             </Column>
-             
-             <!-- Name Column -->
-             <Column field="name" header="Tên khách hàng" sortable style="width: 15%">
-               <template #body="slotProps">
-                 <span class="customer-name">{{ slotProps.data.name || 'N/A' }}</span>
-               </template>
-             </Column>
-             
-             <!-- Email Column -->
-             <Column field="email" header="Email" sortable style="width: 20%">
-               <template #body="slotProps">
-                 <span>{{ slotProps.data.email || 'N/A' }}</span>
-               </template>
-             </Column>
-             
-             <!-- Phone Column -->
-             <Column field="phone" header="Số điện thoại" sortable style="width: 12%">
-               <template #body="slotProps">
-                 <span>{{ slotProps.data.phone || 'N/A' }}</span>
-               </template>
-             </Column>
-             
-             <!-- Address Column -->
-             <Column field="address" header="Địa chỉ" style="width: 20%">
-               <template #body="slotProps">
-                 <span>{{ slotProps.data.address || 'N/A' }}</span>
-               </template>
-             </Column>
-             
-             <!-- Orders Count Column -->
-             <Column field="orders_count" header="Tổng đơn hàng" sortable style="width: 10%" class="text-center">
-               <template #body="slotProps">
-                 <span>{{ slotProps.data.orders_count || 0 }}</span>
-               </template>
-             </Column>
-             
-             <!-- Total Amount Column -->
-             <Column field="total_amount" header="Tổng chi tiêu" sortable style="width: 10%" class="text-center">
-               <template #body="slotProps">
-                 <span>{{ formatCurrency(slotProps.data.total_amount || 0) }}</span>
-               </template>
-             </Column>
-             
-             <!-- Actions Column -->
-             <Column header="Thao tác" style="width: 10%;font-size: 13.4px;">
-               <template #body="slotProps">
-                 <div class="action-group">
-                   <Button 
-                     icon="pi pi-pencil"
-                     class="p-button-sm btn-edit"
-                     @click="editCustomer(slotProps.data)"
-                     v-tooltip.top="'Sửa'" 
-                   />
-                   <Button 
-                     icon="pi pi-trash" 
-                     class="p-button-sm btn-delete"
-                     @click="deleteCustomer(slotProps.data)"
-                     v-tooltip.top="'Xóa'"
-                   />
-                 </div>
-               </template>
-             </Column>
-           </DataTable>
-         </div>
-     </div>
-    
+      </div>
+      <div>
+        <div class="table-header">
+          <h3 class="table-title">Danh sách dữ liệu khách hàng</h3>
+        </div>
+
+        <!-- Customer Data Table -->
+        <div class="table-container">
+          <DataTable :value="filteredCustomers" removableSort tableStyle="min-width: 50rem" class="customers-table"
+            :paginator="true" :row="5" :rows="pagination.per_page" :totalRecords="pagination.total"
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            :rowsPerPageOptions="[5, 10, 25]"
+            currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} khách hàng">
+            <!-- Avatar Column -->
+            <Column field="avatar" header="Avatar" style="width: 10%">
+              <template #body="slotProps">
+                <div class="customer-avatar">
+                  <img v-if="slotProps.data.avatar_url" :src="slotProps.data.avatar_url" :alt="slotProps.data.name"
+                    style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                  <div v-else class="avatar-placeholder">
+                    {{ slotProps.data.name ? slotProps.data.name.substring(0, 2).toUpperCase() : 'N/A' }}
+                  </div>
+                </div>
+              </template>
+            </Column>
+
+            <!-- Name Column -->
+            <Column field="name" header="Tên khách hàng" sortable style="width: 15%">
+              <template #body="slotProps">
+                <span class="customer-name">{{ slotProps.data.name || 'N/A' }}</span>
+              </template>
+            </Column>
+
+            <!-- Email Column -->
+            <Column field="email" header="Email" sortable style="width: 20%">
+              <template #body="slotProps">
+                <span>{{ slotProps.data.email || 'N/A' }}</span>
+              </template>
+            </Column>
+
+            <!-- Phone Column -->
+            <Column field="phone" header="Số điện thoại" sortable style="width: 12%">
+              <template #body="slotProps">
+                <span>{{ slotProps.data.phone || 'N/A' }}</span>
+              </template>
+            </Column>
+
+            <!-- Address Column -->
+            <Column field="address" header="Địa chỉ" style="width: 20%">
+              <template #body="slotProps">
+                <span>{{ slotProps.data.address || 'N/A' }}</span>
+              </template>
+            </Column>
+
+            <!-- Orders Count Column -->
+            <Column field="orders_count" header="Tổng đơn hàng" sortable style="width: 10%" class="text-center">
+              <template #body="slotProps">
+                <span>{{ slotProps.data.orders_count || 0 }}</span>
+              </template>
+            </Column>
+
+            <!-- Total Amount Column -->
+            <Column field="total_amount" header="Tổng chi tiêu" sortable style="width: 10%" class="text-center">
+              <template #body="slotProps">
+                <span>{{ formatCurrency(slotProps.data.total_amount || 0) }}</span>
+              </template>
+            </Column>
+
+            <!-- Actions Column -->
+            <Column header="Thao tác" style="width: 10%;font-size: 13.4px;">
+              <template #body="slotProps">
+                <div class="action-group">
+                  <Button icon="pi pi-pencil" class="p-button-sm btn-edit" @click="editCustomer(slotProps.data)"
+                    v-tooltip.top="'Sửa'" />
+                  <Button icon="pi pi-trash" class="p-button-sm btn-delete" @click="deleteCustomer(slotProps.data)"
+                    v-tooltip.top="'Xóa'" />
+                </div>
+              </template>
+            </Column>
+          </DataTable>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <!-- Create Customer Modal -->
-  <CreateCustomerModal 
-    :visible="showCreateModal"
-    @close="showCreateModal = false"
-    @created="onCustomerCreated"
-  />
+  <CreateCustomerModal :visible="showCreateModal" @close="showCreateModal = false" @created="onCustomerCreated" />
 
   <!-- Edit Customer Modal -->
-  <EditCustomerModal 
-    :visible="showEditModal"
-    :customer="selectedCustomer"
-    @close="showEditModal = false"
-    @updated="onCustomerUpdated"
-  />
+  <EditCustomerModal :visible="showEditModal" :customer="selectedCustomer" @close="showEditModal = false"
+    @updated="onCustomerUpdated" />
 </template>
 
 <script>
@@ -208,7 +173,7 @@ export default {
     CreateCustomerModal,
     EditCustomerModal
   },
-  
+
   props: {
     stats: {
       type: Object,
@@ -234,7 +199,7 @@ export default {
       })
     }
   },
-  
+
   data() {
     return {
       searchQuery: '',
@@ -245,12 +210,12 @@ export default {
       localCustomers: []
     }
   },
-  
+
   computed: {
     displayCustomers() {
       return this.localCustomers.length > 0 ? this.localCustomers : this.customers;
     },
-    
+
     //Lọc khách hàng
     filteredCustomers() {
       const customers = this.localCustomers.length > 0 ? this.localCustomers : this.customers;
@@ -259,7 +224,7 @@ export default {
       if (!this.searchQuery || !this.searchQuery.trim()) {
         return customers; //Trả về tất cả khách hàng
       }
-      
+
       //Lọc khách hàng theo tên, email, số điện thoại
       const term = this.searchQuery.toLowerCase().trim();
       return customers.filter(customer => {
@@ -270,7 +235,7 @@ export default {
       });
     }
   },
-  
+
   watch: {
     customers: {
       handler(newCustomers) {
@@ -279,37 +244,37 @@ export default {
       immediate: true
     }
   },
-  
+
   methods: {
     openCreateModal() {
       this.showCreateModal = true
     },
-    
+
     debounceSearch() {
       clearTimeout(this.searchTimeout)
       this.searchTimeout = setTimeout(() => {
       }, 200)
     },
-    
-    
+
+
     formatCurrency(amount) {
       return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND'
       }).format(amount)
     },
-    
+
     viewCustomer(customer) {
       console.log('View customer:', customer)
       // Implement view customer logic
     },
-    
+
     editCustomer(customer) {
       console.log('Edit customer:', customer)
       this.selectedCustomer = customer
       this.showEditModal = true
     },
-    
+
     async deleteCustomer(customer = null) {
       if (!customer?.id) return; // guard
 
@@ -358,14 +323,14 @@ export default {
         });
       }
     },
-  
-    
+
+
     onCustomerCreated(customer) {
       console.log('Customer created:', customer)
       // Refresh page để load dữ liệu mới
       window.location.reload()
     },
-    
+
     onCustomerUpdated(customer) {
       console.log('Customer updated:', customer)
       // Cập nhật localCustomers
@@ -457,7 +422,7 @@ export default {
   transition: color 0.2s ease;
 }
 
-.search-wrapper .form-control:focus + .input-group-text {
+.search-wrapper .form-control:focus+.input-group-text {
   color: #007bff;
 }
 
@@ -574,7 +539,7 @@ export default {
 .table-container {
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   margin-top: 16px;
   overflow: hidden;
 }

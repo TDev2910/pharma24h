@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Public;
 
+use App\Http\Controllers\Controller;
 use App\Models\ServiceBooking;
 use App\Models\Service;
 use Illuminate\Http\Request;
@@ -55,7 +56,6 @@ class ServiceBookingController extends Controller
                 'message' => 'Đặt lịch thành công!',
                 'booking' => $booking->load('service')
             ]);
-
         } catch (\Exception $e) {
             \Log::error('Booking error: ' . $e->getMessage());
             return response()->json([
@@ -65,3 +65,4 @@ class ServiceBookingController extends Controller
         }
     }
 }
+

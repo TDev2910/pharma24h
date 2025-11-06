@@ -22,27 +22,27 @@ class OrdersController extends Controller
         $totalOrders = Order::count();
         $pendingOrders = Order::whereIn('order_status', ['new', 'pending'])->count();
         $completedOrders = Order::where('order_status', 'completed')->count();
-        
+
         // Query với filters
         $query = Order::with('user')->latest();
-        
+
         if ($request->filled('order_code')) {
             $query->where('order_code', $request->order_code);
         }
-        
+
         // Lọc theo trạng thái nếu có
         if ($request->filled('status')) {
             $query->where('order_status', $request->status);
         }
-        
+
         // Lọc theo ngày đặt hàng nếu có
         $from = $request->input('from_date');
         $to = $request->input('to_date');
         $query->filterByDate($from, $to);
-        
+
         // Pagination
         $orders = $query->paginate(10);
-        
+
         // Format dữ liệu orders
         $ordersData = $orders->map(function ($order) {
             return [
@@ -59,7 +59,7 @@ class OrdersController extends Controller
                 'created_at_formatted' => $order->created_at ? $order->created_at->format('d/m/Y') : 'N/A',
             ];
         });
-        
+
         return Inertia::render('Admin/Orders/Products/Dashboard', [
             'stats' => [
                 'totalOrders' => $totalOrders,
@@ -144,17 +144,12 @@ class OrdersController extends Controller
         ]);
         $order = Order::findOrFail($order);
         // Nếu cập nhật đơn hàng Hoàn thành từ modal, gọi service để trừ tồn + set trạng thái
-        if ($request->status === 'completed') 
-        {
+        if ($request->status === 'completed') {
             $order = $checkout->completeOrder((int) $order->id);
-        } 
-        elseif ($request->status === 'cancelled') 
-        {
+        } elseif ($request->status === 'cancelled') {
             // Nếu hủy đơn, gọi service để restore tồn kho chính (nếu đã completed)
             $order = $checkout->cancelOrder((int) $order->id);
-        } 
-        else 
-        {
+        } else {
             // Cập nhật các trạng thái khác không trừ tồn
             $order->order_status = $request->status;
             if ($request->status === 'pending') {
@@ -162,8 +157,7 @@ class OrdersController extends Controller
             }
             $order->save();
         }
-        if ($request->ajax() || $request->wantsJson()) 
-        {
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Trạng thái đơn hàng đã được cập nhật thành công!',
@@ -237,7 +231,6 @@ class OrdersController extends Controller
     {
         $order = Order::with('items')->findOrFail($orderId);
         $pdf = Pdf::loadView('admin.orders.invoice', compact('order'));
-        return $pdf->download('hoa-don-'.$order->order_code.'.pdf');
+        return $pdf->download('hoa-don-' . $order->order_code . '.pdf');
     }
 }
-

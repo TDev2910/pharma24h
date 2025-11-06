@@ -7,21 +7,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
- 
+
 
 class DashboardController extends Controller
 {
     /**
      * Hiển thị dashboard chính của user
      */
-     
+
     public function index(Request $request)
-    {      
+    {
         $user = Auth::user();
         return view('user.dashboard.index', compact('user'));
     }
 
-    
+
 
     public function profileSettings()
     {
@@ -32,25 +32,25 @@ class DashboardController extends Controller
     public function updateProfileSettings(Request $request)
     {
         $user = Auth::user();
-        
+
         // Xử lý cập nhật thông tin cá nhân
         $validatedData = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $user->id,
-                'phone' => 'nullable|string|max:20',
-                'address' => 'nullable|string|max:255',
-                'province' => 'nullable|string',
-                'district' => 'nullable|string',
-                'ward' => 'nullable|string',
-                'current_password' => 'nullable|string',
-                'new_password' => 'nullable|string|min:6|confirmed',
-            ], [
-                'name.required' => 'Vui lòng nhập họ tên',
-                'email.required' => 'Vui lòng nhập email',
-                'email.email' => 'Email không hợp lệ',
-                'email.unique' => 'Email này đã được sử dụng',
-                'new_password.min' => 'Mật khẩu mới phải có ít nhất 6 ký tự',
-                'new_password.confirmed' => 'Xác nhận mật khẩu không khớp',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
+            'province' => 'nullable|string',
+            'district' => 'nullable|string',
+            'ward' => 'nullable|string',
+            'current_password' => 'nullable|string',
+            'new_password' => 'nullable|string|min:6|confirmed',
+        ], [
+            'name.required' => 'Vui lòng nhập họ tên',
+            'email.required' => 'Vui lòng nhập email',
+            'email.email' => 'Email không hợp lệ',
+            'email.unique' => 'Email này đã được sử dụng',
+            'new_password.min' => 'Mật khẩu mới phải có ít nhất 6 ký tự',
+            'new_password.confirmed' => 'Xác nhận mật khẩu không khớp',
         ]);
 
         try {
@@ -70,12 +70,11 @@ class DashboardController extends Controller
                 if (!\Hash::check($request->current_password, $user->password)) {
                     return back()->withErrors(['current_password' => 'Mật khẩu hiện tại không đúng']);
                 }
-                
+
                 $user->update(['password' => \Hash::make($request->new_password)]);
             }
 
             return back()->with('success', 'Cập nhật thông tin thành công!');
-            
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Có lỗi xảy ra: ' . $e->getMessage()]);
         }
@@ -89,7 +88,7 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $orders = $user->orders()->latest()->get();
-        return view('user.orders.index', compact('user','orders'));
+        return view('user.orders.index', compact('user', 'orders'));
     }
 
     public function orderDetails($orderId)
@@ -130,7 +129,7 @@ class DashboardController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         try {
             // Delete old avatar if exists
             if ($user->avatar) {
@@ -150,7 +149,6 @@ class DashboardController extends Controller
                 'message' => 'Avatar uploaded successfully!',
                 'avatar_url' => asset('storage/avatars/' . $filename)
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -167,7 +165,7 @@ class DashboardController extends Controller
     public function removeAvatar()
     {
         $user = Auth::user();
-        
+
         try {
             // Delete avatar file if exists
             if ($user->avatar) {
@@ -179,7 +177,6 @@ class DashboardController extends Controller
                 'success' => true,
                 'message' => 'Avatar removed successfully!'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

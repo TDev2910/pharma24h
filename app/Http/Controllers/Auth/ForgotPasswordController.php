@@ -35,10 +35,10 @@ class ForgotPasswordController extends Controller
             ]);
 
             $email = $request->email;
-            
+
             //xử lý clear session cũ trước
             session()->forget(['phone_verification', 'phone_for_verification']);
-            
+
             // Kiểm tra cooldown (không cho gửi liên tục)
             $cooldownKey = "otp_cooldown_{$email}";
             if (Cache::has($cooldownKey)) {
@@ -47,7 +47,7 @@ class ForgotPasswordController extends Controller
 
             // Tạo OTP 5 số
             $otp = str_pad(random_int(10000, 99999), 5, '0', STR_PAD_LEFT);
-            
+
             // Lưu OTP vào cache (5 phút)
             $otpKey = "otp_{$email}";
             Cache::put($otpKey, [
@@ -55,22 +55,21 @@ class ForgotPasswordController extends Controller
                 'attempts' => 0,
                 'created_at' => now()
             ], 300); // 5 phút
-            
+
             // Set cooldown 60 giây
             Cache::put($cooldownKey, true, 60);
 
             // Gửi email
             Mail::raw("Mã OTP của bạn là: {$otp}\n\nMã có hiệu lực trong 5 phút.\n\nTrân trọng,\nPharma24h", function ($message) use ($email) {
                 $message->to($email)
-                ->subject('Mã OTP đặt lại mật khẩu - Pharma24h');
+                    ->subject('Mã OTP đặt lại mật khẩu - Pharma24h');
             });
 
             // Lưu email vào session thay vì URL parameter
             session(['otp_email' => $email]);
-            
+
             return redirect()->route('password.verify')
                 ->with('success', 'Mã OTP đã được gửi đến email của bạn!');
-
         } catch (\Exception $e) {
             // Debug: Log chi tiết lỗi
             \Log::error('Forgot Password Error: ' . $e->getMessage());
@@ -84,7 +83,7 @@ class ForgotPasswordController extends Controller
     public function showVerifyForm(Request $request)
     {
         $email = session('otp_email');
-        
+
         if (!$email) {
             return redirect()->route('password.request')->withErrors(['email' => 'Phiên làm việc đã hết hạn. Vui lòng thử lại!']);
         }
@@ -108,7 +107,7 @@ class ForgotPasswordController extends Controller
 
         // Lấy OTP từ cache
         $otpData = Cache::get($otpKey);
-        
+
         // Debug: Log thông tin OTP
         \Log::info('OTP Verification Debug', [
             'email' => $email,
@@ -117,7 +116,7 @@ class ForgotPasswordController extends Controller
             'otp_data_exists' => !is_null($otpData),
             'otp_data' => $otpData
         ]);
-        
+
         if (!$otpData) {
             return back()->withErrors(['otp' => 'Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới!']);
         }
@@ -133,17 +132,17 @@ class ForgotPasswordController extends Controller
             // Tăng số lần thử
             $otpData['attempts']++;
             Cache::put($otpKey, $otpData, 300);
-            
+
             $remainingAttempts = 3 - $otpData['attempts'];
             return back()->withErrors(['otp' => "Mã OTP không đúng. Còn {$remainingAttempts} lần thử!"]);
         }
 
-                // OTP đúng - xóa khỏi cache và lưu email vào session
+        // OTP đúng - xóa khỏi cache và lưu email vào session
         Cache::forget($otpKey);
         session(['reset_email' => $email]);
-        
+
         return redirect()->route('password.reset')
-                       ->with('success', 'Xác thực thành công! Vui lòng đặt mật khẩu mới.');
+            ->with('success', 'Xác thực thành công! Vui lòng đặt mật khẩu mới.');
     }
 
     /**
@@ -152,7 +151,7 @@ class ForgotPasswordController extends Controller
     public function showPhoneVerifyForm(Request $request)
     {
         $phone = $request->query('phone') ?: session('phone_for_verification');
-        
+
         // Debug: Log thông tin phone
         \Log::info('Phone verification debug', [
             'query_phone' => $request->query('phone'),
@@ -160,7 +159,7 @@ class ForgotPasswordController extends Controller
             'final_phone' => $phone,
             'all_query_params' => $request->query()
         ]);
-        
+
         if (!$phone) {
             return redirect()->route('password.request')
                 ->withErrors(['phone' => 'Số điện thoại không hợp lệ']);
@@ -192,25 +191,25 @@ class ForgotPasswordController extends Controller
 
         // ✅ Chuyển đổi từ +84376193244 thành 0376193244
         $normalizedPhone = $this->normalizePhoneForDatabase($phone);
-        
+
         // ✅ Tìm user với số điện thoại đã chuẩn hóa
         $user = User::where('phone', $normalizedPhone)->first();
 
-        if(!$user) {
+        if (!$user) {
             // Debug log để kiểm tra
             \Log::info('Phone verification failed', [
                 'original_phone' => $phone,
                 'normalized_phone' => $normalizedPhone,
                 'all_users_phones' => User::pluck('phone')->toArray()
             ]);
-            
+
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Số điện thoại chưa được đăng ký tài khoản'
                 ], 404);
             }
-            
+
             return back()->withErrors(['phone' => 'Số điện thoại chưa được đăng ký tài khoản']);
         }
 
@@ -219,7 +218,7 @@ class ForgotPasswordController extends Controller
             // Xóa attempts counter và cache cũ
             $otpKey = "phone_otp_attempts_{$phone}";
             Cache::forget($otpKey);
-            
+
             // Clear session cũ trước
             session()->forget(['reset_email', 'phone_verification']);
 
@@ -237,11 +236,13 @@ class ForgotPasswordController extends Controller
             ]);
 
             // Handle AJAX request - Kiểm tra header để đảm bảo trả về JSON
-            if ($request->ajax() || 
-                $request->wantsJson() || 
+            if (
+                $request->ajax() ||
+                $request->wantsJson() ||
                 $request->header('X-Requested-With') === 'XMLHttpRequest' ||
                 $request->header('Accept') === 'application/json' ||
-                str_contains($request->header('Accept', ''), 'application/json')) {
+                str_contains($request->header('Accept', ''), 'application/json')
+            ) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Xác thực thành công!',
@@ -256,23 +257,23 @@ class ForgotPasswordController extends Controller
         // ✅ Nếu không có uid/idToken nhưng có otp -> OTP sai, cần đếm attempts
         if ($otp) {
             $otpKey = "phone_otp_attempts_{$phone}";
-            
+
             // Lấy số lần thử hiện tại từ cache
             $otpData = Cache::get($otpKey, [
                 'attempts' => 0,
                 'created_at' => now()
             ]);
-            
+
             // Tăng số lần thử
             $otpData['attempts']++;
-            
+
             // Kiểm tra số lần thử
             if ($otpData['attempts'] >= 3) {
                 // Xóa cache và yêu cầu gửi lại OTP
                 Cache::forget($otpKey);
-                
+
                 $errorMessage = 'Bạn đã nhập sai quá 3 lần. Vui lòng yêu cầu mã OTP mới!';
-                
+
                 if ($request->ajax() || $request->wantsJson()) {
                     return response()->json([
                         'success' => false,
@@ -280,16 +281,16 @@ class ForgotPasswordController extends Controller
                         'max_attempts_reached' => true
                     ], 422);
                 }
-                
+
                 return back()->withErrors(['otp' => $errorMessage]);
             }
-            
+
             // Lưu lại số lần thử vào cache (5 phút)
             Cache::put($otpKey, $otpData, 300);
-            
+
             $remainingAttempts = 3 - $otpData['attempts'];
             $errorMessage = "Mã OTP không đúng. Còn {$remainingAttempts} lần thử!";
-            
+
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
@@ -297,20 +298,20 @@ class ForgotPasswordController extends Controller
                     'remaining_attempts' => $remainingAttempts
                 ], 422);
             }
-            
+
             return back()->withErrors(['otp' => $errorMessage]);
         }
 
         // Nếu không có cả uid/idToken và otp -> Lỗi request
         $errorMessage = 'Thiếu thông tin xác thực. Vui lòng thử lại!';
-        
+
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => false,
                 'message' => $errorMessage
             ], 422);
         }
-        
+
         return back()->withErrors(['otp' => $errorMessage]);
     }
 
@@ -318,17 +319,17 @@ class ForgotPasswordController extends Controller
     {
         // Loại bỏ tất cả ký tự không phải số
         $cleaned = preg_replace('/[^0-9]/', '', $phone);
-        
+
         // Nếu bắt đầu bằng 84 (từ +84), loại bỏ 84 và thêm 0
         if (substr($cleaned, 0, 2) === '84') {
             $cleaned = '0' . substr($cleaned, 2);
         }
-        
+
         // Nếu không bắt đầu bằng 0, thêm 0
         if (substr($cleaned, 0, 1) !== '0') {
             $cleaned = '0' . $cleaned;
         }
-        
+
         return $cleaned;
     }
 
@@ -343,7 +344,7 @@ class ForgotPasswordController extends Controller
 
         $phone = $request->phone;
         $rateLimitKey = "phone_otp_rate_limit_{$phone}";
-        
+
         // Kiểm tra rate limiting (3 lần trong 1 giờ)
         if (Cache::has($rateLimitKey)) {
             $attempts = Cache::get($rateLimitKey);
@@ -364,7 +365,7 @@ class ForgotPasswordController extends Controller
 
         // Lưu phone vào session
         session(['phone_for_verification' => $phone]);
-    
+
         return response()->json([
             'success' => true,
             'message' => 'Phone saved to session',
@@ -389,10 +390,10 @@ class ForgotPasswordController extends Controller
 
         $phone = $request->phone;
         $otpKey = "phone_otp_attempts_{$phone}";
-        
+
         // Xóa attempts counter
         Cache::forget($otpKey);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Đã reset số lần thử'
@@ -413,10 +414,10 @@ class ForgotPasswordController extends Controller
         try {
             // ✅ SỬA: Chuẩn hóa số điện thoại
             $normalizedPhone = $this->normalizePhoneForDatabase($request->phone);
-            
+
             // Tìm user theo phone number đã chuẩn hóa
             $user = User::where('phone', $normalizedPhone)->first();
-            
+
             if (!$user) {
                 return response()->json([
                     'success' => false,
@@ -445,7 +446,6 @@ class ForgotPasswordController extends Controller
                 'message' => 'Xác thực thành công',
                 'redirect_url' => route('password.reset')
             ]);
-
         } catch (\Exception $e) {
             \Log::error('Phone verification error: ' . $e->getMessage());
             return response()->json([
@@ -463,13 +463,13 @@ class ForgotPasswordController extends Controller
         $email = session('reset_email');
         $phoneVerification = session('phone_verification');
 
-           // ✅ THÊM: Debug logging
-            \Log::info('Reset form debug', [
-                'reset_email' => $email,
-                'phone_verification' => $phoneVerification,
-                'all_session' => session()->all()
-            ]);
-        
+        // ✅ THÊM: Debug logging
+        \Log::info('Reset form debug', [
+            'reset_email' => $email,
+            'phone_verification' => $phoneVerification,
+            'all_session' => session()->all()
+        ]);
+
         //xử lý email và xác thực số điện thoại
         if (!$email && !$phoneVerification) {
             return redirect()->route('password.request')->withErrors(['email' => 'Phiên làm việc đã hết hạn. Vui lòng thử lại!']);
@@ -510,7 +510,6 @@ class ForgotPasswordController extends Controller
             $user->save();
 
             return redirect()->route('login')->with('success', 'Đặt lại mật khẩu thành công! Vui lòng đăng nhập.');
-
         } catch (\Exception $e) {
             return back()->withErrors(['password' => 'Có lỗi xảy ra. Vui lòng thử lại!']);
         }

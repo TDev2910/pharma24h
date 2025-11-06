@@ -3,8 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ServiceBookingController;
+use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\ServiceBookingController;
+use App\Http\Controllers\Public\ReviewController;
 use App\Http\Controllers\Api\ChatbotController;
 use App\Http\Controllers\Admin\AdminController;
 use Inertia\Inertia;
@@ -35,8 +36,8 @@ Route::get('/services/{id}', [HomeController::class, 'serviceDetail'])->name('se
 Route::get('/contact', fn () => Inertia::render('Public/Contact'))->name('contact');
 
 // Review routes
-Route::post('/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
-Route::delete('/reviews/{id}', [App\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy')->middleware('auth');
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
+Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy')->middleware('auth');
 // Auth routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);

@@ -17,35 +17,35 @@ class CustomerController extends Controller
         // Lấy dữ liệu từ db với orders count và total amount
         $totalCustomers = User::where('role', 'user')->count();
         $activeCustomers = User::where('role', 'user')
-            ->whereNotNull('email_verified_at') 
+            ->whereNotNull('email_verified_at')
             ->count();
-        
+
         // Lấy danh sách khách hàng 
         $customers = User::where('role', 'user')
             ->withCount('orders') //đếm số lượng đơn hàng user đã mua
             ->withSum('orders', 'total_amount') // tổng tiền user đã mua
             ->paginate(10);
-        
+
         $customersData = $customers->map(function ($customer) {
             $avatarUrl = null;
             if ($customer->avatar) {
                 // đường dẫn avatar
                 $avatarPath = $customer->avatar;
-                
+
                 // Nếu đường dẫn không bắt đầu bằng 'avatars/', thêm vào
                 if (!str_starts_with($avatarPath, 'avatars/')) {
                     $avatarPath = 'avatars/' . $avatarPath;
                 }
-                
+
                 $avatarUrl = url('storage/' . $avatarPath);
-                
+
                 // Kiểm tra file có tồn tại không
                 $fullPath = public_path('storage/' . $avatarPath);
                 if (!file_exists($fullPath)) {
                     $avatarUrl = null; // Set null nếu file không tồn tại
                 }
             }
-            
+
             return [
                 'id' => $customer->id,
                 'name' => $customer->name,
@@ -58,7 +58,7 @@ class CustomerController extends Controller
                 'total_amount' => $customer->orders_sum_total_amount ?? 0
             ];
         });
-        
+
         return inertia('Admin/Customers/Dashboard', [
             'stats' => [
                 'totalCustomers' => $totalCustomers,
@@ -79,10 +79,7 @@ class CustomerController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        
-    }
+    public function create() {}
 
     /**
      * Store a newly created resource in storage.
@@ -113,7 +110,7 @@ class CustomerController extends Controller
             $province = null;
             $district = null;
             $ward = null;
-            
+
             if ($request->province) {
                 if (is_array($request->province)) {
                     $province = $request->province['name'] ?? null;
@@ -121,7 +118,7 @@ class CustomerController extends Controller
                     $province = $request->province;
                 }
             }
-            
+
             if ($request->district) {
                 if (is_array($request->district)) {
                     $district = $request->district['name'] ?? null;
@@ -129,7 +126,7 @@ class CustomerController extends Controller
                     $district = $request->district;
                 }
             }
-            
+
             if ($request->ward) {
                 if (is_array($request->ward)) {
                     $ward = $request->ward['name'] ?? null;
@@ -165,7 +162,6 @@ class CustomerController extends Controller
                     'total_amount' => 0
                 ]
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -193,9 +189,8 @@ class CustomerController extends Controller
      */
     public function edit(string $id)
     {
-        try
-        {
-            if(!is_numeric($id) || $id <=0) {
+        try {
+            if (!is_numeric($id) || $id <= 0) {
                 return response()->json([
                     'success' => false,
                     'message' => 'ID khách hàng không hợp lệ'
@@ -207,16 +202,12 @@ class CustomerController extends Controller
                 'success' => true,
                 'data' => $user
             ]);
-        }
-        catch(\Illuminate\Database\Eloquent\ModelNotFoundException $e)
-        {
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Không tìm thấy khách hàng với ID: ' . $id
             ], 404);
-        }
-        catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi tải thông tin khách hàng: ' . $e->getMessage()
@@ -229,10 +220,9 @@ class CustomerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        try
-        {
+        try {
             $user = User::findOrFail($id);
-            
+
             $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $id,
@@ -272,7 +262,7 @@ class CustomerController extends Controller
                     $district = $request->district;
                 }
             }
-            
+
             if ($request->ward) {
                 if (is_array($request->ward)) {
                     $ward = $request->ward['name'] ?? $user->ward;
@@ -314,7 +304,6 @@ class CustomerController extends Controller
                     'total_amount' => $user->total_amount ?? 0
                 ]
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -339,8 +328,7 @@ class CustomerController extends Controller
      */
     public function destroy(string $id)
     {
-        try
-        {
+        try {
             $user = User::findOrFail($id);
             $user->delete();
 
@@ -348,16 +336,12 @@ class CustomerController extends Controller
                 'success' => true,
                 'message' => 'Xóa khách hàng thành công!'
             ]);
-        }
-        catch(\Illuminate\Database\Eloquent\ModelNotFoundException $e)
-        {
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Không tìm thấy khách hàng với ID: ' . $id
             ], 404);
-        }
-        catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
@@ -375,34 +359,34 @@ class CustomerController extends Controller
         $activeCustomers = User::where('role', 'user')
             ->whereNotNull('email_verified_at') // Khách hàng đã verify email
             ->count();
-        
+
         // Lấy danh sách khách hàng với pagination
         $customers = User::where('role', 'user')
             ->withCount('orders')
             ->withSum('orders', 'total_amount')
             ->paginate(10);
-        
+
         // Format dữ liệu cho Vue component
         $customersData = $customers->map(function ($customer) {
             $avatarUrl = null;
             if ($customer->avatar) {
                 // Kiểm tra và sửa đường dẫn avatar
                 $avatarPath = $customer->avatar;
-                
+
                 // Nếu đường dẫn không bắt đầu bằng 'avatars/', thêm vào
                 if (!str_starts_with($avatarPath, 'avatars/')) {
                     $avatarPath = 'avatars/' . $avatarPath;
                 }
-                
+
                 $avatarUrl = url('storage/' . $avatarPath);
-                
+
                 // Kiểm tra file có tồn tại không
                 $fullPath = public_path('storage/' . $avatarPath);
                 if (!file_exists($fullPath)) {
                     $avatarUrl = null; // Set null nếu file không tồn tại
                 }
             }
-            
+
             return [
                 'id' => $customer->id,
                 'name' => $customer->name,
@@ -415,7 +399,7 @@ class CustomerController extends Controller
                 'total_amount' => $customer->orders_sum_total_amount ?? 0
             ];
         });
-        
+
         return Inertia::render('Admin/Customers/Dashboard', [
             'stats' => [
                 'totalCustomers' => $totalCustomers,

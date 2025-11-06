@@ -24,16 +24,16 @@ class SupplierController extends Controller
         // Lấy suppliers từ database với relationship
         $suppliers = Supplier::with('category')
             ->latest()
-            ->paginate(15);      
+            ->paginate(15);
         // Lấy supplier groups cho filter
         $supplierGroups = SupplierCategory::active()->ordered()->get();
-        
+
         // Tạo empty collections cho các biến cần thiết trong view
         $provinces = collect([]);
         $businessTypes = collect([]);
-        
+
         // Format suppliers cho Vue component
-        $formattedSuppliers = $suppliers->getCollection()->map(function($supplier) {
+        $formattedSuppliers = $suppliers->getCollection()->map(function ($supplier) {
             return [
                 'id' => $supplier->id,
                 'ma_nha_cung_cap' => $supplier->ma_nha_cung_cap,
@@ -55,16 +55,16 @@ class SupplierController extends Controller
                 ] : null
             ];
         });
-        
+
         return Inertia::render('Admin/Purchases/Suppliers/Dashboard', [
             'suppliers' => $formattedSuppliers,
-            'supplierGroups' => $supplierGroups->map(function($group) {
+            'supplierGroups' => $supplierGroups->map(function ($group) {
                 return [
                     'id' => $group->id,
                     'name' => $group->name
                 ];
             }),
-            'provinces' => $provinces->map(function($province) {
+            'provinces' => $provinces->map(function ($province) {
                 return [
                     'id' => $province->id ?? $province,
                     'name' => $province->name ?? $province
@@ -86,14 +86,14 @@ class SupplierController extends Controller
         if (request()->ajax()) {
             // Lấy supplier groups cho dropdown
             $supplierGroups = SupplierCategory::active()->ordered()->get();
-            
+
             $html = view('admin.products.Nhaphang.Suppliers.partials.supplier-form', compact('supplierGroups'))->render();
             return response()->json([
                 'status' => 'success',
                 'html' => $html
             ]);
         }
-        
+
         return redirect()->route('admin.suppliers.index');
     }
 
@@ -114,7 +114,7 @@ class SupplierController extends Controller
                 'nhom_nha_cung_cap_id' => 'required|exists:supplier_categories,id',
                 'ghi_chu' => 'nullable|string',
                 'ten_cong_ty' => 'nullable|string|max:255|unique:suppliers',
-                'ma_so_thue' => 'nullable|string|max:20|unique:suppliers',   
+                'ma_so_thue' => 'nullable|string|max:20|unique:suppliers',
                 'trang_thai' => 'nullable|in:active,inactive'
             ], [
                 'ma_nha_cung_cap.unique' => 'Mã nhà cung cấp đã tồn tại!',
@@ -157,13 +157,12 @@ class SupplierController extends Controller
             // Default: redirect với flash message
             return redirect()->route('admin.suppliers.index')
                 ->with('success', 'Nhà cung cấp đã được thêm thành công');
-                
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Validation errors - Inertia tự động xử lý và trigger onError
             if ($request->header('X-Inertia')) {
                 throw $e; // Inertia sẽ tự động handle validation errors
             }
-            
+
             // AJAX validation error
             if ($request->ajax()) {
                 return response()->json([
@@ -172,19 +171,18 @@ class SupplierController extends Controller
                     'errors' => $e->errors()
                 ], 422);
             }
-            
+
             throw $e;
-            
         } catch (\Exception $e) {
             \Log::error('Error creating supplier: ' . $e->getMessage());
-            
+
             // Inertia request - trả về redirect với errors
             if ($request->header('X-Inertia')) {
                 return redirect()->back()
                     ->withErrors(['general' => 'Có lỗi xảy ra: ' . $e->getMessage()])
                     ->withInput();
             }
-            
+
             // AJAX error
             if ($request->ajax()) {
                 return response()->json([
@@ -192,7 +190,7 @@ class SupplierController extends Controller
                     'message' => 'Có lỗi xảy ra khi thêm nhà cung cấp: ' . $e->getMessage()
                 ], 500);
             }
-            
+
             return redirect()->back()
                 ->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
                 ->withInput();
@@ -210,7 +208,7 @@ class SupplierController extends Controller
             'total_products' => 0, // Tổng sản phẩm cung cấp
             'last_order_date' => null, // Đơn hàng gần nhất
         ];
-        
+
         if (request()->ajax()) {
             $html = view('admin.products.Nhaphang.Suppliers.partials.supplier-view', compact('supplier', 'supplierStats'))->render();
             return response()->json([
@@ -219,7 +217,7 @@ class SupplierController extends Controller
                 'supplier' => $supplier
             ]);
         }
-        
+
         return view('admin.products.Nhaphang.Suppliers.show', compact('supplier', 'supplierStats'));
     }
 
@@ -230,7 +228,7 @@ class SupplierController extends Controller
     {
         $supplier = Supplier::findOrFail($id);
         $supplierGroups = SupplierCategory::active()->ordered()->get();
-        
+
         return response()->json([
             'success' => true,
             'supplier' => $supplier,
@@ -255,27 +253,24 @@ class SupplierController extends Controller
     /**
      * Remove the specified supplier
      */
-    public function destroy($id)
-    {
-
-    }
+    public function destroy($id) {}
 
     public function getImports($supplierId)
     {
         $imports = StockImport::where('supplier_id', $supplierId)
             ->latest()
             ->get();
-        
-        $formattedImports = $imports->map(function($import) {
+
+        $formattedImports = $imports->map(function ($import) {
             return [
                 'Code' => $import->import_code,
                 'DayImport' => $import->import_date ? \Carbon\Carbon::parse($import->import_date)->format('d/m/Y') : '-',
-                'User' => Auth::user()->name ?? 'N/A', 
+                'User' => Auth::user()->name ?? 'N/A',
                 'TotalAmount' => number_format($import->total_amount ?? 0, 0, ',', '.') . ' đ',
                 'Status' => $import->status ?? 'pending'
             ];
         });
-        
+
         return response()->json([
             'success' => true,
             'data' => $formattedImports
@@ -287,17 +282,17 @@ class SupplierController extends Controller
         $returns = PurchaseReturn::where('supplier_id', $supplierId)
             ->latest()
             ->get();
-        
-        $formattedReturns = $returns->map(function($return) {
+
+        $formattedReturns = $returns->map(function ($return) {
             return [
                 'Code' => $return->return_code,
                 'DayReturn' => $return->return_date ? \Carbon\Carbon::parse($return->return_date)->format('d/m/Y') : '-',
-                'UserReturn' => Auth::user()->name ?? 'N/A', 
+                'UserReturn' => Auth::user()->name ?? 'N/A',
                 'TotalAmountReturn' => number_format($return->total_amount ?? 0, 0, ',', '.') . ' đ',
                 'StatusReturn' => $return->status ?? 'pending'
             ];
         });
-        
+
         return response()->json([
             'success' => true,
             'data' => $formattedReturns
@@ -312,18 +307,18 @@ class SupplierController extends Controller
             $stockImport = StockImport::where('import_code', $importCode)
                 ->with('items')
                 ->first();
-            
+
             if (!$stockImport) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Không tìm thấy phiếu nhập hàng'
                 ], 404);
             }
-            
+
             // Load products manually cho mỗi item
             $medicineIds = [];
             $goodsIds = [];
-            
+
             foreach ($stockImport->items as $item) {
                 if ($item->product_type === 'medicine') {
                     $medicineIds[] = $item->product_id;
@@ -331,16 +326,16 @@ class SupplierController extends Controller
                     $goodsIds[] = $item->product_id;
                 }
             }
-            
+
             // Load tất cả products một lần
             $medicines = Medicine::whereIn('id', array_unique($medicineIds))->get()->keyBy('id');
             $goods = Goods::whereIn('id', array_unique($goodsIds))->get()->keyBy('id');
-            
+
             // Format items cho DataTable
-            $items = $stockImport->items->map(function($item) use ($medicines, $goods) {
+            $items = $stockImport->items->map(function ($item) use ($medicines, $goods) {
                 $productName = 'N/A';
                 $productCode = 'N/A';
-                
+
                 if ($item->product_type === 'medicine') {
                     $product = $medicines->get($item->product_id);
                     if ($product) {
@@ -354,7 +349,7 @@ class SupplierController extends Controller
                         $productName = $product->ten_hang_hoa ?? 'N/A';
                     }
                 }
-                
+
                 return [
                     'code' => $productCode,
                     'name' => $productName,
@@ -364,7 +359,7 @@ class SupplierController extends Controller
                     'total_price' => $item->total_price ?? 0
                 ];
             });
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $items
@@ -384,18 +379,18 @@ class SupplierController extends Controller
             $purchaseReturn = PurchaseReturn::where('return_code', $returnCode)
                 ->with('items')
                 ->first();
-            
+
             if (!$purchaseReturn) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Không tìm thấy phiếu trả hàng'
                 ], 404);
             }
-            
+
             // Load products manually cho mỗi item
             $medicineIds = [];
             $goodsIds = [];
-            
+
             foreach ($purchaseReturn->items as $item) {
                 if ($item->product_type === 'medicine') {
                     $medicineIds[] = $item->product_id;
@@ -403,19 +398,17 @@ class SupplierController extends Controller
                     $goodsIds[] = $item->product_id;
                 }
             }
-            
+
             // Load tất cả products một lần
             $medicines = Medicine::whereIn('id', array_unique($medicineIds))->get()->keyBy('id');
             $goods = Goods::whereIn('id', array_unique($goodsIds))->get()->keyBy('id');
-            
+
             // Format items cho DataTable
-            $items = $purchaseReturn->items->map(function($item) use ($medicines, $goods) 
-            {
+            $items = $purchaseReturn->items->map(function ($item) use ($medicines, $goods) {
                 $productName = 'N/A';
                 $productCode = 'N/A';
-                
-                if ($item->product_type === 'medicine') 
-                {
+
+                if ($item->product_type === 'medicine') {
                     $product = $medicines->get($item->product_id);
                     if ($product) {
                         $productCode = $product->ma_hang ?? 'N/A';
@@ -428,7 +421,7 @@ class SupplierController extends Controller
                         $productName = $product->ten_hang_hoa ?? 'N/A';
                     }
                 }
-                
+
                 return [
                     'code' => $productCode,
                     'name' => $productName,
@@ -438,7 +431,7 @@ class SupplierController extends Controller
                     'total_price' => $item->total_price ?? 0
                 ];
             });
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $items
