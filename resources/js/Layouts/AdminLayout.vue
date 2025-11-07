@@ -16,7 +16,7 @@
             </div>
             <div class="dropdown-col">
               <div class="dropdown-title">Kho hàng</div>
-              <a href="#" class="dropdown-link">Kiểm kho sản phẩm</a>
+              <a href="/admin/products/stock" class="dropdown-link">Kiểm kho sản phẩm</a>
             </div>
             <div class="dropdown-col">
               <div class="dropdown-title">Nhập hàng</div>

@@ -11,4 +11,5 @@ class AdminController extends \App\Http\Controllers\Controller
     {
         return Inertia::render('Admin/AdminDashboard');
     }
+    
 }

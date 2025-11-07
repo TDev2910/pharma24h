@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\Employee\EmployeeController;
 use App\Http\Controllers\Admin\Employee\ScheduleController;
 use App\Http\Controllers\Admin\Employee\ShiftController;
+use App\Http\Controllers\Admin\Product\StockController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -95,6 +96,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/{service}/detail', [ServiceController::class, 'detail'])->name('detail');
         Route::get('/{service}', [ServiceController::class, 'show'])->name('show');
         Route::patch('/{service}/status', [ServiceController::class, 'updateStatus'])->name('updateStatus');
+    });
+
+    // Stock/Inventory routes
+    Route::prefix('products/stock')->name('products.stock.')->group(function () {
+        Route::get('/', [StockController::class, 'index'])->name('index');
+        Route::get('/api', [StockController::class, 'apiIndex'])->name('api');
     });
 
     // Categories
