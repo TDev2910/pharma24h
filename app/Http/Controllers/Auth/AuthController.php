@@ -126,4 +126,105 @@ class AuthController extends Controller
         Auth::logout();
         return redirect('/')->with('success', 'Đăng xuất thành công!');
     }
+    /**
+     * Handle Google login request
+     */
+    public function googleLogin(Request $request)
+    {
+        $request->validate([
+            'idToken' => 'required|string',
+            'uid' => 'required|string',
+            'email' => 'required|email',
+            'name' => 'required|string',
+            'photoURL' => 'nullable|string',
+        ]);
+
+        $uid = $request->uid;
+        $email = $request->email;
+        $name = $request->name;
+        $photoURL = $request->photoURL;
+
+        try {
+            // Tìm user theo firebase_uid hoặc email
+            $user = User::where('firebase_uid', $uid)
+                ->orWhere('email', $email)
+                ->first();
+
+            if ($user) {
+                // User đã tồn tại - cập nhật thông tin
+                if (!$user->firebase_uid) {
+                    $user->firebase_uid = $uid;
+                }
+                if (!$user->provider) {
+                    $user->provider = 'google';
+                }
+                if ($photoURL && !$user->avatar) {
+                    $user->avatar = $photoURL;
+                }
+                $user->email_verified_at = now();
+                $user->save();
+            } else {
+                // Tạo user mới
+                $user = User::create([
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => null, // Google user không cần password
+                    'avatar' => $photoURL,
+                    'firebase_uid' => $uid,
+                    'provider' => 'google',
+                    'role' => 'user',
+                    'email_verified_at' => now(),
+                ]);
+            }
+
+            // Đăng nhập user
+            Auth::login($user);
+
+            // Xác định redirect URL theo role
+            $redirectUrl = '/';
+            $message = 'Đăng nhập thành công!';
+            
+            if ($user->role === 'admin') {
+                $redirectUrl = '/admin/admindashboard';
+                $message = 'Chào mừng Admin!';
+            } elseif ($user->role === 'staff') {
+                $employee = $user->employee ?? null;
+                if ($employee) {
+                    $redirectUrl = '/staff/dashboard';
+                    $message = 'Chào mừng ' . $user->name . '!';
+                }
+            }
+
+            // Nếu là AJAX request, trả về JSON
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $message,
+                    'redirect' => $redirectUrl,
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'role' => $user->role,
+                    ]
+                ]);
+            }
+
+            // Nếu là form submit thông thường, redirect
+            return redirect($redirectUrl)->with('success', $message);
+            
+        } catch (\Exception $e) {
+            // Xử lý lỗi
+            $errorMessage = 'Có lỗi xảy ra khi đăng nhập: ' . $e->getMessage();
+            
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $errorMessage
+                ], 500);
+            }
+            
+            return back()->withErrors(['error' => $errorMessage])->withInput();
+        }
+    }
 }

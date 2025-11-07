@@ -81,6 +81,21 @@
             <button type="submit" class="btn btn-primary w-100 mb-4" id="loginBtn">
                 Đăng nhập
             </button>
+            <!-- Divider -->
+            <div class="text-center my-4">
+                <span class="text-muted">Hoặc</span>
+            </div>
+
+            <!-- Google Login Button -->
+            <button type="button" class="btn btn-outline-danger w-100 mb-3" id="googleLoginBtn">
+                <svg width="18" height="18" viewBox="0 0 18 18" style="margin-right: 8px;">
+                    <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+                    <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.96-2.186l-2.908-2.258c-.806.54-1.837.86-3.052.86-2.347 0-4.33-1.584-5.04-3.71H.957v2.331C2.438 15.983 5.482 18 9 18z"/>
+                    <path fill="#FBBC05" d="M3.96 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.04l3.003-2.33z"/>
+                    <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.96L3.96 7.29C4.67 5.163 6.653 3.58 9 3.58z"/>
+                </svg>
+                Đăng nhập với Google
+            </button>
         </form>
 
         <!-- Footer Links -->
@@ -270,6 +285,35 @@
     margin-top: 4px;
 }
 
+.btn-outline-danger {
+    height: 48px;
+    border: 2px solid #ea4335;
+    border-radius: 24px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #ea4335;
+    background: white;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-outline-danger:hover {
+    background: #ea4335;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(234, 67, 53, 0.3);
+}
+
+.btn-outline-danger:disabled {
+    background: #f5f5f5;
+    border-color: #d0d0d0;
+    color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
     .login-container {
@@ -355,6 +399,106 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.remove('is-invalid');
         });
     });
+    const googleLoginBtn = document.getElementById('googleLoginBtn');
+    
+    if (googleLoginBtn) {
+        googleLoginBtn.addEventListener('click', async function() {
+            const btn = this;
+            const originalText = btn.innerHTML;
+            
+            try {
+                // Disable button và hiển thị loading
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
+                
+                // Import Firebase Google Auth service
+                // Sử dụng Vite asset để load module
+                const firebaseGoogleAuthModule = await import('{{ Vite::asset("resources/js/services/firebaseGoogleAuth.js") }}');
+                const firebaseGoogleAuth = firebaseGoogleAuthModule.default;
+                
+                // Kiểm tra service có tồn tại không
+                if (!firebaseGoogleAuth || typeof firebaseGoogleAuth.signInWithGoogle !== 'function') {
+                    throw new Error('Firebase Google Auth service không khả dụng');
+                }
+                
+                // Đăng nhập với Google
+                const result = await firebaseGoogleAuth.signInWithGoogle();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'Đăng nhập thất bại');
+                }
+                
+                // Lấy CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                if (!csrfToken) {
+                    throw new Error('CSRF token không tìm thấy');
+                }
+                
+                // Gửi thông tin lên backend
+                const formData = new FormData();
+                formData.append('idToken', result.idToken);
+                formData.append('uid', result.user.uid);
+                formData.append('email', result.user.email);
+                formData.append('name', result.user.name);
+                formData.append('photoURL', result.user.photoURL || '');
+                formData.append('_token', csrfToken);
+                
+                const response = await fetch('{{ route("auth.google") }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                // Xử lý JSON parse error
+                let data;
+                try {
+                    data = await response.json();
+                } catch (jsonError) {
+                    throw new Error('Phản hồi từ server không hợp lệ');
+                }
+                
+                if (response.ok && data.success) {
+                    // Redirect sẽ được xử lý bởi backend hoặc frontend
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        window.location.reload();
+                    }
+                } else {
+                    throw new Error(data.message || 'Đăng nhập thất bại');
+                }
+                
+            } catch (error) {
+                console.error('Google login error:', error);
+                
+                // Hiển thị thông báo lỗi
+                let errorMessage = 'Có lỗi xảy ra khi đăng nhập với Google';
+                if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                // Sử dụng alert hoặc SweetAlert2 nếu có
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi đăng nhập',
+                        text: errorMessage
+                    });
+                } else {
+                    alert(errorMessage);
+                }
+                
+                // Restore button
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+    }
 });
+
 </script>
 @endsection

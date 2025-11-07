@@ -9,7 +9,7 @@
             <div class="nav-dropdown">
               <div class="dropdown-col">
                 <div class="dropdown-title">Kho hàng</div>
-                <a href="#" class="dropdown-link">Kiểm kho sản phẩm</a>
+                <a href="/staff/products/stock" class="dropdown-link">Kiểm kho sản phẩm</a>
               </div>
             </div>
           </div>
@@ -19,7 +19,7 @@
               <div class="dropdown-col">
                 <div class="dropdown-title">Tổng quan</div>
                 <a href="#" class="dropdown-link">Quản lý đơn hàng</a>
-                <a href="#" class="dropdown-link">Quản lý dịch vụ</a>
+                <a href="/staff/service-bookings" class="dropdown-link">Quản lý dịch vụ</a>
               </div>
             </div>
           </div>

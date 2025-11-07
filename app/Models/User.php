@@ -20,7 +20,9 @@ class User extends Authenticatable
         'province',
         'district',
         'ward',
-        'role'
+        'role',
+        'firebase_uid',
+        'provider'
     ];
 
     protected $hidden = [
@@ -88,5 +90,13 @@ class User extends Authenticatable
     public function isStaff()
     {
         return $this->role === 'staff';
+    }
+
+    /**
+     * Check if user is Google user
+     */
+    public function isGoogleUser()
+    {
+        return $this->provider === 'google';
     }
 }

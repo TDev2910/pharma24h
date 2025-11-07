@@ -13,7 +13,7 @@ use Inertia\Inertia;
  
 // 🌐 PUBLIC ROUTES
 Route::get('/',[HomeController::class,'homeInertia'])->name('home');
-
+Route::post('/auth/google', [AuthController::class, 'googleLogin'])->name('auth.google');
 // CSRF Token refresh route
 Route::get('/sanctum/csrf-cookie', function () {
     return response()->json(['message' => 'CSRF cookie set']);
