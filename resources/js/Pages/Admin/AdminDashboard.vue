@@ -84,33 +84,22 @@
               <h3>Khách hàng mua nhiều nhất</h3>
             </div>
             <div class="activity-list">
-              <div class="activity-item">
+              <div v-for="(customer, index) in topCustomers" :key="customer.id" class="activity-item">
                 <div class="activity-content">
-                  <div class="activity-title">Order #2048</div>
-                  <div class="activity-meta">John Doe • 12 Jan 25</div>
+                  <div class="activity-title">{{ customer.name }}</div>
+                  <div class="activity-meta">
+                    {{ customer.order_count }} đơn hàng •
+                    {{ formatCurrency(customer.total_spent) }}
+                  </div>
                 </div>
-                <button class="activity-badge new-order">New Order</button>
+                <button class="activity-badge new-order">
+                  Top {{ index + 1 }}
+                </button>
               </div>
-              <div class="activity-item">
+              <div v-if="topCustomers.length === 0" class="activity-item">
                 <div class="activity-content">
-                  <div class="activity-title">Low Stock Alert</div>
-                  <div class="activity-meta">MacBook Air M2 • 10 Jan 25</div>
+                  <div class="activity-title">Chưa có dữ liệu</div>
                 </div>
-                <button class="activity-badge low-stock">Low Stock</button>
-              </div>
-              <div class="activity-item">
-                <div class="activity-content">
-                  <div class="activity-title">Promo code 'SUMMER20'</div>
-                  <div class="activity-meta">Applied 52 times • 8 Jan 25</div>
-                </div>
-                <button class="activity-badge campaign">Campaign</button>
-              </div>
-              <div class="activity-item">
-                <div class="activity-content">
-                  <div class="activity-title">System Update</div>
-                  <div class="activity-meta">Version 1.2.1 • 2 Jan 25</div>
-                </div>
-                <button class="activity-badge system">System</button>
               </div>
             </div>
           </div>
@@ -119,57 +108,28 @@
           <div class="products-card">
             <div class="card-header">
               <h3>Sản phẩm được mua nhiều nhất</h3>
-              <div class="card-actions">
-                <button class="action-btn">Sort</button>
-                <button class="action-btn">Filter</button>
-              </div>
             </div>
             <div class="products-table">
               <table>
                 <thead>
                   <tr>
-                    <th>Product</th>
-                    <th>Stocks</th>
-                    <th>Price</th>
-                    <th>Sales</th>
-                    <th>Earnings</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Tồn kho</th>
+                    <th>Số lượng đã bán</th>
+                    <th>Doanh thu</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>iPhone 15 Pro</td>
-                    <td>125</td>
-                    <td>$999</td>
-                    <td>245</td>
-                    <td>$244,755</td>
+                  <tr v-for="product in topProducts" :key="`${product.type}-${product.id}`">
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.stocks.toLocaleString() }}</td>
+                    <td>{{ product.sales.toLocaleString() }}</td>
+                    <td>{{ formatCurrency(product.earnings) }}</td>
                   </tr>
-                  <tr>
-                    <td>MacBook Air M2</td>
-                    <td>89</td>
-                    <td>$1,199</td>
-                    <td>189</td>
-                    <td>$226,611</td>
-                  </tr>
-                  <tr>
-                    <td>Google Pixel 8</td>
-                    <td>156</td>
-                    <td>$699</td>
-                    <td>178</td>
-                    <td>$124,422</td>
-                  </tr>
-                  <tr>
-                    <td>Nike Air Max 90</td>
-                    <td>234</td>
-                    <td>$120</td>
-                    <td>312</td>
-                    <td>$37,440</td>
-                  </tr>
-                  <tr>
-                    <td>Galaxy Buds Pro</td>
-                    <td>198</td>
-                    <td>$199</td>
-                    <td>267</td>
-                    <td>$53,133</td>
+                  <tr v-if="topProducts.length === 0">
+                    <td colspan="5" style="text-align: center; padding: 20px; color: #6b7280;">
+                      Chưa có dữ liệu
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -190,6 +150,10 @@ export default {
     Chart
   },
   props: {
+    topCustomers: {
+      type: Array,
+      default: () => [],
+    },
     stats: {
       type: Object,
       default: () => ({
@@ -206,6 +170,14 @@ export default {
         goodsCount: 0,
         serviceCount: 0,
       })
+    },
+    topCustomers: {
+      type: Array,
+      default: () => []
+    },
+    topProducts: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -374,7 +346,7 @@ export default {
       const data = this.chartData.datasets[0].data;
       const colors = this.chartData.datasets[0].backgroundColor;
       const total = data.reduce((sum, value) => sum + value, 0);
-      
+
       return labels.map((label, index) => {
         const amount = data[index];
         const percentage = total > 0 ? Math.round((amount / total) * 100) : 0;
