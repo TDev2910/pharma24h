@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Staff\StaffStockController;
 use App\Http\Controllers\Staff\StaffServiceBookingController;
+use App\Http\Controllers\Staff\StaffCustomerController;
+use App\Http\Controllers\Staff\StaffOrderController;
 
 Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
@@ -26,5 +28,28 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
         Route::post('/{id}/mark-paid', [StaffServiceBookingController::class, 'markAsPaid'])->name('mark-paid');
         Route::post('/{id}/complete', [StaffServiceBookingController::class, 'complete'])->name('complete');
     })->name('staff.services.dashboard');
+
+    // Customers
+    Route::prefix('customers')->name('customers.')->group(function () {
+        Route::get('/', [StaffCustomerController::class, 'index'])->name('index');
+        Route::get('/api', [StaffCustomerController::class, 'apiIndex'])->name('api');
+        Route::get('/{id}', [StaffCustomerController::class, 'show'])->name('show');
+        Route::post('/{id}/confirm', [StaffCustomerController::class, 'confirm'])->name('confirm');
+        Route::post('/{id}/cancel', [StaffCustomerController::class, 'cancel'])->name('cancel');
+    });
+    Route::post('/customers/{customer}', [StaffCustomerController::class, 'update'])->name('customers.update');
+    Route::get('/customers/{customer}/edit', [StaffCustomerController::class, 'edit'])->name('customers.edit');
+    Route::delete('/customers/{id}', [StaffCustomerController::class, 'destroy'])->name('customers.destroy');
+
+    // Orders
+    Route::prefix('orders')->name('orders.')->group(function () {
+        Route::get('/', [StaffOrderController::class, 'index'])->name('index');
+        Route::get('/api', [StaffOrderController::class, 'apiIndex'])->name('api');
+        Route::get('/{id}', [StaffOrderController::class, 'show'])->name('show');
+        Route::post('/{id}/confirm', [StaffOrderController::class, 'confirm'])->name('confirm');
+        Route::post('/{id}/cancel', [StaffOrderController::class, 'cancel'])->name('cancel');
+        Route::post('/{id}/update-status', [StaffOrderController::class, 'updateStatus'])->name('update-status');
+        Route::patch('/{id}', [StaffOrderController::class, 'update'])->name('update');
+    }); 
 });
 

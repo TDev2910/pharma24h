@@ -59,9 +59,6 @@
               <div class="meta-item" v-if="product.manufacturer">
                 <strong>Nhà sản xuất:</strong> {{ product.manufacturer.name }}
               </div>
-              <div class="meta-item" v-if="product.manufacturer">
-                <strong>Nhà sản xuất:</strong> {{ product.manufacturer.name }}
-              </div>
               <div class="meta-item" v-if="type === 'medicine' && product.drugRoute">
                 <strong>Đường dùng:</strong> {{ product.drugRoute.name }}
               </div>

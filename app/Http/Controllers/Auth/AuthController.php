@@ -129,6 +129,7 @@ class AuthController extends Controller
     /**
      * Handle Google login request
      */
+    //Đăng nhập bằng google
     public function googleLogin(Request $request)
     {
         $request->validate([

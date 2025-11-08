@@ -22,6 +22,7 @@
     "@primeuix/themes": "^1.2.5",
     "@primevue/forms": "^4.4.0",
     "bootstrap": "^5.3.7",
+    "chart.js": "^4.5.1",
     "dompurify": "^3.3.0",
     "firebase": "^12.4.0",
     "primeicons": "^7.0.0",

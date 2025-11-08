@@ -18,7 +18,7 @@
             <div class="nav-dropdown nav-dropdown-short">
               <div class="dropdown-col">
                 <div class="dropdown-title">Tổng quan</div>
-                <a href="#" class="dropdown-link">Quản lý đơn hàng</a>
+                <a href="/staff/orders" class="dropdown-link">Quản lý đơn hàng</a>
                 <a href="/staff/service-bookings" class="dropdown-link">Quản lý dịch vụ</a>
               </div>
             </div>
@@ -28,7 +28,7 @@
             <div class="nav-dropdown nav-dropdown-short">
               <div class="dropdown-col">
                 <div class="dropdown-title">Tổng quan</div>
-                <a href="#" class="dropdown-link">Quản lý khách hàng</a>
+                <a href="/staff/customers" class="dropdown-link">Quản lý khách hàng</a>
               </div>
             </div>
           </div>
