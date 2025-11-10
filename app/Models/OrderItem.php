@@ -17,6 +17,7 @@ class OrderItem extends Model
         'item_type',
         'product_name',
         'price',
+        'image',
         'quantity',
         'subtotal',
         'is_promotion',

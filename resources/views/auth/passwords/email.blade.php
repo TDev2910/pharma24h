@@ -455,7 +455,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     try {
         // Import Firebase service
-        const { default: firebasePhoneAuth } = await import('{{ Vite::asset("resources/js/services/firebasePhoneAuth.js") }}');
+        const { default: firebasePhoneAuth } = await import('{{ Vite::asset("resources/js/library/firebasePhoneAuth.js") }}');
         
         // Initialize reCAPTCHA
         firebasePhoneAuth.initRecaptcha('recaptcha-container');

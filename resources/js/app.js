@@ -7,10 +7,11 @@ import 'primeicons/primeicons.css'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import PublicLayout from '@/Layouts/PublicLayout.vue'
 import StaffLayout from '@/Layouts/StaffLayout.vue'
+import UserLayout from '@/Layouts/UserLayout.vue'
 
 // Import Firebase modules
-import './config/firebase'
-import './services/FirebasePhoneAuth'
+import './library/firebase'
+import './library/firebasePhoneAuth'
 
 // Import axios - QUAN TRỌNG
 import axios from 'axios'
@@ -59,6 +60,11 @@ createInertiaApp({
     // Gán layout mặc định cho các trang Staff nếu page chưa set layout
     if (name.startsWith('Staff/') && !page.layout) {
       page.layout = StaffLayout
+    }
+    
+    // Gán layout mặc định cho các trang User nếu page chưa set layout
+    if (name.startsWith('User/') && !page.layout) {
+      page.layout = UserLayout
     }
     
     return page

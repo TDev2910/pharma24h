@@ -67,6 +67,7 @@ class CheckoutService
                     'item_type' => $item->item_type,
                     'product_name' => $item->name,
                     'price' => $item->price,
+                    'image' => $item->image,
                     'quantity' => $item->quantity,
                     'subtotal' => $item->price * $item->quantity,
                     'is_promotion' => $item->is_promotion ?? false,

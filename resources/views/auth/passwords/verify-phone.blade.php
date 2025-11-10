@@ -418,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             let firebasePhoneAuth;
             try {
-                const module = await import('{{ Vite::asset("resources/js/services/firebasePhoneAuth.js") }}');
+                const module = await import('{{ Vite::asset("resources/js/library/firebasePhoneAuth.js") }}');
                 firebasePhoneAuth = module.default;
             } catch (importError) {
                 console.error('Failed to import Firebase service:', importError);
@@ -602,7 +602,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!this.disabled) {
             try {
                 // Import Firebase service
-                const { default: firebasePhoneAuth } = await import('{{ Vite::asset("resources/js/services/firebasePhoneAuth.js") }}');
+                const { default: firebasePhoneAuth } = await import('{{ Vite::asset("resources/js/library/firebasePhoneAuth.js") }}');
                 
                 // Initialize reCAPTCHA
                 firebasePhoneAuth.initRecaptcha('recaptcha-container');

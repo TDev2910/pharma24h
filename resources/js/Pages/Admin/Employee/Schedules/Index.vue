@@ -13,8 +13,7 @@
             <span class="input-group-text">
               <i class="pi pi-search"></i>
             </span>
-            <input type="text" class="form-control" 
-              placeholder="Theo mã, tên nhân viên, điện thoại"
+            <input type="text" class="form-control" placeholder="Theo mã, tên nhân viên, điện thoại"
               v-model="searchQuery" @input="debounceSearch">
           </div>
         </div>
@@ -24,7 +23,7 @@
           <Button icon="pi pi-chevron-left" @click="previousWeek" class="p-button-text p-button-rounded"
             :disabled="loading" />
           <div class="week-display">
-            <span class="week-text">{{ weekDisplayText }}</span>
+            <span class="week-text">{{ weekDisplayText }}</span>  
             <Button label="Tuần này" @click="goToCurrentWeek" class="p-button-text p-button-sm" :disabled="loading" />
           </div>
           <Button icon="pi pi-chevron-right" @click="nextWeek" class="p-button-text p-button-rounded"
@@ -33,7 +32,7 @@
       </div>
     </div>
 
-    <!-- Schedule Grid -->
+    <!-- Hiển thị danh sách lịch làm việc -->
     <div class="schedule-grid-container" v-if="!loading && scheduleData.length > 0">
       <div class="schedule-table">
         <!-- Header Row -->
@@ -63,24 +62,15 @@
             <div class="day-content">
               <!-- Shift Blocks -->
               <div class="shift-blocks">
-                <div 
-                  v-for="schedule in getSchedulesForDay(item, day.date)" 
-                  :key="schedule.id" 
-                  class="shift-block"
-                  :class="getShiftColorClass(schedule.shift)" 
-                  @click="editSchedule(schedule, item.employee, day.date)"
-                >
+                <div v-for="schedule in getSchedulesForDay(item, day.date)" :key="schedule.id" class="shift-block"
+                  :class="getShiftColorClass(schedule.shift)" @click="editSchedule(schedule, item.employee, day.date)">
                   {{ schedule.shift?.name || 'N/A' }}
                 </div>
               </div>
-              
+
               <!-- Add Schedule Button - Hiển thị khi chưa đạt giới hạn -->
-              <button 
-                v-if="getSchedulesForDay(item, day.date).length < 3"
-                class="add-schedule-btn" 
-                @click="openAddScheduleModal(item.employee, day.date)" 
-                title="Thêm lịch"
-              >
+              <button v-if="getSchedulesForDay(item, day.date).length < 3" class="add-schedule-btn"
+                @click="openAddScheduleModal(item.employee, day.date)" title="Thêm lịch">
                 + Thêm lịch
               </button>
             </div>
@@ -152,9 +142,11 @@ export default {
       if (!this.weekStart) return []
 
       const days = []
+      //mảng chứa 7 ngày trong tuần
       const dayNames = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy']
 
-      for (let i = 0; i < 7; i++) {
+      for (let i = 0; i < 7; i++) 
+      {
         const date = new Date(this.weekStart)
         date.setDate(date.getDate() + i)
 
@@ -167,10 +159,10 @@ export default {
         checkDate.setHours(0, 0, 0, 0)
 
         days.push({
-          date: date.toISOString().split('T')[0],
-          dayName: dayName,
-          dayNumber: date.getDate(),
-          isToday: checkDate.getTime() === today.getTime()
+          date: date.toISOString().split('T')[0], //format ngày tháng năm
+          dayName: dayName, //tên ngày trong tuần
+          dayNumber: date.getDate(), //số ngày trong tháng
+          isToday: checkDate.getTime() === today.getTime() //kiểm tra ngày hiện tại
         })
       }
 
@@ -179,24 +171,25 @@ export default {
     weekDisplayText() {
       if (!this.weekStart) return ''
 
-      const start = new Date(this.weekStart)
-      const end = new Date(this.weekStart)
+      const start = new Date(this.weekStart) //bắt đầu từ ngày đầu tuần
+      const end = new Date(this.weekStart) //kết thúc từ ngày cuối tuần
       end.setDate(end.getDate() + 6)
 
       const monthNames = ['Th. 1', 'Th. 2', 'Th. 3', 'Th. 4', 'Th. 5', 'Th. 6',
         'Th. 7', 'Th. 8', 'Th. 9', 'Th. 10', 'Th. 11', 'Th. 12']
 
-      const weekNumber = this.getWeekNumber(start)
-      const month = monthNames[start.getMonth()]
+      const weekNumber = this.getWeekNumber(start) //tính số tuần trong năm
+      const month = monthNames[start.getMonth()] //tính số tháng trong năm
       const year = start.getFullYear()
 
       return `Tuần ${weekNumber} - ${month} ${year}`
     },
+    //tìm kiếm nhân viên theo mã, tên, điện thoại, email
     filteredScheduleData() {
       if (!this.searchQuery || !this.searchQuery.trim()) {
         return this.scheduleData
       }
-      
+
       const term = this.searchQuery.toLowerCase().trim()
       return this.scheduleData.filter(item => {
         const employee = item.employee
@@ -204,10 +197,11 @@ export default {
         const code = (employee.employee_code || '').toLowerCase()
         const phone = (employee.phone_number || '').toLowerCase()
         const email = (employee.user?.email || '').toLowerCase()
-        
+
         return name.includes(term) || code.includes(term) || phone.includes(term) || email.includes(term)
       })
     },
+    //thêm/sửa lịch
     scheduleModalTitle() {
       if (this.editingSchedule) {
         return 'Chỉnh sửa lịch làm việc'
@@ -216,6 +210,7 @@ export default {
     }
   },
   mounted() {
+    //khởi tạo tuần hiện tại
     this.initializeWeek()
     this.loadSchedules()
     this.loadEmployees()
@@ -246,9 +241,9 @@ export default {
             week_start: this.weekStart
           }
         })
-        
+
         this.scheduleData = response.data.employees || []
-        
+
         // Debug: Kiểm tra dữ liệu
         console.log('Schedule data:', this.scheduleData)
         if (this.scheduleData.length > 0) {
@@ -302,10 +297,10 @@ export default {
       if (!item.schedules || typeof item.schedules !== 'object') {
         return []
       }
-      
+
       // Lấy schedules cho ngày cụ thể
       const daySchedules = item.schedules[date]
-      
+
       // Nếu là array thì return luôn, nếu không thì return []
       return Array.isArray(daySchedules) ? daySchedules : []
     },

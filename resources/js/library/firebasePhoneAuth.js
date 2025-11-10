@@ -1,4 +1,4 @@
-import { auth } from '../config/firebase.js';
+import { auth } from './firebase.js';
 import { 
     signInWithPhoneNumber, 
     RecaptchaVerifier,
@@ -358,3 +358,4 @@ class FirebasePhoneAuthService
 
 // Export singleton instance
 export default new FirebasePhoneAuthService();
+

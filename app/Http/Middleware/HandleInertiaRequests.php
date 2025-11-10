@@ -17,15 +17,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $user = $request->user();
-        
-        // Debug log
-        \Log::info('HandleInertiaRequests - User check:', [
-            'user_id' => $user ? $user->id : null,
-            'user_name' => $user ? $user->name : null,
-            'user_role' => $user ? $user->role : null,
-            'session_id' => $request->session()->getId(),
-        ]);
-        
+          
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $user ? [
@@ -33,6 +25,7 @@ class HandleInertiaRequests extends Middleware
                     'name' => $user->name,
                     'email' => $user->email,
                     'role' => $user->role,
+                    'avatar' => $user->avatar,
                 ] : null,
             ],
             'flash' => [

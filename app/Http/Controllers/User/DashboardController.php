@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Models\Medicine;
+use App\Models\Goods;
+use Inertia\Inertia;
 
 
 class DashboardController extends Controller
@@ -18,15 +21,23 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        return view('user.dashboard.index', compact('user'));
+        $ordersCount = $user->orders()->count();
+        
+        return Inertia::render('User/Dashboard', [
+            'ordersCount' => $ordersCount,
+            'pageTitle' => 'Dashboard',
+            'pageDescription' => 'Welcome back! Here\'s your account overview',
+        ]);
     }
 
 
 
     public function profileSettings()
     {
-        $user = Auth::user();
-        return view('user.profile.profile-settings', compact('user'));
+        return Inertia::render('User/ProfileSettings', [
+            'pageTitle' => 'Cài đặt hồ sơ',
+            'pageDescription' => 'Quản lý thông tin cá nhân và tùy chọn tài khoản của bạn',
+        ]);
     }
 
     public function updateProfileSettings(Request $request)
@@ -87,15 +98,49 @@ class DashboardController extends Controller
     public function orders()
     {
         $user = Auth::user();
-        $orders = $user->orders()->latest()->get();
-        return view('user.orders.index', compact('user', 'orders'));
+        $orders = $user->orders()
+            ->with('items')
+            ->latest()
+            ->get();
+        
+        // Load images cho các đơn hàng cũ (nếu chưa có image)
+        foreach ($orders as $order) {
+            foreach ($order->items as $item) {
+                // Nếu chưa có image, load từ item relationship
+                if (empty($item->image) && $item->item_id && $item->item_type) {
+                    try {
+                        // Load trực tiếp dựa trên item_type và item_id
+                        if ($item->item_type === 'medicine') {
+                            $product = Medicine::find($item->item_id);
+                        } elseif ($item->item_type === 'goods') {
+                            $product = Goods::find($item->item_id);
+                        }
+                        
+                        if ($product && isset($product->image)) {
+                            $item->image = $product->image;
+                        }
+                    } catch (\Exception $e) {
+                        // Bỏ qua nếu không load được
+                        $item->image = null;
+                    }
+                }
+            }
+        }
+        
+        return Inertia::render('User/Orders/Index', [
+            'orders' => $orders
+        ]);
     }
 
-    public function orderDetails($orderId)
+    public function orderDetails(Request $request, $orderId)
     {
         $user = Auth::user();
-        $order = $user->orders()->with('items')->where('id', $orderId)->firstOrFail();
-        return view('user.orders.details', compact('user', 'order'));
+        $order = $user->orders()->with(['items', 'user'])->where('id', $orderId)->firstOrFail();
+             
+        return Inertia::render('User/Orders/Details', [
+            'order' => $order,
+            'pageTitle' => 'Chi tiết đơn hàng',
+        ]);
     }
 
     /**

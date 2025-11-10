@@ -413,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Import Firebase Google Auth service
                 // Sử dụng Vite asset để load module
-                const firebaseGoogleAuthModule = await import('{{ Vite::asset("resources/js/services/firebaseGoogleAuth.js") }}');
+                const firebaseGoogleAuthModule = await import('{{ Vite::asset("resources/js/library/firebaseGoogleAuth.js") }}');
                 const firebaseGoogleAuth = firebaseGoogleAuthModule.default;
                 
                 // Kiểm tra service có tồn tại không
