@@ -236,18 +236,6 @@
               />
               <small v-if="errors.mo_ta" class="p-error">{{ errors.mo_ta[0] }}</small>
             </div>
-            <br>
-            <div class="form-field full-width">
-              <label class="field-label">Ghi chú</label>
-              <Editor
-                v-model="formData.mo_ta"
-                editorStyle="height: 320px"
-                placeholder="Nhập mô tả sản phẩm"
-                class="field-editor"
-                :class="{ 'p-invalid': errors.mo_ta }"
-              />
-              <small v-if="errors.mo_ta" class="p-error">{{ errors.mo_ta[0] }}</small>
-            </div>
           </div>
         </div>
       </div>

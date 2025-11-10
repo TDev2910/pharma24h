@@ -15,7 +15,8 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/orders', [DashboardController::class, 'orders'])->name('orders');
     Route::get('/orders/{orderId}', [DashboardController::class, 'orderDetails'])->name('orders.details');
     Route::get('/notifications', [DashboardController::class, 'notifications'])->name('notifications');
-    Route::get('/health-profile', [DashboardController::class, 'healthProfile'])->name('health.profile');
+    Route::get('/services', [DashboardController::class, 'services'])->name('services');
+    Route::get('/services/{bookingId}', [DashboardController::class, 'serviceDetails'])->name('services.details');
     
     // Photo Upload
     Route::post('/upload/avatar', [DashboardController::class, 'uploadAvatar'])->name('upload.avatar');

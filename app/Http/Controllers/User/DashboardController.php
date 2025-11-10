@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\Medicine;
 use App\Models\Goods;
+use App\Models\ServiceBooking;
 use Inertia\Inertia;
 
 
@@ -144,13 +145,40 @@ class DashboardController extends Controller
     }
 
     /**
-     * Hiển thị hồ sơ sức khỏe của user
+     * Hiển thị danh sách dịch vụ đã đặt của user
      */
-    public function healthProfile()
+    public function services()
     {
         $user = Auth::user();
-        // TODO: Lấy thông tin sức khỏe của user
-        return view('user.dashboard.health-profile', compact('user'));
+        
+        $bookings = ServiceBooking::where('user_id', $user->id)
+            ->with('service')
+            ->latest()
+            ->get();
+
+        return Inertia::render('User/Services/Index', [
+            'bookings' => $bookings,
+            'pageTitle' => 'Dịch vụ đã đặt',
+            'pageDescription' => 'Quản lý các dịch vụ bạn đã đặt qua hệ thống',
+        ]);
+    }
+
+    /**
+     * Hiển thị chi tiết dịch vụ đã đặt
+     */
+    public function serviceDetails(Request $request, $bookingId)
+    {
+        $user = Auth::user();
+        $booking = ServiceBooking::where('user_id', $user->id)
+            ->with(['service', 'user'])
+            ->where('id', $bookingId)
+            ->firstOrFail();
+        
+        return Inertia::render('User/Services/Details', [
+            'booking' => $booking,
+            'pageTitle' => 'Chi tiết dịch vụ',
+            'pageDescription' => 'Thông tin chi tiết về dịch vụ bạn đã đặt',
+        ]);
     }
 
     /**

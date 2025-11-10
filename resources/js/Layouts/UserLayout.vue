@@ -47,8 +47,8 @@
           
           <!-- Hồ sơ sức khỏe -->
           <li>
-            <Link href="/user/health-profile" :class="{ active: page.url.startsWith('/user/health-profile') }">
-              <i class="fas fa-file-medical"></i>Hồ sơ sức khỏe
+            <Link href="/user/services" :class="{ active: page.url.startsWith('/user/services') }">
+              <i class="fas fa-file-medical"></i>Dịch vụ
             </Link>
           </li>
           
