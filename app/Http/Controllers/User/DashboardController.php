@@ -23,9 +23,11 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $ordersCount = $user->orders()->count();
+        $bookingsCount = $user->service_bookings()->count();
         
         return Inertia::render('User/Dashboard', [
             'ordersCount' => $ordersCount,
+            'bookingsCount' => $bookingsCount, 
             'pageTitle' => 'Dashboard',
             'pageDescription' => 'Welcome back! Here\'s your account overview',
         ]);

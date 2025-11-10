@@ -27,7 +27,7 @@
           <i class="fas fa-bell"></i>
         </div>
         <div class="stat-info">
-          <h3>0</h3>
+          <h3>0</h3>  
           <p>Thông báo</p>
         </div>
       </div>
@@ -37,8 +37,8 @@
           <i class="fas fa-file-medical"></i>
         </div>
         <div class="stat-info">
-          <h3>0</h3>
-          <p>Hồ sơ sức khỏe</p>
+          <h3>{{ bookingsCount || 0 }}</h3>
+          <p>Dịch vụ đã đặt</p>
         </div>
       </div>
     </div>
@@ -76,6 +76,10 @@ const props = defineProps({
     default: () => ({ user: null })
   },
   ordersCount: {
+    type: Number,
+    default: 0
+  },
+  bookingsCount: {
     type: Number,
     default: 0
   }

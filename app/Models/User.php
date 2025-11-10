@@ -84,6 +84,10 @@ class User extends Authenticatable
         return $this->hasOne(Employee::class);
     }
 
+    public function service_bookings()
+    {
+        return $this->hasMany(ServiceBooking::class);
+    }
     /**
      * Check if user is staff
      */
