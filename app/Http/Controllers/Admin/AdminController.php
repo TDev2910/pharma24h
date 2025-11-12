@@ -176,4 +176,88 @@ class AdminController extends \App\Http\Controllers\Controller
             ];
         });
     }
-}
+
+    /**
+     * Lấy doanh thu đơn hàng theo period (day/week/month/year)
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getOrderRevenue(Request $request)
+    {
+        $period = $request->input('period', 'month'); // default: month
+        $query = Order::where('payment_status', 'paid');
+
+        switch ($period) {
+            case 'day':
+                // Lấy 30 ngày gần nhất
+                $query->where('created_at', '>=', now()->subDays(30));
+                $results = $query
+                    ->selectRaw('DATE(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                
+                $labels = $results->map(function($item) {
+                    return date('d/m', strtotime($item->period));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+                
+            case 'week':
+                // Lấy 12 tuần gần nhất
+                $query->where('created_at', '>=', now()->subWeeks(12));
+                $results = $query
+                    ->selectRaw('YEARWEEK(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                
+                $labels = $results->map(function($item) {
+                    return 'Tuần ' . substr($item->period, 4);
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+                
+            case 'month':
+                // Lấy 12 tháng gần nhất
+                $query->where('created_at', '>=', now()->subMonths(12));
+                $results = $query
+                    ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                
+                $labels = $results->map(function($item) {
+                    return 'Tháng ' . date('m/Y', strtotime($item->period . '-01'));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+                
+            case 'year':
+                // Lấy 5 năm gần nhất
+                $query->where('created_at', '>=', now()->subYears(5));
+                $results = $query
+                    ->selectRaw('YEAR(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                
+                $labels = $results->pluck('period')->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+                
+            default:
+                $labels = [];
+                $revenues = [];
+        }
+        
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'labels' => $labels,
+                'revenues' => $revenues
+            ]
+        ]);
+    }
+}   

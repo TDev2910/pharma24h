@@ -35,6 +35,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         return Inertia::render('Admin/Orders/Services/Dashboard');
     })->name('admin.services.dashboard');
 
+    // Dashboard Revenue API
+    Route::get('/dashboard/revenue/orders', [AdminController::class, 'getOrderRevenue'])->name('dashboard.revenue.orders');
     // Supporting entities
     // Drug Route
     Route::get('products/drugroute', [SupportingEntityController::class, 'indexDrugRoute'])->name('products.drugroute.index');

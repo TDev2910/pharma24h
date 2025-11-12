@@ -30,7 +30,7 @@
           <!-- Service Chart -->
           <div class="chart-card">
             <div class="chart-header">
-              <h3>Service</h3>
+              <h3>Tổng quan doanh thu</h3>
               <div class="chart-controls">
                 <button class="chart-btn active">Monthly</button>
                 <button class="chart-btn">Quarterly</button>
@@ -47,12 +47,32 @@
             <div class="chart-header">
               <h3>Doanh thu</h3>
               <div class="chart-controls">
-                <button class="chart-btn active">Monthly</button>
-                <button class="chart-btn">Quarterly</button>
-                <button class="chart-btn">Yearly</button>
+                <button class="chart-btn" :class="{ active: orderRevenuePeriod === 'day' }"
+                  @click="setOrderRevenuePeriod('day')">
+                  Ngày
+                </button>
+                <button class="chart-btn" :class="{ active: orderRevenuePeriod === 'week' }"
+                  @click="setOrderRevenuePeriod('week')">
+                  Tuần
+                </button>
+                <button class="chart-btn" :class="{ active: orderRevenuePeriod === 'month' }"
+                  @click="setOrderRevenuePeriod('month')">
+                  Tháng
+                </button>
+                <button class="chart-btn" :class="{ active: orderRevenuePeriod === 'year' }"
+                  @click="setOrderRevenuePeriod('year')">
+                  Năm
+                </button>
               </div>
             </div>
-            <Chart type="bar" :data="barChartData" :options="barChartOptions" />
+            <!-- Biểu đồ Doanh thu Đơn hàng -->
+            <Chart 
+              v-if="!loadingOrderRevenue" 
+              type="bar" 
+              :data="orderRevenueChartData"
+              :options="orderRevenueChartOptions" 
+            />
+            <div v-else class="chart-loading">Đang tải dữ liệu...</div>
           </div>
 
           <!-- Top Categories Chart -->
@@ -143,6 +163,7 @@
 
 <script>
 import Chart from 'primevue/chart';
+import axios from 'axios';
 
 export default {
   name: 'AdminDashboard',
@@ -182,7 +203,46 @@ export default {
   },
   data() {
     return {
-      // Bar Chart Data for Sales Revenue
+      // Order Revenue Data
+      orderRevenuePeriod: 'month',
+      loadingOrderRevenue: false,
+      orderRevenueData: {
+        labels: [],
+        revenues: []
+      },
+      // Order Revenue Chart Options
+      orderRevenueChartOptions: {
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                return this.formatCurrency(context.parsed.y);
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: (value) => {
+                return this.formatCurrency(value);
+              }
+            }
+          }
+        },
+        maintainAspectRatio: false
+      },
+      
+      // Bar Chart Data for Sales Revenue (old - có thể xóa sau)
       barChartData: {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
         datasets: [
@@ -357,6 +417,20 @@ export default {
           color: colors[index]
         };
       });
+    },
+    
+    // Computed cho Order Revenue Chart
+    orderRevenueChartData() {
+      return {
+        labels: this.orderRevenueData.labels,
+        datasets: [
+          {
+            label: 'Doanh thu đơn hàng',
+            data: this.orderRevenueData.revenues,
+            backgroundColor: '#3b82f6'
+          }
+        ]
+      };
     }
   },
   methods: {
@@ -366,7 +440,44 @@ export default {
         style: 'currency',
         currency: 'VND'
       }).format(value);
+    },
+    
+    // Fetch doanh thu đơn hàng từ API
+    async fetchOrderRevenue(period) {
+      this.loadingOrderRevenue = true;
+      try {
+        const response = await axios.get('/admin/dashboard/revenue/orders', {
+          params: { period }
+        });
+        
+        if (response.data.success) {
+          this.orderRevenueData = {
+            labels: response.data.data.labels,
+            revenues: response.data.data.revenues
+          };
+        }
+      } catch (error) {
+        console.error('Error fetching order revenue:', error);
+        this.orderRevenueData = {
+          labels: [],
+          revenues: []
+        };
+      } finally {
+        this.loadingOrderRevenue = false;
+      }
+    },
+    
+    // Set period cho đơn hàng
+    setOrderRevenuePeriod(period) {
+      this.orderRevenuePeriod = period;
+      this.fetchOrderRevenue(period);
     }
+  },
+  
+  // Lifecycle hook
+  mounted() {
+    // Fetch dữ liệu ban đầu với period mặc định
+    this.fetchOrderRevenue(this.orderRevenuePeriod);
   }
 };
 </script>
@@ -772,6 +883,15 @@ export default {
 
 .chart-card :deep(canvas) {
   max-height: 300px;
+}
+
+.chart-loading {
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 14px;
 }
 
 .categories-list {

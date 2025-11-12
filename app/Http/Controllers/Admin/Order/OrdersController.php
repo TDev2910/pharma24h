@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Notifications\OrderStatusUpdated;
 use Inertia\Inertia;
 
 class OrdersController extends Controller
@@ -143,6 +144,7 @@ class OrdersController extends Controller
             'status' => 'required|in:pending,completed,cancelled',
         ]);
         $order = Order::findOrFail($order);
+        $oldStatus = $order->order_status;
         // Nếu cập nhật đơn hàng Hoàn thành từ modal, gọi service để trừ tồn + set trạng thái
         if ($request->status === 'completed') {
             $order = $checkout->completeOrder((int) $order->id);
@@ -157,6 +159,12 @@ class OrdersController extends Controller
             }
             $order->save();
         }
+
+        // Gửi notification cho user nếu status thay đổi
+        if ($oldStatus !== $order->order_status && $order->user) {
+            $order->user->notify(new OrderStatusUpdated($order, $oldStatus, $order->order_status));
+        }
+
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,

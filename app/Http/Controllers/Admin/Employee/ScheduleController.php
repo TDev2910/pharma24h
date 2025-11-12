@@ -89,12 +89,16 @@ class ScheduleController extends Controller
             // Tính số ca làm việc trong tuần
             $shiftCount = $employeeSchedules->count();
             
-            // Tính lương dự kiến (đơn giản: lương cơ bản / số ngày làm việc trong tháng * số ca)
-            // Hoặc có thể tính theo giờ nếu salary_type = 'per_hour'
+            // Tính lương dự kiến
+            // - Lương cố định (fixed): Lương tháng / 22 ngày làm việc * số ca trong tuần
+            // - Lương theo giờ (per_hour): Cần thêm thông tin giờ làm việc từ shift
             $estimatedSalary = 0;
             if ($employee->salary_type === 'fixed') {
                 // Giả sử tháng có 22 ngày làm việc, mỗi ngày 1 ca
-                $estimatedSalary = ($employee->salary_level / 22) * ($shiftCount / 7) * 7;
+                // Lương 1 ca = salary_level / 22
+                // Lương tuần = Lương 1 ca * số ca trong tuần
+                $salaryPerShift = $employee->salary_level / 22; // Lương 1 ca
+                $estimatedSalary = $salaryPerShift * $shiftCount; // Lương tuần
             } else {
                 // Tính theo giờ (cần thêm thông tin giờ làm việc từ shift)
                 // Tạm thời để 0

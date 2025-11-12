@@ -15,6 +15,10 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/orders', [DashboardController::class, 'orders'])->name('orders');
     Route::get('/orders/{orderId}', [DashboardController::class, 'orderDetails'])->name('orders.details');
     Route::get('/notifications', [DashboardController::class, 'notifications'])->name('notifications');
+    Route::get('/notifications/unread-count', [DashboardController::class, 'getUnreadCount'])->name('notifications.unread-count');
+    Route::post('/notifications/{notificationId}/read', [DashboardController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [DashboardController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/{notificationId}', [DashboardController::class, 'deleteNotification'])->name('notifications.delete');
     Route::get('/services', [DashboardController::class, 'services'])->name('services');
     Route::get('/services/{bookingId}', [DashboardController::class, 'serviceDetails'])->name('services.details');
     

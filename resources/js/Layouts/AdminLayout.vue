@@ -9,9 +9,9 @@
           <div class="nav-dropdown">
             <div class="dropdown-col">
               <div class="dropdown-title">Hàng hóa</div>
-                <a href="/admin/products" class="dropdown-link">Tổng quan</a>
-                <a href="/admin/medicines/list" class="dropdown-link">Danh sách thuốc</a>
-                <a href="/admin/goods/list" class="dropdown-link">Danh sách hàng hóa</a>
+                <a href="/admin/products" class="dropdown-link">Cập nhật thông tin </a>
+                <a href="/admin/medicines/list" class="dropdown-link">Xem danh sách thuốc</a>
+                <a href="/admin/goods/list" class="dropdown-link"> Xem danh sách vật tư y tế</a>
                 <a href="/admin/services/list" class="dropdown-link">Danh sách dịch vụ</a>
             </div>
             <div class="dropdown-col">
@@ -21,8 +21,8 @@
             <div class="dropdown-col">
               <div class="dropdown-title">Nhập hàng</div>
               <a href="/admin/suppliers" class="dropdown-link">Nhà cung cấp</a>
-              <a href="/admin/import" class="dropdown-link">Nhập hàng</a>
-              <a href="/admin/purchase-returns" class="dropdown-link">Trả hàng nhập</a>
+              <a href="/admin/import" class="dropdown-link">Đặt hàng</a>
+              <a href="/admin/purchase-returns" class="dropdown-link">Trả hàng </a>
             </div>
           </div>
         </div>

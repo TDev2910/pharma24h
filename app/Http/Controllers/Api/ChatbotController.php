@@ -8,6 +8,7 @@ use Illuminate\Http\StreamedResponse;
 use Illuminate\Http\StreamedEvent;
 use App\Services\Chatbot\ProductSearchService;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ChatbotController extends Controller
 {
@@ -37,6 +38,12 @@ class ChatbotController extends Controller
                     //lấy api key từ config đã set up sẵn trong file service.php 
                     $apiKey = config('services.gemini.api_key');
 
+                    // Kiểm tra API key
+                    if (empty($apiKey)) {
+                        Log::error('Chatbot: Gemini API key chưa được cấu hình');
+                        throw new \Exception('API key chưa được cấu hình. Vui lòng kiểm tra file .env và thêm GEMINI_API_KEY.');
+                    }
+
                     $prompt = $this->buildEnhancedPrompt($userMessage, $productInfo);
                     // ====================================================
 
@@ -56,7 +63,14 @@ class ChatbotController extends Controller
 
                     if ($response->successful()) {
                         $responseData = $response->json();
-                        $content = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? 'Không thể kết nối Gemini';
+                        
+                        // Kiểm tra cấu trúc response
+                        if (!isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
+                            Log::error('Chatbot: Cấu trúc response từ Gemini không đúng', ['response' => $responseData]);
+                            throw new \Exception('Không thể lấy phản hồi từ Gemini API');
+                        }
+                        
+                        $content = $responseData['candidates'][0]['content']['parts'][0]['text'];
 
                         // Stream Gemini response
                         $words = explode(' ', $content);
@@ -70,9 +84,23 @@ class ChatbotController extends Controller
 
                         yield new StreamedEvent(event: 'update', data: "\n\n");
                     } else {
-                        throw new \Exception('Gemini API failed: ' . $response->status());
+                        $errorBody = $response->body();
+                        $statusCode = $response->status();
+                        Log::error('Chatbot: Gemini API failed', [
+                            'status' => $statusCode,
+                            'response' => $errorBody,
+                            'message' => $userMessage
+                        ]);
+                        throw new \Exception('Gemini API failed: ' . $statusCode . ' - ' . substr($errorBody, 0, 200));
                     }
                 } catch (\Exception $e) {
+                    // Log lỗi chi tiết
+                    Log::error('Chatbot error', [
+                        'message' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                        'user_message' => $userMessage
+                    ]);
+                    
                     // Fallback response khi Gemini lỗi
                     $fallbackResponse = $this->getFallbackResponse($userMessage);
 
@@ -159,7 +187,7 @@ class ChatbotController extends Controller
             return "Giá thuốc tại nhà thuốc Pharma PCT cạnh tranh và hợp lý. Chúng tôi có nhiều chương trình khuyến mãi và giảm giá cho khách hàng thân thiết.";
         }
 
-        // Phản hồi mặc định
-        return "Xin chào! Tôi là trợ lý của nhà thuốc Pharma PCT. Hiện tại hệ thống AI đang bảo trì, nhưng tôi vẫn có thể hỗ trợ bạn. Bạn có thể hỏi về thuốc men, giờ làm việc, địa chỉ, hoặc dịch vụ khám bệnh. Để được tư vấn chi tiết, hãy gọi 0901645269.";
+        // Phản hồi mặc định - không nói "bảo trì" nữa
+        return "Xin chào! Tôi là trợ lý của nhà thuốc Pharma PCT. Tôi có thể hỗ trợ bạn về thuốc men, giờ làm việc, địa chỉ, hoặc dịch vụ khám bệnh. Để được tư vấn chi tiết hơn, bạn có thể gọi hotline 0901645269 hoặc đến trực tiếp nhà thuốc tại 12 Đô Lương, Phường 11, Vũng Tàu.";
     }
 }

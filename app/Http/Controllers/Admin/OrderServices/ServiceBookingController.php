@@ -7,6 +7,7 @@ use App\Models\ServiceBooking;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Notifications\ServiceBookingStatusUpdated;
 
 class ServiceBookingController extends Controller
 {
@@ -79,6 +80,7 @@ class ServiceBookingController extends Controller
     public function confirm($id)
     {
         $booking = ServiceBooking::findOrFail($id);
+        $oldStatus = $booking->status; // Lưu status cũ
 
         // Kiểm tra có thể xác nhận không
         if (!$booking->canConfirm()) {
@@ -91,6 +93,11 @@ class ServiceBookingController extends Controller
         // Cập nhật trạng thái
         $booking->update(['status' => 'confirmed']);
 
+        // Gửi notification cho user nếu status thay đổi
+        if ($oldStatus !== $booking->status && $booking->user) {
+            $booking->user->notify(new ServiceBookingStatusUpdated($booking, $oldStatus, $booking->status));
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Xác nhận lịch hẹn thành công',
@@ -102,6 +109,7 @@ class ServiceBookingController extends Controller
     public function cancel($id)
     {
         $booking = ServiceBooking::findOrFail($id);
+        $oldStatus = $booking->status; // Lưu status cũ
 
         // Kiểm tra có thể hủy không
         if (!$booking->canCancel()) {
@@ -113,6 +121,11 @@ class ServiceBookingController extends Controller
 
         // Cập nhật trạng thái
         $booking->update(['status' => 'cancelled']);
+
+        // Gửi notification cho user nếu status thay đổi
+        if ($oldStatus !== $booking->status && $booking->user) {
+            $booking->user->notify(new ServiceBookingStatusUpdated($booking, $oldStatus, $booking->status));
+        }
 
         return response()->json([
             'success' => true,
@@ -148,6 +161,7 @@ class ServiceBookingController extends Controller
     public function complete($id)
     {
         $booking = ServiceBooking::findOrFail($id);
+        $oldStatus = $booking->status; // Lưu status cũ
 
         // Kiểm tra có thể hoàn thành không
         if (!$booking->canComplete()) {
@@ -159,6 +173,11 @@ class ServiceBookingController extends Controller
 
         // Cập nhật trạng thái
         $booking->update(['status' => 'completed']);
+
+        // Gửi notification cho user nếu status thay đổi
+        if ($oldStatus !== $booking->status && $booking->user) {
+            $booking->user->notify(new ServiceBookingStatusUpdated($booking, $oldStatus, $booking->status));
+        }
 
         return response()->json([
             'success' => true,

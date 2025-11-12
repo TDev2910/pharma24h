@@ -56,6 +56,7 @@
           <li>
             <Link href="/user/notifications" :class="{ active: page.url.startsWith('/user/notifications') }">
               <i class="fas fa-bell"></i>Thông báo
+              <span v-if="unreadCount > 0" class="notification-badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
             </Link>
           </li>
           
@@ -101,6 +102,8 @@
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3'
 import Toast from 'primevue/toast'
+import axios from 'axios'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 // Props từ Inertia
 const props = defineProps({
@@ -115,6 +118,10 @@ const props = defineProps({
   pageDescription: {
     type: String,
     default: ''
+  },
+  unreadNotificationsCount: {
+    type: Number,
+    default: 0
   }
 })
 
@@ -123,7 +130,26 @@ const page = usePage()
 
 const pageTitle = page.props.pageTitle || ''
 const pageDescription = page.props.pageDescription || ''
+const unreadCount = ref(props.unreadNotificationsCount || 0)
+let pollingInterval = null
 
+onMounted(() => {
+  // Polling mỗi 30 giây để kiểm tra notifications mới
+
+  pollingInterval = setInterval(() => {
+    axios.get('/user/notifications/unread-count')
+      .then(response => {
+        unreadCount.value = response.data.count || 0
+      })
+      .catch(() => { })
+  }, 30000) // 30 giây
+})
+
+onUnmounted(() => {
+  if (pollingInterval) {
+    clearInterval(pollingInterval)
+  }
+})
 // Handle logout
 const handleLogout = () => {
   router.post('/logout')
@@ -241,6 +267,25 @@ const handleLogout = () => {
   text-align: left;
   cursor: pointer;
   font-family: inherit;
+}
+
+.sidebar-menu a {
+  position: relative; 
+}
+
+.notification-badge {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #ef4444;
+  color: white;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
 }
 
 .logout-btn {

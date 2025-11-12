@@ -24,10 +24,12 @@ class DashboardController extends Controller
         $user = Auth::user();
         $ordersCount = $user->orders()->count();
         $bookingsCount = $user->service_bookings()->count();
+        $unreadNotificationsCount = $user->unreadNotifications()->count();
         
         return Inertia::render('User/Dashboard', [
             'ordersCount' => $ordersCount,
             'bookingsCount' => $bookingsCount, 
+            'unreadNotificationsCount' => $unreadNotificationsCount,
             'pageTitle' => 'Dashboard',
             'pageDescription' => 'Welcome back! Here\'s your account overview',
         ]);
@@ -189,9 +191,59 @@ class DashboardController extends Controller
     public function notifications()
     {
         $user = Auth::user();
-        // TODO: Lấy danh sách thông báo của user
-        // $notifications = $user->notifications()->latest()->get();
-        return view('user.dashboard.notifications', compact('user'));
+        $notifications = $user->notifications()->latest()->paginate(20);
+
+        // Đánh dấu đã đọc khi vào trang
+        $user->unreadNotifications->markAsRead();
+        
+        return Inertia::render('User/Notifications/Index', [
+            'notifications' => $notifications,
+            'pageTitle' => 'Thông báo',
+            'pageDescription' => 'Quản lý các thông báo của bạn',
+        ]);
+    }
+
+    public function getUnreadCount()
+    {
+        $user = Auth::user();
+        return response()->json([
+            'count' => $user->unreadNotifications()->count()
+        ]);
+    }
+
+    public function markAsRead($notificationId)
+    {
+        $user = Auth::user();
+        $notification = $user->notifications()->findOrFail($notificationId);
+        $notification->markAsRead();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã đánh dấu đã đọc'
+        ]);
+    }
+
+    public function markAllAsRead()
+    {
+        $user = Auth::user();
+        $user->unreadNotifications->markAsRead();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã đánh dấu tất cả đã đọc'
+        ]);
+    }
+
+    public function deleteNotification($notificationId)
+    {
+        $user = Auth::user();
+        $notification = $user->notifications()->findOrFail($notificationId);
+        $notification->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã xóa thông báo'
+        ]);
     }
 
     /**
