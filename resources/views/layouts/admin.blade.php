@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{{-- <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -100,4 +100,4 @@
     <script src="{{ asset('js/products/hanghoa/editors.js') }}"></script>
     @stack('scripts')
 </body>
-</html>
+</html> --}}

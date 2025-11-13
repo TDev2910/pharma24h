@@ -277,8 +277,12 @@ class ServiceController extends Controller
         $services = $query->latest()->get();
         $data = $this->getFormData();
 
-        return Inertia::render('Admin/Products/Lists/ListServices', [
+        return Inertia::render('Admin/Products/Lists/UnifiedList', [
+            'productType' => 'service',
+            'medicines' => [],
+            'goods' => [],
             'services' => $services,
+            'categories' => [],
             'data' => $data
         ]);
     }

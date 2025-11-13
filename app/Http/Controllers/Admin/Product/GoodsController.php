@@ -66,9 +66,13 @@ class GoodsController extends Controller
 
         $categories = ProductCategory::select('id', 'name')->get();
 
-        return Inertia::render('Admin/Products/Lists/ListGoods', [
+        return Inertia::render('Admin/Products/Lists/UnifiedList', [
+            'productType' => 'goods',
+            'medicines' => [],
             'goods' => $goods,
+            'services' => [],
             'categories' => $categories,
+            'data' => []
         ]);
     }
 

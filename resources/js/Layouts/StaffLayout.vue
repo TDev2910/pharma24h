@@ -1,7 +1,7 @@
 <template>
     <div class="admin-layout">
       <!-- Admin Navigation - Giữ nguyên cấu trúc navbar phức tạp -->
-      <nav class="navbar">
+      <nav class="navbarstaff">
         <div class="nav-menu">
           <a href="/staff/dashboard" class="nav-item active">Tổng Quan</a>
           <div class="nav-item dropdown">
@@ -77,7 +77,7 @@
     position: relative;
   }
   
-  .navbar {
+  .navbarstaff {
     background: #1db46a;
     padding: 0 24px;
     min-height: 44px;

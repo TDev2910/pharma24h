@@ -10,7 +10,7 @@ use App\Models\Service;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
-
+use App\Models\ServiceBooking;
 class AdminController extends \App\Http\Controllers\Controller
 {
     public function dashboard()
@@ -252,6 +252,176 @@ class AdminController extends \App\Http\Controllers\Controller
                 $revenues = [];
         }
         
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'labels' => $labels,
+                'revenues' => $revenues
+            ]
+        ]);
+    }
+
+    public function getServiceRevenue(Request $request)
+    {
+        $period = $request->input('period', 'month');
+        $query = ServiceBooking::where('payment_status','paid');
+
+        switch ($period) {
+            case 'day':
+                $query->where('created_at', '>=', now()->subDays(30));
+                $results = $query
+                    ->selectRaw('DATE(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->map(function($item) {
+                    return date('d/m', strtotime($item->period));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
+            case 'week':
+                $query->where('created_at', '>=', now()->subWeeks(12));
+                $results = $query
+                    ->selectRaw('YEARWEEK(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->map(function($item) {
+                    return 'Tuần ' . substr($item->period, 4);
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
+            case 'month':
+                $query->where('created_at', '>=', now()->subMonths(12));
+                $results = $query
+                    ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as period, SUM(price) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->map(function($item) {
+                    return 'Tháng ' . date('m/Y', strtotime($item->period . '-01'));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
+            case 'year':
+                $query->where('created_at', '>=', now()->subYears(5));
+                $results = $query
+                    ->selectRaw('YEAR(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->pluck('period')->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
+            default:
+                $labels = [];
+                $revenues = [];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'labels' => $labels,
+                'revenues' => $revenues
+            ]
+        ]);
+    }
+
+    public function getTotalRevenue(Request $request)
+    {
+        $period = $request->input('period', 'month');
+        $labels = [];
+        $revenues = [];
+        switch ($period) {
+            case 'day':
+                $from = now()->subDays(30);
+                $orderData = Order::where('payment_status', 'paid')
+                    ->where('created_at', '>=', $from)
+                    ->selectRaw('DATE(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $serviceData = ServiceBooking::where('payment_status', 'paid')
+                    ->where('created_at', '>=', $from)
+                    ->selectRaw('DATE(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $allPeriods = collect($orderData->keys())
+                    ->merge($serviceData->keys())->unique()->sort()->values();
+                foreach ($allPeriods as $periodVal) {
+                    $labels[] = date('d/m', strtotime($periodVal));
+                    $total = (float)($orderData[$periodVal] ?? 0) + (float)($serviceData[$periodVal] ?? 0);
+                    $revenues[] = $total;
+                }
+                break;
+            case 'week':
+                $from = now()->subWeeks(12);
+                $orderData = Order::where('payment_status', 'paid')
+                    ->where('created_at', '>=', $from)
+                    ->selectRaw('YEARWEEK(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $serviceData = ServiceBooking::where('payment_status', 'paid')
+                    ->where('created_at', '>=', $from)
+                    ->selectRaw('YEARWEEK(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $allPeriods = collect($orderData->keys())
+                    ->merge($serviceData->keys())->unique()->sort()->values();
+                foreach ($allPeriods as $periodVal) {
+                    $labels[] = 'Tuần ' . substr($periodVal, 4);
+                    $total = (float)($orderData[$periodVal] ?? 0) + (float)($serviceData[$periodVal] ?? 0);
+                    $revenues[] = $total;
+                }
+                break;
+            case 'month':
+                $from = now()->subMonths(12);
+                $orderData = Order::where('payment_status', 'paid')
+                    ->where('created_at', '>=', $from)
+                    ->selectRaw('DATE_FORMAT(created_at, \"%Y-%m\") as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $serviceData = ServiceBooking::where('payment_status', 'paid')
+                    ->where('created_at', '>=', $from)
+                    ->selectRaw('DATE_FORMAT(created_at, \"%Y-%m\") as period, SUM(price) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $allPeriods = collect($orderData->keys())
+                    ->merge($serviceData->keys())->unique()->sort()->values();
+                foreach ($allPeriods as $periodVal) {
+                    $labels[] = 'Tháng ' . date('m/Y', strtotime($periodVal . '-01'));
+                    $total = (float)($orderData[$periodVal] ?? 0) + (float)($serviceData[$periodVal] ?? 0);
+                    $revenues[] = $total;
+                }
+                break;
+            case 'year':
+                $from = now()->subYears(5);
+                $orderData = Order::where('payment_status', 'paid')
+                    ->where('created_at', '>=', $from)
+                    ->selectRaw('YEAR(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $serviceData = ServiceBooking::where('payment_status', 'paid')
+                    ->where('created_at', '>=', $from)
+                    ->selectRaw('YEAR(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $allPeriods = collect($orderData->keys())
+                    ->merge($serviceData->keys())->unique()->sort()->values();
+                foreach ($allPeriods as $periodVal) {
+                    $labels[] = $periodVal;
+                    $total = (float)($orderData[$periodVal] ?? 0) + (float)($serviceData[$periodVal] ?? 0);
+                    $revenues[] = $total;
+                }
+                break;
+            default:
+                $labels = [];
+                $revenues = [];
+        }
+
         return response()->json([
             'success' => true,
             'data' => [

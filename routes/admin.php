@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\Employee\EmployeeController;
 use App\Http\Controllers\Admin\Employee\ScheduleController;
 use App\Http\Controllers\Admin\Employee\ShiftController;
 use App\Http\Controllers\Admin\Product\StockController;
+use App\Http\Controllers\Admin\Product\UnifiedListController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -36,7 +37,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     })->name('admin.services.dashboard');
 
     // Dashboard Revenue API
+    Route::get('/dashboard/revenue/total', [AdminController::class, 'getTotalRevenue'])->name('dashboard.revenue.total');
     Route::get('/dashboard/revenue/orders', [AdminController::class, 'getOrderRevenue'])->name('dashboard.revenue.orders');
+    Route::get('/dashboard/revenue/services', [AdminController::class, 'getServiceRevenue'])->name('dashboard.revenue.services');
     // Supporting entities
     // Drug Route
     Route::get('products/drugroute', [SupportingEntityController::class, 'indexDrugRoute'])->name('products.drugroute.index');
@@ -57,6 +60,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('products/position/{id}', [SupportingEntityController::class, 'destroyPosition'])->name('products.position.destroy');
 
     // PRODUCT MANAGEMENT ROUTES
+
+    // Unified List - Main entry point for product lists
+    Route::get('/products/list', [UnifiedListController::class, 'index'])->name('products.list');
 
     // Medicines
     Route::prefix('medicines')->name('medicines.')->group(function () {

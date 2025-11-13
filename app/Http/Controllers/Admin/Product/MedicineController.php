@@ -102,8 +102,12 @@ class MedicineController extends Controller
         $medicines = $query->latest()->get();
         $data = $this->getFormData();
 
-        return Inertia::render('Admin/Products/Lists/ListMedicines', [
+        return Inertia::render('Admin/Products/Lists/UnifiedList', [
+            'productType' => 'medicine',
             'medicines' => $medicines,
+            'goods' => [],
+            'services' => [],
+            'categories' => [],
             'data' => $data
         ]);
     }

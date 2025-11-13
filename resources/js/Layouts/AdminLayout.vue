@@ -1,7 +1,7 @@
 <template>
   <div class="admin-layout">
     <!-- Admin Navigation - Giữ nguyên cấu trúc navbar phức tạp -->
-    <nav class="navbar">
+    <nav class="navbaradmin">
       <div class="nav-menu">
         <a href="/admin/admindashboard" class="nav-item active">Tổng Quan</a>
         <div class="nav-item dropdown">
@@ -10,17 +10,11 @@
             <div class="dropdown-col">
               <div class="dropdown-title">Hàng hóa</div>
                 <a href="/admin/products" class="dropdown-link">Cập nhật thông tin </a>
-                <a href="/admin/medicines/list" class="dropdown-link">Xem danh sách thuốc</a>
-                <a href="/admin/goods/list" class="dropdown-link"> Xem danh sách vật tư y tế</a>
-                <a href="/admin/services/list" class="dropdown-link">Danh sách dịch vụ</a>
-            </div>
-            <div class="dropdown-col">
-              <div class="dropdown-title">Kho hàng</div>
-              <a href="/admin/products/stock" class="dropdown-link">Kiểm kho sản phẩm</a>
+                <a href="/admin/products/list" class="dropdown-link">Xem danh sách hàng hóa</a>
+                <a href="/admin/products/stock" class="dropdown-link">Kiểm tra tồn kho</a>
             </div>
             <div class="dropdown-col">
               <div class="dropdown-title">Nhập hàng</div>
-              <a href="/admin/suppliers" class="dropdown-link">Nhà cung cấp</a>
               <a href="/admin/import" class="dropdown-link">Đặt hàng</a>
               <a href="/admin/purchase-returns" class="dropdown-link">Trả hàng </a>
             </div>
@@ -46,6 +40,14 @@
           </div>
         </div>
         <div class="nav-item dropdown">
+          <span class="nav-item">Đối tác</span>
+          <div class="nav-dropdown nav-dropdown-short">
+            <div class="dropdown-col">
+              <a href="/admin/suppliers" class="dropdown-link">Quản lý cung cấp</a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-item dropdown">
           <span class="nav-item">Bác sĩ</span>
           <div class="nav-dropdown nav-dropdown-short">
             <div class="dropdown-col">
@@ -67,9 +69,9 @@
         </div>
         <a href="/logout" class="nav-item">Đăng xuất</a>
       </div>
-      <button class="sell-btn">
-        <i class="fas fa-cart-shopping cart-icon"></i> Bán hàng
-      </button>
+        <!-- <button class="sell-btn">
+          <i class="fas fa-cart-shopping cart-icon"></i> Bán hàng
+        </button> -->
     </nav>
 
     <!-- Main Content -->
@@ -104,8 +106,8 @@ html, body {
   position: relative;
 }
 
-.navbar {
-  background: #1db46a;
+.navbaradmin {
+  background: #696FC7;
   padding: 0 24px;
   min-height: 44px;
   display: flex;
@@ -211,7 +213,7 @@ html, body {
 }
 
 .sell-btn:hover {
-  background: #059669;
+  background: #696FC7;
 }
 
 /* Scoped styles cho các component con */
@@ -226,7 +228,7 @@ html, body {
 }
 
 :deep(.nav-item:hover) {
-  background: #1db46a;
+  background: #696FC7;
   color: white;
 }
 
