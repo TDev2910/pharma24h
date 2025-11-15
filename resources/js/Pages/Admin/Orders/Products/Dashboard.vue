@@ -2,11 +2,12 @@
   <div class="orders-page">
     <!-- Header Control Bar -->
     <div class="header-control-bar">
-      <div class="controls-section" style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
+      <div class="controls-section"
+        style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
         <!-- Title Section -->
         <div class="title-section">
           <h3>Danh sách đơn hàng</h3>
-        </div>      
+        </div>
         <!-- Search Section -->
         <div style="flex:1; display:flex; justify-content:center;">
           <div class="search-wrapper">
@@ -14,28 +15,18 @@
               <span class="input-group-text">
                 <i class="pi pi-search"></i>
               </span>
-              <input 
-                type="text" 
-                class="form-control" 
-                style="border-radius:8px;" 
-                placeholder="Tìm kiếm theo mã đơn hàng, tên khách hàng, số điện thoại" 
-                v-model="searchQuery" 
-                @input="debounceSearch"
-              >
-            </div>         
+              <input type="text" class="form-control" style="border-radius:8px;"
+                placeholder="Tìm kiếm theo mã đơn hàng, tên khách hàng, số điện thoại" v-model="searchQuery"
+                @input="debounceSearch">
+            </div>
           </div>
         </div>
         <!-- Utility Options -->
         <div class="ultility-options">
           <!-- In hóa đơn đã chọn -->
-          <Button 
-            icon="pi pi-print"
-            label="In hóa đơn đã chọn"
-            @click="printSelectedInvoices"
-            :disabled="selectedOrders.length === 0"
-            severity="success"
-            style="background:#10b981; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
-          />
+          <Button icon="pi pi-print" label="In hóa đơn đã chọn" @click="printSelectedInvoices"
+            :disabled="selectedOrders.length === 0" severity="success"
+            style="background:#10b981; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
           <!-- Utility Icons -->
           <div class="utility-icons">
             <button class="btn" title="Chế độ xem">
@@ -100,13 +91,8 @@
               <label class="filter-label">Mã đơn hàng</label>
               <div class="input-group">
                 <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  placeholder="Tìm theo mã" 
-                  v-model="filters.order_code"
-                  @input="applyFilters"
-                >
+                <input type="text" class="form-control" placeholder="Tìm theo mã" v-model="filters.order_code"
+                  @input="applyFilters">
               </div>
             </div>
 
@@ -114,34 +100,21 @@
             <div class="filter-item">
               <label class="filter-label">Ngày đặt hàng</label>
               <div class="input-group">
-                <input 
-                  type="date" 
-                  class="form-control" 
-                  placeholder="Từ ngày" 
-                  v-model="filters.from_date"
-                  @change="applyFilters"
-                >
+                <input type="date" class="form-control" placeholder="Từ ngày" v-model="filters.from_date"
+                  @change="applyFilters">
                 <span class="input-group-text">-</span>
-                <input 
-                  type="date" 
-                  class="form-control" 
-                  placeholder="Đến ngày" 
-                  v-model="filters.to_date"
-                  @change="applyFilters"
-                >
+                <input type="date" class="form-control" placeholder="Đến ngày" v-model="filters.to_date"
+                  @change="applyFilters">
               </div>
             </div>
 
             <!-- Status Filter -->
             <div class="filter-item">
               <label class="filter-label">Trạng thái</label>
-              <select 
-                class="form-select" 
-                v-model="filters.status"
-                @change="applyFilters"
-              >
+              <select class="form-select" v-model="filters.status" @change="applyFilters">
                 <option value="">Tất cả</option>
                 <option value="pending">Đang chờ xử lý</option>
+                <option value="confirmed">Đã xác nhận</option>
                 <option value="completed">Hoàn thành</option>
                 <option value="cancelled">Đã hủy</option>
               </select>
@@ -155,42 +128,27 @@
         <div class="table-header">
           <h3 class="table-title">Danh sách dữ liệu đơn hàng</h3>
         </div>
-        
+
         <div class="table-container">
-          <DataTable 
-            :value="filteredOrders" 
-            removableSort 
-            tableStyle="min-width: 50rem"
-            class="orders-table"
-            :paginator="true"
-            :rows="pagination.per_page"
-            :totalRecords="pagination.total"
+          <DataTable :value="filteredOrders" removableSort tableStyle="min-width: 50rem" class="orders-table"
+            :paginator="true" :rows="pagination.per_page" :totalRecords="pagination.total"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            :rowsPerPageOptions="[5,10,25]"
-            currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} đơn hàng"
-          >
+            :rowsPerPageOptions="[5, 10, 25]"
+            currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} đơn hàng">
             <!-- Checkbox Column -->
             <Column headerStyle="width: 30px">
               <template #body="slotProps">
                 <div class="form-check">
-                  <input 
-                    class="form-check-input order-select" 
-                    type="checkbox" 
-                    :value="slotProps.data.id"
+                  <input class="form-check-input order-select" type="checkbox" :value="slotProps.data.id"
                     :checked="selectedOrders.includes(slotProps.data.id)"
-                    @change="handleSelectOrder(slotProps.data.id, $event)"
-                  >
+                    @change="handleSelectOrder(slotProps.data.id, $event)">
                 </div>
               </template>
               <template #header>
                 <div class="form-check">
-                  <input 
-                    class="form-check-input" 
-                    type="checkbox" 
-                    id="selectAll"
+                  <input class="form-check-input" type="checkbox" id="selectAll"
                     :checked="selectedOrders.length === filteredOrders.length && filteredOrders.length > 0"
-                    @change="handleSelectAll"
-                  >
+                    @change="handleSelectAll">
                 </div>
               </template>
             </Column>
@@ -201,14 +159,14 @@
                 <span class="fw-medium">{{ slotProps.data.order_code || 'N/A' }}</span>
               </template>
             </Column>
-            
+
             <!-- Customer Name Column -->
             <Column field="customer_name" header="Tên khách hàng" sortable style="width: 18%">
               <template #body="slotProps">
                 <span>{{ slotProps.data.customer_name || 'N/A' }}</span>
               </template>
             </Column>
-            
+
             <!-- Status Column -->
             <Column field="order_status" header="Trạng thái" sortable style="width: 15%">
               <template #body="slotProps">
@@ -217,50 +175,38 @@
                 </span>
               </template>
             </Column>
-            
+
             <!-- Payment Method Column -->
             <Column field="payment_method" header="Phương thức thanh toán" style="width: 15%">
               <template #body="slotProps">
                 <span>{{ getPaymentMethodText(slotProps.data.payment_method) }}</span>
               </template>
             </Column>
-            
+
             <!-- Total Amount Column -->
             <Column field="total_amount" header="Tổng tiền" sortable style="width: 12%" class="text-center">
               <template #body="slotProps">
                 <span>{{ formatCurrency(slotProps.data.total_amount || 0) }}</span>
               </template>
             </Column>
-            
+
             <!-- Created Date Column -->
             <Column field="created_at_formatted" header="Ngày tạo" sortable style="width: 10%">
               <template #body="slotProps">
                 <span>{{ slotProps.data.created_at_formatted || 'N/A' }}</span>
               </template>
             </Column>
-            
+
             <!-- Actions Column -->
             <Column header="Thao tác" style="width: 15%">
               <template #body="slotProps">
                 <div class="action-group">
-                  <Button 
-                    icon="pi pi-eye"
-                    class="p-button-sm btn-detail"
-                    @click="viewOrderDetail(slotProps.data)"
-                    v-tooltip.top="'Xem chi tiết'" 
-                  />
-                  <Button 
-                    icon="pi pi-pencil"
-                    class="p-button-sm btn-edit"
-                    @click="editOrder(slotProps.data)"
-                    v-tooltip.top="'Chỉnh sửa'" 
-                  />
-                  <Button 
-                    icon="pi pi-trash" 
-                    class="p-button-sm btn-delete"
-                    @click="deleteOrder(slotProps.data)"
-                    v-tooltip.top="'Xóa'"
-                  />
+                  <Button icon="pi pi-eye" class="p-button-sm btn-detail" @click="viewOrderDetail(slotProps.data)"
+                    v-tooltip.top="'Xem chi tiết'" />
+                  <Button icon="pi pi-pencil" class="p-button-sm btn-edit" @click="editOrder(slotProps.data)"
+                    v-tooltip.top="'Chỉnh sửa'" />
+                  <Button icon="pi pi-trash" class="p-button-sm btn-delete" @click="deleteOrder(slotProps.data)"
+                    v-tooltip.top="'Xóa'" />
                 </div>
               </template>
             </Column>
@@ -269,26 +215,14 @@
       </div>
     </div>
 
-          <!-- Order Details Modal -->
-    <OrderDetailsModal
-      :visible="showDetailsModal"
-      :orderId="selectedOrderId"
-      @close="showDetailsModal = false"
-    />
+    <!-- Order Details Modal -->
+    <OrderDetailsModal :visible="showDetailsModal" :orderId="selectedOrderId" @close="showDetailsModal = false" />
 
     <!-- Order Edit Modal -->
-    <OrderEditModal
-      :visible="showEditModal"
-      :orderId="selectedEditOrderId"
-      @close="showEditModal = false"
-      @updated="onOrderUpdated"
-    />
+    <OrderEditModal :visible="showEditModal" :orderId="selectedEditOrderId" @close="showEditModal = false"
+      @updated="onOrderUpdated" />
 
-    <InvoiceModal
-      :visible="showInvoiceModal"
-      :orderId="selectedInvoiceOrderId"
-      @close="showInvoiceModal = false"
-    />
+    <InvoiceModal :visible="showInvoiceModal" :orderId="selectedInvoiceOrderId" @close="showInvoiceModal = false" />
   </div>
 </template>
 
@@ -315,7 +249,7 @@ export default {
     OrderEditModal,
     InvoiceModal
   },
-  
+
   props: {
     stats: {
       type: Object,
@@ -350,7 +284,7 @@ export default {
       })
     }
   },
-  
+
   data() {
     return {
       searchQuery: '',
@@ -371,7 +305,7 @@ export default {
       }
     }
   },
-  
+
   computed: {
     filteredOrders() {
       const orders = this.localOrders.length > 0 ? this.localOrders : this.orders;
@@ -380,7 +314,7 @@ export default {
       if (!this.searchQuery || !this.searchQuery.trim()) {
         return orders;
       }
-      
+
       // Lọc theo search query
       const term = this.searchQuery.toLowerCase().trim();
       return orders.filter(order => {
@@ -391,7 +325,7 @@ export default {
       });
     }
   },
-  
+
   watch: {
     orders: {
       handler(newOrders) {
@@ -407,7 +341,7 @@ export default {
       deep: true
     }
   },
-  
+
   methods: {
     debounceSearch() {
       clearTimeout(this.searchTimeout);
@@ -415,24 +349,26 @@ export default {
         // Search được xử lý qua computed property
       }, 200);
     },
-    
+
     formatCurrency(amount) {
       return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND'
       }).format(amount);
     },
-    
+
     formatDate(dateString) {
       if (!dateString) return 'N/A';
       const date = new Date(dateString);
       return date.toLocaleDateString('vi-VN');
     },
-    
+
     getStatusBadgeClass(status) {
       const s = (status || '').toString().toLowerCase();
       if (s === 'pending' || s === 'new') {
         return 'badge bg-warning text-dark';
+      } else if (s === 'confirmed') {
+        return 'badge bg-info';
       } else if (s === 'completed') {
         return 'badge bg-success';
       } else if (s === 'cancelled') {
@@ -440,11 +376,13 @@ export default {
       }
       return 'badge bg-secondary';
     },
-    
+
     getStatusText(status) {
       const s = (status || '').toString().toLowerCase();
       if (s === 'pending' || s === 'new') {
         return 'Đang chờ xử lý';
+      } else if (s === 'confirmed') {
+        return 'Đã xác nhận';
       } else if (s === 'completed') {
         return 'Hoàn thành';
       } else if (s === 'cancelled') {
@@ -452,10 +390,10 @@ export default {
       }
       return 'Khác';
     },
-    
+
     getPaymentMethodText(method) {
       const m = (method || '').toString().toLowerCase();
-      switch(m) {
+      switch (m) {
         case 'cash':
           return 'Tiền mặt';
         case 'transfer':
@@ -470,7 +408,7 @@ export default {
           return method || 'Không xác định';
       }
     },
-    
+
     handleSelectAll(event) {
       if (event.target.checked) {
         this.selectedOrders = this.filteredOrders.map(order => order.id);
@@ -478,7 +416,7 @@ export default {
         this.selectedOrders = [];
       }
     },
-    
+
     handleSelectOrder(orderId, event) {
       if (event.target.checked) {
         if (!this.selectedOrders.includes(orderId)) {
@@ -488,7 +426,7 @@ export default {
         this.selectedOrders = this.selectedOrders.filter(id => id !== orderId);
       }
     },
-    
+
     printSelectedInvoices() {
       if (this.selectedOrders.length === 0) {
         Swal.fire({
@@ -500,7 +438,7 @@ export default {
         });
         return;
       }
-      
+
       // Mở từng hóa đơn ở tab mới
       this.selectedOrders.forEach((id, idx) => {
         const url = `/admin/orders/${id}/invoice`;
@@ -508,7 +446,7 @@ export default {
           window.open(url, '_blank');
         }, idx * 250);
       });
-      
+
       Swal.fire({
         icon: 'success',
         title: 'Thành công',
@@ -517,8 +455,8 @@ export default {
         showConfirmButton: false
       });
     },
-    
-        viewOrderDetail(order) {
+
+    viewOrderDetail(order) {
       this.selectedOrderId = order.id;
       this.showDetailsModal = true;
     },
@@ -528,10 +466,10 @@ export default {
       this.showEditModal = true;
     },
 
-    onOrderUpdated(order) {  
+    onOrderUpdated(order) {
       router.reload({ only: ['orders'] });
     },
-    
+
     async deleteOrder(order) {
       if (!order?.id) return;
 
@@ -555,7 +493,7 @@ export default {
         if (response.data?.success) {
           // Cập nhật localOrders
           this.localOrders = this.localOrders.filter(o => o.id !== order.id);
-          
+
           // Cập nhật selectedOrders
           this.selectedOrders = this.selectedOrders.filter(id => id !== order.id);
 
@@ -566,7 +504,7 @@ export default {
             timer: 1500,
             showConfirmButton: false
           });
-          
+
           // Reload để cập nhật stats
           router.reload();
         } else {
@@ -590,7 +528,7 @@ export default {
       this.selectedInvoiceOrderId = order.id;
       this.showInvoiceModal = true;
     },
-    
+
     applyFilters() {
       router.get('/admin/orders', {
         order_code: this.filters.order_code || '',
@@ -675,7 +613,7 @@ export default {
   transition: color 0.2s ease;
 }
 
-.search-wrapper .form-control:focus + .input-group-text {
+.search-wrapper .form-control:focus+.input-group-text {
   color: #007bff;
 }
 
@@ -814,7 +752,7 @@ export default {
 .table-container {
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   margin-top: 16px;
   overflow: hidden;
 }

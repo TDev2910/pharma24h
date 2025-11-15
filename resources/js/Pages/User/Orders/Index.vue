@@ -102,6 +102,7 @@ const activeTab = ref('all')
 const statusTabs = [
   { status: 'all', label: 'Tất cả' },
   { status: 'new', label: 'Chờ xử lý' },
+  { status: 'confirmed', label: 'Đã xác nhận' },
   { status: 'delivered', label: 'Hoàn thành' },
   { status: 'cancelled', label: 'Đã hủy' },
 ]

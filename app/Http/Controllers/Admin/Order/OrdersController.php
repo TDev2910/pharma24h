@@ -141,7 +141,7 @@ class OrdersController extends Controller
     public function updateStatus(Request $request, string $order, CheckoutService $checkout)
     {
         $request->validate([
-            'status' => 'required|in:pending,completed,cancelled',
+            'status' => 'required|in:pending,complete,confirmed,cancelled',
         ]);
         $order = Order::findOrFail($order);
         $oldStatus = $order->order_status;
@@ -152,6 +152,10 @@ class OrdersController extends Controller
             // Nếu hủy đơn, gọi service để restore tồn kho chính (nếu đã completed)
             $order = $checkout->cancelOrder((int) $order->id);
         } else {
+            $order->order_status = $request->status;
+            if($request->status === 'confirmed'){
+                $order->payment_status = 'unpaid';
+            }
             // Cập nhật các trạng thái khác không trừ tồn
             $order->order_status = $request->status;
             if ($request->status === 'pending') {
@@ -194,7 +198,6 @@ class OrdersController extends Controller
             'note' => 'nullable|string|max:1000',
             'delivery_method' => 'nullable|in:shipping,pickup',
             'payment_method' => 'nullable|string|max:50',
-            // Không nhận order_status ở đây để tránh nhầm với dropdown cập nhật trạng thái
         ]);
 
         $order->fill($validated);

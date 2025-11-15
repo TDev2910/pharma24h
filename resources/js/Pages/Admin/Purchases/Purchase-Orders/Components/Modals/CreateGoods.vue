@@ -149,6 +149,7 @@ export default {
       this.$emit('close')
     },
 
+    //nhận dữ liệu đầu vào
     async saveGoods(event) {
       if (event) {
         event.preventDefault()
@@ -160,8 +161,6 @@ export default {
 
       try {
         const formData = new FormData()
-
-        // Append các trường cần thiết
         if (this.formData.ma_hang) formData.append('ma_hang', this.formData.ma_hang)
         if (this.formData.ma_vach) formData.append('ma_vach', this.formData.ma_vach)
         if (this.formData.ten_hang_hoa) formData.append('ten_hang_hoa', this.formData.ten_hang_hoa)

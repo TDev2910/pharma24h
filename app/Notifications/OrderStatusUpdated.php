@@ -79,7 +79,7 @@ class OrderStatusUpdated extends Notification
          $labels = [
              'new' => 'Chờ xử lý',
              'processing' => 'Đang xử lý',
-             'delivered' => 'Đã giao',
+             'confirmed' => 'Đã xác nhận',
              'completed' => 'Hoàn thành',
              'cancelled' => 'Đã hủy',
          ];

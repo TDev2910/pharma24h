@@ -1,15 +1,7 @@
 <template>
-  <Dialog 
-    :visible="visible" 
-    @update:visible="$emit('close')"
-    :header="modalTitle" 
-    :style="{ width: '1000px', maxWidth: '95vw' }"
-    modal
-    :closable="true"
-    :draggable="false"
-    :loading="loading"
-    class="order-edit-modal"
-  >
+  <Dialog :visible="visible" @update:visible="$emit('close')" :header="modalTitle"
+    :style="{ width: '1000px', maxWidth: '95vw' }" modal :closable="true" :draggable="false" :loading="loading"
+    class="order-edit-modal">
     <div v-if="loading && !order" class="text-center py-5">
       <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
       <p class="mt-3">Đang tải dữ liệu...</p>
@@ -30,18 +22,10 @@
           <p class="text-muted small mb-3">Chọn trạng thái để cập nhật ngay lập tức</p>
         </div>
         <div class="status-buttons">
-          <Button 
-            v-for="status in statusOptions"
-            :key="status.value"
-            :label="status.label"
-            :icon="status.icon"
-            :severity="status.severity"
-            :class="{ 'status-active': order.order_status === status.value }"
-            @click="updateStatusQuick(status.value)"
-            :loading="statusLoading === status.value"
-            :disabled="order.order_status === status.value"
-            class="status-btn"
-          />
+          <Button v-for="status in statusOptions" :key="status.value" :label="status.label" :icon="status.icon"
+            :severity="status.severity" :class="{ 'status-active': order.order_status === status.value }"
+            @click="updateStatusQuick(status.value)" :loading="statusLoading === status.value"
+            :disabled="order.order_status === status.value" class="status-btn" />
         </div>
       </div>
 
@@ -53,23 +37,19 @@
           <i class="pi pi-pencil me-2"></i>
           Thông tin đơn hàng
         </h6>
-        
+
         <div class="form-grid">
           <!-- Thông tin khách hàng -->
           <div class="form-section">
             <h6 class="form-section-title">Thông tin khách hàng</h6>
-            
+
             <div class="form-row">
               <div class="form-field">
                 <label for="customerName" class="field-label">
                   Họ tên <span class="text-danger">*</span>
                 </label>
-                <InputText
-                  id="customerName"
-                  v-model="formData.customer_name"
-                  placeholder="Nhập họ tên khách hàng"
-                  :class="{ 'p-invalid': errors.customer_name }"
-                />
+                <InputText id="customerName" v-model="formData.customer_name" placeholder="Nhập họ tên khách hàng"
+                  :class="{ 'p-invalid': errors.customer_name }" />
                 <small v-if="errors.customer_name" class="p-error">
                   {{ errors.customer_name[0] }}
                 </small>
@@ -79,12 +59,8 @@
                 <label for="customerPhone" class="field-label">
                   Số điện thoại <span class="text-danger">*</span>
                 </label>
-                <InputText
-                  id="customerPhone"
-                  v-model="formData.customer_phone"
-                  placeholder="Nhập số điện thoại"
-                  :class="{ 'p-invalid': errors.customer_phone }"
-                />
+                <InputText id="customerPhone" v-model="formData.customer_phone" placeholder="Nhập số điện thoại"
+                  :class="{ 'p-invalid': errors.customer_phone }" />
                 <small v-if="errors.customer_phone" class="p-error">
                   {{ errors.customer_phone[0] }}
                 </small>
@@ -94,13 +70,8 @@
             <div class="form-row">
               <div class="form-field">
                 <label for="customerEmail" class="field-label">Email</label>
-                <InputText
-                  id="customerEmail"
-                  v-model="formData.customer_email"
-                  type="email"
-                  placeholder="Nhập email"
-                  :class="{ 'p-invalid': errors.customer_email }"
-                />
+                <InputText id="customerEmail" v-model="formData.customer_email" type="email" placeholder="Nhập email"
+                  :class="{ 'p-invalid': errors.customer_email }" />
                 <small v-if="errors.customer_email" class="p-error">
                   {{ errors.customer_email[0] }}
                 </small>
@@ -108,15 +79,9 @@
 
               <div class="form-field">
                 <label for="paymentMethod" class="field-label">Phương thức thanh toán</label>
-                <Dropdown
-                  id="paymentMethod"
-                  v-model="formData.payment_method"
-                  :options="paymentMethodOptions"
-                  optionLabel="label"
-                  optionValue="value"
-                  placeholder="Chọn phương thức thanh toán"
-                  :class="{ 'p-invalid': errors.payment_method }"
-                />
+                <Dropdown id="paymentMethod" v-model="formData.payment_method" :options="paymentMethodOptions"
+                  optionLabel="label" optionValue="value" placeholder="Chọn phương thức thanh toán"
+                  :class="{ 'p-invalid': errors.payment_method }" />
                 <small v-if="errors.payment_method" class="p-error">
                   {{ errors.payment_method[0] }}
                 </small>
@@ -127,20 +92,13 @@
           <!-- Thông tin giao hàng -->
           <div class="form-section">
             <h6 class="form-section-title">Thông tin giao hàng</h6>
-            
+
             <div class="form-row">
               <div class="form-field">
                 <label for="deliveryMethod" class="field-label">Phương thức nhận hàng</label>
-                <Dropdown
-                  id="deliveryMethod"
-                  v-model="formData.delivery_method"
-                  :options="deliveryMethodOptions"
-                  optionLabel="label"
-                  optionValue="value"
-                  placeholder="Chọn phương thức"
-                  :class="{ 'p-invalid': errors.delivery_method }"
-                  @change="onDeliveryMethodChange"
-                />
+                <Dropdown id="deliveryMethod" v-model="formData.delivery_method" :options="deliveryMethodOptions"
+                  optionLabel="label" optionValue="value" placeholder="Chọn phương thức"
+                  :class="{ 'p-invalid': errors.delivery_method }" @change="onDeliveryMethodChange" />
                 <small v-if="errors.delivery_method" class="p-error">
                   {{ errors.delivery_method[0] }}
                 </small>
@@ -148,12 +106,8 @@
 
               <div class="form-field" v-if="formData.delivery_method === 'pickup'">
                 <label for="pickupLocation" class="field-label">Địa điểm nhận hàng</label>
-                <InputText
-                  id="pickupLocation"
-                  v-model="formData.pickup_location"
-                  placeholder="Nhập địa điểm nhận hàng"
-                  :class="{ 'p-invalid': errors.pickup_location }"
-                />
+                <InputText id="pickupLocation" v-model="formData.pickup_location" placeholder="Nhập địa điểm nhận hàng"
+                  :class="{ 'p-invalid': errors.pickup_location }" />
                 <small v-if="errors.pickup_location" class="p-error">
                   {{ errors.pickup_location[0] }}
                 </small>
@@ -164,12 +118,8 @@
               <div class="form-row">
                 <div class="form-field">
                   <label for="shippingAddress" class="field-label">Địa chỉ giao hàng</label>
-                  <InputText
-                    id="shippingAddress"
-                    v-model="formData.shipping_address"
-                    placeholder="Nhập địa chỉ"
-                    :class="{ 'p-invalid': errors.shipping_address }"
-                  />
+                  <InputText id="shippingAddress" v-model="formData.shipping_address" placeholder="Nhập địa chỉ"
+                    :class="{ 'p-invalid': errors.shipping_address }" />
                   <small v-if="errors.shipping_address" class="p-error">
                     {{ errors.shipping_address[0] }}
                   </small>
@@ -179,12 +129,8 @@
               <div class="form-row">
                 <div class="form-field">
                   <label for="province" class="field-label">Tỉnh/Thành phố</label>
-                  <InputText
-                    id="province"
-                    v-model="formData.province"
-                    placeholder="Nhập tỉnh/thành phố"
-                    :class="{ 'p-invalid': errors.province }"
-                  />
+                  <InputText id="province" v-model="formData.province" placeholder="Nhập tỉnh/thành phố"
+                    :class="{ 'p-invalid': errors.province }" />
                   <small v-if="errors.province" class="p-error">
                     {{ errors.province[0] }}
                   </small>
@@ -192,12 +138,8 @@
 
                 <div class="form-field">
                   <label for="district" class="field-label">Quận/Huyện</label>
-                  <InputText
-                    id="district"
-                    v-model="formData.district"
-                    placeholder="Nhập quận/huyện"
-                    :class="{ 'p-invalid': errors.district }"
-                  />
+                  <InputText id="district" v-model="formData.district" placeholder="Nhập quận/huyện"
+                    :class="{ 'p-invalid': errors.district }" />
                   <small v-if="errors.district" class="p-error">
                     {{ errors.district[0] }}
                   </small>
@@ -205,12 +147,8 @@
 
                 <div class="form-field">
                   <label for="ward" class="field-label">Phường/Xã</label>
-                  <InputText
-                    id="ward"
-                    v-model="formData.ward"
-                    placeholder="Nhập phường/xã"
-                    :class="{ 'p-invalid': errors.ward }"
-                  />
+                  <InputText id="ward" v-model="formData.ward" placeholder="Nhập phường/xã"
+                    :class="{ 'p-invalid': errors.ward }" />
                   <small v-if="errors.ward" class="p-error">
                     {{ errors.ward[0] }}
                   </small>
@@ -223,13 +161,8 @@
           <div class="form-section full-width">
             <h6 class="form-section-title">Ghi chú</h6>
             <div class="form-field">
-              <Textarea
-                v-model="formData.note"
-                rows="3"
-                placeholder="Nhập ghi chú cho đơn hàng (nếu có)"
-                :class="{ 'p-invalid': errors.note }"
-                style="width: 100%"
-              />
+              <Textarea v-model="formData.note" rows="3" placeholder="Nhập ghi chú cho đơn hàng (nếu có)"
+                :class="{ 'p-invalid': errors.note }" style="width: 100%" />
               <small v-if="errors.note" class="p-error">
                 {{ errors.note[0] }}
               </small>
@@ -255,15 +188,15 @@
           <div class="row mb-3">
             <div class="col-md-6">
               <p class="mb-2">
-                <strong>Mã đơn hàng:</strong> 
+                <strong>Mã đơn hàng:</strong>
                 <span>{{ order.order_code }}</span>
               </p>
               <p class="mb-2">
-                <strong>Ngày đặt:</strong> 
+                <strong>Ngày đặt:</strong>
                 <span>{{ formatDate(order.created_at) }}</span>
               </p>
               <p class="mb-2">
-                <strong>Trạng thái:</strong> 
+                <strong>Trạng thái:</strong>
                 <span :class="getStatusBadgeClass(order.order_status)">
                   {{ getStatusText(order.order_status) }}
                 </span>
@@ -271,13 +204,13 @@
             </div>
             <div class="col-md-6">
               <p class="mb-2">
-                <strong>Trạng thái thanh toán:</strong> 
+                <strong>Trạng thái thanh toán:</strong>
                 <span :class="getPaymentStatusBadgeClass(order.payment_status)">
                   {{ getPaymentStatusText(order.payment_status) }}
                 </span>
               </p>
               <p class="mb-2" v-if="order.transaction_id">
-                <strong>Mã giao dịch:</strong> 
+                <strong>Mã giao dịch:</strong>
                 <span>{{ order.transaction_id }}</span>
               </p>
             </div>
@@ -285,11 +218,7 @@
 
           <!-- Items Table -->
           <div v-if="items && items.length > 0" class="mt-3">
-            <DataTable 
-              :value="items" 
-              class="order-items-table"
-              :paginator="false"
-            >
+            <DataTable :value="items" class="order-items-table" :paginator="false">
               <Column header="STT" style="width: 60px">
                 <template #body="slotProps">
                   {{ slotProps.index + 1 }}
@@ -335,18 +264,8 @@
     <template #footer>
       <div class="flex justify-between align-items-center w-full">
         <div class="flex gap-2">
-          <Button 
-            label="Đóng" 
-            severity="secondary" 
-            icon="pi pi-times"
-            @click="closeModal"
-          />
-          <Button 
-            label="Lưu thông tin" 
-            icon="pi pi-check"
-            @click="saveOrderInfo"
-            :loading="saving"
-          />
+          <Button label="Đóng" severity="secondary" icon="pi pi-times" @click="closeModal" />
+          <Button label="Lưu thông tin" icon="pi pi-check" @click="saveOrderInfo" :loading="saving" />
         </div>
       </div>
     </template>
@@ -415,21 +334,27 @@ export default {
       },
       errors: {},
       statusOptions: [
-        { 
-          label: 'Đang chờ xử lý', 
-          value: 'pending', 
+        {
+          label: 'Đang chờ xử lý',
+          value: 'pending',
           icon: 'pi pi-clock',
           severity: 'warning'
         },
-        { 
-          label: 'Hoàn thành', 
-          value: 'completed', 
+        {
+          label: 'Đã xác nhận',
+          value: 'confirmed',
           icon: 'pi pi-check-circle',
           severity: 'success'
         },
-        { 
-          label: 'Hủy đơn hàng', 
-          value: 'cancelled', 
+        {
+          label: 'Hoàn thành',
+          value: 'completed',
+          icon: 'pi pi-check-circle',
+          severity: 'success'
+        },
+        {
+          label: 'Hủy đơn hàng',
+          value: 'cancelled',
           icon: 'pi pi-times-circle',
           severity: 'danger'
         }
@@ -485,11 +410,11 @@ export default {
 
       try {
         const response = await axios.get(`/admin/orders/${this.orderId}`);
-        
+
         if (response.data?.success) {
           this.order = response.data.order;
           this.items = response.data.items || [];
-          
+
           // Populate form data
           this.formData = {
             customer_name: this.order.customer_name || '',
@@ -514,7 +439,7 @@ export default {
         this.loading = false;
       }
     },
-    
+
     async updateStatusQuick(newStatus) {
       if (!this.orderId) return;
 
@@ -527,7 +452,7 @@ export default {
 
         if (response.data?.success) {
           this.order.order_status = newStatus;
-          
+
           this.$toast.add({
             severity: 'success',
             summary: 'Thành công',
@@ -594,7 +519,7 @@ export default {
 
           // Reload order details to get updated data
           await this.loadOrderDetails();
-          
+
           this.$emit('updated', this.order);
         } else {
           this.$toast.add({
@@ -606,7 +531,7 @@ export default {
         }
       } catch (error) {
         console.error('Error saving order info:', error);
-        
+
         if (error.response?.status === 422) {
           this.errors = error.response.data.errors || {};
           this.$toast.add({
@@ -627,7 +552,7 @@ export default {
         this.saving = false;
       }
     },
-    
+
     onDeliveryMethodChange() {
       // Reset shipping fields if switching to pickup
       if (this.formData.delivery_method === 'pickup') {
@@ -641,11 +566,11 @@ export default {
         this.formData.pickup_location = '';
       }
     },
-    
+
     closeModal() {
       this.$emit('close');
     },
-    
+
     resetModal() {
       this.order = null;
       this.items = [];
@@ -669,7 +594,7 @@ export default {
         payment_method: 'cash'
       };
     },
-    
+
     formatDate(dateString) {
       if (!dateString) return 'N/A';
       const date = new Date(dateString);
@@ -680,14 +605,14 @@ export default {
       const minutes = String(date.getMinutes()).padStart(2, '0');
       return `${day}/${month}/${year} ${hours}:${minutes}`;
     },
-    
+
     formatCurrency(amount) {
       return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND'
       }).format(amount);
     },
-    
+
     getStatusBadgeClass(status) {
       const s = (status || '').toString().toLowerCase();
       if (s === 'pending' || s === 'new') {
@@ -699,7 +624,7 @@ export default {
       }
       return 'badge bg-secondary';
     },
-    
+
     getStatusText(status) {
       const s = (status || '').toString().toLowerCase();
       if (s === 'pending' || s === 'new') {
@@ -711,7 +636,7 @@ export default {
       }
       return 'Không xác định';
     },
-    
+
     getPaymentStatusBadgeClass(status) {
       const s = (status || '').toString().toLowerCase();
       if (s === 'pending' || s === 'unpaid') {
@@ -727,7 +652,7 @@ export default {
       }
       return 'badge bg-secondary';
     },
-    
+
     getPaymentStatusText(status) {
       const s = (status || '').toString().toLowerCase();
       if (s === 'pending' || s === 'unpaid') {
@@ -1014,11 +939,11 @@ export default {
   .form-row {
     grid-template-columns: 1fr;
   }
-  
+
   .status-buttons {
     flex-direction: column;
   }
-  
+
   .status-btn {
     width: 100%;
   }

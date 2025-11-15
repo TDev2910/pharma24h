@@ -151,6 +151,10 @@ class StaffOrderController extends Controller
             // Nếu hủy đơn, gọi service để restore tồn kho chính (nếu đã completed)
             $order = $checkout->cancelOrder((int) $order->id);
         } else {
+            $order->order_status = $request->status;
+            if($request->status === 'confirmed'){
+                $order->payment_status = 'unpaid';
+            }
             // Cập nhật các trạng thái khác không trừ tồn
             $order->order_status = $request->status;
             if ($request->status === 'pending') {
@@ -193,7 +197,6 @@ class StaffOrderController extends Controller
             'note' => 'nullable|string|max:1000',
             'delivery_method' => 'nullable|in:shipping,pickup',
             'payment_method' => 'nullable|string|max:50',
-            // Không nhận order_status ở đây để tránh nhầm với dropdown cập nhật trạng thái
         ]);
 
         $order->fill($validated);
