@@ -34,9 +34,9 @@ class ImportController extends Controller
                     'so_luong' => ['required', 'integer', 'min:1'],
                     'don_gia'  => ['required', 'numeric', 'min:0'],
                 ],
-                'rowNormalizer' => function(array $row) {
+                'rowNormalizer' => function (array $row) {
                     // Chuẩn hoá và thống nhất key nội bộ
-                    $get = function(array $keys, $default = null) use ($row) {
+                    $get = function (array $keys, $default = null) use ($row) {
                         foreach ($keys as $k) {
                             if (array_key_exists($k, $row) && $row[$k] !== null && $row[$k] !== '') {
                                 return $row[$k];
@@ -45,7 +45,7 @@ class ImportController extends Controller
                         return $default;
                     };
 
-                    $cleanString = function($v) {
+                    $cleanString = function ($v) {
                         if (!is_string($v)) return $v;
                         $v = preg_replace('/\x{FEFF}|\x{200B}|\x{200C}|\x{200D}/u', '', $v);
                         $v = trim($v);
@@ -69,10 +69,10 @@ class ImportController extends Controller
                         'don_gia'  => $donGia,
                     ];
                 },
-                'rowFilter' => function(array $row) {
+                'rowFilter' => function (array $row) {
                     return !(empty($row['ma_hang']) && empty($row['ten_hang']));
                 },
-                'rowResolver' => function(array $row) {
+                'rowResolver' => function (array $row) {
                     $maHang = $row['ma_hang'];
                     $tenHang = $row['ten_hang'];
 
@@ -100,7 +100,7 @@ class ImportController extends Controller
                     $row['__product_type'] = $productType;
                     return $row;
                 },
-                'accumulate' => function(array $row) {
+                'accumulate' => function (array $row) {
                     $product = $row['__product'];
                     $productType = $row['__product_type'];
 
@@ -138,8 +138,7 @@ class ImportController extends Controller
                 'items' => $items,
                 'errors' => $errors,
                 'message' => 'Import thành công ' . count($items) . ' sản phẩm'
-            ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE|JSON_UNESCAPED_UNICODE);
-
+            ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
@@ -195,8 +194,8 @@ class ImportController extends Controller
                     'so_luong' => ['required', 'integer', 'min:1'],
                     'don_gia' => ['required', 'numeric', 'min:0'],
                 ],
-                'rowNormalizer' => function(array $row) {
-                    $get = function(array $keys, $default = null) use ($row) {
+                'rowNormalizer' => function (array $row) {
+                    $get = function (array $keys, $default = null) use ($row) {
                         foreach ($keys as $k) {
                             if (array_key_exists($k, $row) && $row[$k] !== null && $row[$k] !== '') {
                                 return $row[$k];
@@ -205,7 +204,7 @@ class ImportController extends Controller
                         return $default;
                     };
 
-                    $cleanString = function($v) {
+                    $cleanString = function ($v) {
                         if (!is_string($v)) return $v;
                         $v = preg_replace('/\x{FEFF}|\x{200B}|\x{200C}|\x{200D}/u', '', $v);
                         $v = trim($v);
@@ -229,10 +228,10 @@ class ImportController extends Controller
                         'don_gia'  => $donGia,
                     ];
                 },
-                'rowFilter' => function(array $row) {
+                'rowFilter' => function (array $row) {
                     return !(empty($row['ma_hang']) && empty($row['ten_hang']));
                 },
-                'rowResolver' => function(array $row) {
+                'rowResolver' => function (array $row) {
                     $maHang = $row['ma_hang'];
                     $tenHang = $row['ten_hang'];
 
@@ -260,7 +259,7 @@ class ImportController extends Controller
                     $row['__product_type'] = $productType;
                     return $row;
                 },
-                'accumulate' => function(array $row) {
+                'accumulate' => function (array $row) {
                     $product = $row['__product'];
                     $productType = $row['__product_type'];
 
@@ -295,8 +294,7 @@ class ImportController extends Controller
                 'items' => $items,
                 'errors' => $errors,
                 'message' => 'Import thành công ' . count($items) . ' sản phẩm'
-            ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE|JSON_UNESCAPED_UNICODE);
-
+            ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,

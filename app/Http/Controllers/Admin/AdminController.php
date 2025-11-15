@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin; 
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -11,28 +11,29 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
 use App\Models\ServiceBooking;
+
 class AdminController extends \App\Http\Controllers\Controller
 {
     public function dashboard()
     {
         // Tính tổng số sản phẩm (Thuốc + Vật tư y tế + Dịch vụ)
         $totalProducts = Medicine::count() + Goods::count() + Service::count();
-        
+
         // Tổng số đơn hàng
         $totalOrders = Order::count();
-        
+
         // Tổng số khách hàng (role = 'user')
         $totalCustomers = User::where('role', 'user')->count();
-        
+
         // Tổng doanh thu (tổng total_amount của các đơn hàng đã thanh toán)
         $totalRevenue = Order::where('payment_status', 'paid')
             ->sum('total_amount');
-        
+
         // Dữ liệu cho biểu đồ Top Categories (3 loại)
         $medicineCount = Medicine::count();
         $goodsCount = Goods::count();
         $serviceCount = Service::count();
-        
+
         // Top 5 khách hàng mua nhiều nhất
         $topCustomers = $this->getTopCustomers();
 
@@ -87,13 +88,13 @@ class AdminController extends \App\Http\Controllers\Controller
         // Bước 4: Lấy thông tin user và format dữ liệu
         return $topCustomers->map(function ($item) use ($users) {
             $user = $users->get($item->user_id);
-            
+
             // Trả về mảng với thông tin cần thiết
             return [
                 'id' => $user ? $user->id : $item->user_id,
                 'name' => $user ? $user->name : 'Khách hàng #' . $item->user_id,
-                'order_count' => (int) $item->order_count, 
-                'total_spent' => (float) $item->total_spent, 
+                'order_count' => (int) $item->order_count,
+                'total_spent' => (float) $item->total_spent,
             ];
         });
     }
@@ -130,7 +131,7 @@ class AdminController extends \App\Http\Controllers\Controller
         //Tối ưu - Load tất cả Medicine và Goods một lần thay vì find() từng cái
         $medicineIds = $topProducts->where('item_type', 'medicine')->pluck('item_id')->unique()->toArray();
         $goodsIds = $topProducts->where('item_type', 'goods')->pluck('item_id')->unique()->toArray();
-        
+
         $medicines = Medicine::whereIn('id', $medicineIds)->get()->keyBy('id');
         $goods = Goods::whereIn('id', $goodsIds)->get()->keyBy('id');
 
@@ -149,8 +150,7 @@ class AdminController extends \App\Http\Controllers\Controller
                     $stocks = $product->ton_kho ?? 0;
                     $price = $product->gia_ban ?? 0;
                 }
-            } 
-            elseif ($item->item_type === 'goods') {
+            } elseif ($item->item_type === 'goods') {
                 $product = $goods->get($item->item_id);
                 if ($product) {
                     $productName = $product->ten_hang_hoa;
@@ -197,13 +197,13 @@ class AdminController extends \App\Http\Controllers\Controller
                     ->groupBy('period')
                     ->orderBy('period')
                     ->get();
-                
-                $labels = $results->map(function($item) {
+
+                $labels = $results->map(function ($item) {
                     return date('d/m', strtotime($item->period));
                 })->toArray();
                 $revenues = $results->pluck('revenue')->toArray();
                 break;
-                
+
             case 'week':
                 // Lấy 12 tuần gần nhất
                 $query->where('created_at', '>=', now()->subWeeks(12));
@@ -212,13 +212,13 @@ class AdminController extends \App\Http\Controllers\Controller
                     ->groupBy('period')
                     ->orderBy('period')
                     ->get();
-                
-                $labels = $results->map(function($item) {
+
+                $labels = $results->map(function ($item) {
                     return 'Tuần ' . substr($item->period, 4);
                 })->toArray();
                 $revenues = $results->pluck('revenue')->toArray();
                 break;
-                
+
             case 'month':
                 // Lấy 12 tháng gần nhất
                 $query->where('created_at', '>=', now()->subMonths(12));
@@ -227,13 +227,13 @@ class AdminController extends \App\Http\Controllers\Controller
                     ->groupBy('period')
                     ->orderBy('period')
                     ->get();
-                
-                $labels = $results->map(function($item) {
+
+                $labels = $results->map(function ($item) {
                     return 'Tháng ' . date('m/Y', strtotime($item->period . '-01'));
                 })->toArray();
                 $revenues = $results->pluck('revenue')->toArray();
                 break;
-                
+
             case 'year':
                 // Lấy 5 năm gần nhất
                 $query->where('created_at', '>=', now()->subYears(5));
@@ -242,16 +242,16 @@ class AdminController extends \App\Http\Controllers\Controller
                     ->groupBy('period')
                     ->orderBy('period')
                     ->get();
-                
+
                 $labels = $results->pluck('period')->toArray();
                 $revenues = $results->pluck('revenue')->toArray();
                 break;
-                
+
             default:
                 $labels = [];
                 $revenues = [];
         }
-        
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -264,7 +264,7 @@ class AdminController extends \App\Http\Controllers\Controller
     public function getServiceRevenue(Request $request)
     {
         $period = $request->input('period', 'month');
-        $query = ServiceBooking::where('payment_status','paid');
+        $query = ServiceBooking::where('payment_status', 'paid');
 
         switch ($period) {
             case 'day':
@@ -274,7 +274,7 @@ class AdminController extends \App\Http\Controllers\Controller
                     ->groupBy('period')
                     ->orderBy('period')
                     ->get();
-                $labels = $results->map(function($item) {
+                $labels = $results->map(function ($item) {
                     return date('d/m', strtotime($item->period));
                 })->toArray();
                 $revenues = $results->pluck('revenue')->toArray();
@@ -287,7 +287,7 @@ class AdminController extends \App\Http\Controllers\Controller
                     ->groupBy('period')
                     ->orderBy('period')
                     ->get();
-                $labels = $results->map(function($item) {
+                $labels = $results->map(function ($item) {
                     return 'Tuần ' . substr($item->period, 4);
                 })->toArray();
                 $revenues = $results->pluck('revenue')->toArray();
@@ -300,7 +300,7 @@ class AdminController extends \App\Http\Controllers\Controller
                     ->groupBy('period')
                     ->orderBy('period')
                     ->get();
-                $labels = $results->map(function($item) {
+                $labels = $results->map(function ($item) {
                     return 'Tháng ' . date('m/Y', strtotime($item->period . '-01'));
                 })->toArray();
                 $revenues = $results->pluck('revenue')->toArray();
@@ -430,4 +430,4 @@ class AdminController extends \App\Http\Controllers\Controller
             ]
         ]);
     }
-}   
+}

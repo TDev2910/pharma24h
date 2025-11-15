@@ -33,7 +33,7 @@ class ProductCategoryController extends Controller
         ]);
 
         $category = ProductCategory::create($request->only('name', 'parent_id', 'sort_order'));
-        
+
         // Return JSON response for API calls
         if ($request->expectsJson()) {
             return response()->json([
@@ -42,7 +42,7 @@ class ProductCategoryController extends Controller
                 'data' => $category
             ], 201);
         }
-        
+
         return redirect()->route('admin.products.index')
             ->with('success', 'Tạo nhóm hàng thành công!');
     }
@@ -53,7 +53,7 @@ class ProductCategoryController extends Controller
     public function update(Request $request, $id)
     {
         $category = ProductCategory::findOrFail($id);
-        
+
         $request->validate([
             'name' => 'required|string|max:255|unique:product_categories,name,' . $id,
             'parent_id' => [
@@ -65,7 +65,7 @@ class ProductCategoryController extends Controller
                         if ($value == $id) {
                             $fail('Danh mục không thể là cha của chính nó.');
                         }
-                        
+
                         // Prevent circular reference
                         $parent = ProductCategory::find($value);
                         if ($parent) {
@@ -107,25 +107,25 @@ class ProductCategoryController extends Controller
     public function getCategoriesForModal(Request $request)
     {
         $search = $request->get('search', '');
-        
+
         $categories = ProductCategory::getCategoryTree();
-        
+
         // Convert to array format for Vue component
         $categoriesArray = $this->convertToArray($categories);
-        
+
         return response()->json([
             'success' => true,
             'data' => $categoriesArray
         ]);
     }
-    
+
     /**
      * Convert Collection to array format for Vue component
      */
     private function convertToArray($categories)
     {
         $result = [];
-        
+
         foreach ($categories as $category) {
             $categoryData = [
                 'id' => $category->id,
@@ -133,26 +133,26 @@ class ProductCategoryController extends Controller
                 'parent_id' => $category->parent_id,
                 'children' => $category->children->isNotEmpty() ? $this->convertToArray($category->children) : []
             ];
-            
+
             $result[] = $categoryData;
         }
-        
+
         return $result;
     }
-    
+
     /**
      * Add product counts to categories recursively
      */
     private function addProductCounts($categories, $search = '')
     {
         $result = [];
-        
+
         foreach ($categories as $category) {
             // Filter by search term if provided
-            $matchesSearch = empty($search) || 
-                           stripos($category->name, $search) !== false ||
-                           $this->categoryMatchesSearch($category, $search);
-            
+            $matchesSearch = empty($search) ||
+                stripos($category->name, $search) !== false ||
+                $this->categoryMatchesSearch($category, $search);
+
             if ($matchesSearch || !empty($search)) {
                 $categoryData = [
                     'id' => $category->id,
@@ -160,14 +160,14 @@ class ProductCategoryController extends Controller
                     'parent_id' => $category->parent_id,
                     'children' => $this->addProductCounts($category->children, $search)
                 ];
-                
+
                 $result[] = $categoryData;
             }
         }
-        
+
         return $result;
     }
-    
+
     /**
      * Check if category or any of its children matches search term
      */
@@ -176,13 +176,13 @@ class ProductCategoryController extends Controller
         if (stripos($category->name, $search) !== false) {
             return true;
         }
-        
+
         foreach ($category->children as $child) {
             if ($this->categoryMatchesSearch($child, $search)) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -192,7 +192,7 @@ class ProductCategoryController extends Controller
     public function destroy($id)
     {
         $category = ProductCategory::findOrFail($id);
-        
+
         // Check if category has products (you might want to add this check)
         // $productCount = $category->products()->count();
         // if ($productCount > 0) {

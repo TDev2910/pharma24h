@@ -8,6 +8,7 @@
           @search="handleSearch"
           @file-upload="handleFileUpload"
           @settings="handleSettings"
+          @item-created="handleItemCreated"
         />
       <ItemsTable 
         :items="items"
@@ -44,6 +45,8 @@ import Toolbar from './Components/Toolbar.vue'
 import ItemsTable from './Components/Items-table.vue'
 import SummaryPanel from './Components/Summary-panel.vue'
 import ModalPayment from './Components/Modal-payment.vue'
+import CreateMedicine from './Components/Modals/CreateMedicine.vue'
+import CreateGoods from './Components/Modals/CreateGoods.vue'
 
 export default {
   name: 'CreatePurchaseOrder',
@@ -52,7 +55,9 @@ export default {
     Toolbar,
     ItemsTable,
     SummaryPanel,
-    ModalPayment
+    ModalPayment,
+    CreateMedicine,
+    CreateGoods
   },
 
   setup() {
@@ -240,6 +245,70 @@ export default {
       
       // Emit event to SummaryPanel to update cash_paid
       this.$refs.summaryPanel?.updatePayment(paymentData)
+    },
+
+    handleItemCreated(itemData, productType) {
+      console.log('Item created received:', itemData, productType)
+      
+      let newItem = null
+      let successMessage = ''
+
+      // Transform dữ liệu theo productType
+      if (productType === 'medicine') {
+        newItem = {
+          id: itemData.id,
+          ma_hang: itemData.ma_hang,
+          ten_hang: itemData.ten_thuoc, // Medicine dùng ten_thuoc
+          don_vi_tinh: itemData.don_vi_tinh || '',
+          so_luong: 1, // Số lượng mặc định
+          don_gia: itemData.gia_von || 0, // Giá nhập = gia_von
+          thanh_tien: itemData.gia_von || 0, // thanh_tien = so_luong * don_gia (1 * gia_von)
+          product_type: 'medicine',
+          product_id: itemData.id
+        }
+        successMessage = 'Thuốc đã được thêm vào danh sách'
+      } else if (productType === 'goods') {
+        newItem = {
+          id: itemData.id,
+          ma_hang: itemData.ma_hang,
+          ten_hang: itemData.ten_hang_hoa, // Goods dùng ten_hang_hoa
+          don_vi_tinh: itemData.don_vi_tinh || '',
+          so_luong: 1, // Số lượng mặc định
+          don_gia: itemData.gia_von || 0, // Giá nhập = gia_von
+          thanh_tien: itemData.gia_von || 0, // thanh_tien = so_luong * don_gia (1 * gia_von)
+          product_type: 'goods',
+          product_id: itemData.id
+        }
+        successMessage = 'Vật tư y tế đã được thêm vào danh sách'
+      } else {
+        console.log('Unknown product type:', productType)
+        return
+      }
+
+      console.log('New item to add:', newItem)
+      
+      // Thêm item mới vào mảng items
+      this.items.push(newItem)
+      
+      // Cập nhật tổng tiền
+      const newTotal = this.calculateTotal()
+      this.handleUpdateTotal(newTotal)
+      
+      // Hiển thị thông báo thành công
+      this.toast.add({
+        severity: 'success',
+        summary: 'Thành công',
+        detail: successMessage,
+        life: 3000
+      })
+    },
+
+    calculateTotal() {
+      return this.items.reduce((total, item) => {
+        const quantity = item.so_luong || item.quantity || 0
+        const price = item.don_gia || item.unit_price || 0
+        return total + (quantity * price)
+      }, 0)
     }
 
   },

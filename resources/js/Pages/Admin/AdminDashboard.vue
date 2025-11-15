@@ -546,7 +546,7 @@
         return {
           labels: this.orderRevenueData.labels,
           datasets: [
-            {
+            { 
               label: 'Doanh thu đơn hàng',
               data: this.orderRevenueData.revenues,
               backgroundColor: '#3b82f6'

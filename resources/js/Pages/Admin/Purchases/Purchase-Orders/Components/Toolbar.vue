@@ -5,52 +5,75 @@
       <div class="title-section">
         <h4>Danh sách nhập hàng</h4>
       </div>
-           
+
       <!-- Utility Options -->
       <div class="ultility-options" style="margin-left: auto;">
-        <button 
-          class="btn btn-primary"
-          @click="handleCreate"
-        >
-          <i class="pi pi-plus"></i>
-         Đặt hàng
-        </button>
-        
+        <!-- Dropdown Đặt hàng -->
+        <div class="dropdown" :class="{ 'show': showOrderDropdown }">
+          <button class="btn btn-primary" @click="toggleOrderDropdown">
+            <i class="pi pi-plus"></i>
+            Đặt hàng
+          </button>
+          <div class="dropdown-menu" :class="{ 'show': showOrderDropdown }" v-if="showOrderDropdown">
+            <div class="dropdown-item" @click="openMedicineModal">
+              <i class="pi pi-pill"></i>
+              Thuốc
+            </div>
+            <div class="dropdown-item" @click="openGoodsModal">
+              <i class="pi pi-box"></i>
+              Vật tư y tế
+            </div>
+          </div>
+        </div>
+
         <div class="utility-icons">
-          <button 
-            class="btn" 
-            title="Danh sách"
-            @click="handleList"
-          >
+          <button class="btn" title="Danh sách" @click="handleList">
             <i class="pi pi-list"></i>
           </button>
-          <button 
-            class="btn" 
-            title="Cài đặt"
-            @click="handleSettings"
-          >
+          <button class="btn" title="Cài đặt" @click="handleSettings">
             <i class="pi pi-cog"></i>
           </button>
-          <button 
-            class="btn" 
-            title="Trợ giúp"
-            @click="handleHelp"
-          >
+          <button class="btn" title="Trợ giúp" @click="handleHelp">
             <i class="pi pi-question-circle"></i>
           </button>
         </div>
       </div>
     </div>
+    <!-- Modal CreateMedicine -->
+    <CreateMedicine 
+      v-if="showMedicineModal" 
+      :visible="showMedicineModal" 
+      @close="closeMedicineModal"
+      @created="handleMedicineCreated"
+    />
+    <!-- Modal CreateGoods -->
+    <CreateGoods 
+      v-if="showGoodsModal" 
+      :visible="showGoodsModal" 
+      @close="closeGoodsModal"
+      @created="handleGoodsCreated"
+    />
+    
   </div>
 </template>
 
+
 <script>
+import CreateMedicine from './Modals/CreateMedicine.vue'
+import CreateGoods from './Modals/CreateGoods.vue'
+
 export default {
   name: 'Toolbar',
-  
+  components: {
+    CreateMedicine,
+    CreateGoods
+  },
   data() {
     return {
-      searchQuery: ''
+      searchQuery: '',
+      showOrderDropdown: false,
+      showMedicineModal: false,
+      showGoodsModal: false
     }
   },
 
@@ -63,20 +86,64 @@ export default {
       }, 300)
     },
 
+    toggleOrderDropdown() {
+      this.showOrderDropdown = !this.showOrderDropdown
+    },
+
+    createOrder(type) {
+      this.showOrderDropdown = false
+      // Xử lý logic đặt hàng theo loại (medicine/goods/service)
+      console.log('Đặt hàng:', type)
+      // Ví dụ: mở modal đặt hàng hoặc chuyển trang
+    },
+
+    openMedicineModal() {
+      this.showOrderDropdown = false
+      this.showMedicineModal = true
+      console.log('Opening modal:', this.showMedicineModal) // Debug log
+    },
+
+    closeMedicineModal() {
+      this.showMedicineModal = false
+    },
+
+    handleMedicineCreated(medicineData) {
+      console.log('Medicine created in Toolbar:', medicineData)
+      // Emit event lên parent component (Create.vue) với dữ liệu medicine
+      this.$emit('item-created', medicineData, 'medicine')
+      this.closeMedicineModal()
+    },
+
+    openGoodsModal() {
+      this.showOrderDropdown = false
+      this.showGoodsModal = true
+    },
+
+    closeGoodsModal() {
+      this.showGoodsModal = false
+    },
+
+    handleGoodsCreated(goodsData) {
+      console.log('Goods created in Toolbar:', goodsData)
+      // Emit event lên parent component (Create.vue) với dữ liệu goods
+      this.$emit('item-created', goodsData, 'goods')
+      this.closeGoodsModal()
+    },
+
     handleKeydown(event) {
       // Handle F3 key để focus vào search
       if (event.key === 'F3') {
         event.preventDefault()
         this.$refs.searchInput.focus()
       }
-      
+
       // Handle Enter key để search ngay lập tức
       if (event.key === 'Enter') {
         event.preventDefault()
         clearTimeout(this.searchTimeout)
         this.$emit('search', this.searchQuery)
       }
-      
+
       // Handle Escape key để clear search
       if (event.key === 'Escape') {
         this.searchQuery = ''
@@ -125,7 +192,6 @@ export default {
       }
     })
   },
-
   beforeUnmount() {
     // Cleanup timeout
     if (this.searchTimeout) {
@@ -251,18 +317,72 @@ export default {
   margin-right: 6px;
 }
 
+/* Dropdown Styles */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 150px;
+  margin-top: 4px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #495057;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #007bff;
+}
+
+.dropdown-item i {
+  font-size: 14px;
+  width: 16px;
+}
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .controls-section {
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .search-wrapper {
     max-width: 100%;
     min-width: 100%;
   }
-  
+
   .ultility-options {
     width: 100%;
     justify-content: space-between;
