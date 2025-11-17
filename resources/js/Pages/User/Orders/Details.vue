@@ -26,6 +26,29 @@
         Ngày đặt: {{ formatDateTime(order.created_at) }}
       </div>
 
+      <div class="cancellation-section">
+        <div v-if="cancellationStatusLabel" class="cancellation-status" :class="`cancellation-${order.cancellation_status}`">
+          <i class="fas fa-info-circle"></i>
+          <span>{{ cancellationStatusLabel }}</span>
+        </div>
+        <div v-if="order.cancellation_admin_note && order.cancellation_status === 'rejected'" class="cancellation-note">
+          <strong>Lý do từ chối:</strong> {{ order.cancellation_admin_note }}
+        </div>
+        <div v-if="order.cancellation_reason && order.cancellation_status" class="cancellation-note user-note">
+          <strong>Lý do khách hàng:</strong> {{ order.cancellation_reason }}
+          <p v-if="order.cancellation_user_note">{{ order.cancellation_user_note }}</p>
+        </div>
+        <button
+          v-if="canRequestCancellation"
+          type="button"
+          class="btn cancel-btn"
+          @click="openCancelModal"
+        >
+          <i class="fas fa-ban"></i>
+          Yêu cầu hủy đơn hàng
+        </button>
+      </div>
+
       <!-- Pharmacy Info -->
       <div v-if="order.pickup_location" class="pharmacy-info-section">
         <i class="fas fa-map-marker-alt"></i>
@@ -71,10 +94,58 @@
       <p>Đang tải thông tin đơn hàng...</p>
     </div>
   </div>
+
+  <!-- Cancel Request Modal -->
+  <div v-if="showCancelModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Yêu cầu hủy đơn hàng</h3>
+        <button class="modal-close" @click="closeCancelModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form @submit.prevent="submitCancel">
+          <div class="form-group">
+            <label for="cancel-reason">Lý do hủy *</label>
+            <select id="cancel-reason" v-model="cancelForm.reason" class="form-control">
+              <option value="">-- Chọn lý do --</option>
+              <option value="change_of_mind">Đổi ý</option>
+              <option value="wrong_product">Đặt nhầm sản phẩm</option>
+              <option value="found_better">Tìm được nơi khác phù hợp hơn</option>
+              <option value="other">Khác</option>
+            </select>
+            <small v-if="cancelForm.errors.reason" class="text-error">{{ cancelForm.errors.reason }}</small>
+          </div>
+          <div class="form-group">
+            <label for="cancel-note">Ghi chú thêm</label>
+            <textarea
+              id="cancel-note"
+              v-model="cancelForm.note"
+              class="form-control"
+              rows="4"
+              placeholder="Bạn có thể mô tả chi tiết hơn lý do hủy..."
+            ></textarea>
+            <small v-if="cancelForm.errors.note" class="text-error">{{ cancelForm.errors.note }}</small>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn secondary" @click="closeCancelModal">
+              Đóng
+            </button>
+            <button type="submit" class="btn primary" :disabled="cancelForm.processing">
+              <span v-if="cancelForm.processing">
+                <i class="fas fa-spinner fa-spin"></i> Đang gửi...
+              </span>
+              <span v-else>Gửi yêu cầu</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import { ref, computed } from 'vue'
+import { Link, useForm } from '@inertiajs/vue3'
 
 // Props từ Inertia
 const props = defineProps({
@@ -84,6 +155,46 @@ const props = defineProps({
   }
 })
 
+const showCancelModal = ref(false)
+
+const cancelForm = useForm({
+  reason: '',
+  note: ''
+})
+
+const canRequestCancellation = computed(() => {
+  if (!props.order) return false
+  const status = props.order.order_status || ''
+  return ['pending', 'new'].includes(status) && props.order.cancellation_status !== 'requested'
+})
+
+const cancellationStatusLabel = computed(() => {
+  if (!props.order) return ''
+  const map = {
+    requested: 'Đang chờ Admin xử lý',
+    approved: 'Đã hủy thành công',
+    rejected: 'Yêu cầu hủy bị từ chối'
+  }
+  return map[props.order.cancellation_status] || null
+})
+
+const openCancelModal = () => {
+  showCancelModal.value = true
+}
+
+const closeCancelModal = () => {
+  showCancelModal.value = false
+  cancelForm.reset()
+  cancelForm.clearErrors()
+}
+
+const submitCancel = () => {
+  if (!props.order) return
+  cancelForm.post(`/user/orders/${props.order.id}/request-cancel`, {
+  preserveScroll: true,
+  onSuccess: () => closeCancelModal()
+})
+}
 // Helper functions
 const formatOrderCode = (id) => {
   return String(id).padStart(4, '0')
@@ -323,6 +434,162 @@ const getStatusLabel = (status) => {
 .order-summary-section {
   padding-top: 16px;
   border-top: 1px solid #e9ecef;
+}
+
+.cancellation-section {
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px dashed #f1c40f;
+  border-radius: 8px;
+  background: #fffdf5;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cancellation-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.cancellation-requested {
+  color: #b7791f;
+}
+
+.cancellation-approved {
+  color: #2d6a4f;
+}
+
+.cancellation-rejected {
+  color: #c92a2a;
+}
+
+.cancellation-note {
+  font-size: 14px;
+  color: #495057;
+}
+
+.cancellation-note.user-note p {
+  margin: 4px 0 0;
+}
+
+.btn.cancel-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: #c92a2a;
+  border: 1px solid #c92a2a;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn.cancel-btn:hover {
+  background: #c92a2a;
+  color: #fff;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  color: #6c757d;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn.secondary {
+  background: #f1f3f5;
+  border: none;
+  color: #495057;
+}
+
+.btn.primary {
+  background: #d62828;
+  color: #fff;
+  border: none;
+}
+
+.btn.primary[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.text-error {
+  color: #dc3545;
+  font-size: 12px;
 }
 
 .summary-row {

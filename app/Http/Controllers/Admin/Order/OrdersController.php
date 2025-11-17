@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin\Order;
 use App\Http\Controllers\Controller;
 use App\Services\CheckoutService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Notifications\OrderStatusUpdated;
+use App\Notifications\OrderCancellationProcessed;
 use Inertia\Inertia;
 
 class OrdersController extends Controller
@@ -33,7 +35,11 @@ class OrdersController extends Controller
 
         // Lọc theo trạng thái nếu có
         if ($request->filled('status')) {
-            $query->where('order_status', $request->status);
+            if ($request->status === Order::STATUS['CANCELLATION_REQUESTED']) {
+                $query->cancellationRequested();
+            } else {
+                $query->where('order_status', $request->status);
+            }
         }
 
         // Lọc theo ngày đặt hàng nếu có
@@ -141,7 +147,7 @@ class OrdersController extends Controller
     public function updateStatus(Request $request, string $order, CheckoutService $checkout)
     {
         $request->validate([
-            'status' => 'required|in:pending,complete,confirmed,cancelled',
+            'status' => 'required|in:pending,completed,confirmed,cancelled',
         ]);
         $order = Order::findOrFail($order);
         $oldStatus = $order->order_status;
@@ -243,5 +249,96 @@ class OrdersController extends Controller
         $order = Order::with('items')->findOrFail($orderId);
         $pdf = Pdf::loadView('admin.orders.invoice', compact('order'));
         return $pdf->download('hoa-don-' . $order->order_code . '.pdf');
+    }
+
+    public function approveCancellation(Request $request, Order $order, CheckoutService $checkout)
+    {
+        $data = $request->validate([
+            'admin_note' => 'nullable|string|max:2000',
+        ]);
+
+        if ($order->cancellation_status !== Order::CANCELLATION_STATUS['REQUESTED']) {
+            return back()->withErrors(['error' => 'Đơn này không có yêu cầu hủy hoặc đã xử lý.']);
+        }
+ 
+        try {
+            DB::transaction(function () use ($order, $data, $checkout) {
+                $order = Order::whereKey($order->getKey())->lockForUpdate()->firstOrFail();
+ 
+                if ($order->order_status === Order::STATUS['COMPLETED']) {
+                    $checkout->cancelOrder($order->id); // trả hàng + cập nhật payment_status
+                }
+                else 
+                {
+                    $order->order_status = Order::STATUS['CANCELLED'];
+                    $order->payment_status = 'cancelled';
+                    $order->save();
+                }
+ 
+                $order->cancellation_status = Order::CANCELLATION_STATUS['APPROVED'];
+                $order->cancellation_admin_note = $data['admin_note'] ?? null;
+                $order->cancellation_processed_at = now();
+                $order->cancellation_processed_by = Auth::id();
+                $order->order_status_before_cancellation = null;
+                $order->save();
+            });
+        } catch (\Throwable $e) {
+            return back()->withErrors(['error' => 'Không thể duyệt yêu cầu hủy: ' . $e->getMessage()]);
+        }
+ 
+        $order->refresh();
+
+        if ($order->user) {
+            $order->user->notify(
+                new OrderCancellationProcessed(
+                    $order,
+                    Order::CANCELLATION_STATUS['APPROVED'],
+                    $data['admin_note'] ?? null
+                )
+            );
+        }
+
+        return back()->with('success', 'Đã xác nhận hủy đơn hàng.');
+    }
+    
+    public function rejectCancellation(Request $request, Order $order)
+    {
+        $data = $request->validate([
+            'admin_note' => 'required|string|max:2000',
+        ]);
+
+        if($order->cancellation_status !== Order::CANCELLATION_STATUS['REQUESTED']) {
+            return back()->withErrors(['error' => 'Đơn này không có yêu cầu hủy hoặc đã xử lý.']);
+        }
+     
+        try {
+            DB::transaction(function () use ($order, $data) {
+                $order = Order::whereKey($order->getKey())->lockForUpdate()->firstOrFail();
+ 
+                // Khôi phục trạng thái đơn về pending (hoặc trạng thái cũ nếu bạn lưu lại đâu đó)
+                $order->order_status = $order->order_status_before_cancellation ?? Order::STATUS['PENDING'];
+                $order->cancellation_status = Order::CANCELLATION_STATUS['REJECTED'];
+                $order->cancellation_admin_note = $data['admin_note'];
+                $order->cancellation_processed_at = now();
+                $order->cancellation_processed_by = Auth::id();
+                $order->order_status_before_cancellation = null;
+                $order->save();
+            });
+        } catch (\Throwable $e) {
+            return back()->withErrors(['error' => 'Không thể từ chối yêu cầu hủy: ' . $e->getMessage()]);
+        }
+        $order->refresh();
+
+        if ($order->user) {
+            $order->user->notify(
+                new OrderCancellationProcessed(
+                    $order,
+                    Order::CANCELLATION_STATUS['REJECTED'],
+                    $data['admin_note']
+                )
+            );
+        }
+
+        return back()->with('success', 'Đã từ chối yêu cầu hủy đơn hàng.');
     }
 }

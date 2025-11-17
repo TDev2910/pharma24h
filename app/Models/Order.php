@@ -12,6 +12,22 @@ class Order extends Model
 {
     use HasFactory;
 
+    public const STATUS = [
+        'NEW' => 'new',
+        'PENDING' => 'pending',
+        'CONFIRMED' => 'confirmed',
+        'COMPLETED' => 'completed',
+        'CANCELLED' => 'cancelled',
+        'CANCELLATION_REQUESTED' => 'cancellation_requested',
+    ];
+
+    public const CANCELLATION_STATUS = [
+        'NONE' => null,
+        'REQUESTED' => 'requested',
+        'APPROVED' => 'approved',
+        'REJECTED' => 'rejected',
+    ];
+
     protected $fillable = [
         'user_id',
         'session_id',
@@ -28,9 +44,23 @@ class Order extends Model
         'payment_method',
         'payment_status',
         'order_status',
+        'order_status_before_cancellation',
         'transaction_id',
         'note',
         'order_code',
+        'cancellation_status',
+        'cancellation_reason',
+        'cancellation_user_note',
+        'cancellation_admin_note',
+        'cancellation_requested_at',
+        'cancellation_processed_at',
+        'cancellation_processed_by',
+    ];
+    
+    protected $casts = [
+        'cancellation_requested_at' => 'datetime',
+        'cancellation_processed_at' => 'datetime',
+        'order_status_before_cancellation' => 'string',
     ];
     
     protected static function boot()
@@ -57,6 +87,11 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function processedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'cancellation_processed_by');
     }
 
     public function isPaid(): bool
@@ -98,10 +133,26 @@ class Order extends Model
 
     public function scopeFilterByStatus($query,$status)
     {
-        if($status && in_array($status, ['new','pending','completed','cancelled']))
+        if ($status === self::STATUS['CANCELLATION_REQUESTED']) {
+            return $query->where('cancellation_status', self::CANCELLATION_STATUS['REQUESTED']);
+        }
+
+        if($status && in_array($status, [self::STATUS['NEW'],self::STATUS['PENDING'],self::STATUS['COMPLETED'],self::STATUS['CANCELLED']]))
         {
             return $query->where('order_status',$status);
         }
         return $query;
+    }
+
+    public function scopeCancellationRequested($query)
+    {
+        return $query->where('cancellation_status', self::CANCELLATION_STATUS['REQUESTED']);
+    }
+
+    //kiểm tra đơn hàng có thể hủy không
+    public function isCancellable(): bool
+    {
+        return in_array($this->order_status, [self::STATUS['PENDING'], self::STATUS['NEW']], true)
+            && $this->cancellation_status !== self::CANCELLATION_STATUS['REQUESTED'];
     }
 }

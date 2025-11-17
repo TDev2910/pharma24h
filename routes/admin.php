@@ -124,6 +124,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('orders/{order}/update-status', [OrdersController::class, 'updateStatus'])->name('orders.update-status');
     Route::get('orders/{order}/invoice', [OrdersController::class, 'printInvoice'])->name('orders.invoice');
     Route::post('/orders/{id}/complete', [OrdersController::class, 'markCompleted'])->name('orders.complete');
+    Route::post('orders/{order}/cancellations/approve', [OrdersController::class, 'approveCancellation'])
+        ->name('orders.cancellations.approve');
+    Route::post('orders/{order}/cancellations/reject', [OrdersController::class, 'rejectCancellation'])
+        ->name('orders.cancellations.reject');
+    
 
     // Service Bookings
     Route::prefix('service-bookings')->name('service-bookings.')->group(function () {
@@ -215,7 +220,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('purchase-orders', PruchaseImportController::class)->names('purchase-orders');
     Route::get('generate-import-code', [PruchaseImportController::class, 'generateImportCode'])->name('generate-import-code');
     Route::post('process-excel', [PruchaseImportController::class, 'processExcel'])->name('process-excel');
-
+    Route::post('purchase-orders/{stockImport}/payment', [PruchaseImportController::class, 'payment'])
+        ->name('purchase-orders.payment')
+        ->middleware('auth');
     // Purchase Returns
     // Đặt route export và các route cụ thể trước route resource để tránh xung đột
     Route::get('purchase-returns/export', [PurchaseReturnsController::class, 'export'])->name('purchase-returns.export')->middleware('auth');

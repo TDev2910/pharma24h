@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="handleSubmit" class="card shadow-sm summary-card">
     <div class="card-body d-flex flex-column summary-right">
-      
+
       <!-- Header tìm Ncc + nút thêm -->
       <div class="mb-3">
         <label class="form-label">Nhà cung cấp</label>
@@ -19,34 +19,19 @@
       <div class="mb-3 d-flex align-items-center">
         <label class="form-label mb-0 me-3" style="min-width: 130px;">Mã phiếu nhập</label>
         <div class="input-group">
-          <input 
-            type="text" 
-            v-model="formData.import_code" 
-            class="form-control text-muted" 
-            placeholder="Mã phiếu tự động" 
-            readonly
-          >
-          <button 
-            type="button" 
-            class="btn btn-outline-secondary" 
-            @click="generateCode"
-            :disabled="isGeneratingCode"
-          >
-            <i :class="isGeneratingCode ? 'fas fa-spinner fa-spin' : 'fas fa-sync-alt'"></i> 
+          <input type="text" v-model="formData.import_code" class="form-control text-muted"
+            placeholder="Mã phiếu tự động" readonly>
+          <button type="button" class="btn btn-outline-secondary" @click="generateCode" :disabled="isGeneratingCode">
+            <i :class="isGeneratingCode ? 'fas fa-spinner fa-spin' : 'fas fa-sync-alt'"></i>
             {{ isGeneratingCode ? 'Đang tạo...' : 'Tạo mã' }}
           </button>
         </div>
       </div>
-    
+
       <!-- Ngày đặt hàng -->
       <div class="mb-3 d-flex align-items-center">
         <label class="form-label mb-0 me-3" style="min-width: 130px;">Ngày nhập</label>
-        <input 
-          type="date" 
-          v-model="formData.import_date" 
-          class="form-control" 
-          style="max-width: 200px;"
-        >
+        <input type="date" v-model="formData.import_date" class="form-control" style="max-width: 200px;">
       </div>
 
       <!-- Khu tổng tiền giống mẫu -->
@@ -54,27 +39,15 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
           <div class="d-flex align-items-center gap-2">
             <span class="form-label m-0">Tổng tiền hàng</span>
-            <input 
-              type="number" 
-              v-model="formData.subtotal_raw" 
-              class="form-control form-control-sm text-center" 
-              style="width:64px;background:#f8f9fa;" 
-              min="0"
-              readonly
-            >
+            <input type="number" v-model="formData.subtotal_raw" class="form-control form-control-sm text-center"
+              style="width:64px;background:#f8f9fa;" min="0" readonly>
           </div>
           <span class="fw-bold value">{{ formatCurrency(formData.subtotal_raw) }}</span>
         </div>
         <div class="d-flex justify-content-between align-items-center mb-2">
           <span class="form-label m-0">Giảm giá</span>
-          <input 
-            type="number" 
-            v-model="formData.discount" 
-            class="form-control text-end" 
-            style="width:120px;background:#fff;" 
-            min="0"
-            @input="recalculate"
-          >
+          <input type="number" v-model="formData.discount" class="form-control text-end"
+            style="width:120px;background:#fff;" min="0" @input="recalculate">
         </div>
         <div class="d-flex justify-content-between align-items-center mb-2">
           <span class="form-label m-0">Cần trả nhà cung cấp</span>
@@ -84,23 +57,12 @@
         <div class="mb-1 d-flex justify-content-between align-items-center">
           <div class="d-flex align-items-center gap-2">
             <span class="form-label m-0">Tiền trả nhà cung cấp</span>
-            <button 
-              type="button" 
-              class="btn btn-sm btn-outline-primary" 
-              @click="showPaymentModal"
-              title="Thanh toán"
-            >
+            <button type="button" class="btn btn-sm btn-outline-primary" @click="showPaymentModal" title="Thanh toán">
               <i class="fas fa-credit-card"></i>
             </button>
           </div>
-          <input 
-            type="number" 
-            v-model="formData.cash_paid" 
-            class="form-control text-end" 
-            style="width:120px;" 
-            min="0"
-            @input="recalculate"
-          >
+          <input type="number" v-model="formData.cash_paid" class="form-control text-end" style="width:120px;" min="0"
+            @input="recalculate">
         </div>
 
         <div class="d-flex justify-content-between align-items-center mt-2">
@@ -111,23 +73,18 @@
 
       <!-- Ghi chú -->
       <div class="mb-3 mt-3">
-        <textarea 
-          v-model="formData.note" 
-          rows="3" 
-          class="form-control" 
-          placeholder="Nhập ghi chú..."
-        ></textarea>
+        <textarea v-model="formData.note" rows="3" class="form-control" placeholder="Nhập ghi chú..."></textarea>
       </div>
 
-     <!-- Buttons -->
-     <div class="d-flex justify-content-end gap-2 mt-3">
-       <button type="submit" name="action" value="draft" class="btn btn-primary px-4">
-         <i class="fas fa-save me-1"></i>Lưu tạm
-       </button>
-       <button type="submit" name="action" value="complete" class="btn btn-success px-4">
-         <i class="fas fa-check me-1"></i>Hoàn thành
-       </button>
-     </div>
+      <!-- Buttons -->
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <button type="submit" name="action" value="draft" class="btn btn-primary px-4">
+          <i class="fas fa-save me-1"></i>Lưu tạm
+        </button>
+        <button type="submit" name="action" value="complete" class="btn btn-success px-4">
+          <i class="fas fa-check me-1"></i>Hoàn thành
+        </button>
+      </div>
     </div>
   </form>
 </template>
@@ -135,7 +92,7 @@
 <script>
 export default {
   name: 'SummaryPanel',
-  
+
   props: {
     suppliers: {
       type: Array,
@@ -168,7 +125,7 @@ export default {
   methods: {
     generateCode() {
       this.isGeneratingCode = true
-      
+
       // Gọi API để tạo mã từ server
       fetch('/admin/generate-import-code')
         .then(response => response.json())
@@ -192,7 +149,7 @@ export default {
       const subtotal = Math.max(this.formData.subtotal_raw, 0)
       const discount = Math.max(this.formData.discount, 0)
       const cashPaid = Math.max(this.formData.cash_paid, 0)
-      
+
       this.formData.payable = Math.max(subtotal - discount, 0)
       this.formData.debt = cashPaid ? (cashPaid * -1) : (this.formData.payable * -1)
     },
@@ -204,7 +161,7 @@ export default {
 
     handleSubmit(event) {
       const action = event.submitter.value
-      
+
       // Emit event với form data
       this.$emit('form-submit', {
         ...this.formData,
@@ -242,7 +199,7 @@ export default {
   mounted() {
     // Tự động tạo mã khi component mount
     this.generateCode()
-    
+
     // Lắng nghe event từ modal payment
     this.$parent.$on('payment-confirmed', (paymentData) => {
       this.updatePayment(paymentData)

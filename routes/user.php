@@ -14,6 +14,9 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     // Other Features
     Route::get('/orders', [DashboardController::class, 'orders'])->name('orders');
     Route::get('/orders/{orderId}', [DashboardController::class, 'orderDetails'])->name('orders.details');
+    Route::post('/orders/{order}/request-cancel', [DashboardController::class, 'requestCancel'])
+        ->name('orders.request-cancel');
+    
     Route::get('/notifications', [DashboardController::class, 'notifications'])->name('notifications');
     Route::get('/notifications/unread-count', [DashboardController::class, 'getUnreadCount'])->name('notifications.unread-count');
     Route::post('/notifications/{notificationId}/read', [DashboardController::class, 'markAsRead'])->name('notifications.mark-read');

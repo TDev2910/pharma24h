@@ -4,32 +4,18 @@
     <div class="row g-3">
       <!-- Products table - Left side (main content) -->
       <div class="col-lg-8">
-        <Toolbar 
-          @search="handleSearch"
-          @file-upload="handleFileUpload"
-          @settings="handleSettings"
-        />
-        <ItemTable 
-          @update-total="handleUpdateTotal"
-          @update-items="handleUpdateItems"
-        />
+        <Toolbar @search="handleSearch" @file-upload="handleFileUpload" @settings="handleSettings" />
+        <ItemTable @update-total="handleUpdateTotal" @update-items="handleUpdateItems" />
       </div>
-      
+
       <!-- Form details - Right sidebar -->
       <div class="col-lg-4">
-        <SummaryPanel 
-          :suppliers="suppliers"
-          :total-amount="totalAmount"
-          @form-submit="handleFormSubmit"
-        />
+        <SummaryPanel :suppliers="suppliers" :total-amount="totalAmount" @form-submit="handleFormSubmit" />
       </div>
     </div>
-    
+
     <!-- Modal Payment -->
-    <ModalPayment 
-      :payable-amount="payableAmount"
-      @payment-confirmed="handlePaymentConfirmed"
-    />
+    <ModalPayment :payable-amount="payableAmount" @payment-confirmed="handlePaymentConfirmed" />
   </div>
 </template>
 
@@ -42,7 +28,7 @@ import ModalPayment from './Components/Modal-payment.vue'
 
 export default {
   name: 'CreatePurchaseReturn',
-  
+
   components: {
     Toolbar,
     ItemTable,
@@ -54,7 +40,7 @@ export default {
     const toast = useToast()
     return { toast }
   },
-  
+
   props: {
     suppliers: {
       type: Array,
@@ -69,7 +55,7 @@ export default {
       default: () => []
     }
   },
-  
+
   data() {
     return {
       totalAmount: 0,
@@ -136,7 +122,7 @@ export default {
             discount: 0, // Individual item discount
             note: item.note || null
           }
-          
+
           // Validate each item
           if (!processedItem.product_id) {
             throw new Error(`Sản phẩm "${item.ten_hang || item.ma_hang}" không có ID`)
@@ -147,7 +133,7 @@ export default {
           if (!processedItem.unit_price || processedItem.unit_price <= 0) {
             throw new Error(`Sản phẩm "${item.ten_hang || item.ma_hang}" có đơn giá không hợp lệ`)
           }
-          
+
           return processedItem
         })
 
@@ -178,17 +164,17 @@ export default {
             detail: 'Phiếu trả hàng đã được lưu thành công',
             life: 3000
           })
-            
+
           // Redirect to dashboard after successful save
           setTimeout(() => {
             window.location.href = '/admin/purchase-returns'
           }, 1500)
         } else {
           let errorMessage = 'Có lỗi xảy ra khi lưu phiếu trả hàng'
-          
+
           try {
             const errorData = await response.json()
-            
+
             if (errorData.message) {
               errorMessage = errorData.message
             } else if (errorData.errors) {
@@ -199,7 +185,7 @@ export default {
           } catch (e) {
             errorMessage = `HTTP ${response.status}: ${response.statusText}`
           }
-          
+
           this.toast.add({
             severity: 'error',
             summary: 'Lỗi',
@@ -251,11 +237,11 @@ export default {
   .create-purchase-return-page {
     padding: 10px;
   }
-  
+
   .row.g-3 {
     margin: 0;
   }
-  
+
   .col-lg-8,
   .col-lg-4 {
     padding: 0;

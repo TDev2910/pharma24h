@@ -5,55 +5,33 @@
       <div class="title-section">
         <h4>Danh sách trả hàng</h4>
       </div>
-      
+
       <!-- Search Section -->
       <div class="search-wrapper">
         <div class="input-group">
           <span class="input-group-text">
             <i class="fas fa-search"></i>
           </span>
-          <input 
-            type="text" 
-            class="form-control" 
-            placeholder="Tìm hàng hóa theo mã hoặc tên (F3)"
-            v-model="searchQuery"
-            @input="handleSearch"
-            @keydown="handleKeydown"
-            ref="searchInput"
-          >
+          <input type="text" class="form-control" placeholder="Tìm hàng hóa theo mã hoặc tên (F3)" v-model="searchQuery"
+            @input="handleSearch" @keydown="handleKeydown" ref="searchInput">
         </div>
       </div>
-      
+
       <!-- Utility Options -->
       <div class="ultility-options">
-        <button 
-          class="btn btn-primary"
-          @click="handleCreate"
-        >
+        <button class="btn btn-primary" @click="handleCreate">
           <i class="pi pi-plus"></i>
           Trả hàng
         </button>
-        
+
         <div class="utility-icons">
-          <button 
-            class="btn" 
-            title="Danh sách"
-            @click="handleList"
-          >
+          <button class="btn" title="Danh sách" @click="handleList">
             <i class="pi pi-list"></i>
           </button>
-          <button 
-            class="btn" 
-            title="Cài đặt"
-            @click="handleSettings"
-          >
+          <button class="btn" title="Cài đặt" @click="handleSettings">
             <i class="pi pi-cog"></i>
           </button>
-          <button 
-            class="btn" 
-            title="Trợ giúp"
-            @click="handleHelp"
-          >
+          <button class="btn" title="Trợ giúp" @click="handleHelp">
             <i class="pi pi-question-circle"></i>
           </button>
         </div>
@@ -65,7 +43,7 @@
 <script>
 export default {
   name: 'Toolbar',
-  
+
   data() {
     return {
       searchQuery: ''
@@ -87,14 +65,14 @@ export default {
         event.preventDefault()
         this.$refs.searchInput.focus()
       }
-      
+
       // Handle Enter key để search ngay lập tức
       if (event.key === 'Enter') {
         event.preventDefault()
         clearTimeout(this.searchTimeout)
         this.$emit('search', this.searchQuery)
       }
-      
+
       // Handle Escape key để clear search
       if (event.key === 'Escape') {
         this.searchQuery = ''
@@ -275,12 +253,12 @@ export default {
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .search-wrapper {
     max-width: 100%;
     min-width: 100%;
   }
-  
+
   .ultility-options {
     width: 100%;
     justify-content: space-between;

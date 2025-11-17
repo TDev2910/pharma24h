@@ -171,22 +171,71 @@
           </div>
         </div>
       </div>
+
+      <!-- Thông tin yêu cầu hủy -->
+      <div v-if="order.cancellation_status" class="cancellation-info mt-4">
+        <!-- Đối với status cancellation_status là requested thì hiển thị thông tin yêu cầu hủy -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="pi pi-info-circle text-warning"></i>
+          <h6 class="fw-bold mb-0">Yêu cầu hủy đơn hàng</h6>
+        </div>
+        <p v-if="order.cancellation_reason">
+          <strong>Lý do:</strong>
+          {{ getCancellationReasonText(order.cancellation_reason) }}
+        </p>
+        <p v-if="order.cancellation_user_note">
+          <strong>Ghi chú của khách:</strong>
+          {{ order.cancellation_user_note }}
+        </p>
+        <p v-if="order.cancellation_requested_at">
+          <strong>Thời gian yêu cầu:</strong>
+          {{ formatDate(order.cancellation_requested_at) }}
+        </p>
+        <p v-if="order.cancellation_processed_at">
+          <strong>Thời gian xử lý:</strong>
+          {{ formatDate(order.cancellation_processed_at) }}
+        </p>
+      </div>
     </div>
 
     <template #footer>
-      <div class="flex justify-end gap-2">
-        <Button 
-          label="Đóng" 
-          severity="secondary" 
-          @click="closeModal"
-        />
-        <Button 
-          v-if="order"
-          label="In hóa đơn" 
-          icon="pi pi-print"
-          severity="success"
-          @click="printInvoice"
-        />
+      <div class="w-100 d-flex flex-column gap-2">
+        <textarea
+          v-if="order?.cancellation_status === 'requested'"
+          v-model="adminNote"
+          class="form-control"
+          rows="2"
+          placeholder="Nhập ghi chú cho khách hàng (bắt buộc khi từ chối)"
+        ></textarea>
+
+        <div class="d-flex justify-content-end gap-2">
+          <Button 
+            label="Đóng" 
+            severity="secondary" 
+            @click="closeModal"
+          />
+          <Button 
+            v-if="order"
+            label="In hóa đơn" 
+            icon="pi pi-print"
+            severity="success"
+            @click="printInvoice"
+          />
+          <Button
+            v-if="order?.cancellation_status === 'requested'"
+            label="Từ chối hủy"
+            severity="warning"
+            :loading="processing"
+            @click="processCancellation('reject')"
+          />
+          <Button
+            v-if="order?.cancellation_status === 'requested'"
+            label="Xác nhận hủy"
+            severity="danger"
+            :loading="processing"
+            @click="processCancellation('approve')"
+          />
+        </div>
       </div>
     </template>
   </Dialog>
@@ -217,13 +266,15 @@ export default {
       default: null
     }
   },
-  emits: ['close'],
+  emits: ['close', 'updated', 'alert'],
   data() {
     return {
       loading: false,
       error: null,
       order: null,
-      items: []
+      items: [],
+      adminNote: '',
+      processing: false
     }
   },
   computed: {
@@ -270,6 +321,7 @@ export default {
         if (response.data?.success) {
           this.order = response.data.order;
           this.items = response.data.items || [];
+          this.adminNote = this.order?.cancellation_admin_note || '';
         } else {
           this.error = 'Không thể tải dữ liệu đơn hàng. Vui lòng thử lại!';
         }
@@ -290,6 +342,8 @@ export default {
       this.items = [];
       this.error = null;
       this.loading = false;
+      this.adminNote = '';
+      this.processing = false;
     },
     
     printInvoice() {
@@ -324,6 +378,8 @@ export default {
         return 'badge bg-success';
       } else if (s === 'cancelled') {
         return 'badge bg-danger';
+      } else if (s === 'cancellation_requested') {
+        return 'badge bg-danger';
       }
       return 'badge bg-secondary';
     },
@@ -336,6 +392,8 @@ export default {
         return 'Hoàn thành';
       } else if (s === 'cancelled') {
         return 'Đã hủy';
+      } else if (s === 'cancellation_requested') {
+        return 'Yêu cầu hủy';
       }
       return 'Không xác định';
     },
@@ -399,6 +457,62 @@ export default {
       }
       return method || 'Không xác định';
     },
+
+    async processCancellation(action) {
+      if (!this.order?.id) return;
+      if (action === 'reject' && !this.adminNote.trim()) {
+        this.$emit('alert', {
+          type: 'warning',
+          message: 'Vui lòng nhập ghi chú khi từ chối yêu cầu hủy.'
+        });
+        return;
+      }
+
+      try {
+        this.processing = true;
+        await axios.post(`/admin/orders/${this.order.id}/cancellations/${action}`, {
+          admin_note: this.adminNote
+        });
+        this.$emit('updated');
+        this.closeModal();
+      } catch (error) {
+        console.error('processCancellation error:', error);
+        this.$emit('alert', {
+          type: 'error',
+          message: error.response?.data?.message || 'Không thể xử lý yêu cầu hủy.'
+        });
+      } finally {
+        this.processing = false;
+      }
+    },
+
+    getCancellationBadgeClass(status) {
+      const map = {
+        requested: 'badge bg-warning text-dark',
+        approved: 'badge bg-success',
+        rejected: 'badge bg-danger'
+      };
+      return map[status] || 'badge bg-secondary';
+    },
+
+    getCancellationStatusText(status) {
+      const map = {
+        requested: 'Đang chờ Admin xử lý',
+        approved: 'Đã chấp nhận hủy',
+        rejected: 'Đã từ chối hủy'
+      };
+      return map[status] || 'Không xác định';
+    },
+
+    getCancellationReasonText(reason) {
+      const map = {
+        change_of_mind: 'Đổi ý',
+        wrong_product: 'Đặt nhầm sản phẩm',
+        found_better: 'Tìm nơi khác phù hợp hơn',
+        other: 'Khác'
+      };
+      return map[reason] || reason || 'Không xác định';
+    },
     
     getFullAddress() {
       if (!this.order) return '';
@@ -430,6 +544,13 @@ export default {
   min-width: 140px;
   display: inline-block;
   color: #495057;
+}
+
+.cancellation-info {
+  border: 1px dashed #f4c430;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fffdf5;
 }
 
 .badge {

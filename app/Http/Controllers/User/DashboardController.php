@@ -6,10 +6,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use App\Models\Medicine;
 use App\Models\Goods;
 use App\Models\ServiceBooking;
+use App\Models\Order;
+use App\Models\User;
+use App\Notifications\OrderCancellationRequested;
 use Inertia\Inertia;
 
 
@@ -146,6 +151,58 @@ class DashboardController extends Controller
             'order' => $order,
             'pageTitle' => 'Chi tiết đơn hàng',
         ]);
+    }
+
+    //yêu cầu hủy đơn hàng
+    public function requestCancel(Request $request, Order $order)
+    {
+        $user = Auth::user();
+
+        if ($order->user_id !== $user->id) {
+            abort(403, 'Bạn không có quyền thao tác trên đơn hàng này.');
+        }
+
+        $data = $request->validate([
+            'reason' => 'required|string|max:255',
+            'note' => 'nullable|string|max:2000',
+        ]);
+
+        try {
+            DB::transaction(function () use ($order, $data) {
+                $order = Order::whereKey($order->getKey())->lockForUpdate()->firstOrFail();
+                //sử dụng lockForUpdate đảm bảo không có ai đồng thời thay đổi trạng thái
+                if (! $order->isCancellable()) {
+                    abort(422, 'Đơn hàng không thể yêu cầu hủy.');
+                }
+
+                if (!$order->order_status_before_cancellation) {
+                    $order->order_status_before_cancellation = $order->order_status;
+                }
+
+                $order->order_status = Order::STATUS['CANCELLATION_REQUESTED'];
+                $order->cancellation_status = Order::CANCELLATION_STATUS['REQUESTED'];
+                $order->cancellation_reason = $data['reason'];
+                $order->cancellation_user_note = $data['note'] ?? null;
+                $order->cancellation_requested_at = now();
+                $order->cancellation_processed_at = null;
+                $order->cancellation_processed_by = null;
+                $order->cancellation_admin_note = null;
+                $order->save();
+            });
+        } catch (\Throwable $e) {
+            return back()->withErrors([
+                'error' => 'Không thể gửi yêu cầu hủy: ' . $e->getMessage()
+            ]);
+        }
+
+        $order->refresh();
+
+        $admins = User::where('role', 'admin')->get();
+        if ($admins->isNotEmpty()) {
+            Notification::send($admins, new OrderCancellationRequested($order));
+        }
+
+        return back()->with('success', 'Đã gửi yêu cầu hủy. Vui lòng chờ Admin xử lý.');
     }
 
     /**

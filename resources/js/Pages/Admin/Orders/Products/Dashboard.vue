@@ -116,6 +116,7 @@
                 <option value="pending">Đang chờ xử lý</option>
                 <option value="confirmed">Đã xác nhận</option>
                 <option value="completed">Hoàn thành</option>
+                <option value="cancellation_requested">Yêu cầu hủy</option>
                 <option value="cancelled">Đã hủy</option>
               </select>
             </div>
@@ -373,6 +374,8 @@ export default {
         return 'badge bg-success';
       } else if (s === 'cancelled') {
         return 'badge bg-danger';
+      } else if (s === 'cancellation_requested') {
+        return 'badge bg-danger';
       }
       return 'badge bg-secondary';
     },
@@ -387,6 +390,8 @@ export default {
         return 'Hoàn thành';
       } else if (s === 'cancelled') {
         return 'Đã hủy';
+      } else if (s === 'cancellation_requested') {
+        return 'Yêu cầu hủy';
       }
       return 'Khác';
     },

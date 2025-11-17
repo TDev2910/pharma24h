@@ -1,14 +1,7 @@
 <template>
   <!-- Modal: Thanh toán nhà cung cấp -->
-  <div 
-    v-if="showModal" 
-    class="modal fade show" 
-    :class="{ 'd-block': showModal }"
-    tabindex="-1" 
-    aria-labelledby="paySupplierLabel" 
-    aria-hidden="false"
-    style="background-color: rgba(0,0,0,0.5);"
-  >
+  <div v-if="showModal" class="modal fade show" :class="{ 'd-block': showModal }" tabindex="-1"
+    aria-labelledby="paySupplierLabel" aria-hidden="false" style="background-color: rgba(0,0,0,0.5);">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -18,37 +11,20 @@
         <div class="modal-body">
           <div class="mb-3">
             <label class="form-label">Thanh toán</label>
-            <input 
-              type="number" 
-              class="form-control form-control-lg text-end" 
-              v-model="paymentAmount"
-              min="0"
-              @input="updatePaymentDisplay"
-            >
+            <input type="number" class="form-control form-control-lg text-end" v-model="paymentAmount" min="0"
+              @input="updatePaymentDisplay">
           </div>
           <div class="d-flex gap-2 mb-3">
-            <button 
-              type="button" 
-              class="btn btn-outline-primary flex-fill pay-method" 
-              :class="{ active: selectedMethod === 'cash' }"
-              @click="selectPaymentMethod('cash')"
-            >
+            <button type="button" class="btn btn-outline-primary flex-fill pay-method"
+              :class="{ active: selectedMethod === 'cash' }" @click="selectPaymentMethod('cash')">
               Tiền mặt
             </button>
-            <button 
-              type="button" 
-              class="btn btn-outline-primary flex-fill pay-method" 
-              :class="{ active: selectedMethod === 'card' }"
-              @click="selectPaymentMethod('card')"
-            >
+            <button type="button" class="btn btn-outline-primary flex-fill pay-method"
+              :class="{ active: selectedMethod === 'card' }" @click="selectPaymentMethod('card')">
               Thẻ
             </button>
-            <button 
-              type="button" 
-              class="btn btn-outline-primary flex-fill pay-method" 
-              :class="{ active: selectedMethod === 'transfer' }"
-              @click="selectPaymentMethod('transfer')"
-            >
+            <button type="button" class="btn btn-outline-primary flex-fill pay-method"
+              :class="{ active: selectedMethod === 'transfer' }" @click="selectPaymentMethod('transfer')">
               Chuyển khoản
             </button>
           </div>
@@ -73,7 +49,7 @@
 <script>
 export default {
   name: 'ModalPayment',
-  
+
   props: {
     payableAmount: {
       type: Number,
@@ -119,7 +95,7 @@ export default {
         amount: this.paymentAmount,
         method: this.selectedMethod
       })
-      
+
       // Đóng modal
       this.closeModal()
     },
@@ -144,7 +120,7 @@ export default {
     payableAmount(newVal) {
       this.paymentAmount = newVal
     },
-    
+
     show(newVal) {
       if (newVal) {
         this.resetModal()
@@ -155,13 +131,13 @@ export default {
 </script>
 
 <style scoped>
-.modal-backdrop { 
-  z-index: 9998 !important; 
+.modal-backdrop {
+  z-index: 9998 !important;
 }
 
-.modal { 
-  z-index: 9999 !important; 
-  pointer-events: auto !important; 
+.modal {
+  z-index: 9999 !important;
+  pointer-events: auto !important;
 }
 
 .pay-method.active {
