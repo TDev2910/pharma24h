@@ -50,7 +50,27 @@ class CheckoutController extends Controller
         }
 
         try {
-            $order = $this->checkoutService->createOrder($request->validated());
+            // Lấy tất cả validated data và thêm district_id, ward_code nếu có
+            $orderData = $request->validated();
+            
+            // Thêm district_id và ward_code nếu có (có thể không có trong validated nếu validation fail)
+            if ($request->has('district_id')) {
+                $orderData['district_id'] = $request->input('district_id');
+            }
+            if ($request->has('ward_code')) {
+                $orderData['ward_code'] = $request->input('ward_code');
+            }
+            
+            // Log để debug
+            \Log::info('Checkout Request Data', [
+                'delivery_method' => $orderData['delivery_method'] ?? null,
+                'district_id' => $orderData['district_id'] ?? null,
+                'ward_code' => $orderData['ward_code'] ?? null,
+                'district' => $orderData['district'] ?? null,
+                'ward' => $orderData['ward'] ?? null,
+            ]);
+            
+            $order = $this->checkoutService->createOrder($orderData);
 
             if ($request->payment_method === 'vnpay') {
                 return redirect()->route('payment.vnpay.checkout', ['order_id' => $order->id]);

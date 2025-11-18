@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Store\CartController;
 use App\Http\Controllers\Store\CheckoutController;
 use App\Http\Controllers\Store\PaymentController;
+use App\Http\Controllers\Admin\Order\GHNController;
 
 //giỏ hàng
 Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
@@ -22,4 +23,13 @@ Route::prefix('payment')->name('payment.')->group(function () {
         Route::get('/return', [PaymentController::class, 'vnpayReturn'])->name('return');
         Route::post('/ipn', [PaymentController::class, 'vnpayIpn'])->name('ipn');
     });
+});
+
+// GHN API routes (public for checkout form)
+Route::prefix('ghn')->name('ghn.')->group(function () {
+    Route::get('provinces', [GHNController::class, 'getProvinces'])->name('provinces');
+    Route::post('districts', [GHNController::class, 'getDistricts'])->name('districts');
+    Route::post('wards', [GHNController::class, 'getWards'])->name('wards');
+    Route::post('map-address', [GHNController::class, 'mapAddressToGHN'])->name('map-address');
+    Route::get('test', [GHNController::class, 'testConnection'])->name('test');
 });

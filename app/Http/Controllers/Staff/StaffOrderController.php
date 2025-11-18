@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Services\CheckoutService;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -243,4 +241,5 @@ class StaffOrderController extends Controller
         $pdf = Pdf::loadView('staff.orders.invoice', compact('order'));
         return $pdf->download('hoa-don-' . $order->order_code . '.pdf');
     }
+
 }

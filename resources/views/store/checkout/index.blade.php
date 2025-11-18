@@ -107,6 +107,10 @@
                                         </div>
                                     </div>
                                     
+                                    <!-- Hidden fields để lưu district_id và ward_code từ GHN -->
+                                    <input type="hidden" id="district_id" name="district_id" value="{{ old('district_id') }}">
+                                    <input type="hidden" id="ward_code" name="ward_code" value="{{ old('ward_code') }}">
+                                    
                                     <div class="mb-3">
                                         <label for="shipping_address" class="form-label">Địa chỉ cụ thể <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control @error('shipping_address') is-invalid @enderror" 
@@ -294,12 +298,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // API địa chỉ
+    // API địa chỉ từ provinces.open-api.vn (giống Create.vue)
     async function loadProvinces() {
         try {
-            const response = await fetch('https://provinces.open-api.vn/api/p/');
+            const response = await fetch('https://provinces.open-api.vn/api/?depth=1');
             const provinces = await response.json();
             const provinceSelect = document.getElementById('province');
+            
+            provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
             
             provinces.forEach(province => {
                 const option = document.createElement('option');
@@ -326,26 +332,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Lỗi khi lấy danh sách tỉnh/thành phố:', error);
+            alert('Không thể tải danh sách tỉnh/thành phố. Vui lòng thử lại.');
         }
     }
     
-    // Hàm lấy danh sách quận/huyện theo tỉnh/thành phố
+    // Hàm lấy danh sách quận/huyện từ provinces.open-api.vn
     async function loadDistricts(provinceCode) {
         try {
             const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
             const data = await response.json();
             const districtSelect = document.getElementById('district');
             
-            // Xóa các option cũ
             districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
             
-            data.districts.forEach(district => {
-                const option = document.createElement('option');
-                option.value = district.name;
-                option.dataset.code = district.code;
-                option.textContent = district.name;
-                districtSelect.appendChild(option);
-            });
+            if (data.districts && Array.isArray(data.districts)) {
+                data.districts.forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district.name;
+                    option.dataset.code = district.code;
+                    option.textContent = district.name;
+                    districtSelect.appendChild(option);
+                });
+            }
             
             // Chọn lại district đã lưu nếu có
             const savedDistrict = "{{ old('district') }}";
@@ -364,25 +372,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Lỗi khi lấy danh sách quận/huyện:', error);
+            alert('Không thể tải danh sách quận/huyện. Vui lòng thử lại.');
         }
     }
     
-    // Hàm lấy danh sách phường/xã theo quận/huyện
+    // Hàm lấy danh sách phường/xã từ provinces.open-api.vn
     async function loadWards(districtCode) {
         try {
             const response = await fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
             const data = await response.json();
             const wardSelect = document.getElementById('ward');
             
-            // Xóa các option cũ
             wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
             
-            data.wards.forEach(ward => {
-                const option = document.createElement('option');
-                option.value = ward.name;
-                option.textContent = ward.name;
-                wardSelect.appendChild(option);
-            });
+            if (data.wards && Array.isArray(data.wards)) {
+                data.wards.forEach(ward => {
+                    const option = document.createElement('option');
+                    option.value = ward.name;
+                    option.dataset.code = ward.code;
+                    option.textContent = ward.name;
+                    wardSelect.appendChild(option);
+                });
+            }
             
             // Chọn lại ward đã lưu nếu có
             const savedWard = "{{ old('ward') }}";
@@ -397,6 +408,60 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Lỗi khi lấy danh sách phường/xã:', error);
+            alert('Không thể tải danh sách phường/xã. Vui lòng thử lại.');
+        }
+    }
+    
+    // Hàm map địa chỉ sang GHN ID (gọi khi user chọn ward)
+    async function mapToGHNIds(provinceName, districtName, wardName) {
+        try {
+            // Gọi API backend để map tên địa chỉ sang GHN ID
+            const response = await fetch('{{ route("ghn.map-address") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    province: provinceName,
+                    district: districtName,
+                    ward: wardName
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (!response.ok) {
+                const errorMessage = result.message || `HTTP error! status: ${response.status}`;
+                console.error('GHN Map Address Error:', {
+                    status: response.status,
+                    message: errorMessage,
+                    result: result
+                });
+                throw new Error(errorMessage);
+            }
+            
+            if (result.success && result.data) {
+                // Lưu district_id và ward_code vào hidden fields
+                if (result.data.district_id) {
+                    document.getElementById('district_id').value = result.data.district_id;
+                    console.log('✅ Đã lưu district_id:', result.data.district_id);
+                }
+                if (result.data.ward_code) {
+                    document.getElementById('ward_code').value = result.data.ward_code;
+                    console.log('✅ Đã lưu ward_code:', result.data.ward_code);
+                }
+                return true;
+            } else {
+                const errorMessage = result.message || 'Không thể map địa chỉ sang GHN ID';
+                console.error('GHN Map Address Failed:', result);
+                throw new Error(errorMessage);
+            }
+        } catch (error) {
+            console.error('Lỗi khi map địa chỉ sang GHN ID:', error);
+            throw error; // Throw error để caller có thể xử lý
         }
     }
     
@@ -410,6 +475,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (provinceCode) {
             loadDistricts(provinceCode);
         }
+        // Reset district và ward
+        document.getElementById('district_id').value = '';
+        document.getElementById('ward_code').value = '';
     });
     
     // Sự kiện khi chọn quận/huyện
@@ -419,10 +487,28 @@ document.addEventListener('DOMContentLoaded', function() {
         if (districtCode) {
             loadWards(districtCode);
         }
+        // Reset ward_code
+        document.getElementById('ward_code').value = '';
+    });
+    
+    // Sự kiện khi chọn phường/xã - Map sang GHN ID
+    document.getElementById('ward').addEventListener('change', function() {
+        const provinceSelect = document.getElementById('province');
+        const districtSelect = document.getElementById('district');
+        const wardSelect = document.getElementById('ward');
+        
+        const provinceName = provinceSelect.options[provinceSelect.selectedIndex]?.value;
+        const districtName = districtSelect.options[districtSelect.selectedIndex]?.value;
+        const wardName = wardSelect.options[wardSelect.selectedIndex]?.value;
+        
+        if (provinceName && districtName && wardName) {
+            // Map sang GHN ID
+            mapToGHNIds(provinceName, districtName, wardName);
+        }
     });
     
     // Form Validation
-    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
         const deliveryMethod = document.querySelector('input[name="delivery_method"]:checked').value;
         let isValid = true;
         
@@ -443,6 +529,87 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!isValid) {
                 e.preventDefault();
                 alert('Vui lòng điền đầy đủ thông tin giao hàng');
+                return;
+            }
+            
+            // Kiểm tra và map district_id, ward_code nếu chưa có
+            const districtId = document.getElementById('district_id').value;
+            const wardCode = document.getElementById('ward_code').value;
+            
+            if (!districtId || !wardCode) {
+                e.preventDefault();
+                
+                // Lấy thông tin địa chỉ đã chọn
+                const provinceSelect = document.getElementById('province');
+                const districtSelect = document.getElementById('district');
+                const wardSelect = document.getElementById('ward');
+                
+                const provinceName = provinceSelect.options[provinceSelect.selectedIndex]?.value;
+                const districtName = districtSelect.options[districtSelect.selectedIndex]?.value;
+                const wardName = wardSelect.options[wardSelect.selectedIndex]?.value;
+                
+                if (provinceName && districtName && wardName) {
+                    // Hiển thị thông báo đang xử lý
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+                    
+                    try {
+                        // Map địa chỉ sang GHN ID
+                        const mapped = await mapToGHNIds(provinceName, districtName, wardName);
+                        
+                        if (mapped) {
+                            // Kiểm tra lại sau khi map
+                            const newDistrictId = document.getElementById('district_id').value;
+                            const newWardCode = document.getElementById('ward_code').value;
+                            
+                            if (newDistrictId && newWardCode) {
+                                // Log để debug
+                                console.log('✅ Đã map thành công:', {
+                                    district_id: newDistrictId,
+                                    ward_code: newWardCode
+                                });
+                                
+                                // Submit form lại
+                                submitBtn.innerHTML = originalText;
+                                submitBtn.disabled = false;
+                                
+                                // Đảm bảo hidden fields có giá trị trước khi submit
+                                const districtIdField = document.getElementById('district_id');
+                                const wardCodeField = document.getElementById('ward_code');
+                                
+                                if (!districtIdField.value || !wardCodeField.value) {
+                                    console.error('❌ Hidden fields không có giá trị!', {
+                                        district_id: districtIdField.value,
+                                        ward_code: wardCodeField.value
+                                    });
+                                    alert('Có lỗi xảy ra. Vui lòng thử lại.');
+                                    return;
+                                }
+                                
+                                console.log('📤 Đang submit form với:', {
+                                    district_id: districtIdField.value,
+                                    ward_code: wardCodeField.value
+                                });
+                                
+                                this.submit();
+                            } else {
+                                submitBtn.innerHTML = originalText;
+                                submitBtn.disabled = false;
+                                alert('Không thể lấy thông tin địa chỉ từ GHN. Vui lòng thử lại hoặc liên hệ hỗ trợ.');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error mapping address:', error);
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        const errorMessage = error.message || 'Có lỗi xảy ra khi xử lý địa chỉ. Vui lòng thử lại.';
+                        alert(errorMessage);
+                    }
+                } else {
+                    alert('Vui lòng chọn đầy đủ tỉnh/thành phố, quận/huyện và phường/xã.');
+                }
                 return;
             }
         } else {

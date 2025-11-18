@@ -12,6 +12,7 @@ class Order extends Model
 {
     use HasFactory;
 
+    //chứa các trạng thái đơn hàng
     public const STATUS = [
         'NEW' => 'new',
         'PENDING' => 'pending',
@@ -21,6 +22,7 @@ class Order extends Model
         'CANCELLATION_REQUESTED' => 'cancellation_requested',
     ];
 
+    //chứa các trạng thái hủy đơn hàng
     public const CANCELLATION_STATUS = [
         'NONE' => null,
         'REQUESTED' => 'requested',
@@ -39,7 +41,9 @@ class Order extends Model
         'shipping_address',
         'province',
         'district',
+        'district_id',
         'ward',
+        'ward_code',
         'total_amount',
         'payment_method',
         'payment_status',
@@ -55,12 +59,24 @@ class Order extends Model
         'cancellation_requested_at',
         'cancellation_processed_at',
         'cancellation_processed_by',
+        'ghn_order_code',
+        'ghn_status',
+        'ghn_fee',
+        'ghn_expected_delivery_time',
+        'ghn_tracking_url',
+        'ghn_cod_amount',
+        'ghn_shipper_name',
+        'ghn_shipper_phone',
+        'ghn_created_at',
     ];
     
     protected $casts = [
         'cancellation_requested_at' => 'datetime',
         'cancellation_processed_at' => 'datetime',
         'order_status_before_cancellation' => 'string',
+        //ghn
+        'ghn_expected_delivery_time' => 'datetime',
+        'ghn_created_at' => 'datetime',
     ];
     
     protected static function boot()
@@ -155,4 +171,18 @@ class Order extends Model
         return in_array($this->order_status, [self::STATUS['PENDING'], self::STATUS['NEW']], true)
             && $this->cancellation_status !== self::CANCELLATION_STATUS['REQUESTED'];
     }
+
+    //trạng thái đơn hàng GHN
+    public const GHN_STATUS = [
+        'READY_TO_PICK' => 'ready_to_pick',
+        'PICKING' => 'picking',
+        'STORING' => 'storing',
+        'TRANSPORTING' => 'transporting',
+        'DELIVERING' => 'delivering',
+        'DELIVERED' => 'delivered',
+        'RETURN' => 'return',
+        'CANCEL' => 'cancel',
+    ];
+
+    
 }

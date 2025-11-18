@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\Employee\ScheduleController;
 use App\Http\Controllers\Admin\Employee\ShiftController;
 use App\Http\Controllers\Admin\Product\StockController;
 use App\Http\Controllers\Admin\Product\UnifiedListController;
+use App\Http\Controllers\Admin\Order\GHNController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -129,7 +130,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('orders/{order}/cancellations/reject', [OrdersController::class, 'rejectCancellation'])
         ->name('orders.cancellations.reject');
     
-
+    //Giao hàng nhanh 
+    Route::prefix('ghn')->name('ghn.')->group(function () {
+        Route::post('orders/{order}/create', [GHNController::class, 'createShippingOrder'])->name('orders.create');
+        Route::post('shipping-fee', [GHNController::class, 'getShippingFee'])->name('shipping-fee');
+        Route::get('provinces', [GHNController::class, 'getProvinces'])->name('provinces');
+        Route::post('districts', [GHNController::class, 'getDistricts'])->name('districts');
+        Route::post('wards', [GHNController::class, 'getWards'])->name('wards');
+        Route::get('orders/{order}/track', [GHNController::class, 'trackOrder'])->name('orders.track');
+    });
     // Service Bookings
     Route::prefix('service-bookings')->name('service-bookings.')->group(function () {
         Route::get('/', [ServiceBookingController::class, 'index'])->name('index');

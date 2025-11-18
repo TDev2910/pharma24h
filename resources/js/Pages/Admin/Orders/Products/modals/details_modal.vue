@@ -172,6 +172,65 @@
         </div>
       </div>
 
+      <!-- Thông tin GHN -->
+      <div v-if="order.delivery_method === 'shipping'" class="ghn-info-section mt-4">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <i class="pi pi-truck text-primary"></i>
+          <h6 class="fw-bold mb-0">Thông tin Giao hàng nhanh (GHN)</h6>
+        </div>
+        
+        <div v-if="order.ghn_order_code" class="ghn-details">
+          <div class="row">
+            <div class="col-md-6">
+              <p class="mb-2">
+                <strong>Mã vận đơn GHN:</strong> 
+                <span class="text-primary fw-bold">{{ order.ghn_order_code }}</span>
+              </p>
+              <p class="mb-2">
+                <strong>Trạng thái GHN:</strong> 
+                <span :class="getGHNStatusBadgeClass(order.ghn_status)">
+                  {{ getGHNStatusText(order.ghn_status) }}
+                </span>
+              </p>
+              <p class="mb-2" v-if="order.ghn_fee">
+                <strong>Phí vận chuyển:</strong> 
+                <span>{{ formatCurrency(order.ghn_fee) }}</span>
+              </p>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-2" v-if="order.ghn_expected_delivery_time">
+                <strong>Dự kiến giao hàng:</strong> 
+                <span>{{ formatDate(order.ghn_expected_delivery_time) }}</span>
+              </p>
+              <p class="mb-2" v-if="order.ghn_shipper_name">
+                <strong>Tên shipper:</strong> 
+                <span>{{ order.ghn_shipper_name }}</span>
+              </p>
+              <p class="mb-2" v-if="order.ghn_shipper_phone">
+                <strong>SĐT shipper:</strong> 
+                <span>{{ order.ghn_shipper_phone }}</span>
+              </p>
+              <p class="mb-0" v-if="order.ghn_tracking_url">
+                <a :href="order.ghn_tracking_url" target="_blank" class="btn btn-sm btn-outline-primary">
+                  <i class="pi pi-external-link"></i> Theo dõi đơn hàng
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div v-else class="ghn-create-section">
+          <div class="alert alert-info d-flex align-items-center gap-2">
+            <i class="pi pi-info-circle"></i>
+            <span>Đơn hàng chưa được tạo trên GHN. Vui lòng tạo đơn GHN để giao hàng.</span>
+          </div>
+          <div v-if="!order.district_id || !order.ward_code" class="alert alert-warning mt-2">
+            <i class="pi pi-exclamation-triangle"></i>
+            <span>Đơn hàng thiếu thông tin địa chỉ (district_id hoặc ward_code). Vui lòng kiểm tra lại địa chỉ giao hàng.</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Thông tin yêu cầu hủy -->
       <div v-if="order.cancellation_status" class="cancellation-info mt-4">
         <!-- Đối với status cancellation_status là requested thì hiển thị thông tin yêu cầu hủy -->
@@ -213,6 +272,14 @@
             label="Đóng" 
             severity="secondary" 
             @click="closeModal"
+          />
+          <Button 
+            v-if="order && order.delivery_method === 'shipping' && !order.ghn_order_code && order.district_id && order.ward_code"
+            label="Tạo đơn GHN" 
+            icon="pi pi-truck"
+            severity="info"
+            :loading="creatingGHN"
+            @click="createGHNOrder"
           />
           <Button 
             v-if="order"
@@ -274,7 +341,8 @@ export default {
       order: null,
       items: [],
       adminNote: '',
-      processing: false
+      processing: false,
+      creatingGHN: false
     }
   },
   computed: {
@@ -523,6 +591,76 @@ export default {
         this.order.province
       ].filter(Boolean);
       return addressParts.join(', ');
+    },
+
+    async createGHNOrder() {
+      if (!this.order?.id) return;
+
+      if (!confirm('Bạn có chắc chắn muốn tạo đơn GHN cho đơn hàng này?')) {
+        return;
+      }
+      
+
+      try {
+        this.creatingGHN = true;
+        const response = await axios.post(`/admin/ghn/orders/${this.order.id}/create`);
+        
+        if (response.data?.success) {
+          this.$emit('alert', {
+            type: 'success',
+            message: response.data.message || 'Tạo đơn GHN thành công!'
+          });
+          
+          // Reload order details để cập nhật thông tin GHN
+          await this.loadOrderDetails();
+          this.$emit('updated');
+        } else {
+          this.$emit('alert', {
+            type: 'error',
+            message: response.data?.message || 'Không thể tạo đơn GHN.'
+          });
+        }
+      } catch (error) {
+        console.error('createGHNOrder error:', error);
+        this.$emit('alert', {
+          type: 'error',
+          message: error.response?.data?.message || 'Đã xảy ra lỗi khi tạo đơn GHN.'
+        });
+      } finally {
+        this.creatingGHN = false;
+      }
+    },
+
+    getGHNStatusBadgeClass(status) {
+      if (!status) return 'badge bg-secondary';
+      const s = status.toString().toLowerCase();
+      const statusMap = {
+        'ready_to_pick': 'badge bg-info',
+        'picking': 'badge bg-primary',
+        'storing': 'badge bg-secondary',
+        'transporting': 'badge bg-warning text-dark',
+        'delivering': 'badge bg-primary',
+        'delivered': 'badge bg-success',
+        'return': 'badge bg-danger',
+        'cancel': 'badge bg-danger'
+      };
+      return statusMap[s] || 'badge bg-secondary';
+    },
+
+    getGHNStatusText(status) {
+      if (!status) return 'Chưa có';
+      const s = status.toString().toLowerCase();
+      const statusMap = {
+        'ready_to_pick': 'Sẵn sàng lấy hàng',
+        'picking': 'Đang lấy hàng',
+        'storing': 'Đang lưu kho',
+        'transporting': 'Đang vận chuyển',
+        'delivering': 'Đang giao hàng',
+        'delivered': 'Đã giao hàng',
+        'return': 'Hoàn trả',
+        'cancel': 'Đã hủy'
+      };
+      return statusMap[s] || status;
     }
   }
 }
@@ -675,5 +813,59 @@ export default {
   color: #842029;
   background-color: #f8d7da;
   border-color: #f5c2c7;
+}
+
+.ghn-info-section {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 16px;
+  background: #f8f9fa;
+}
+
+.ghn-details {
+  background: white;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.ghn-create-section {
+  background: white;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 0;
+}
+
+.alert-info {
+  color: #055160;
+  background-color: #cff4fc;
+  border-color: #b6effb;
+}
+
+.alert-warning {
+  color: #664d03;
+  background-color: #fff3cd;
+  border-color: #ffecb5;
+}
+
+.btn-sm {
+  padding: 4px 12px;
+  font-size: 13px;
+}
+
+.btn-outline-primary {
+  color: #0d6efd;
+  border-color: #0d6efd;
+  background-color: transparent;
+}
+
+.btn-outline-primary:hover {
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
 }
 </style>

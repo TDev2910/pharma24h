@@ -33,6 +33,9 @@ class CheckoutRequest extends FormRequest
             $rules['province'] = 'required|string|max:100';
             $rules['district'] = 'required|string|max:100';
             $rules['ward'] = 'required|string|max:100';
+            // Thêm district_id và ward_code (nullable vì có thể map sau)
+            $rules['district_id'] = 'nullable|integer';
+            $rules['ward_code'] = 'nullable|string|max:50';
         } 
         else 
         {

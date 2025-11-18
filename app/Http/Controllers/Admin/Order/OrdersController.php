@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Services\CheckoutService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -118,7 +117,43 @@ class OrdersController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'order' => $order,
+                'order' => [
+                    'id' => $order->id,
+                    'order_code' => $order->order_code,
+                    'customer_name' => $order->customer_name,
+                    'customer_phone' => $order->customer_phone,
+                    'customer_email' => $order->customer_email,
+                    'order_status' => $order->order_status,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
+                    'delivery_method' => $order->delivery_method,
+                    'shipping_address' => $order->shipping_address,
+                    'province' => $order->province,
+                    'district' => $order->district,
+                    'ward' => $order->ward,
+                    'district_id' => $order->district_id,
+                    'ward_code' => $order->ward_code,
+                    'pickup_location' => $order->pickup_location,
+                    'total_amount' => $order->total_amount,
+                    'note' => $order->note,
+                    'transaction_id' => $order->transaction_id,
+                    'created_at' => $order->created_at,
+                    'cancellation_status' => $order->cancellation_status,
+                    'cancellation_reason' => $order->cancellation_reason,
+                    'cancellation_user_note' => $order->cancellation_user_note,
+                    'cancellation_admin_note' => $order->cancellation_admin_note,
+                    'cancellation_requested_at' => $order->cancellation_requested_at,
+                    'cancellation_processed_at' => $order->cancellation_processed_at,
+                    // GHN fields
+                    'ghn_order_code' => $order->ghn_order_code,
+                    'ghn_status' => $order->ghn_status,
+                    'ghn_fee' => $order->ghn_fee,
+                    'ghn_expected_delivery_time' => $order->ghn_expected_delivery_time,
+                    'ghn_tracking_url' => $order->ghn_tracking_url,
+                    'ghn_shipper_name' => $order->ghn_shipper_name,
+                    'ghn_shipper_phone' => $order->ghn_shipper_phone,
+                    'ghn_created_at' => $order->ghn_created_at,
+                ],
                 'items' => $items,
             ]);
         }

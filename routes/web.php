@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ChatbotController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\User\DashboardController;
+use App\Http\Controllers\Api\GHNWebhookController;
 use Inertia\Inertia;
  
 // 🌐 PUBLIC ROUTES
@@ -90,6 +91,9 @@ Route::post('/bookings', [ServiceBookingController::class, 'store'])->name('book
 // Chatbot routes
 Route::post('/api/chatbot/chat', [ChatbotController::class, 'chat'])->name('chatbot.chat');
 
+Route::post('/api/ghn/webhook', [\App\Http\Controllers\Api\GHNWebhookController::class, 'handleWebhook'])
+    ->name('ghn.webhook')
+    ->withoutMiddleware(['web']);
 // Include admin routes
 require __DIR__.'/admin.php';
 

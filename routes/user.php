@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\DashboardController;
+use App\Http\Controllers\User\GHNController;
 
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     // Dashboard Overview
@@ -14,6 +15,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     // Other Features
     Route::get('/orders', [DashboardController::class, 'orders'])->name('orders');
     Route::get('/orders/{orderId}', [DashboardController::class, 'orderDetails'])->name('orders.details');
+    Route::get('/orders/{order}/tracking', [DashboardController::class, 'orderTracking'])->name('orders.tracking');
     Route::post('/orders/{order}/request-cancel', [DashboardController::class, 'requestCancel'])
         ->name('orders.request-cancel');
     
