@@ -55,6 +55,59 @@
         <span>Nhà thuốc: {{ order.pickup_location }}</span>
       </div>
 
+      <!-- GHN Shipping Info -->
+      <div
+        v-if="order.delivery_method === 'shipping'"
+        class="shipping-info-section"
+      >
+        <h3 class="section-title">Thông tin vận chuyển GHN</h3>
+        <div class="shipping-row">
+          <span>Mã vận đơn:</span>
+          <strong>{{ order.ghn_order_code || 'Đang tạo' }}</strong>
+        </div>
+        <div class="shipping-row">
+          <span>Trạng thái:</span>
+          <span class="ghn-status-badge" :class="getGHNStatusClass(order.ghn_status)">
+            {{ getGHNStatusLabel(order.ghn_status) }}
+          </span>
+        </div>
+        <div class="shipping-row" v-if="order.ghn_expected_delivery_time">
+          <span>Dự kiến giao:</span>
+          <span>{{ formatDateTime(order.ghn_expected_delivery_time) }}</span>
+        </div>
+        <div class="shipping-row" v-if="order.ghn_fee">
+          <span>Phí vận chuyển:</span>
+          <span>{{ formatCurrency(order.ghn_fee) }} ₫</span>
+        </div>
+        <div class="shipping-row" v-if="order.ghn_cod_amount">
+          <span>Số tiền thu hộ:</span>
+          <span>{{ formatCurrency(order.ghn_cod_amount) }} ₫</span>
+        </div>
+        <div class="shipping-row" v-if="order.ghn_order_code">
+          <span>Tra cứu:</span>
+          <a
+            class="tracking-link"
+            :href="getGHNTrackingUrl(order)"
+            target="_blank"
+            rel="noopener"
+          >
+            Xem trên GHN
+          </a>
+        </div>
+        <div
+          class="shipping-row"
+          v-if="order.ghn_shipper_name || order.ghn_shipper_phone"
+        >
+          <span>Nhân viên giao:</span>
+          <span>
+            {{ order.ghn_shipper_name || 'Đang cập nhật' }}
+            <template v-if="order.ghn_shipper_phone">
+              - {{ order.ghn_shipper_phone }}
+            </template>
+          </span>
+        </div>
+      </div>
+
       <!-- Order Items -->
       <div class="order-items-section">
         <h3 class="section-title">Sản phẩm</h3>
@@ -139,6 +192,37 @@
           </div>
         </form>
       </div>
+      <div v-if="order.is_shipping && order.ghn_order_code" class="shipping-info-section">
+     <h3 class="section-title">Vận chuyển GHN</h3>
+     <div class="shipping-row">
+       <span>Mã vận đơn:</span>
+       <strong>{{ order.ghn_order_code }}</strong>
+     </div>
+     <div class="shipping-row">
+       <span>Trạng thái:</span>
+       <span class="badge">{{ order.ghn_status_text || 'Đang cập nhật' }}</span>
+     </div>
+     <div class="shipping-row" v-if="order.ghn_expected_delivery_time">
+       <span>Dự kiến giao:</span>
+       <span>{{ formatDateTime(order.ghn_expected_delivery_time) }}</span>
+     </div>
+     <div class="shipping-row">
+       <span>Tra cứu:</span>
+       <a
+         :href="order.ghn_tracking_url || `https://donhang.ghn.vn/?order_code=${order.ghn_order_code}`"
+         target="_blank"
+         rel="noopener"
+       >Xem trên GHN</a>
+     </div>
+     <Button
+       v-if="order.ghn_order_code"
+       label="Cập nhật trạng thái"
+       icon="pi pi-refresh"
+       class="refresh-btn"
+       :loading="refreshing"
+       @click="refreshGHNStatus"
+     />
+   </div>
     </div>
   </div>
 </template>
@@ -251,6 +335,45 @@ const getStatusLabel = (status) => {
   }
   return labelMap[status] || status
 }
+
+const normalizeStatus = (status) => (status ? status.toString().toLowerCase() : '')
+
+const getGHNStatusLabel = (status) => {
+  if (!status) return 'Chưa có'
+  const normalized = normalizeStatus(status)
+  const map = {
+    'ready_to_pick': 'Sẵn sàng lấy hàng',
+    'picking': 'Đang lấy hàng',
+    'storing': 'Đang lưu kho',
+    'transporting': 'Đang vận chuyển',
+    'delivering': 'Đang giao',
+    'delivered': 'Đã giao hàng',
+    'return': 'Đang hoàn trả',
+    'cancel': 'Đã hủy'
+  }
+  return map[normalized] || status
+}
+
+const getGHNStatusClass = (status) => {
+  const s = normalizeStatus(status)
+  if (!s) return 'ghn-status-default'
+  const map = {
+    'ready_to_pick': 'ghn-status-info',
+    'picking': 'ghn-status-info',
+    'storing': 'ghn-status-secondary',
+    'transporting': 'ghn-status-warning',
+    'delivering': 'ghn-status-primary',
+    'delivered': 'ghn-status-success',
+    'return': 'ghn-status-danger',
+    'cancel': 'ghn-status-danger'
+  }
+  return map[s] || 'ghn-status-default'
+}
+
+const getGHNTrackingUrl = (order) => {
+  if (!order?.ghn_order_code) return '#'
+  return order.ghn_tracking_url || `https://donhang.ghn.vn/?order_code=${order.ghn_order_code}`
+}
 </script>
 
 <style scoped>
@@ -362,6 +485,83 @@ const getStatusLabel = (status) => {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.shipping-info-section {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  background: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shipping-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #495057;
+}
+
+.shipping-row span:first-child {
+  color: #6c757d;
+}
+
+.tracking-link {
+  color: #0d6efd;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.tracking-link:hover {
+  text-decoration: underline;
+}
+
+.ghn-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ghn-status-default {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.ghn-status-info {
+  background: #cff4fc;
+  color: #055160;
+}
+
+.ghn-status-secondary {
+  background: #e2e3e5;
+  color: #41464b;
+}
+
+.ghn-status-warning {
+  background: #fff3cd;
+  color: #664d03;
+}
+
+.ghn-status-primary {
+  background: #cfe2ff;
+  color: #084298;
+}
+
+.ghn-status-success {
+  background: #d1e7dd;
+  color: #0f5132;
+}
+
+.ghn-status-danger {
+  background: #f8d7da;
+  color: #842029;
 }
 
 .order-items-section {

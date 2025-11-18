@@ -111,7 +111,16 @@ class DashboardController extends Controller
         $orders = $user->orders()
             ->with('items')
             ->latest()
-            ->get();
+            ->get()
+            ->map(function ($order) {
+                $order->append([
+                    'ghn_status_text',     
+                    'ghn_expected_delivery_formatted',
+                ]);
+                $order->is_shipping = $order->isShipping();
+
+            return $order;
+        });
         
         // Load images cho các đơn hàng cũ (nếu chưa có image)
         foreach ($orders as $order) {
@@ -138,18 +147,25 @@ class DashboardController extends Controller
         }
         
         return Inertia::render('User/Orders/Index', [
-            'orders' => $orders
+            'orders' => $orders,
         ]);
     }
 
     public function orderDetails(Request $request, $orderId)
     {
         $user = Auth::user();
-        $order = $user->orders()->with(['items', 'user'])->where('id', $orderId)->firstOrFail();
-             
+
+        $order = $user->orders()
+            ->with(['items'])
+            ->where('id', $orderId)
+            ->firstOrFail()
+            ->append([
+                'ghn_status_text',
+                'ghn_expected_delivery_formatted',
+            ]);
+
         return Inertia::render('User/Orders/Details', [
             'order' => $order,
-            'pageTitle' => 'Chi tiết đơn hàng',
         ]);
     }
 

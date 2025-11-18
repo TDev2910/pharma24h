@@ -184,5 +184,30 @@ class Order extends Model
         'CANCEL' => 'cancel',
     ];
 
-    
+    public function getGhnStatusTextAttribute(): string
+    {
+        $map = [
+            'ready_to_pick' => 'Sẵn sàng lấy hàng',
+            'picking' => 'Đang lấy hàng',
+            'storing' => 'Lưu kho',
+            'transporting' => 'Đang vận chuyển',
+            'delivering' => 'Đang giao',
+            'delivered' => 'Đã giao',
+            'return' => 'Hoàn trả',
+            'cancel' => 'GHN đã hủy',
+        ];
+
+        return $map[$this->ghn_status] ?? 'Chưa có';
+    }
+
+    public function getGhnExpectedDeliveryFormattedAttribute(): ?string
+    {
+        if (!$this->ghn_expected_delivery_time) {
+            return null;
+        }
+
+        return $this->ghn_expected_delivery_time
+            ->timezone(config('app.timezone', 'Asia/Ho_Chi_Minh'))
+            ->format('H:i d/m/Y');
+    }
 }
