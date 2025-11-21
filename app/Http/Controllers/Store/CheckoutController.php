@@ -6,19 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CheckoutRequest;
 use App\Services\CartService;
 use App\Services\CheckoutService;
+use App\Services\EmailSMTP\EmailService;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
     protected $cartService;
     protected $checkoutService;
-
-    public function __construct(CartService $cartService, CheckoutService $checkoutService)
+    protected $emailService;
+    public function __construct(CartService $cartService, CheckoutService $checkoutService, EmailService $emailService)
     {
         $this->cartService = $cartService;
         $this->checkoutService = $checkoutService;
+        $this->emailService = $emailService;
     }
 
     // Hiển thị form checkout
@@ -72,8 +75,32 @@ class CheckoutController extends Controller
             
             $order = $this->checkoutService->createOrder($orderData);
 
+            \Log::info('Order created successfully', [
+                'order_id' => $order->id,
+                'order_code' => $order->order_code,
+                'customer_email' => $order->customer_email,
+                'payment_method' => $order->payment_method
+            ]);
+
             if ($request->payment_method === 'vnpay') {
                 return redirect()->route('payment.vnpay.checkout', ['order_id' => $order->id]);
+            }
+        
+            // Gửi email cho đơn COD (cod)
+            if ($request->payment_method === 'cod') {
+                \Log::info('COD order created, attempting to send email', [
+                    'order_id' => $order->id,
+                    'customer_email' => $order->customer_email
+                ]);
+                try {
+                    $this->emailService->sendOrderConfirmation($order);
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send order confirmation email for COD order', [
+                        'order_id' => $order->id,
+                        'order_code' => $order->order_code,
+                        'error' => $e->getMessage()
+                    ]);
+                }
             }
 
             return redirect()->route('checkout.success', ['order_id' => $order->id]);

@@ -23,6 +23,7 @@ class CheckoutRequest extends FormRequest
             'delivery_method' => 'required|in:shipping,pickup',
             'payment_method' => 'required|in:cod,vnpay',
             'note' => 'nullable|string',
+            'customer_email' => 'nullable|email|max:255',
         ];
 
         // Thêm rules tùy thuộc vào phương thức giao hàng

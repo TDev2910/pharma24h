@@ -77,6 +77,17 @@
                                     </div>
                                     
                                     <div class="mb-3">
+                                        <label for="customer_email" class="form-label">Email <span class="text-muted">(để nhận email xác nhận đơn hàng)</span></label>
+                                        <input type="email" class="form-control @error('customer_email') is-invalid @enderror" 
+                                            id="customer_email" name="customer_email" 
+                                            value="{{ old('customer_email', auth()->user()->email ?? '') }}" 
+                                            placeholder="Nhập email của bạn">
+                                        @error('customer_email')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    
+                                    <div class="mb-3">
                                         <label for="province" class="form-label">Tỉnh/Thành phố <span class="text-danger">*</span></label>
                                         <select class="form-select @error('province') is-invalid @enderror" id="province" name="province">
                                             <option value="">Chọn tỉnh/thành phố</option>
@@ -137,6 +148,14 @@
                                         <input type="text" class="form-control" 
                                             id="customer_phone_pickup" 
                                             value="{{ old('customer_phone', auth()->user()->phone ?? '') }}">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="customer_email_pickup" class="form-label">Email <span class="text-muted">(để nhận email xác nhận đơn hàng)</span></label>
+                                        <input type="email" class="form-control" 
+                                            id="customer_email_pickup" 
+                                            value="{{ old('customer_email', auth()->user()->email ?? '') }}"
+                                            placeholder="Nhập email của bạn">
                                     </div>
                                     
                                     <div class="mb-3">
@@ -260,6 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Copy dữ liệu
                 const customerNamePickup = document.getElementById('customer_name_pickup').value;
                 const customerPhonePickup = document.getElementById('customer_phone_pickup').value;
+                const customerEmailPickup = document.getElementById('customer_email_pickup').value;
                 
                 if (customerNamePickup) {
                     document.getElementById('customer_name').value = customerNamePickup;
@@ -267,6 +287,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (customerPhonePickup) {
                     document.getElementById('customer_phone').value = customerPhonePickup;
+                }
+                
+                if (customerEmailPickup) {
+                    document.getElementById('customer_email').value = customerEmailPickup;
                 }
             } else {
                 shippingInfo.classList.add('d-none');
@@ -286,6 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Copy dữ liệu
                 const customerName = document.getElementById('customer_name').value;
                 const customerPhone = document.getElementById('customer_phone').value;
+                const customerEmail = document.getElementById('customer_email').value;
                 
                 if (customerName) {
                     document.getElementById('customer_name_pickup').value = customerName;
@@ -293,6 +318,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (customerPhone) {
                     document.getElementById('customer_phone_pickup').value = customerPhone;
+                }
+                
+                if (customerEmail) {
+                    document.getElementById('customer_email_pickup').value = customerEmail;
                 }
             }
         });
@@ -617,6 +646,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Copy thông tin người nhận từ form pickup sang form chính
             document.getElementById('customer_name').value = document.getElementById('customer_name_pickup').value;
             document.getElementById('customer_phone').value = document.getElementById('customer_phone_pickup').value;
+            document.getElementById('customer_email').value = document.getElementById('customer_email_pickup').value;
             
             // Kiểm tra thông tin nhận hàng tại nhà thuốc
             const pickupFields = ['customer_name_pickup', 'customer_phone_pickup', 'pickup_location'];

@@ -12,14 +12,14 @@
           <li>💰 Giá cả và thanh toán</li>
         </ul>
       </div>
-      
+
       <div v-for="(message, index) in messages" :key="index" class="message" :class="message.type">
         <div class="message-content">
           <span v-html="formatMessage(message.content)"></span>
         </div>
         <div class="message-time">{{ message.time }}</div>
       </div>
-      
+
       <!-- Loading indicator -->
       <div v-if="isLoading" class="message bot">
         <div class="message-content">
@@ -32,15 +32,8 @@
     <div class="chat-input">
       <form @submit.prevent="sendMessage">
         <div class="input-group">
-          <textarea 
-            v-model="currentMessage" 
-            @keydown.enter.prevent="sendMessage"
-            @keydown.ctrl.enter="addNewLine"
-            placeholder="Nhập tin nhắn của bạn..."
-            :disabled="isLoading"
-            rows="1"
-            ref="messageInput"
-          ></textarea>
+          <textarea v-model="currentMessage" @keydown.enter.prevent="sendMessage" @keydown.ctrl.enter="addNewLine"
+            placeholder="Nhập tin nhắn của bạn..." :disabled="isLoading" rows="1" ref="messageInput"></textarea>
           <button type="submit" :disabled="!currentMessage.trim() || isLoading" class="send-btn">
             <i class="fas fa-paper-plane"></i>
           </button>
@@ -104,14 +97,14 @@ const sendMessage = async () => {
 
   const userMessage = currentMessage.value.trim()
   currentMessage.value = ''
-  
+
   // Add user message
   messages.value.push({
     type: 'user',
     content: userMessage,
     time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
   })
-  
+
   scrollToBottom()
   isLoading.value = true
 
@@ -125,40 +118,40 @@ const sendMessage = async () => {
     const formData = new FormData()
     formData.append('message', userMessage)
     formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'))
-    
+
     // Use fetch with POST method
     const response = await fetch('/api/chatbot/chat', {
       method: 'POST',
       body: formData
     })
-    
+
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }
-    
+
     // Read the stream
     const reader = response.body.getReader()
     const decoder = new TextDecoder()
-    
+
     let botResponse = ''
     let isFirstChunk = true
-    
+
     while (true) {
       const { done, value } = await reader.read()
       if (done) break
-      
+
       const chunk = decoder.decode(value)
       const lines = chunk.split('\n')
-      
+
       for (const line of lines) {
         if (line.startsWith('data: ')) {
           const data = line.slice(6)
-          
+
           if (data === '</stream>') {
             isLoading.value = false
             return
           }
-          
+
           if (isFirstChunk) {
             // Add bot message container
             messages.value.push({
@@ -168,16 +161,16 @@ const sendMessage = async () => {
             })
             isFirstChunk = false
           }
-          
+
           // Append to bot response
           botResponse += data
-          
+
           // Update the last message (bot message)
           const lastMessage = messages.value[messages.value.length - 1]
           if (lastMessage && lastMessage.type === 'bot') {
             lastMessage.content = botResponse
           }
-          
+
           scrollToBottom()
         }
       }
@@ -186,7 +179,7 @@ const sendMessage = async () => {
   } catch (error) {
     console.error('Error sending message:', error)
     isLoading.value = false
-    
+
     messages.value.push({
       type: 'bot',
       content: '❌ Có lỗi xảy ra. Vui lòng thử lại.',
@@ -209,7 +202,7 @@ onMounted(() => {
   if (messageInput.value) {
     messageInput.value.focus()
   }
-  
+
   // Listen for clear chat event
   window.addEventListener('clear-chat', clearChat)
 })
@@ -219,7 +212,7 @@ onUnmounted(() => {
   if (eventSource) {
     eventSource.close()
   }
-  
+
   // Remove event listener
   window.removeEventListener('clear-chat', clearChat)
 })
@@ -306,8 +299,15 @@ onUnmounted(() => {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .chat-input {
@@ -396,7 +396,7 @@ onUnmounted(() => {
     height: 100vh;
     border-radius: 0;
   }
-  
+
   .message-content {
     max-width: 85%;
   }
