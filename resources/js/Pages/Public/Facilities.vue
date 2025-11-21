@@ -200,7 +200,7 @@ const skills = ref([
 const modules = [Autoplay, Pagination];
 
 const doctors = ref([
-{
+  {
     id: 1,
     name: 'Dr. Nguyen Van A',
     image: 'https://img.freepik.com/free-photo/smiling-doctor-with-stethoscope-isolated-grey_651396-974.jpg?w=740'
@@ -208,7 +208,7 @@ const doctors = ref([
   {
     id: 2,
     name: 'Dr. Tran Thi B',
-    image: 'https://img.freepik.com/free-photo/portrait-smiling-handsome-male-doctor-man_171337-5055.jpg' 
+    image: 'https://img.freepik.com/free-photo/portrait-smiling-handsome-male-doctor-man_171337-5055.jpg'
   },
   {
     id: 3,
@@ -255,11 +255,15 @@ const doctors = ref([
 
 .main-image {
   width: 100%;
-  height: 500px; /* Cố định chiều cao để ảnh đều nhau */
-  object-fit: cover; /* Cắt ảnh vừa khung, không méo */
-  object-position: center; /* Căn giữa ảnh */
+  height: 500px;
+  /* Cố định chiều cao để ảnh đều nhau */
+  object-fit: cover;
+  /* Cắt ảnh vừa khung, không méo */
+  object-position: center;
+  /* Căn giữa ảnh */
   display: block;
-  border-radius: 0.5rem; /* Bo góc nhẹ cho ảnh bên trong */
+  border-radius: 0.5rem;
+  /* Bo góc nhẹ cho ảnh bên trong */
 }
 
 .decoration-dots {
