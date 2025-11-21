@@ -27,7 +27,7 @@ class GHNService
     }
 
     /**
-     * Lấy danh sách tỉnh/thành phố
+     * Lấy danh sách api tỉnh/thành phố
      */
     public function getProvinces(): array
     {
