@@ -9,7 +9,7 @@
     <Transition name="sidebar">
       <div v-if="isOpen" class="chatbot-sidebar">
         <div class="chatbot-sidebar-header">
-          <h3>Chatbot Pharma PCT</h3>
+          <h3>Hỗ Trợ Khách Hàng</h3>
           <div class="header-buttons">
             <!-- <button @click="clearChat" class="clear-btn"></button> -->
             <button @click="closeChat" class="close-btn">&times;</button>
@@ -101,7 +101,7 @@ const closeChat = () => {
 
 /* Sidebar Header */
 .chatbot-sidebar-header {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: #1a56db;
   color: white;
   padding: 15px 20px;
   display: flex;

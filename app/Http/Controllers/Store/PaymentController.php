@@ -7,7 +7,6 @@ use App\Models\Order;
 use App\Services\Payment\VNPayService;
 use App\Services\EmailSMTP\EmailService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
@@ -37,11 +36,7 @@ class PaymentController extends Controller
             try {
                 $this->emailService->sendOrderConfirmation($result['order']);
             } catch (\Exception $e) {
-                \Log::error('Failed to send order confirmation email after VNPay payment', [
-                    'order_id' => $result['order']->id,
-                    'order_code' => $result['order']->order_code,
-                    'error' => $e->getMessage()
-                ]);
+                // Silent fail - không log lỗi
             }
             
             return redirect()->route('checkout.success', ['order_id' => $result['order']->id]);

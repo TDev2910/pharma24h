@@ -1,47 +1,71 @@
 <template>
   <div class="chatbot-container">
-    <!-- Chat Messages -->
     <div class="chat-messages" ref="messagesContainer">
-      <div v-if="messages.length === 0" class="welcome-message">
-        <p>👋 Xin chào! Tôi là trợ lý AI của nhà thuốc Pharma PCT.</p>
-        <p>Hãy hỏi tôi về các thông tin sau:</p>
-        <ul>
-          <li>💊 Thông tin thuốc</li>
-          <li>🏥 Dịch vụ khám bệnh</li>
-          <li>📍 Địa chỉ và giờ làm việc</li>
-          <li>💰 Giá cả và thanh toán</li>
-        </ul>
-      </div>
-
-      <div v-for="(message, index) in messages" :key="index" class="message" :class="message.type">
-        <div class="message-content">
-          <span v-html="formatMessage(message.content)"></span>
+      <div v-if="messages.length === 0" class="welcome-screen">
+        <div class="bot-avatar-large">
+          <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Bot" />
         </div>
-        <div class="message-time">{{ message.time }}</div>
+        <h3>Xin chào! Tôi có thể giúp gì cho bạn?</h3>
+        <p>Bạn cần tìm khách sạn, địa điểm vui chơi hay ẩm thực tại Vũng Tàu?</p>
       </div>
 
-      <!-- Loading indicator -->
-      <div v-if="isLoading" class="message bot">
-        <div class="message-content">
-          <span class="typing-indicator">🤖 Đang trả lời...</span>
+      <div v-for="(message, index) in messages" :key="index" class="message-row" :class="message.type">
+        
+        <div v-if="message.type === 'bot'" class="avatar">
+          <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Bot" />
+        </div>
+
+        <div class="message-content-wrapper">
+          <div class="message-bubble" :class="{ 'user-bubble': message.type === 'user', 'bot-bubble': message.type === 'bot' }">
+            <span v-html="formatMessage(message.content)"></span>
+          </div>
+          <div class="message-time">{{ message.time }}</div>
+        </div>
+        
+      </div>
+
+      <div v-if="isLoading" class="message-row bot">
+        <div class="avatar">
+          <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Bot" />
+        </div>
+        <div class="message-content-wrapper">
+          <div class="message-bubble loading-bubble">
+            <div class="typing-dots">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Chat Input -->
-    <div class="chat-input">
+    <div class="chat-input-area">
       <form @submit.prevent="sendMessage">
-        <div class="input-group">
-          <textarea v-model="currentMessage" @keydown.enter.prevent="sendMessage" @keydown.ctrl.enter="addNewLine"
-            placeholder="Nhập tin nhắn của bạn..." :disabled="isLoading" rows="1" ref="messageInput"></textarea>
-          <button type="submit" :disabled="!currentMessage.trim() || isLoading" class="send-btn">
-            <i class="fas fa-paper-plane"></i>
-          </button>
+        <div class="input-container">
+          <textarea 
+            v-model="currentMessage" 
+            @keydown.enter.prevent="sendMessage" 
+            @keydown.ctrl.enter="addNewLine"
+            placeholder="Nhập tin nhắn..." 
+            :disabled="isLoading" 
+            rows="1" 
+            ref="messageInput"
+            class="chat-textarea"
+          ></textarea>
+
+          <div class="input-actions">
+            <button type="button" class="action-btn emoji-btn" title="Chèn emoji">
+              <i class="far fa-smile"></i>
+            </button>
+            
+            <button type="submit" :disabled="!currentMessage.trim() || isLoading" class="action-btn send-btn">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
         </div>
       </form>
     </div>
   </div>
-</template>
+</template> 
 
 <script setup>
 import { ref, onMounted, nextTick, watch, onUnmounted } from 'vue'
@@ -219,186 +243,241 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* --- Container & Header --- */
 .chatbot-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh; /* Điều chỉnh nếu cần fixed height */
   width: 100%;
   background: white;
   overflow: hidden;
-  flex: 1;
+  border-radius: 10px; /* Bo góc container */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
+.chat-header {
+  background: #1a73e8; /* Màu xanh đậm */
+  color: white;
+  padding: 15px;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 5px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+.close-btn:hover {
+  opacity: 1;
+}
+
+/* --- Khu vực tin nhắn --- */
 .chat-messages {
   flex: 1;
-  padding: 15px;
+  padding: 20px;
   overflow-y: auto;
-  background: #f8f9fa;
-  min-height: 0;
-}
-
-.welcome-message {
-  text-align: center;
-  color: #666;
-  padding: 15px;
-  font-size: 14px;
-}
-
-.welcome-message ul {
-  text-align: left;
-  display: inline-block;
-  margin-top: 10px;
-  font-size: 13px;
-}
-
-.message {
-  margin-bottom: 10px;
+  background-color: #f8f9fa; /* Nền xám nhạt */
   display: flex;
   flex-direction: column;
+  gap: 15px;
 }
 
-.message.user {
-  align-items: flex-end;
+/* --- Welcome Screen: Giống ảnh --- */
+.welcome-screen {
+  text-align: center;
+  margin-top: 30px;
+  padding: 20px;
+  flex: 1;
 }
-
-.message.bot {
-  align-items: flex-start;
+.bot-avatar-large img {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
 }
-
-.message-content {
-  max-width: 80%;
-  padding: 10px 14px;
-  border-radius: 15px;
-  word-wrap: break-word;
-  line-height: 1.3;
-  font-size: 14px;
-}
-
-.message.user .message-content {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: white;
-  border-bottom-right-radius: 5px;
-}
-
-.message.bot .message-content {
-  background: white;
+.welcome-screen h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
   color: #333;
-  border: 1px solid #e9ecef;
-  border-bottom-left-radius: 5px;
+}
+.welcome-screen p {
+  font-size: 15px;
+  color: #666;
 }
 
+/* --- Message Row (Chứa avatar + bubble) --- */
+.message-row {
+  display: flex;
+  align-items: flex-start;
+  max-width: 85%;
+}
+.message-row.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+  max-width: 100%; /* User bubble có thể full width */
+}
+.message-row.bot {
+  align-self: flex-start;
+}
+
+/* --- Avatar --- */
+.avatar {
+  width: 36px;
+  height: 36px;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+.message-row.user .avatar {
+  margin-left: 10px;
+  margin-right: 0;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* --- Content Wrapper (Bubble + Time) --- */
+.message-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+}
+.message-row.user .message-content-wrapper {
+    align-items: flex-end;
+}
+
+/* --- Bubble Chat Styles --- */
+.message-bubble {
+  padding: 12px 16px;
+  border-radius: 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+/* Bot Style */
+.bot-bubble {
+  background-color: white;
+  color: #1c1e21;
+  border: 1px solid #e9ecef;
+  border-top-left-radius: 4px; /* Góc nhọn phía avatar */
+}
+
+/* User Style */
+.user-bubble {
+  background: #0084ff; /* Màu xanh Messenger */
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+/* --- Time Stamp --- */
 .message-time {
   font-size: 11px;
   color: #999;
-  margin-top: 5px;
+  margin-top: 4px;
   padding: 0 5px;
 }
-
-.typing-indicator {
-  animation: pulse 1.5s infinite;
+.message-row.user .message-time {
+    text-align: right;
 }
 
-@keyframes pulse {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
+/* --- Typing Animation (Tối giản) --- */
+.typing-dots {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+}
+.typing-dots span {
+  width: 8px;
+  height: 8px;
+  background: #ccc;
+  border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out both;
+}
+@keyframes typing {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
 }
 
-.chat-input {
-  padding: 15px;
+/* --- Input Area (Giống ảnh input) --- */
+.chat-input-area {
+  padding: 10px 15px;
   background: white;
   border-top: 1px solid #e9ecef;
-  flex-shrink: 0;
 }
-
-.input-group {
+.input-container {
   display: flex;
-  gap: 8px;
   align-items: flex-end;
+  background: white;
+  border: 1px solid #dcdcdc; /* Viền mỏng */
+  border-radius: 24px;
+  padding: 6px 12px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.input-container:focus-within {
+  border-color: #0084ff;
 }
 
-.input-group textarea {
+.chat-textarea {
   flex: 1;
-  border: 2px solid #e9ecef;
-  border-radius: 20px;
-  padding: 10px 14px;
-  font-size: 13px;
-  font-family: inherit;
-  resize: none;
-  outline: none;
-  transition: border-color 0.3s;
-  min-height: 40px;
-  max-height: 100px;
-}
-
-.input-group textarea:focus {
-  border-color: #4facfe;
-}
-
-.input-group textarea:disabled {
-  background: #f8f9fa;
-  cursor: not-allowed;
-}
-
-.send-btn {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   border: none;
-  color: white;
-  padding: 10px 14px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 14px;
-  transition: transform 0.3s;
-  min-width: 40px;
-  height: 40px;
+  background: transparent;
+  resize: none;
+  padding: 8px 5px;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  min-height: 24px;
+  max-height: 120px;
+  color: #333;
+}
+
+/* --- Action Buttons --- */
+.input-actions {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 4px;
+  margin-bottom: 2px; /* Căn chỉnh với dòng cuối của text */
 }
-
-.send-btn:hover:not(:disabled) {
-  transform: scale(1.05);
+.action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s;
+  color: #65676b; /* Màu xám cho icon */
+  font-size: 18px;
 }
-
+.action-btn:hover {
+  background-color: #f2f2f2;
+}
+.send-btn {
+  color: #0084ff; /* Màu xanh cho nút gửi */
+}
 .send-btn:disabled {
-  opacity: 0.5;
+  color: #bcc0c4;
   cursor: not-allowed;
-  transform: none;
 }
 
-/* Scrollbar styling */
+/* Scrollbar */
 .chat-messages::-webkit-scrollbar {
   width: 6px;
 }
-
-.chat-messages::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
 .chat-messages::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background-color: rgba(0, 0, 0, 0.1);
   border-radius: 3px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .chatbot-container {
-    height: 100vh;
-    border-radius: 0;
-  }
-
-  .message-content {
-    max-width: 85%;
-  }
 }
 </style>
