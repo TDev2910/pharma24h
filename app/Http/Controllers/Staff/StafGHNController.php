@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Order;
+namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
@@ -8,7 +8,7 @@ use App\Services\Shipping\GHNService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-class GHNController extends Controller
+class StafGHNController extends Controller
 {
     protected GHNService $ghnService;
 
@@ -83,7 +83,7 @@ class GHNController extends Controller
                         'transporting' => Order::STATUS['CONFIRMED'],
                         'delivering' => Order::STATUS['CONFIRMED'],
                         'delivered' => Order::STATUS['COMPLETED'],
-                        'return' => Order::STATUS['CANCELLED'], // Sửa lại thành CANCELLED
+                        'return' => Order::STATUS['CANCELLED'], // Trả hàng → Hủy
                         'cancel' => Order::STATUS['CANCELLED'],
                     ];
                     
@@ -395,6 +395,115 @@ class GHNController extends Controller
     }
 
     /**
+     * Đồng bộ trạng thái GHN và cập nhật trạng thái đơn hàng
+     */
+    public function syncGhnStatus(Order $order)
+    {
+        if (!$order->ghn_order_code) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn hàng chưa có mã vận đơn GHN'
+            ], 400);
+        }
+
+        try {
+            $result = $this->ghnService->getOrderInfo($order->ghn_order_code);
+
+            if (!$result['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'] ?? 'Lỗi lấy thông tin đơn hàng GHN'
+                ], 400);
+            }
+
+            $ghnData = $result['data'];
+            $oldGhnStatus = $order->ghn_status;
+            $oldOrderStatus = $order->order_status;
+
+            // Cập nhật thông tin GHN
+            $order->ghn_status = $ghnData['status'] ?? $order->ghn_status;
+            $order->ghn_expected_delivery_time = $ghnData['expected_delivery_time'] ?? $order->ghn_expected_delivery_time;
+
+            // Cập nhật thông tin shipper
+            $order->ghn_shipper_name = $ghnData['shipper_name'] ?? $order->ghn_shipper_name;
+            $order->ghn_shipper_phone = $ghnData['shipper_phone'] ?? $order->ghn_shipper_phone;
+
+            // Status mapping
+            $statusMapping = [
+                // Nhóm trạng thái đơn hàng chưa xử lý
+                'ready_to_pick' => Order::STATUS['PENDING'], // Chờ lấy hàng
+                'picking' => Order::STATUS['PENDING'], // Đang lấy hàng
+
+                // Nhóm trạng thái đang giao hàng
+                'transporting' => Order::STATUS['CONFIRMED'], // Đang vận chuyển
+                'delivering' => Order::STATUS['CONFIRMED'], // Đang giao hàng
+
+                // Nhóm trạng thái đã hoàn thành
+                'delivered' => Order::STATUS['COMPLETED'], // Đã giao hàng
+                'return' => Order::STATUS['COMPLETED'], // Trả hàng
+                'cancel' => Order::STATUS['CANCELLED'], // Hủy đơn hàng
+            ];
+
+            // Xử lý Logic Mapping
+            if (isset($ghnData['status'])) {
+                $ghnCurrentStatus = $ghnData['status'];
+                
+                if (array_key_exists($ghnCurrentStatus, $statusMapping)) {
+                    // Trường hợp CÓ trong map
+                    $newOrderStatus = $statusMapping[$ghnCurrentStatus];
+                    
+                    if ($newOrderStatus !== $order->order_status) {
+                        $order->order_status = $newOrderStatus;
+                        
+                        // Xử lý thanh toán COD khi giao thành công
+                        if ($ghnCurrentStatus === 'delivered' && $order->payment_method === 'cod') {
+                            $order->payment_status = 'paid';
+                        }
+                    }
+                } else {
+                    // Trường hợp KHÔNG có trong map - Log để theo dõi
+                    Log::warning("GHN sync warning: Unknown status '{$ghnCurrentStatus}' for Order #{$order->id}", [
+                        'order_id' => $order->id,
+                        'ghn_order_code' => $order->ghn_order_code,
+                        'unknown_status' => $ghnCurrentStatus,
+                        'current_order_status' => $order->order_status
+                    ]);
+                    // Không cập nhật order_status để tránh sai lệch
+                }
+            }
+
+            $order->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đồng bộ trạng thái GHN thành công!',
+                'data' => [
+                    'ghn_status' => $order->ghn_status,
+                    'ghn_status_text' => $order->ghn_status_text ?? 'N/A',
+                    'order_status' => $order->order_status,
+                    'old_ghn_status' => $oldGhnStatus,
+                    'old_order_status' => $oldOrderStatus,
+                    'status_changed' => $oldOrderStatus !== $order->order_status,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            // Log lỗi hệ thống để debug
+            Log::error("GHN Sync Error Order #{$order->id}", [
+                'order_id' => $order->id,
+                'ghn_order_code' => $order->ghn_order_code ?? null,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi hệ thống: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Chuẩn hóa tên tỉnh/thành phố để so sánh
      */
     private function normalizeProvinceName($name)
@@ -442,108 +551,5 @@ class GHNController extends Controller
         $name = preg_replace('/^(Phường|Xã|Thị trấn)\s*/i', '', $name);
         // Giữ lại số phường (ví dụ: "Phường 25" -> "25")
         return trim($name);
-    }
-
-    public function syncGhnStatus(Order $order)
-    {
-        if(!$order->ghn_order_code) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Đơn hàng chưa có mã vận đơn GHN'
-            ], 400);
-        }
-
-        try {
-            $result = $this->ghnService->getOrderInfo($order->ghn_order_code);
-            
-            if(!$result['success']) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Không thể lấy thông tin đơn hàng từ GHN'
-                ], 400);
-            }
-            $ghnData = $result['data'];
-            $oldGhnStatus = $order->ghn_status;
-            $oldOrderStatus = $order->order_status;
-
-            // Cập nhật trạng thái đơn hàng
-            $order->ghn_status = $ghnData['status'] ?? $order->ghn_status;
-            $order->ghn_expected_delivery_time = $ghnData['expected_delivery_time'] ?? $order->ghn_expected_delivery_time;
-
-            // Cập nhật thông tin shipper
-            $order->ghn_shipper_name = $ghnData['shipper_name'] ?? $order->ghn_shipper_name;
-            $order->ghn_shipper_phone = $ghnData['shipper_phone'] ?? $order->ghn_shipper_phone;
-
-            //status mapping
-            $statusMapping = [
-                //nhóm trạng thái đơn hàng chưa xử lý
-                'ready_to_pick' => Order::STATUS['PENDING'], //chờ lấy hàng
-                'picking' => Order::STATUS['PENDING'], //đang lấy hàng
-
-                //nhóm trạng thái đang giao hàng
-                'transporting' => Order::STATUS['CONFIRMED'], //đang vận chuyển
-                'delivering' => Order::STATUS['CONFIRMED'], //đang giao hàng
-
-                //nhóm trạng thái đã hoàn thành
-                'delivered' => Order::STATUS['COMPLETED'], //đã giao hàng
-                'return' => Order::STATUS['COMPLETED'], //trả hàng
-                'cancel' => Order::STATUS['CANCELLED'], //hủy đơn hàng
-            ];
-            // 3. Xử lý Logic Mapping
-            if (isset($ghnData['status'])) {
-                $ghnCurrentStatus = $ghnData['status'];
-                
-                if (array_key_exists($ghnCurrentStatus, $statusMapping)) {
-                    // Trường hợp CÓ trong map
-                    $newOrderStatus = $statusMapping[$ghnCurrentStatus];
-                    
-                    if ($newOrderStatus !== $order->order_status) {
-                        $order->order_status = $newOrderStatus;
-                        
-                        // Xử lý thanh toán COD khi giao thành công
-                        if ($ghnCurrentStatus === 'delivered' && $order->payment_method === 'cod') {
-                            $order->payment_status = 'paid';
-                        }
-                    }
-                } else {
-                    // Trường hợp KHÔNG có trong map - Log để theo dõi
-                    Log::warning("GHN sync warning: Unknown status '{$ghnCurrentStatus}' for Order #{$order->id}", [
-                        'order_id' => $order->id,
-                        'ghn_order_code' => $order->ghn_order_code,
-                        'unknown_status' => $ghnCurrentStatus,
-                        'current_order_status' => $order->order_status
-                    ]);
-                    // Không cập nhật order_status để tránh sai lệch
-                }
-            }
-            $order->save();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Đồng bộ trạng thái GHN thành công!',
-                'data' => [
-                    'ghn_status' => $order->ghn_status,
-                    'ghn_status_text' => $order->ghn_status_text ?? 'N/A',
-                    'order_status' => $order->order_status,
-                    'old_ghn_status' => $oldGhnStatus,
-                    'old_order_status' => $oldOrderStatus,
-                    'status_changed' => $oldOrderStatus !== $order->order_status,
-                ]
-            ]);
-        } 
-        catch (\Exception $e) {
-            // Log lỗi hệ thống để debug
-            Log::error("GHN Sync Error Order #{$order->id}", [
-                'order_id' => $order->id,
-                'ghn_order_code' => $order->ghn_order_code ?? null,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Lỗi hệ thống: ' . $e->getMessage()
-            ], 500);
-        }
     }
 }

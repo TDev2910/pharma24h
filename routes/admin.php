@@ -138,6 +138,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('districts', [GHNController::class, 'getDistricts'])->name('districts');
         Route::post('wards', [GHNController::class, 'getWards'])->name('wards');
         Route::get('orders/{order}/track', [GHNController::class, 'trackOrder'])->name('orders.track');
+        Route::post('orders/{order}/sync-status', [GHNController::class, 'syncGhnStatus'])->name('orders.sync-status');
     });
     // Service Bookings
     Route::prefix('service-bookings')->name('service-bookings.')->group(function () {

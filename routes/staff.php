@@ -6,6 +6,7 @@ use App\Http\Controllers\Staff\StaffStockController;
 use App\Http\Controllers\Staff\StaffServiceBookingController;
 use App\Http\Controllers\Staff\StaffCustomerController;
 use App\Http\Controllers\Staff\StaffOrderController;
+use App\Http\Controllers\Staff\StafGHNController; // Thêm dòng này
 
 Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
@@ -51,5 +52,16 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
         Route::post('/{id}/update-status', [StaffOrderController::class, 'updateStatus'])->name('update-status');
         Route::patch('/{id}', [StaffOrderController::class, 'update'])->name('update');
     }); 
+    
+    // GHN routes - Thêm nhóm routes này
+    Route::prefix('ghn')->name('ghn.')->group(function () {
+        Route::post('orders/{order}/create', [StafGHNController::class, 'createShippingOrder'])->name('orders.create');
+        Route::post('shipping-fee', [StafGHNController::class, 'getShippingFee'])->name('shipping-fee');
+        Route::get('provinces', [StafGHNController::class, 'getProvinces'])->name('provinces');
+        Route::post('districts', [StafGHNController::class, 'getDistricts'])->name('districts');
+        Route::post('wards', [StafGHNController::class, 'getWards'])->name('wards');
+        Route::get('orders/{order}/track', [StafGHNController::class, 'trackOrder'])->name('orders.track');
+        Route::post('orders/{order}/sync-status', [StafGHNController::class, 'syncGhnStatus'])->name('orders.sync-status');
+    });
 });
 

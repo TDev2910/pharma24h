@@ -39,10 +39,6 @@ class GHNService
             ])->get($url);
 
             if (!$response->successful()) {
-                Log::error('GHN API Error - getProvinces: HTTP ' . $response->status(), [
-                    'url' => $url,
-                    'response' => $response->body()
-                ]);
                 return [
                     'success' => false,
                     'message' => 'Lỗi kết nối API GHN: HTTP ' . $response->status()
@@ -52,9 +48,6 @@ class GHNService
             $data = $response->json();
             
             if (!isset($data['code'])) {
-                Log::error('GHN API Error - getProvinces: Invalid response format', [
-                    'response' => $data
-                ]);
                 return [
                     'success' => false,
                     'message' => 'Định dạng response không hợp lệ từ GHN API'
@@ -69,19 +62,12 @@ class GHNService
             }
 
             $errorMessage = $data['message'] ?? ($data['code_message'] ?? 'Lỗi không xác định');
-            Log::error('GHN API Error - getProvinces: ' . $errorMessage, [
-                'code' => $data['code'] ?? null,
-                'data' => $data
-            ]);
             
             return [
                 'success' => false,
                 'message' => $errorMessage
             ];
         } catch (\Exception $e) {
-            Log::error('GHN API Error - getProvinces Exception: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString()
-            ]);
             return [
                 'success' => false,
                 'message' => 'Lỗi kết nối API: ' . $e->getMessage()
@@ -116,7 +102,6 @@ class GHNService
                 'message' => $data['message'] ?? 'Lỗi không xác định'
             ];
         } catch (\Exception $e) {
-            Log::error('GHN API Error - getDistricts: ' . $e->getMessage());
             return [
                 'success' => false,
                 'message' => 'Lỗi kết nối API: ' . $e->getMessage()
@@ -150,7 +135,6 @@ class GHNService
                 'message' => $data['message'] ?? 'Lỗi không xác định'
             ];
         } catch (\Exception $e) {
-            Log::error('GHN API Error - getWards: ' . $e->getMessage());
             return [
                 'success' => false,
                 'message' => 'Lỗi kết nối API: ' . $e->getMessage()
@@ -210,7 +194,6 @@ class GHNService
                 'message' => $data['message'] ?? 'Lỗi tính phí vận chuyển'
             ];
         } catch (\Exception $e) {
-            Log::error('GHN API Error - calculateShippingFee: ' . $e->getMessage());
             return [
                 'success' => false,
                 'message' => 'Lỗi kết nối API: ' . $e->getMessage()
@@ -237,10 +220,6 @@ class GHNService
 
             // Kiểm tra thông tin địa chỉ gửi
             if (!$this->fromDistrictId || !$this->fromWardCode) {
-                Log::error('GHN: Missing from address config', [
-                    'from_district_id' => $this->fromDistrictId,
-                    'from_ward_code' => $this->fromWardCode
-                ]);
                 return [
                     'success' => false,
                     'message' => 'Thiếu cấu hình địa chỉ gửi hàng. Vui lòng kiểm tra GHN_FROM_DISTRICT_ID và GHN_FROM_WARD_CODE trong file .env'
@@ -285,12 +264,6 @@ class GHNService
                 'items' => $items,
             ];
 
-            Log::info('GHN: Creating order', [
-                'order_id' => $order->id,
-                'url' => $url,
-                'payload' => $payload
-            ]);
-
             $response = Http::withHeaders([
                 'Token' => $this->token,
                 'ShopId' => $this->shopId,
@@ -298,13 +271,6 @@ class GHNService
             ])->post($url, $payload);
 
             if (!$response->successful()) {
-                $responseBody = $response->body();
-                Log::error('GHN API Error - createOrder: HTTP ' . $response->status(), [
-                    'url' => $url,
-                    'status' => $response->status(),
-                    'response' => $responseBody,
-                    'payload' => $payload
-                ]);
                 return [
                     'success' => false,
                     'message' => 'Lỗi kết nối API GHN: HTTP ' . $response->status()
@@ -314,9 +280,6 @@ class GHNService
             $data = $response->json();
             
             if (!isset($data['code'])) {
-                Log::error('GHN API Error - createOrder: Invalid response format', [
-                    'response' => $data
-                ]);
                 return [
                     'success' => false,
                     'message' => 'Định dạng response không hợp lệ từ GHN API'
@@ -334,12 +297,6 @@ class GHNService
             }
 
             $errorMessage = $data['message'] ?? ($data['code_message'] ?? 'Lỗi tạo đơn hàng GHN');
-            Log::error('GHN API Error - createOrder: ' . $errorMessage, [
-                'code' => $data['code'] ?? null,
-                'code_message' => $data['code_message'] ?? null,
-                'message' => $data['message'] ?? null,
-                'data' => $data
-            ]);
 
             return [
                 'success' => false,
@@ -347,9 +304,6 @@ class GHNService
                 'code_message' => $data['code_message'] ?? null
             ];
         } catch (\Exception $e) {
-            Log::error('GHN API Error - createOrder Exception: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString()
-            ]);
             return [
                 'success' => false,
                 'message' => 'Lỗi kết nối API: ' . $e->getMessage()
@@ -385,7 +339,6 @@ class GHNService
                 'message' => $data['message'] ?? 'Lỗi lấy thông tin đơn hàng'
             ];
         } catch (\Exception $e) {
-            Log::error('GHN API Error - getOrderInfo: ' . $e->getMessage());
             return [
                 'success' => false,
                 'message' => 'Lỗi kết nối API: ' . $e->getMessage()
@@ -422,7 +375,6 @@ class GHNService
                 'message' => $data['message'] ?? 'Lỗi hủy đơn hàng'
             ];
         } catch (\Exception $e) {
-            Log::error('GHN API Error - cancelOrder: ' . $e->getMessage());
             return [
                 'success' => false,
                 'message' => 'Lỗi kết nối API: ' . $e->getMessage()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Store;
 
+use Inertia\Inertia;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CheckoutRequest;
 use App\Services\CartService;
@@ -65,22 +66,7 @@ class CheckoutController extends Controller
             }
             
             // Log để debug
-            \Log::info('Checkout Request Data', [
-                'delivery_method' => $orderData['delivery_method'] ?? null,
-                'district_id' => $orderData['district_id'] ?? null,
-                'ward_code' => $orderData['ward_code'] ?? null,
-                'district' => $orderData['district'] ?? null,
-                'ward' => $orderData['ward'] ?? null,
-            ]);
-            
             $order = $this->checkoutService->createOrder($orderData);
-
-            \Log::info('Order created successfully', [
-                'order_id' => $order->id,
-                'order_code' => $order->order_code,
-                'customer_email' => $order->customer_email,
-                'payment_method' => $order->payment_method
-            ]);
 
             if ($request->payment_method === 'vnpay') {
                 return redirect()->route('payment.vnpay.checkout', ['order_id' => $order->id]);
@@ -88,10 +74,6 @@ class CheckoutController extends Controller
         
             // Gửi email cho đơn COD (cod)
             if ($request->payment_method === 'cod') {
-                \Log::info('COD order created, attempting to send email', [
-                    'order_id' => $order->id,
-                    'customer_email' => $order->customer_email
-                ]);
                 try {
                     $this->emailService->sendOrderConfirmation($order);
                 } catch (\Exception $e) {

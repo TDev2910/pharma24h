@@ -4,68 +4,37 @@
       <!-- Employee Info (Read-only) -->
       <div class="form-field">
         <label class="field-label">Nhân viên</label>
-        <InputText 
-          :value="employeeDisplay" 
-          disabled 
-          class="field-input"
-        />
+        <InputText :value="employeeDisplay" disabled class="field-input" />
       </div>
 
       <!-- Date -->
       <div class="form-field">
         <label class="field-label">Ngày làm việc</label>
-        <Calendar 
-          v-model="formData.schedule_date" 
-          dateFormat="dd/mm/yy"
-          :disabled="!!schedule"
-          class="field-input"
-          :class="{ 'p-invalid': errors.schedule_date }"
-        />
+        <Calendar v-model="formData.schedule_date" dateFormat="dd/mm/yy" :disabled="!!schedule" class="field-input"
+          :class="{ 'p-invalid': errors.schedule_date }" />
         <small v-if="errors.schedule_date" class="p-error">{{ errors.schedule_date[0] }}</small>
       </div>
 
-      <!-- Shift -->
+      <!-- ca làm việc -->
       <div class="form-field">
         <label class="field-label">Ca làm việc <span class="required">*</span></label>
-        <Dropdown 
-          v-model="formData.shift_id" 
-          :options="shifts" 
-          optionLabel="name" 
-          optionValue="id"
-          placeholder="Chọn ca làm việc"
-          class="field-input"
-          :class="{ 'p-invalid': errors.shift_id }"
-        />
+        <Dropdown v-model="formData.shift_id" :options="shifts" optionLabel="name" optionValue="id"
+          placeholder="Chọn ca làm việc" class="field-input" :class="{ 'p-invalid': errors.shift_id }" />
         <small v-if="errors.shift_id" class="p-error">{{ errors.shift_id[0] }}</small>
       </div>
 
       <!-- Notes -->
       <div class="form-field">
         <label class="field-label">Ghi chú</label>
-        <Textarea 
-          v-model="formData.notes" 
-          rows="3"
-          placeholder="Nhập ghi chú (nếu có)"
-          class="field-input"
-          :class="{ 'p-invalid': errors.notes }"
-        />
+        <Textarea v-model="formData.notes" rows="3" placeholder="Nhập ghi chú (nếu có)" class="field-input"
+          :class="{ 'p-invalid': errors.notes }" />
         <small v-if="errors.notes" class="p-error">{{ errors.notes[0] }}</small>
       </div>
 
       <!-- Actions -->
       <div class="form-actions">
-        <Button 
-          label="Hủy" 
-          @click="$emit('cancel')" 
-          class="p-button-text"
-          :disabled="loading"
-        />
-        <Button 
-          type="submit"
-          :label="schedule ? 'Cập nhật' : 'Thêm lịch'" 
-          :loading="loading"
-          :disabled="loading"
-        />
+        <Button label="Hủy" @click="$emit('cancel')" class="p-button-text" :disabled="loading" />
+        <Button type="submit" :label="schedule ? 'Cập nhật' : 'Thêm lịch'" :loading="loading" :disabled="loading" />
       </div>
     </form>
   </div>
@@ -166,7 +135,7 @@ export default {
       this.errors = {}
 
       try {
-        const payload = 
+        const payload =
         {
           employee_id: this.formData.employee_id,
           shift_id: this.formData.shift_id,
@@ -175,13 +144,11 @@ export default {
         }
 
         let response
-        if (this.schedule && this.schedule.id) 
-        {
+        if (this.schedule && this.schedule.id) {
           // Update
           response = await axios.put(`/admin/employee-schedules/${this.schedule.id}`, payload)
-        } 
-        else 
-        {
+        }
+        else {
           // Create
           response = await axios.post('/admin/employee-schedules', payload)
         }
@@ -196,7 +163,7 @@ export default {
         this.$emit('saved', response.data)
       } catch (error) {
         console.error('Error saving schedule:', error)
-        
+
         if (error.response && error.response.status === 422) {
           this.errors = error.response.data.errors || {}
           this.$toast.add({

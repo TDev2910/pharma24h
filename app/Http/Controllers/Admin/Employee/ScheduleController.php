@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Exception;
 
-
 class ScheduleController extends Controller
 {
     /**
@@ -19,7 +18,7 @@ class ScheduleController extends Controller
      */
     public function index(Request $request)
     {
-        //hiển thị danh sách lịch làm việc
+        // hiển thị danh sách lịch làm việc
         $schedules = EmployeeSchedule::with(['employee.user', 'shift'])
             ->when($request->employee_id, function ($query, $employeeId) {
                 $query->where('employee_id', $employeeId);
@@ -36,9 +35,10 @@ class ScheduleController extends Controller
         return Inertia::render('Admin/Employee/Schedules/Index', [
             'schedules' => $schedules,
             'employees' => Employee::with('user')->get(),
-            'shifts' => Shift::all(),
+            'shifts'    => Shift::all(),
         ]);
     }
+
     /**
      * API: Lấy lịch làm việc
      */
@@ -71,24 +71,24 @@ class ScheduleController extends Controller
     public function getWeeklySchedules(Request $request)
     {
         $weekStart = $request->get('week_start', date('Y-m-d', strtotime('monday this week')));
-        $weekEnd = date('Y-m-d', strtotime($weekStart . ' +6 days'));
-        
+        $weekEnd   = date('Y-m-d', strtotime($weekStart . ' +6 days'));
+
         // Lấy tất cả nhân viên
         $employees = Employee::with(['user', 'branch', 'department', 'jobTitle'])->get();
-        
+
         // Lấy lịch làm việc trong tuần
         $schedules = EmployeeSchedule::with(['shift'])
             ->whereBetween('schedule_date', [$weekStart, $weekEnd])
             ->get()
             ->groupBy('employee_id');
-        
+
         // Tính lương dự kiến cho mỗi nhân viên
         $result = $employees->map(function ($employee) use ($schedules, $weekStart, $weekEnd) {
             $employeeSchedules = $schedules->get($employee->id, collect());
-            
+
             // Tính số ca làm việc trong tuần
             $shiftCount = $employeeSchedules->count();
-            
+
             // Tính lương dự kiến
             // - Lương cố định (fixed): Lương tháng / 22 ngày làm việc * số ca trong tuần
             // - Lương theo giờ (per_hour): Cần thêm thông tin giờ làm việc từ shift
@@ -103,30 +103,30 @@ class ScheduleController extends Controller
                 // Tính theo giờ (cần thêm thông tin giờ làm việc từ shift)
                 // Tạm thời để 0
             }
-            
+
             return [
-                'employee' => $employee,
-                'schedules' => $employeeSchedules->groupBy(function($schedule) {
+                'employee'        => $employee,
+                'schedules'       => $employeeSchedules->groupBy(function ($schedule) {
                     return $schedule->schedule_date->format('Y-m-d');
                 })->map(function ($daySchedules) {
                     return $daySchedules->map(function ($schedule) {
                         return [
-                            'id' => $schedule->id,
-                            'shift' => $schedule->shift,
-                            'schedule_date' => $schedule->schedule_date->format('Y-m-d'),
-                            'notes' => $schedule->notes,
+                            'id'           => $schedule->id,
+                            'shift'        => $schedule->shift,
+                            'schedule_date'=> $schedule->schedule_date->format('Y-m-d'),
+                            'notes'        => $schedule->notes,
                         ];
-                    })->values(); // Thêm ->values() để convert thành array
-                })->toArray(), // Thêm ->toArray() để convert Collection thành array
-                'shift_count' => $shiftCount,
-                'estimated_salary' => $estimatedSalary,
+                    })->values();
+                })->toArray(),
+                'shift_count'     => $shiftCount,
+                'estimated_salary'=> $estimatedSalary,
             ];
         });
-        
+
         return response()->json([
             'week_start' => $weekStart,
-            'week_end' => $weekEnd,
-            'employees' => $result,
+            'week_end'   => $weekEnd,
+            'employees'  => $result,
         ]);
     }
 
@@ -141,33 +141,31 @@ class ScheduleController extends Controller
 
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
-                    'success' => true,
-                    'message' => 'Thêm lịch làm việc thành công!',
+                    'success'  => true,
+                    'message'  => 'Thêm lịch làm việc thành công!',
                     'schedule' => $schedule
                 ], 201);
             }
 
             return redirect()->back()->with('success', 'Thêm lịch làm việc thành công!');
-        } 
-        catch (Exception $e) 
-        {
+        } catch (Exception $e) {
             if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
                 $message = 'Nhân viên đã có lịch làm việc cho ca này trong ngày đã chọn!';
-                
+
                 if ($request->expectsJson() || $request->ajax()) {
                     return response()->json([
                         'success' => false,
                         'message' => $message
                     ], 422);
                 }
-                
+
                 return redirect()->back()
                     ->with('error', $message)
                     ->withInput();
             }
 
             $message = 'Có lỗi xảy ra: ' . $e->getMessage();
-            
+
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -193,18 +191,16 @@ class ScheduleController extends Controller
 
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
-                    'success' => true,
-                    'message' => 'Cập nhật lịch làm việc thành công!',
+                    'success'  => true,
+                    'message'  => 'Cập nhật lịch làm việc thành công!',
                     'schedule' => $schedule
                 ]);
             }
 
             return redirect()->back()->with('success', 'Cập nhật lịch làm việc thành công!');
-        } 
-        catch (Exception $e) 
-        {
+        } catch (Exception $e) {
             $message = 'Có lỗi xảy ra: ' . $e->getMessage();
-            
+
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -223,16 +219,12 @@ class ScheduleController extends Controller
      */
     public function destroy($id)
     {
-        try
-        {
+        try {
             $schedule = EmployeeSchedule::findOrFail($id);
             $schedule->delete();
 
             return redirect()->back()->with('success', 'Xóa lịch làm việc thành công!');
-        } 
-
-        catch (Exception $e) 
-        {   
+        } catch (Exception $e) {
             return redirect()->back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
     }

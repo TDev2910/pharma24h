@@ -23,7 +23,7 @@
           <Button icon="pi pi-chevron-left" @click="previousWeek" class="p-button-text p-button-rounded"
             :disabled="loading" />
           <div class="week-display">
-            <span class="week-text">{{ weekDisplayText }}</span>  
+            <span class="week-text">{{ weekDisplayText }}</span>
             <Button label="Tuần này" @click="goToCurrentWeek" class="p-button-text p-button-sm" :disabled="loading" />
           </div>
           <Button icon="pi pi-chevron-right" @click="nextWeek" class="p-button-text p-button-rounded"
@@ -145,8 +145,7 @@ export default {
       //mảng chứa 7 ngày trong tuần
       const dayNames = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy']
 
-      for (let i = 0; i < 7; i++) 
-      {
+      for (let i = 0; i < 7; i++) {
         const date = new Date(this.weekStart)
         date.setDate(date.getDate() + i)
 

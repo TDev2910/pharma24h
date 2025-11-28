@@ -33,12 +33,6 @@ class PaymentController extends Controller
     {
         $result = $this->vnpayService->processReturn($request->all());
         if ($result['success']) {
-            \Log::info('VNPay payment successful, attempting to send email', [
-                'order_id' => $result['order']->id,
-                'order_code' => $result['order']->order_code,
-                'customer_email' => $result['order']->customer_email
-            ]);
-            
             // Gửi email xác nhận đơn hàng
             try {
                 $this->emailService->sendOrderConfirmation($result['order']);

@@ -3,166 +3,163 @@
 @section('title', 'Thanh toán')
 
 @section('content')
-<div class="container py-5">
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Thông tin thanh toán</h5>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('checkout.process') }}" method="POST" id="checkoutForm">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="note" class="form-label">Ghi chú</label>
-                            <input type="text" class="form-control @error('note') is-invalid @enderror" 
-                                id="note" name="note" value="{{ old('note') }}" placeholder="Nhập ghi chú ở đây">
-                            @error('note')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        
-                        <!-- Phương thức nhận hàng -->
-                        <div class="card mb-4">
-                            <div class="card-header bg-light">
-                                <h6 class="mb-0">Hình thức nhận hàng</h6>
+<div class="page-wrapper bg-light min-vh-100">
+    <section class="checkout-header py-4 bg-white shadow-sm mb-4" style="margin-top:100px;">
+        <div class="container">
+            <div class="d-flex align-items-center text-muted small mb-2">
+                <i class="pi pi-home me-2"></i> Trang chủ
+                <i class="pi pi-angle-right mx-2"></i> Giỏ hàng
+                <i class="pi pi-angle-right mx-2"></i> Thanh toán
+            </div>
+            <h2 class="fw-bold text-primary m-0">Thanh Toán & Đặt Hàng</h2>
+        </div>
+    </section>
+
+    <section class="checkout-content pb-5">
+        <div class="container">
+            <form action="{{ route('checkout.process') }}" method="POST" id="checkoutForm">
+                @csrf
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm rounded-3 mb-4">
+                            <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                                <h5 class="fw-bold text-dark"><i class="pi pi-id-card text-primary me-2"></i>Thông tin nhận hàng</h5>
                             </div>
-                            <div class="card-body">
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <input class="form-check-input delivery-method" type="radio" name="delivery_method" 
-                                                id="delivery_shipping" value="shipping" 
-                                                {{ old('delivery_method', 'shipping') === 'shipping' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="delivery_shipping">
-                                                Giao hàng tận nơi
-                                            </label>
+                            <div class="card-body p-4">
+                                <label class="form-label fw-medium mb-2 text-muted">Vui lòng chọn hình thức nhận hàng:</label>
+                                <div class="delivery-toggle d-flex justify-content-center mb-4 p-1 bg-light rounded-pill border">
+                                    <label class="toggle-item flex-fill">
+                                        <input class="delivery-method" type="radio" name="delivery_method" id="delivery_shipping" value="shipping"
+                                            {{ old('delivery_method', 'shipping') === 'shipping' ? 'checked' : '' }}>
+                                        <div class="inner d-flex align-items-center justify-content-center gap-2 fw-bold">
+                                            <i class="pi pi-truck"></i> Giao hàng tận nơi
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <input class="form-check-input delivery-method" type="radio" name="delivery_method" 
-                                                id="delivery_pickup" value="pickup" 
-                                                {{ old('delivery_method') === 'pickup' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="delivery_pickup">
-                                                Nhận tại nhà thuốc
-                                            </label>
+                                    </label>
+                                    <label class="toggle-item flex-fill">
+                                        <input class="delivery-method" type="radio" name="delivery_method" id="delivery_pickup" value="pickup"
+                                            {{ old('delivery_method') === 'pickup' ? 'checked' : '' }}>
+                                        <div class="inner d-flex align-items-center justify-content-center gap-2 fw-bold">
+                                            <i class="pi pi-building"></i> Nhận tại nhà thuốc
                                         </div>
-                                    </div>
+                                    </label>
                                 </div>
-                                
-                                <!-- Thông tin giao hàng tận nơi -->
-                                <div id="shipping_info" class="mt-4 {{ old('delivery_method') === 'pickup' ? 'd-none' : '' }}">
-                                    <h6 class="mb-3">Thông tin người nhận hàng</h6>
-                                    <div class="mb-3">
-                                        <label for="customer_name" class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('customer_name') is-invalid @enderror" 
-                                            id="customer_name" name="customer_name" 
-                                            value="{{ old('customer_name', auth()->user()->name ?? '') }}" 
-                                            {{ old('delivery_method', 'shipping') === 'shipping' ? 'required' : '' }}>
-                                        @error('customer_name')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="customer_phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('customer_phone') is-invalid @enderror" 
-                                            id="customer_phone" name="customer_phone" 
-                                            value="{{ old('customer_phone', auth()->user()->phone ?? '') }}" 
-                                            {{ old('delivery_method', 'shipping') === 'shipping' ? 'required' : '' }}>
-                                        @error('customer_phone')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="customer_email" class="form-label">Email <span class="text-muted">(để nhận email xác nhận đơn hàng)</span></label>
-                                        <input type="email" class="form-control @error('customer_email') is-invalid @enderror" 
-                                            id="customer_email" name="customer_email" 
-                                            value="{{ old('customer_email', auth()->user()->email ?? '') }}" 
-                                            placeholder="Nhập email của bạn">
-                                        @error('customer_email')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="province" class="form-label">Tỉnh/Thành phố <span class="text-danger">*</span></label>
-                                        <select class="form-select @error('province') is-invalid @enderror" id="province" name="province">
-                                            <option value="">Chọn tỉnh/thành phố</option>
-                                        </select>
-                                        @error('province')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    
-                                    <div class="row mb-3">
+
+                                <hr class="text-muted opacity-25 my-4">
+
+                                <div id="shipping_info" class="animate-fade {{ old('delivery_method') === 'pickup' ? 'd-none' : '' }}">
+                                    <h6 class="fw-bold mb-3 text-primary"><i class="pi pi-user me-2"></i>Thông tin người nhận</h6>
+                                    <div class="row g-3 mb-4">
                                         <div class="col-md-6">
-                                            <label for="district" class="form-label">Quận/Huyện <span class="text-danger">*</span></label>
-                                            <select class="form-select @error('district') is-invalid @enderror" id="district" name="district">
-                                                <option value="">Chọn quận/huyện</option>
-                                            </select>
-                                            @error('district')
+                                            <label class="form-label small text-muted">Họ và tên <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control @error('customer_name') is-invalid @enderror"
+                                                id="customer_name" name="customer_name"
+                                                value="{{ old('customer_name', auth()->user()->name ?? '') }}"
+                                                {{ old('delivery_method', 'shipping') === 'shipping' ? 'required' : '' }}>
+                                            @error('customer_name')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="ward" class="form-label">Phường/Xã <span class="text-danger">*</span></label>
-                                            <select class="form-select @error('ward') is-invalid @enderror" id="ward" name="ward">
-                                                <option value="">Chọn phường/xã</option>
-                                            </select>
-                                            @error('ward')
+                                            <label class="form-label small text-muted">Số điện thoại <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control @error('customer_phone') is-invalid @enderror"
+                                                id="customer_phone" name="customer_phone"
+                                                value="{{ old('customer_phone', auth()->user()->phone ?? '') }}"
+                                                {{ old('delivery_method', 'shipping') === 'shipping' ? 'required' : '' }}>
+                                            @error('customer_phone')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label small text-muted">Email <span class="text-muted fw-normal">(Nhận hóa đơn điện tử)</span></label>
+                                            <input type="email" class="form-control @error('customer_email') is-invalid @enderror"
+                                                id="customer_email" name="customer_email"
+                                                value="{{ old('customer_email', auth()->user()->email ?? '') }}"
+                                                placeholder="Nhập email của bạn">
+                                            @error('customer_email')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
-                                    
-                                    <!-- Hidden fields để lưu district_id và ward_code từ GHN -->
+
+                                    <h6 class="fw-bold mb-3 text-primary"><i class="pi pi-map me-2"></i>Địa chỉ giao hàng</h6>
+                                    <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label small text-muted">Tỉnh / Thành phố <span class="text-danger">*</span></label>
+                                                <select class="form-select @error('province') is-invalid @enderror" id="province" name="province">
+                                                    <option value="">Chọn tỉnh/thành phố</option>
+                                                </select>
+                                                @error('province')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small text-muted">Quận / Huyện <span class="text-danger">*</span></label>
+                                                <select class="form-select @error('district') is-invalid @enderror" id="district" name="district">
+                                                    <option value="">Chọn quận/huyện</option>
+                                                </select>
+                                                @error('district')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small text-muted">Phường / Xã <span class="text-danger">*</span></label>
+                                                <select class="form-select @error('ward') is-invalid @enderror" id="ward" name="ward">
+                                                    <option value="">Chọn phường/xã</option>
+                                                </select>
+                                                @error('ward')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label small text-muted">Địa chỉ cụ thể <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control @error('shipping_address') is-invalid @enderror"
+                                                    id="shipping_address" name="shipping_address" placeholder="Số nhà, tên đường, tòa nhà..."
+                                                    value="{{ old('shipping_address') }}">
+                                                @error('shipping_address')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                    </div>
                                     <input type="hidden" id="district_id" name="district_id" value="{{ old('district_id') }}">
                                     <input type="hidden" id="ward_code" name="ward_code" value="{{ old('ward_code') }}">
-                                    
-                                    <div class="mb-3">
-                                        <label for="shipping_address" class="form-label">Địa chỉ cụ thể <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('shipping_address') is-invalid @enderror" 
-                                            id="shipping_address" name="shipping_address" placeholder="Nhập số nhà, tên đường" 
-                                            value="{{ old('shipping_address') }}">
-                                        @error('shipping_address')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
                                 </div>
-                                
-                                <!-- Thông tin nhận tại nhà thuốc -->
-                                <div id="pickup_info" class="mt-4 {{ old('delivery_method') !== 'pickup' ? 'd-none' : '' }}">
-                                    <h6 class="mb-3">Thông tin người nhận hàng</h6>
-                                    <div class="mb-3">
-                                        <label for="customer_name_pickup" class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" 
-                                            id="customer_name_pickup" 
-                                            value="{{ old('customer_name', auth()->user()->name ?? '') }}">
+
+                                <div id="pickup_info" class="animate-fade {{ old('delivery_method') !== 'pickup' ? 'd-none' : '' }}">
+                                    <div class="alert alert-info border-0 bg-info-subtle text-info-emphasis mb-4 rounded-3">
+                                        <div class="d-flex">
+                                            <i class="pi pi-info-circle me-2 mt-1"></i>
+                                            <div>
+                                                <strong>Lưu ý:</strong> Sản phẩm sẽ được giữ tại cửa hàng trong vòng <strong>24h</strong>. Vui lòng đến đúng giờ.
+                                            </div>
+                                        </div>
                                     </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="customer_phone_pickup" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" 
-                                            id="customer_phone_pickup" 
-                                            value="{{ old('customer_phone', auth()->user()->phone ?? '') }}">
+
+                                    <h6 class="fw-bold mb-3 text-primary"><i class="pi pi-user me-2"></i>Thông tin người đến lấy hàng</h6>
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-muted">Họ và tên <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="customer_name_pickup"
+                                                value="{{ old('customer_name', auth()->user()->name ?? '') }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-muted">Số điện thoại <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="customer_phone_pickup"
+                                                value="{{ old('customer_phone', auth()->user()->phone ?? '') }}">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label small text-muted">Email <span class="text-muted fw-normal">(Nhận xác nhận đơn hàng)</span></label>
+                                            <input type="email" class="form-control" id="customer_email_pickup"
+                                                value="{{ old('customer_email', auth()->user()->email ?? '') }}"
+                                                placeholder="Nhập email của bạn">
+                                        </div>
                                     </div>
-                                    
+
+                                    <h6 class="fw-bold mb-3 text-primary"><i class="pi pi-building me-2"></i>Chọn cửa hàng gần bạn</h6>
                                     <div class="mb-3">
-                                        <label for="customer_email_pickup" class="form-label">Email <span class="text-muted">(để nhận email xác nhận đơn hàng)</span></label>
-                                        <input type="email" class="form-control" 
-                                            id="customer_email_pickup" 
-                                            value="{{ old('customer_email', auth()->user()->email ?? '') }}"
-                                            placeholder="Nhập email của bạn">
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="pickup_location" class="form-label">Chọn cửa hàng <span class="text-danger">*</span></label>
-                                        <select class="form-select @error('pickup_location') is-invalid @enderror" 
+                                        <label class="form-label small text-muted">Tìm kiếm nhà thuốc <span class="text-danger">*</span></label>
+                                        <select class="form-select @error('pickup_location') is-invalid @enderror"
                                             id="pickup_location" name="pickup_location">
-                                            <option value="">Chọn cửa hàng</option>
+                                            <option value="">Chọn cửa hàng...</option>
                                             @foreach($pharmacyLocations as $location)
                                                 <option value="{{ $location['name'] }}" {{ old('pickup_location') == $location['name'] ? 'selected' : '' }}>
                                                     {{ $location['name'] }} - {{ $location['address'] }}
@@ -176,80 +173,144 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Phương thức thanh toán -->
-                        <div class="card mb-4">
-                            <div class="card-header bg-light">
-                                <h6 class="mb-0">Phương thức thanh toán</h6>
+
+                        <div class="card border-0 shadow-sm rounded-3 mb-4">
+                            <div class="card-body p-4">
+                                <label class="form-label fw-medium"><i class="pi pi-pencil text-primary me-2"></i>Ghi chú đơn hàng</label>
+                                <textarea name="note" id="note" rows="2" class="form-control @error('note') is-invalid @enderror"
+                                    placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi giao...">{{ old('note') }}</textarea>
+                                @error('note')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
-                            <div class="card-body">
+                        </div>
+
+                        <div class="card border-0 shadow-sm rounded-3">
+                            <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                                <h5 class="fw-bold text-dark"><i class="pi pi-wallet text-primary me-2"></i>Phương thức thanh toán</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="payment-options d-flex flex-column gap-3">
+                                    <label class="payment-item d-flex align-items-center p-3 border rounded-3 cursor-pointer transition-all
+                                        {{ old('payment_method', 'cod') === 'cod' ? 'border-primary bg-primary-subtle' : '' }}">
+                                        <input class="form-check-input me-2" type="radio" name="payment_method" id="payment_cod" value="cod"
+                                            {{ old('payment_method', 'cod') === 'cod' ? 'checked' : '' }}>
+                                        <div class="ms-2 flex-fill">
+                                            <span class="fw-bold d-block text-dark">Thanh toán khi nhận hàng (COD)</span>
+                                            <span class="small text-muted">Bạn chỉ phải thanh toán khi đã nhận được hàng</span>
+                                        </div>
+                                        <i class="pi pi-money-bill fs-4 text-success"></i>
+                                    </label>
+
+                                    <label class="payment-item d-flex align-items-center p-3 border rounded-3 cursor-pointer transition-all
+                                        {{ old('payment_method') === 'vnpay' ? 'border-primary bg-primary-subtle' : '' }}">
+                                        <input class="form-check-input me-2" type="radio" name="payment_method" id="payment_vnpay" value="vnpay"
+                                            {{ old('payment_method') === 'vnpay' ? 'checked' : '' }}>
+                                        <div class="ms-2 flex-fill">
+                                            <span class="fw-bold d-block text-dark">Thanh toán qua VNPAY / Ngân hàng</span>
+                                            <span class="small text-muted">Quét mã QR để thanh toán nhanh chóng</span>
+                                        </div>
+                                        <i class="pi pi-credit-card fs-4 text-primary"></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="checkout-summary card border-0 shadow-lg rounded-3 position-sticky" style="top:20px;">
+                            <div class="card-header bg-primary text-white py-3 rounded-top-3">
+                                <h5 class="m-0 fw-bold text-center">Tóm Tắt Đơn Hàng</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="order-items mb-3 border-bottom pb-3">
+                                    @foreach($cartItems as $item)
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge bg-light text-dark border me-2">{{ $item->quantity ?? $item->qty ?? 1 }}x</span>
+                                                <span class="text-dark small fw-medium text-truncate" style="max-width: 160px;">
+                                                    {{ $item->product_name ?? $item->name ?? 'Sản phẩm' }}
+                                                </span>
+                                            </div>
+                                            <span class="small fw-bold">{{ number_format($item->price ?? $item->unit_price ?? 0) }}đ</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div class="summary-row d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Tạm tính:</span>
+                                    <span class="fw-bold">{{ number_format($cartTotal) }}đ</span>
+                                </div>
+                                <div class="summary-row d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Phí vận chuyển:</span>
+                                    <span class="text-success fw-bold">0đ</span>
+                                </div>
+
+                                <hr class="my-3 text-muted">
+
+                                <div class="total-row d-flex justify-content-between align-items-center mb-4">
+                                    <span class="h5 fw-bold text-dark m-0">Tổng cộng:</span>
+                                    <span class="h4 fw-bold text-danger m-0">{{ number_format($cartTotal) }}đ</span>
+                                </div>
+
                                 <div class="form-check mb-3">
-                                    <input class="form-check-input" type="radio" name="payment_method" id="payment_cod" value="cod" 
-                                        {{ old('payment_method', 'cod') === 'cod' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="payment_cod">
-                                        <i class="fas fa-money-bill-wave me-2"></i> Thanh toán khi nhận hàng (COD)
+                                    <input class="form-check-input" type="checkbox" id="agree_terms" checked>
+                                    <label class="form-check-label small text-muted" for="agree_terms">
+                                        Đồng ý với các <a href="#" class="text-decoration-none">điều khoản & chính sách</a> của nhà thuốc.
                                     </label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="payment_method" id="payment_vnpay" value="vnpay"
-                                        {{ old('payment_method') === 'vnpay' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="payment_vnpay">
-                                        <i class="fas fa-credit-card me-2"></i> Thanh toán qua VNPAY
-                                    </label>
-                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm d-flex justify-content-center align-items-center">
+                                    <span>HOÀN TẤT ĐẶT HÀNG</span>
+                                </button>
+                                <a href="{{ route('cart.index') }}" class="d-block text-center mt-3 text-muted text-decoration-none small hover-underline">
+                                    <i class="pi pi-arrow-left me-1"></i> Quay lại giỏ hàng
+                                </a>
                             </div>
                         </div>
-                        
-                        <div class="d-flex justify-content-between mt-4">
-                            <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>Quay lại giỏ hàng
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-check me-2"></i>Đặt hàng
-                            </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
-        
-        <div class="col-md-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Chi tiết thanh toán</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Tạm tính</span>
-                        <span>{{ number_format($cartTotal) }}đ</span>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Phí vận chuyển</span>
-                        <span>0đ</span>
-                    </div>
-                    
-                    <hr>
-                    
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="fw-bold">Tổng tiền</span>
-                        <span class="text-danger fw-bold fs-5">{{ number_format($cartTotal) }}đ</span>
-                    </div>
-                    
-                    <div class="mt-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="agree_terms" checked>
-                            <label class="form-check-label small" for="agree_terms">
-                                Bằng cách tích vào ô này, bạn đồng ý với <a href="#">điều khoản & điều kiện</a> của chúng tôi.
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </section>
 </div>
 @endsection
+
+@push('styles')
+<style>
+    .delivery-toggle .toggle-item {
+        border-radius: 999px;
+        border: 1px solid transparent;
+        transition: all .2s ease;
+    }
+    .delivery-toggle .toggle-item input {
+        display: none;
+    }
+    .delivery-toggle .toggle-item .inner {
+        padding: 12px 8px;
+        border-radius: 999px;
+    }
+    .delivery-toggle .toggle-item:has(input:checked) .inner {
+        background: #0d6efd;
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(13, 110, 253, 0.15);
+    }
+    .delivery-toggle .toggle-item:not(:has(input:checked)) .inner {
+        color: #6c757d;
+    }
+    .payment-item:hover {
+        background-color: #f8f9fa;
+        border-color: #0d6efd !important;
+    }
+    .animate-fade {
+        animation: fadeIn .4s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity:0; transform: translateY(-10px); }
+        to { opacity:1; transform: translateY(0); }
+    }
+</style>
+@endpush
 
 @push('scripts')
 <script>

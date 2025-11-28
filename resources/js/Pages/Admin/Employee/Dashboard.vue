@@ -99,9 +99,6 @@
               <button class="tab" :class="{ active: activeTab === 'salary' }" @click="switchTab('salary')">
                 Lương & Phụ cấp
               </button>
-              <button class="tab" :class="{ active: activeTab === 'schedule' }" @click="switchTab('schedule')">
-                Lịch làm việc
-              </button>
             </div>
 
             <!-- Tab Content -->
@@ -188,8 +185,6 @@
                     <div class="mt-3">
                       <Button label="Chỉnh sửa" icon="pi pi-pencil" class="p-button-success p-button-sm me-2"
                         @click="editEmployee(slotProps.data)" />
-                      <Button label="Lập lịch" icon="pi pi-calendar" class="p-button-info p-button-sm me-2"
-                        @click="scheduleEmployee(slotProps.data)" />
                       <Button label="Xóa" icon="pi pi-trash" class="p-button-danger p-button-sm"
                         @click="deleteEmployee(slotProps.data)" />
                     </div>

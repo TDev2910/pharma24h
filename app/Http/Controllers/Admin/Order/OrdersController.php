@@ -182,7 +182,7 @@ class OrdersController extends Controller
     public function updateStatus(Request $request, string $order, CheckoutService $checkout)
     {
         $request->validate([
-            'status' => 'required|in:pending,completed,confirmed,cancelled',
+            'status' => 'required|in:pending,completed,confirmed,cancelled,delivered',
         ]);
         $order = Order::findOrFail($order);
         $oldStatus = $order->order_status;
@@ -201,7 +201,7 @@ class OrdersController extends Controller
             $order->order_status = $request->status;
             if ($request->status === 'pending') {
                 $order->payment_status = 'unpaid';
-            }
+            }   
             $order->save();
         }
 
