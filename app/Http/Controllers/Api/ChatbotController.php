@@ -30,12 +30,10 @@ class ChatbotController extends Controller
         return response()->eventStream(
             function () use ($userMessage) {
                 try {
-                    // ========== THÊM MỚI: SEARCH PRODUCTS ==========
                     $searchResults = $this->productSearch->search($userMessage);
                     $productInfo = $this->productSearch->formatForGemini($searchResults);
-                    // ===============================================
 
-                    //lấy api key từ config đã set up sẵn trong file service.php 
+                    // lấy api key từ config đã set up sẵn trong file service.php 
                     $apiKey = config('services.gemini.api_key');
 
                     // Kiểm tra API key
@@ -45,31 +43,30 @@ class ChatbotController extends Controller
                     }
 
                     $prompt = $this->buildEnhancedPrompt($userMessage, $productInfo);
-                    // ====================================================
 
-                    //Gửi POST request đến Gemini API
+                    // Gửi POST request đến Gemini API
                     $response = Http::timeout(30)->post(
                         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey,
                         [
                             'contents' => [
                                 [
                                     'parts' => [
-                                        ['text' => $prompt]
-                                    ]
-                                ]
-                            ]
+                                        ['text' => $prompt],
+                                    ],
+                                ],
+                            ],
                         ]
                     );
 
                     if ($response->successful()) {
                         $responseData = $response->json();
-                        
+
                         // Kiểm tra cấu trúc response
                         if (!isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
                             Log::error('Chatbot: Cấu trúc response từ Gemini không đúng', ['response' => $responseData]);
                             throw new \Exception('Không thể lấy phản hồi từ Gemini API');
                         }
-                        
+
                         $content = $responseData['candidates'][0]['content']['parts'][0]['text'];
 
                         // Stream Gemini response
@@ -89,7 +86,7 @@ class ChatbotController extends Controller
                         Log::error('Chatbot: Gemini API failed', [
                             'status' => $statusCode,
                             'response' => $errorBody,
-                            'message' => $userMessage
+                            'message' => $userMessage,
                         ]);
                         throw new \Exception('Gemini API failed: ' . $statusCode . ' - ' . substr($errorBody, 0, 200));
                     }
@@ -98,9 +95,9 @@ class ChatbotController extends Controller
                     Log::error('Chatbot error', [
                         'message' => $e->getMessage(),
                         'trace' => $e->getTraceAsString(),
-                        'user_message' => $userMessage
+                        'user_message' => $userMessage,
                     ]);
-                    
+
                     // Fallback response khi Gemini lỗi
                     $fallbackResponse = $this->getFallbackResponse($userMessage);
 
@@ -124,31 +121,56 @@ class ChatbotController extends Controller
         );
     }
 
-    public function index() {}
+    public function index()
+    {
 
-    //xây dựng prompt cho Gemini API trả lời đúng
+    }
+
     private function buildEnhancedPrompt(string $userMessage, string $productInfo): string
     {
         return <<<PROMPT
-        Bạn là trợ lý AI của nhà thuốc Pharma PCT (địa chỉ: 12 Đô Lương, Phường 11, Vũng Tàu).
+        Bạn là nhân viên bán hàng tại nhà thuốc Pharma PCT (12 Đô Lương, Vũng Tàu).
+        Nhiệm vụ: Trả lời ngắn gọn, súc tích, đúng trọng tâm câu hỏi của khách (đóng vai người bán hàng thực tế).
 
+        DỮ LIỆU SẢN PHẨM HIỆN CÓ:
         {$productInfo}
 
-        CÂU HỎI KHÁCH HÀNG: {$userMessage}
+        YÊU CẦU TRẢ LỜI:
+        1. NGUYÊN TẮC VÀNG: Khách hỏi gì đáp nấy. KHÔNG trả lời dư thừa.
+        - Khách hỏi "giá bao nhiêu": Chỉ trả lời Tên thuốc + Giá + Tình trạng hàng (Còn/Hết). KHÔNG nêu cách dùng, thành phần (trừ khi khách hỏi thêm).
+        - Khách hỏi "công dụng": Chỉ nêu ngắn gọn 1 dòng tác dụng chính.
+        - Khách hỏi "cách dùng": Mới được nêu chi tiết liều lượng.
 
-        HƯỚNG DẪN TRẢ LỜI:
-        1. CHỈ trả lời các câu hỏi về lĩnh vực Y TẾ, SỨC KHỎE, THUỐC MEN, DỊCH VỤ Y TẾ, hoặc thông tin nhà thuốc (giờ làm việc, địa chỉ).
-        2. Nếu câu hỏi KHÔNG liên quan đến y tế (ví dụ: thời tiết, thể thao, giải trí, tin tức, v.v.), hãy từ chối một cách lịch sự và đề xuất khách hàng hỏi về sức khỏe hoặc thuốc men.
-        3. Nếu có thông tin sản phẩm/dịch vụ ở trên, hãy tư vấn cụ thể dựa trên dữ liệu đó (tên, giá, tồn kho, mô tả).
-        4. Trả lời bằng tiếng Việt, thân thiện và chuyên nghiệp.
-        5. Nếu không có thông tin sản phẩm, hãy tư vấn chung về sức khỏe và đề xuất khách hàng liên hệ hotline 0901645269.
-        6. Luôn kết thúc bằng câu hỏi để tương tác với khách hàng.
+        2. VĂN PHONG:
+        - Thân thiện, ngắn gọn.
+        - Không liệt kê dài dòng kiểu văn bản hành chính.
+        - Nếu có nhiều sản phẩm, hãy tóm tắt dạng danh sách ngắn.
 
-        Trả lời:
+        3. KỊCH BẢN MẪU:
+        - Khách: "Siro ho bao nhiêu tiền?"
+        - Bạn: "Hiện tại, bên em đang có 2 loại siro ho ạ:
+            1. Prospan (Đức): 93.000đ/chai (Trị viêm phế quản).
+            2. ATessen: 50.000đ/hộp (Giảm ho khan).
+            Bạn muốn lấy loại nào ạ?"
+
+        CÂU HỎI CỦA KHÁCH: "{$userMessage}"
+        TRẢ LỜI:
         PROMPT;
     }
 
-    //phản hồi dữ liệu được set cố định để tránh lỗi khi Gemini lỗi
+    private function isProductQuery(string $message): bool
+    {
+        $message = mb_strtolower($message, 'UTF-8');
+        $productKeywords = ['sản phẩm', 'thuốc', 'hàng hóa', 'kem', 'viên', 'siro'];
+        foreach ($productKeywords as $keyword) {
+            if (mb_strpos($message, $keyword) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // phản hồi dữ liệu được set cố định để tránh lỗi khi Gemini lỗi
     private function getFallbackResponse($message)
     {
         $message = strtolower($message);
