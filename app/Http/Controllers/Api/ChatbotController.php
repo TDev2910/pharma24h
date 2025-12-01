@@ -30,93 +30,83 @@ class ChatbotController extends Controller
         return response()->eventStream(
             function () use ($userMessage) {
                 try {
+                    // 1. Tìm kiếm dữ liệu trong DB
                     $searchResults = $this->productSearch->search($userMessage);
-                    $productInfo = $this->productSearch->formatForGemini($searchResults);
 
-                    // lấy api key từ config đã set up sẵn trong file service.php 
+                    // --- [MỚI] GỬI ẢNH VỀ CLIENT TRƯỚC ---
+                    $productImages = $this->productSearch->extractProductImages($searchResults);
+                    if (!empty($productImages)) {
+                        // Gửi sự kiện tên là 'images'
+                        echo "event: images\n";
+                        echo "data: " . json_encode($productImages) . "\n\n";
+
+                        // Đẩy dữ liệu đi ngay lập tức (Flush buffer)
+                        if (ob_get_level() > 0) ob_flush();
+                        flush();
+                    }
+                    // -------------------------------------
+
+                    // 2. Chuẩn bị dữ liệu cho Gemini (Code cũ)
+                    $productInfo = $this->productSearch->formatForGemini($searchResults);
                     $apiKey = config('services.gemini.api_key');
 
-                    // Kiểm tra API key
                     if (empty($apiKey)) {
-                        Log::error('Chatbot: Gemini API key chưa được cấu hình');
-                        throw new \Exception('API key chưa được cấu hình. Vui lòng kiểm tra file .env và thêm GEMINI_API_KEY.');
+                        throw new \Exception('API key chưa cấu hình');
                     }
 
                     $prompt = $this->buildEnhancedPrompt($userMessage, $productInfo);
 
-                    // Gửi POST request đến Gemini API
+                    // 3. Gọi Gemini API
                     $response = Http::timeout(30)->post(
                         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey,
                         [
                             'contents' => [
                                 [
                                     'parts' => [
-                                        ['text' => $prompt],
-                                    ],
-                                ],
-                            ],
+                                        [
+                                            'text' => $prompt
+                                        ]
+                                    ]
+                                ]
+                            ]
                         ]
                     );
 
                     if ($response->successful()) {
                         $responseData = $response->json();
-
-                        // Kiểm tra cấu trúc response
-                        if (!isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
-                            Log::error('Chatbot: Cấu trúc response từ Gemini không đúng', ['response' => $responseData]);
-                            throw new \Exception('Không thể lấy phản hồi từ Gemini API');
-                        }
-
-                        $content = $responseData['candidates'][0]['content']['parts'][0]['text'];
-
-                        // Stream Gemini response
+                        // Kiểm tra null safe cho response
+                        $content = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? '';
                         $words = explode(' ', $content);
-                        foreach ($words as $index => $word) {
-                            yield new StreamedEvent(event: 'update', data: $word . ' ');
 
+                        foreach ($words as $index => $word) {
+                            // Gửi sự kiện tên là 'update' (chứa text)
+                            echo "event: update\n";
+                            echo "data: " . $word . ' ' . "\n\n";
+
+                            // Flush buffer định kỳ để tạo hiệu ứng gõ chữ mượt mà
                             if ($index % 3 === 0) {
-                                usleep(50000); // 50ms delay
+                                if (ob_get_level() > 0) ob_flush();
+                                flush();
+                                usleep(50000);
                             }
                         }
-
-                        yield new StreamedEvent(event: 'update', data: "\n\n");
                     } else {
-                        $errorBody = $response->body();
-                        $statusCode = $response->status();
-                        Log::error('Chatbot: Gemini API failed', [
-                            'status' => $statusCode,
-                            'response' => $errorBody,
-                            'message' => $userMessage,
-                        ]);
-                        throw new \Exception('Gemini API failed: ' . $statusCode . ' - ' . substr($errorBody, 0, 200));
+                        // Xử lý lỗi API
+                        Log::error('Gemini API Error', ['body' => $response->body()]);
+                        echo "event: update\n";
+                        echo "data: Xin lỗi, hệ thống đang bận.\n\n";
                     }
                 } catch (\Exception $e) {
-                    // Log lỗi chi tiết
-                    Log::error('Chatbot error', [
-                        'message' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString(),
-                        'user_message' => $userMessage,
-                    ]);
-
-                    // Fallback response khi Gemini lỗi
-                    $fallbackResponse = $this->getFallbackResponse($userMessage);
-
-                    // Stream fallback response
-                    $words = explode(' ', $fallbackResponse);
-                    foreach ($words as $index => $word) {
-                        yield new StreamedEvent(event: 'update', data: $word . ' ');
-
-                        if ($index % 3 === 0) {
-                            usleep(100000); // 100ms delay
-                        }
-                    }
-                    yield new StreamedEvent(event: 'update', data: "\n\n");
+                    Log::error('Chatbot Stream Error: ' . $e->getMessage());
+                    echo "event: update\n";
+                    echo "data: Có lỗi xảy ra: " . $e->getMessage() . "\n\n";
                 }
             },
-            headers: [
+            [
                 'Content-Type' => 'text/event-stream',
                 'Cache-Control' => 'no-cache',
                 'Connection' => 'keep-alive',
+                'X-Accel-Buffering' => 'no', // Quan trọng nếu dùng Nginx
             ]
         );
     }

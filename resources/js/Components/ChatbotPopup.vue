@@ -16,9 +16,28 @@
         </div>
 
         <div class="message-content-wrapper">
-          <div class="message-bubble" :class="{ 'user-bubble': message.type === 'user', 'bot-bubble': message.type === 'bot' }">
-            <span v-html="formatMessage(message.content)"></span>
+          
+          <div v-if="message.type === 'bot' && message.products && message.products.length > 0" class="products-carousel">
+            <div v-for="product in message.products" :key="product.id" class="product-card">
+              <div class="product-image">
+                <img :src="product.image" :alt="product.name" @error="$event.target.src='https://via.placeholder.com/150?text=No+Image'"/>
+              </div>
+              <div class="product-info">
+                <div class="product-name" :title="product.name">{{ product.name }}</div>
+                <div class="product-price">{{ product.price }}</div>
+                <button class="view-btn">Chi tiết</button>
+              </div>
+            </div>
           </div>
+
+          <div v-if="message.content || isLoading" class="message-bubble" :class="{ 'user-bubble': message.type === 'user', 'bot-bubble': message.type === 'bot', 'loading-bubble': !message.content && isLoading && message.type === 'bot' }">
+             <span v-if="message.content" v-html="formatMessage(message.content)"></span>
+             
+             <div v-else-if="isLoading && message.type === 'bot'" class="typing-dots">
+               <span></span><span></span><span></span>
+             </div>
+          </div>
+          
           <div class="message-time">{{ message.time }}</div>
         </div>
         
@@ -157,57 +176,62 @@ const sendMessage = async () => {
     const reader = response.body.getReader()
     const decoder = new TextDecoder()
 
+    // Tạo tin nhắn cho bot rỗng
+    const botMessageIndex = messages.value.push({
+      type: 'bot',
+      content: '',
+      products: [], 
+      time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+    }) - 1
+
+    let currentEvent = null // biến lưu loại event đang đọc hiện tại
+
     let botResponse = ''
     let isFirstChunk = true
 
+    // 3. Vòng lặp đọc Stream
     while (true) {
       const { done, value } = await reader.read()
       if (done) break
 
       const chunk = decoder.decode(value)
-      const lines = chunk.split('\n')
+      // Tách dòng cẩn thận hơn để tránh lỗi dòng trống
+      const lines = chunk.split('\n').filter(line => line.trim() !== '')
 
       for (const line of lines) {
-        if (line.startsWith('data: ')) {
+        if (line.startsWith('event: ')) {
+          currentEvent = line.slice(7).trim()
+        } 
+        else if (line.startsWith('data: ')) {
           const data = line.slice(6)
 
-          if (data === '</stream>') {
-            isLoading.value = false
-            return
+          if (currentEvent === 'images') {
+             try {
+               // Parse mảng sản phẩm
+               const products = JSON.parse(data)
+               // Gán vào tin nhắn bot hiện tại
+               messages.value[botMessageIndex].products = products
+               nextTick(() => scrollToBottom())
+             } catch (e) {
+               console.error('Lỗi parse ảnh:', e)
+             }
+          } 
+          else if (currentEvent === 'update') {
+             // Nối text
+             messages.value[botMessageIndex].content += data
+             nextTick(() => scrollToBottom())
           }
-
-          if (isFirstChunk) {
-            // Add bot message container
-            messages.value.push({
-              type: 'bot',
-              content: '',
-              time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
-            })
-            isFirstChunk = false
-          }
-
-          // Append to bot response
-          botResponse += data
-
-          // Update the last message (bot message)
-          const lastMessage = messages.value[messages.value.length - 1]
-          if (lastMessage && lastMessage.type === 'bot') {
-            lastMessage.content = botResponse
-          }
-
-          scrollToBottom()
         }
       }
     }
 
-  } catch (error) {
-    console.error('Error sending message:', error)
     isLoading.value = false
-
-    messages.value.push({
-      type: 'bot',
-      content: '❌ Có lỗi xảy ra. Vui lòng thử lại.',
-      time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+  } catch (error) {
+    console.error('Error:', error)
+    isLoading.value = false
+    messages.value.push({ 
+        type: 'bot', 
+        content: 'Có lỗi kết nối, vui lòng thử lại.' 
     })
   }
 }
@@ -443,6 +467,105 @@ onUnmounted(() => {
   min-height: 24px;
   max-height: 120px;
   color: #333;
+}
+
+/* --- Product Carousel (Thanh trượt ngang) --- */
+.products-carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 5px 2px 15px 2px; /* Padding bottom để tránh che bóng đổ */
+  margin-bottom: 8px;
+  max-width: 100%;
+  scrollbar-width: thin; /* Firefox */
+}
+
+/* Thanh cuộn cho Chrome/Safari */
+.products-carousel::-webkit-scrollbar {
+  height: 6px;
+}
+.products-carousel::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+/* --- Product Card --- */
+.product-card {
+  min-width: 160px;
+  max-width: 160px;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+}
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.product-image {
+  height: 120px;
+  width: 100%;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Hoặc 'contain' nếu muốn thấy hết ảnh */
+}
+
+.product-info {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.product-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+  line-height: 1.3;
+  /* Cắt dòng nếu tên quá dài */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 34px;
+}
+
+.product-price {
+  font-size: 14px;
+  color: #d32f2f; /* Màu đỏ nổi bật */
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.view-btn {
+  margin-top: auto;
+  background: #e3f2fd;
+  color: #1976d2;
+  border: none;
+  border-radius: 6px;
+  padding: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s;
+}
+.view-btn:hover {
+  background: #bbdefb;
 }
 
 /* --- Action Buttons --- */
