@@ -61,39 +61,47 @@ class HomeController extends Controller
     {
         //lấy sản phẩm thuộc loại danh mục thuốc
         $medicines = Medicine::with(['category', 'manufacturer'])
-            ->where('ban_truc_tiep', true)
-            ->latest()
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'name' => $item->ten_thuoc,
-                    'gia_ban' => $item->gia_ban,
-                    'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? '') : '',
-                    'unit'  => $item->don_vi_tinh,
-                    'image' => $item->image ? asset('storage/' . $item->image) : null,
-                    'type'  => 'medicine',
-                    'created_at' => $item->created_at
-                ];
-            });
+        ->where('ban_truc_tiep', true)
+        ->latest()
+        ->get()
+        ->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'name' => $item->ten_thuoc,
+                'gia_ban' => $item->gia_ban ?? 0,
+                'gia_khuyen_mai' => $item->gia_khuyen_mai ?? 0,
+                'ton_kho' => $item->ton_kho ?? 0,
+                'ton_khuyen_mai' => $item->ton_khuyen_mai ?? 0,
+                'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? '') : '',
+                'unit'  => $item->don_vi_tinh,
+                'don_vi_tinh' => $item->don_vi_tinh,
+                'image' => $item->image ? asset('storage/' . $item->image) : null,
+                'type'  => 'medicine',
+                'created_at' => $item->created_at
+            ];
+        });
 
         //lấy sản phẩm thuộc loại danh mục vật tư y tế
         $goods = Goods::with(['category', 'manufacturer'])
-            ->where('ban_truc_tiep', true)
-            ->latest()
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'name' => $item->ten_hang_hoa,
-                    'gia_ban' => $item->gia_ban,
-                    'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? '') : '',
-                    'unit'  => $item->don_vi_tinh,
-                    'image' => $item->image ? asset('storage/' . $item->image) : null,
-                    'type'  => 'goods',
-                    'created_at' => $item->created_at
-                ];
-            });
+        ->where('ban_truc_tiep', true)
+        ->latest()
+        ->get()
+        ->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'name' => $item->ten_hang_hoa,
+                'gia_ban' => $item->gia_ban ?? 0,
+                'gia_khuyen_mai' => $item->gia_khuyen_mai ?? 0,
+                'ton_kho' => $item->ton_kho ?? 0,
+                'ton_khuyen_mai' => $item->ton_khuyen_mai ?? 0,
+                'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? '') : '',
+                'unit'  => $item->don_vi_tinh,
+                'don_vi_tinh' => $item->don_vi_tinh,
+                'image' => $item->image ? asset('storage/' . $item->image) : null,
+                'type'  => 'goods',
+                'created_at' => $item->created_at
+            ];
+        });
 
         $allProducts = $medicines->merge($goods)
             ->sortByDesc('created_at')

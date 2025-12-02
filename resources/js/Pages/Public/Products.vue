@@ -131,11 +131,24 @@
                 <div class="product-body">
                   <div class="product-title-modern">{{ product.name }}</div>
                   <div class="product-price-modern">
-                    {{ product.gia_ban_formatted }}
+                    <template v-if="isPromotionActive(product)">
+                      <span class="text-danger">{{ formatPrice(product.gia_khuyen_mai) }}</span>
+                      <span class="badge bg-warning text-dark ms-2" style="font-size: 0.7rem;">KM</span>
+                      <span class="text-muted ms-2" style="text-decoration: line-through; font-size: 0.9rem;">
+                        {{ formatPrice(product.gia_ban) }}
+                      </span>
+                    </template>
+                    <template v-else>
+                      {{ formatPrice(product.gia_ban) }}
+                    </template>
                   </div>
-                  <button class="btn btn-primary product-btn"
-                    @click="addToCart({ id: product.id, type: product.type })">
-                    Thêm vào giỏ
+                  <button class="btn product-btn" :class="{
+                    'btn-secondary': isOutOfStock(product),
+                    'btn-success': isPromotionActive(product) && !isOutOfStock(product),
+                    'btn-primary': !isPromotionActive(product) && !isOutOfStock(product)
+                  }" @click.stop="addToCartHandler(product)" :disabled="isButtonDisabled(product)">
+                    <i class="fas fa-cart-plus me-2"></i>
+                    {{ getButtonLabel(product) }}
                   </button>
                 </div>
               </div>
@@ -236,33 +249,64 @@ function resetPriceFilter() {
   })
 }
 
+function isPromotionActive(product) {
+  // Kiểm tra null, undefined, 0, và chuyển đổi sang number
+  const tonKhuyenMai = Number(product.ton_khuyen_mai) || 0;
+  const giaKhuyenMai = Number(product.gia_khuyen_mai) || 0;
+  return tonKhuyenMai > 0 && giaKhuyenMai > 0;
+}
 
-//thêm sản phẩm vào giỏ hàng
-async function addToCart({ id, type }) {
+function isOutOfStock(product) {
+  // Kiểm tra null, undefined, 0, string "0", và số âm
+  const tonKho = Number(product.ton_kho) || 0;
+  return tonKho <= 0;  // ✅ Dùng <= 0 thay vì == 0 để bao gồm cả số âm
+}
+
+function isButtonDisabled(product) {
+  if (isOutOfStock(product)) return true;
+  
+  // Kiểm tra nếu có khuyến mãi nhưng hết tồn khuyến mãi
+  if (isPromotionActive(product)) {
+    const tonKhuyenMai = Number(product.ton_khuyen_mai) || 0;
+    if (tonKhuyenMai <= 0) return true;
+  }
+  
+  return false;
+}
+
+function getButtonLabel(product) {
+  if (isOutOfStock(product)) return 'Hết hàng';
+  if (isPromotionActive(product)) return 'Mua với giá KM';
+  return 'Thêm vào giỏ';
+}
+
+function formatPrice(amount) {
+  if (!amount) return '0 VNĐ';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND'
+  }).format(amount);
+}
+
+// Xử lý hàm thêm vào giỏ hàng
+async function addToCartHandler(product) {
   try {
     const response = await axios.post('/cart/add', {
-      item_id: id,
-      item_type: type,
-      quantity: 1
+      item_id: product.id,           // ✅ Dùng product từ tham số
+      item_type: product.type,        // ✅ Dùng product.type
+      quantity: 1,
+      is_promotion: isPromotionActive(product)  // ✅ Gọi function với product
     });
-
     if (response.data.success) {
-      // 1. Cập nhật số lượng giỏ hàng
       window.dispatchEvent(new CustomEvent('cart-updated'));
-
-      // 2. Tự động mở dropdown giỏ hàng
       const cartDropdown = document.querySelector('#cartDropdown');
       if (cartDropdown && typeof bootstrap !== 'undefined') {
         const bsDropdown = new bootstrap.Dropdown(cartDropdown);
         bsDropdown.show();
       }
-
-      // 3. Load cart items (gọi function từ cart.js)
       if (typeof window.loadCartItems === 'function') {
         setTimeout(() => window.loadCartItems(), 100);
       }
-
-      // 4. Hiển thị thông báo sau khi thêm vào giỏ hàng
       if (typeof window.showNotification === 'function') {
         window.showNotification('Đã thêm vào giỏ hàng!', 'success');
       }
@@ -274,6 +318,44 @@ async function addToCart({ id, type }) {
     }
   }
 }
+
+//thêm sản phẩm vào giỏ hàng
+// async function addToCart({ id, type }) {
+//   try {
+//     const response = await axios.post('/cart/add', {
+//       item_id: id,
+//       item_type: type,
+//       quantity: 1
+//     });
+
+//     if (response.data.success) {
+//       // 1. Cập nhật số lượng giỏ hàng
+//       window.dispatchEvent(new CustomEvent('cart-updated'));
+
+//       // 2. Tự động mở dropdown giỏ hàng
+//       const cartDropdown = document.querySelector('#cartDropdown');
+//       if (cartDropdown && typeof bootstrap !== 'undefined') {
+//         const bsDropdown = new bootstrap.Dropdown(cartDropdown);
+//         bsDropdown.show();
+//       }
+
+//       // 3. Load cart items (gọi function từ cart.js)
+//       if (typeof window.loadCartItems === 'function') {
+//         setTimeout(() => window.loadCartItems(), 100);
+//       }
+
+//       // 4. Hiển thị thông báo sau khi thêm vào giỏ hàng
+//       if (typeof window.showNotification === 'function') {
+//         window.showNotification('Đã thêm vào giỏ hàng!', 'success');
+//       }
+//     }
+//   } catch (e) {
+//     console.error('Error adding to cart:', e);
+//     if (typeof window.showNotification === 'function') {
+//       window.showNotification('Có lỗi xảy ra!', 'error');
+//     }
+//   }
+// }
 
 //chuyển hướng đến trang chi tiết sản phẩm
 function goToProductDetail(product) {
