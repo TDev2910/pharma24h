@@ -1,0 +1,409 @@
+/* Orders Modals CSS */
+/* Styles cho các modals trong Orders module */
+
+/* ===== Details Modal ===== */
+.order-info p,
+.customer-info p,
+.payment-info p,
+.delivery-info p {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.order-info strong,
+.customer-info strong,
+.payment-info strong,
+.delivery-info strong {
+  min-width: 140px;
+  display: inline-block;
+  color: #495057;
+}
+
+.cancellation-info {
+  border: 1px dashed #f4c430;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fffdf5;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+.bg-warning {
+  background-color: #ffc107 !important;
+  color: #000 !important;
+}
+
+.bg-success {
+  background-color: #198754 !important;
+  color: #fff !important;
+}
+
+.bg-danger {
+  background-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+.bg-info {
+  background-color: #0dcaf0 !important;
+  color: #fff !important;
+}
+
+.bg-secondary {
+  background-color: #6c757d !important;
+  color: #fff !important;
+}
+
+.order-items-table {
+  font-size: 14px;
+}
+
+.order-items-table :deep(.p-datatable-thead > tr > th) {
+  background: #f8f9fa;
+  font-weight: 600;
+  padding: 10px;
+}
+
+.order-items-table :deep(.p-datatable-tbody > tr > td) {
+  padding: 10px;
+}
+
+.order-summary {
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.text-end {
+  text-align: right !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.fw-bold {
+  font-weight: 600 !important;
+}
+
+.fs-5 {
+  font-size: 1.25rem !important;
+}
+
+.border-top {
+  border-top: 1px solid #dee2e6 !important;
+}
+
+.pt-2 {
+  padding-top: 0.5rem !important;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem !important;
+}
+
+.mb-3 {
+  margin-bottom: 1rem !important;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem !important;
+}
+
+.mt-3 {
+  margin-top: 1rem !important;
+}
+
+.mt-4 {
+  margin-top: 1.5rem !important;
+}
+
+.py-3 {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+
+.py-5 {
+  padding-top: 3rem !important;
+  padding-bottom: 3rem !important;
+}
+
+.alert {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+}
+
+.alert-danger {
+  color: #842029;
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+}
+
+.ghn-info-section {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 16px;
+  background: #f8f9fa;
+}
+
+.ghn-details {
+  background: white;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.ghn-create-section {
+  background: white;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.alert-info {
+  color: #055160;
+  background-color: #cff4fc;
+  border-color: #b6effb;
+}
+
+.alert-warning {
+  color: #664d03;
+  background-color: #fff3cd;
+  border-color: #ffecb5;
+}
+
+.btn-sm {
+  padding: 4px 12px;
+  font-size: 13px;
+}
+
+.btn-outline-primary {
+  color: #0d6efd;
+  border-color: #0d6efd;
+  background-color: transparent;
+}
+
+.btn-outline-primary:hover {
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+/* ===== Edit Modal ===== */
+.order-edit-modal :deep(.p-dialog-content) {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Status Quick Update Section */
+.status-quick-update {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.status-header h6 {
+  color: #495057;
+  margin: 0;
+}
+
+.status-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.status-btn {
+  flex: 1;
+  min-width: 120px;
+}
+
+.status-btn.status-active {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Form Sections */
+.form-edit-section {
+  margin-top: 16px;
+}
+
+.section-title {
+  color: #495057;
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-section {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.form-section.full-width {
+  width: 100%;
+}
+
+.form-section-title {
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 4px;
+}
+
+.field-label .text-danger {
+  color: #dc3545;
+}
+
+/* Shipping Address Fields */
+.shipping-address-fields {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e9ecef;
+}
+
+/* Order Details Section */
+.order-details-section {
+  margin-top: 16px;
+}
+
+.details-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.details-toggle:hover {
+  background: #e9ecef;
+}
+
+.details-content {
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+.small {
+  font-size: 12px;
+}
+
+.me-2 {
+  margin-right: 0.5rem !important;
+}
+
+/* ===== Invoice Modal ===== */
+.invoice-modal :deep(.p-dialog-content) {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.invoice-content {
+  padding: 8px;
+}
+
+.invoice-header {
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 16px;
+}
+
+.invoice-header h2 {
+  color: #2c3e50;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.invoice-section {
+  margin-bottom: 20px;
+}
+
+.invoice-section .section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.invoice-table {
+  font-size: 14px;
+}
+
+.invoice-total {
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.total-amount {
+  font-size: 18px;
+  color: #198754;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .status-buttons {
+    flex-direction: column;
+  }
+
+  .status-btn {
+    width: 100%;
+  }
+}
+

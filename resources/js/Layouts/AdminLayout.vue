@@ -9,9 +9,9 @@
           <div class="nav-dropdown">
             <div class="dropdown-col">
               <div class="dropdown-title">Hàng hóa</div>
-                <a href="/admin/products" class="dropdown-link">Cập nhật thông tin </a>
-                <a href="/admin/products/list" class="dropdown-link">Xem danh sách hàng hóa</a>
-                <a href="/admin/products/stock" class="dropdown-link">Kiểm tra tồn kho</a>
+              <a href="/admin/products" class="dropdown-link">Cập nhật thông tin </a>
+              <a href="/admin/products/list" class="dropdown-link">Xem danh sách hàng hóa</a>
+              <a href="/admin/products/stock" class="dropdown-link">Kiểm tra tồn kho</a>
             </div>
             <div class="dropdown-col">
               <div class="dropdown-title">Nhập hàng</div>
@@ -56,7 +56,7 @@
             </div>
           </div>
         </div>
-         <div class="nav-item dropdown">
+        <div class="nav-item dropdown">
           <span class="nav-item">Nội bộ</span>
           <div class="nav-dropdown nav-dropdown-short">
             <div class="dropdown-col">
@@ -67,9 +67,25 @@
             </div>
           </div>
         </div>
+        <div class="nav-item dropdown">
+          <span class="nav-item">Báo cáo</span>
+          <div class="nav-dropdown">
+            <div class="dropdown-col">
+              <a href="" class="dropdown-link">Đặt hàng</a>
+              <a href="" class="dropdown-link">Trả hàng</a>
+              <a href="/admin/reports/top-products-sell" class="dropdown-link">Hàng hóa</a>
+            </div>
+            <div class="dropdown-col">
+              <a href="" class="dropdown-link">Khách hàng</a>
+              <a href="" class="dropdown-link">Nhà cung cấp</a>
+              <a href="" class="dropdown-link">Nhân viên</a>
+            </div>
+          </div>
+        </div>
+
         <a href="/logout" class="nav-item">Đăng xuất</a>
       </div>
-        <!-- <button class="sell-btn">
+      <!-- <button class="sell-btn">
           <i class="fas fa-cart-shopping cart-icon"></i> Bán hàng
         </button> -->
     </nav>
@@ -78,7 +94,7 @@
     <div>
       <slot />
     </div>
-    
+
     <!-- Toast for notifications -->
     <Toast />
   </div>
@@ -95,7 +111,8 @@ import Toast from 'primevue/toast'
 /* CSS cho Admin Layout - không import external CSS để tránh lỗi build */
 
 /* Reset global styles để header nằm sát trên cùng */
-html, body {
+html,
+body {
   margin: 0 !important;
   padding: 0 !important;
 }

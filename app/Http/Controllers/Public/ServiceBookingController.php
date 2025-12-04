@@ -57,7 +57,6 @@ class ServiceBookingController extends Controller
                 'booking' => $booking->load('service')
             ]);
         } catch (\Exception $e) {
-            \Log::error('Booking error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra: ' . $e->getMessage()

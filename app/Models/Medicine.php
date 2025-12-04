@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Medicine extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $fillable = [
         'ma_hang',
@@ -37,6 +38,7 @@ class Medicine extends Model
         'image',
         'khach_dat',
     ];
+    protected $dates = ['deleted_at'];
 
     protected $appends = ['image_url', 'gia_ban_formatted'];
 

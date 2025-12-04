@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\Employee\ShiftController;
 use App\Http\Controllers\Admin\Product\StockController;
 use App\Http\Controllers\Admin\Product\UnifiedListController;
 use App\Http\Controllers\Admin\Order\GHNController;
+use App\Http\Controllers\Admin\Report\ReportController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -252,10 +253,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('products', [ImportController::class, 'processProductExcel'])->name('products');
     });
 
-    // ========================================
-    // LEGACY ROUTES (for backward compatibility)
-    // ========================================
-
     // Legacy medicine routes
     Route::get('products/create-medicine', [ProductController::class, 'createMedicine'])->name('products.createMedicine');
     Route::post('products/store-medicine', [ProductController::class, 'storeMedicine'])->name('products.storeMedicine');
@@ -271,4 +268,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('products/goods/{goods}', [ProductController::class, 'updateGoods'])->name('products.goods.update');
     Route::delete('products/goods/{goods}', [ProductController::class, 'deleteGoods'])->name('products.goods.delete');
     Route::get('products/goods/{goods}/detail', [ProductController::class, 'showGoodsDetail'])->name('products.goods.detail');
+
+    //Report Routes
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/top-products-sell', [ReportController::class, 'topProductsSell'])->name('top-products-sell');
+    });
 });

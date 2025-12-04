@@ -70,7 +70,7 @@ class ProductSearchService
         $query = Medicine::where('ban_truc_tiep', true);
 
         // Sử dụng logic and: duyệt qua từng từ khóa
-        // Sản phẩm phải thỏa mãn từ khóa 1 VÀ từ khóa 2 VÀ ...
+        // Sản phẩm phải thỏa mãn từ khóa 1 và từ khóa 2 và ...
         foreach ($keywords as $keyword) {
             $query->where(function ($q) use ($keyword) {
                 $q->where('ten_thuoc', 'like', '%' . $keyword . '%')
@@ -155,6 +155,7 @@ class ProductSearchService
         return array_values($keywords);
     }
 
+    // trích xuất ảnh sản phẩm
     public function extractProductImages(array $searchResults): array
     {
         $images = [];
@@ -187,6 +188,7 @@ class ProductSearchService
         return $images;
     }
 
+    // trích xuất khoảng giá từ tin nhắn
     private function extractPriceRange(string $message): ?array
     {
         $message  = mb_strtolower($message, 'UTF-8');
@@ -208,6 +210,7 @@ class ProductSearchService
         return null;
     }
 
+    // chuẩn hóa giá tiền
     private function normalizePrice(string $price): ?int
     {
         $price = preg_replace('/[^\d.,]/', '', $price);
@@ -218,6 +221,7 @@ class ProductSearchService
         return $price ? (int) $price : null;
     }
 
+    // phát hiện loại tìm kiếm (thuốc, sản phẩm, dịch vụ)
     private function detectSearchType(string $message): string
     {
         $message         = mb_strtolower($message, 'UTF-8');
@@ -248,6 +252,7 @@ class ProductSearchService
         return 'all';
     }
 
+    // lọc bỏ các từ khóa quá chung chung (thuốc, sản phẩm...)
     private function filterGenericKeywords(array $keywords): array
     {
         $genericWords = [

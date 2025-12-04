@@ -65,16 +65,6 @@
           <span>Mã vận đơn:</span>
           <strong>{{ order.ghn_order_code || 'Đang tạo' }}</strong>
         </div>
-        <div class="shipping-row">
-          <span>Trạng thái:</span>
-          <span class="ghn-status-badge" :class="getGHNStatusClass(order.ghn_status)">
-            {{ getGHNStatusLabel(order.ghn_status) }}
-          </span>
-        </div>
-        <div class="shipping-row" v-if="order.ghn_expected_delivery_time">
-          <span>Dự kiến giao:</span>
-          <span>{{ formatDateTime(order.ghn_expected_delivery_time) }}</span>
-        </div>
         <div class="shipping-row" v-if="order.ghn_fee">
           <span>Phí vận chuyển:</span>
           <span>{{ formatCurrency(order.ghn_fee) }} ₫</span>

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
 use App\Models\User;
 
 class ForgotPasswordController extends Controller
@@ -71,8 +70,6 @@ class ForgotPasswordController extends Controller
             return redirect()->route('password.verify')
                 ->with('success', 'Mã OTP đã được gửi đến email của bạn!');
         } catch (\Exception $e) {
-            // Debug: Log chi tiết lỗi
-            \Log::error('Forgot Password Error: ' . $e->getMessage());
             return back()->withErrors(['email' => 'Lỗi gửi OTP: ' . $e->getMessage()]);
         }
     }
@@ -108,15 +105,6 @@ class ForgotPasswordController extends Controller
         // Lấy OTP từ cache
         $otpData = Cache::get($otpKey);
 
-        // Debug: Log thông tin OTP
-        \Log::info('OTP Verification Debug', [
-            'email' => $email,
-            'input_otp' => $inputOtp,
-            'cache_key' => $otpKey,
-            'otp_data_exists' => !is_null($otpData),
-            'otp_data' => $otpData
-        ]);
-
         if (!$otpData) {
             return back()->withErrors(['otp' => 'Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới!']);
         }
@@ -151,14 +139,6 @@ class ForgotPasswordController extends Controller
     public function showPhoneVerifyForm(Request $request)
     {
         $phone = $request->query('phone') ?: session('phone_for_verification');
-
-        // Debug: Log thông tin phone
-        \Log::info('Phone verification debug', [
-            'query_phone' => $request->query('phone'),
-            'session_phone' => session('phone_for_verification'),
-            'final_phone' => $phone,
-            'all_query_params' => $request->query()
-        ]);
 
         if (!$phone) {
             return redirect()->route('password.request')
@@ -196,13 +176,6 @@ class ForgotPasswordController extends Controller
         $user = User::where('phone', $normalizedPhone)->first();
 
         if (!$user) {
-            // Debug log để kiểm tra
-            \Log::info('Phone verification failed', [
-                'original_phone' => $phone,
-                'normalized_phone' => $normalizedPhone,
-                'all_users_phones' => User::pluck('phone')->toArray()
-            ]);
-
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
@@ -447,7 +420,6 @@ class ForgotPasswordController extends Controller
                 'redirect_url' => route('password.reset')
             ]);
         } catch (\Exception $e) {
-            \Log::error('Phone verification error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra, vui lòng thử lại'
@@ -462,13 +434,6 @@ class ForgotPasswordController extends Controller
     {
         $email = session('reset_email');
         $phoneVerification = session('phone_verification');
-
-        // ✅ THÊM: Debug logging
-        \Log::info('Reset form debug', [
-            'reset_email' => $email,
-            'phone_verification' => $phoneVerification,
-            'all_session' => session()->all()
-        ]);
 
         //xử lý email và xác thực số điện thoại
         if (!$email && !$phoneVerification) {

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Goods extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $fillable = [
         'ma_hang',
@@ -36,7 +37,7 @@ class Goods extends Model
         'gia_khuyen_mai',
         'ton_khuyen_mai',
     ];
-
+    protected $dates = ['deleted_at'];
     protected $appends = ['image_url', 'gia_ban_formatted'];
 
     // Get image URL - giống như Post model

@@ -774,7 +774,7 @@ export default {
   flex-direction: column;
   background: #fff;
   border-radius: 12px;
-  padding:15px;
+  padding: 15px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e9ecef;
   display: flex;
@@ -847,6 +847,7 @@ export default {
   opacity: 1 !important;
   visibility: visible !important;
 }
+
 /* Table Container */
 .table-container {
   width: 100%;

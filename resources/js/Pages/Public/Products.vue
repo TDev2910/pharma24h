@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-top: 100px;">
+  <div style="margin-top: -20px;">
     <!-- Header Component -->
     <Header :auth="auth" />
 

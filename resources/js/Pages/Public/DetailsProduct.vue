@@ -514,6 +514,49 @@ const scrollToReviewForm = () => {
   font-weight: 600;
 }
 
+/* ✅ THÊM: CSS cụ thể cho btn-primary trong product-actions */
+.product-actions .btn.btn-primary {
+  background: #1a56db;
+  color: #fff;
+  border: none;
+}
+
+.product-actions .btn.btn-primary:hover {
+  background: #1650cf;
+  color: #fff;
+}
+
+.product-actions .btn.btn-primary:active,
+.product-actions .btn.btn-primary:focus {
+  background: #1650cf;
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.25);
+}
+
+/* ✅ THÊM: CSS cho btn-success (khi có khuyến mãi) */
+.product-actions .btn.btn-success {
+  background: #10b981;
+  color: #fff;
+  border: none;
+}
+
+.product-actions .btn.btn-success:hover {
+  background: #059669;
+  color: #fff;
+}
+
+/* ✅ THÊM: CSS cho btn-secondary (khi hết hàng) */
+.product-actions .btn.btn-secondary {
+  background: #6b7280;
+  color: #fff;
+  border: none;
+}
+
+.product-actions .btn.btn-secondary:hover {
+  background: #4b5563;
+  color: #fff;
+}
+
 .product-description {
   background: #fff;
   border-radius: 12px;

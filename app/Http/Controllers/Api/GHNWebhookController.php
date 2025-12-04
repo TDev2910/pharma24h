@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 class GHNWebhookController extends Controller
@@ -16,19 +15,11 @@ class GHNWebhookController extends Controller
      */
     public function handleWebhook(Request $request)
     {
-        // Log toàn bộ request để debug
-        Log::info('GHN Webhook received', [
-            'headers' => $request->headers->all(),
-            'body' => $request->all(),
-            'ip' => $request->ip()
-        ]);
-
         // Lấy dữ liệu từ request
         $data = $request->all();
         $ghnOrderCode = $data['order_code'] ?? null;
         
         if (!$ghnOrderCode) {
-            Log::warning('GHN Webhook: Missing order_code', ['data' => $data]);
             return response()->json([
                 'code' => 400,
                 'message' => 'Missing order_code'
@@ -39,7 +30,6 @@ class GHNWebhookController extends Controller
         $order = Order::where('ghn_order_code', $ghnOrderCode)->first();
         
         if (!$order) {
-            Log::warning('GHN Webhook: Order not found', ['ghn_order_code' => $ghnOrderCode]);
             return response()->json([
                 'code' => 404,
                 'message' => 'Order not found'
@@ -70,13 +60,6 @@ class GHNWebhookController extends Controller
                 $this->updateOrderStatus($order, $data['status'] ?? $order->ghn_status);
                 
                 $order->save();
-
-                Log::info('GHN Webhook: Order updated', [
-                    'order_id' => $order->id,
-                    'ghn_order_code' => $ghnOrderCode,
-                    'ghn_status' => $order->ghn_status,
-                    'order_status' => $order->order_status
-                ]);
             });
 
             // Trả về response thành công cho GHN
@@ -87,13 +70,6 @@ class GHNWebhookController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            Log::error('GHN Webhook processing error', [
-                'order_id' => $order->id ?? null,
-                'ghn_order_code' => $ghnOrderCode,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
             return response()->json([
                 'code' => 500,
                 'message' => 'Internal server error'
@@ -127,13 +103,6 @@ class GHNWebhookController extends Controller
             if ($ghnStatus === 'delivered' && $order->payment_method === 'cod') {
                 $order->payment_status = 'paid';
             }
-            
-            Log::info('Order status updated from GHN webhook', [
-                'order_id' => $order->id,
-                'old_status' => $oldStatus,
-                'new_status' => $newStatus,
-                'ghn_status' => $ghnStatus
-            ]);
         }
     }
 

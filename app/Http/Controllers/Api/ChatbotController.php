@@ -8,7 +8,6 @@ use Illuminate\Http\StreamedResponse;
 use Illuminate\Http\StreamedEvent;
 use App\Services\Chatbot\ProductSearchService;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class ChatbotController extends Controller
 {
@@ -33,7 +32,7 @@ class ChatbotController extends Controller
                     // 1. Tìm kiếm dữ liệu trong DB
                     $searchResults = $this->productSearch->search($userMessage);
 
-                    // --- [MỚI] GỬI ẢNH VỀ CLIENT TRƯỚC ---
+                    // Gửi ảnh về client trước
                     $productImages = $this->productSearch->extractProductImages($searchResults);
                     if (!empty($productImages)) {
                         // Gửi sự kiện tên là 'images'
@@ -44,9 +43,9 @@ class ChatbotController extends Controller
                         if (ob_get_level() > 0) ob_flush();
                         flush();
                     }
-                    // -------------------------------------
+                    // Kết thúc gửi ảnh về client
 
-                    // 2. Chuẩn bị dữ liệu cho Gemini (Code cũ)
+                    // 2. Chuẩn bị dữ liệu cho Gemini 
                     $productInfo = $this->productSearch->formatForGemini($searchResults);
                     $apiKey = config('services.gemini.api_key');
 
@@ -56,7 +55,7 @@ class ChatbotController extends Controller
 
                     $prompt = $this->buildEnhancedPrompt($userMessage, $productInfo);
 
-                    // 3. Gọi Gemini API
+                    // 3. Gọi Gemini API dùng gemini-2.5-flash
                     $response = Http::timeout(30)->post(
                         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey,
                         [
@@ -92,12 +91,10 @@ class ChatbotController extends Controller
                         }
                     } else {
                         // Xử lý lỗi API
-                        Log::error('Gemini API Error', ['body' => $response->body()]);
                         echo "event: update\n";
                         echo "data: Xin lỗi, hệ thống đang bận.\n\n";
                     }
                 } catch (\Exception $e) {
-                    Log::error('Chatbot Stream Error: ' . $e->getMessage());
                     echo "event: update\n";
                     echo "data: Có lỗi xảy ra: " . $e->getMessage() . "\n\n";
                 }
@@ -160,6 +157,7 @@ class ChatbotController extends Controller
         return false;
     }
 
+    // phòng hờ trường hợp gọi gemini lỗi
     // phản hồi dữ liệu được set cố định để tránh lỗi khi Gemini lỗi
     private function getFallbackResponse($message)
     {
