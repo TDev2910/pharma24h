@@ -9,6 +9,11 @@ use App\Models\OrderItem;
 use App\Models\Order;
 use App\Models\Medicine;
 use App\Models\Goods;
+use App\Models\StockImportItem;
+use App\Models\StockImport;
+use App\Models\Inventory\PurchaseReturnItem;
+use App\Models\Inventory\PurchaseReturn;
+use App\Models\User;
 
 class ReportController extends Controller
 {
@@ -18,6 +23,7 @@ class ReportController extends Controller
     public function topProductsSell()
     {
         $topProducts = $this->getTopProducts(10);
+
         return Inertia::render('Admin/Reports/DashboardTopProductsSell', [
             'topProducts' => $topProducts,
         ]);
@@ -34,7 +40,7 @@ class ReportController extends Controller
     {
         $types = ['medicine', 'goods'];
 
-        // 2. Query Aggregate Data
+        // Query aggregate data
         $topProducts = OrderItem::query()
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->where('orders.payment_status', 'paid')
@@ -48,15 +54,14 @@ class ReportController extends Controller
             ')
             ->groupBy('order_items.item_id', 'order_items.item_type')
             ->orderByDesc('total_sold')
-            ->take($limit) // Dùng take() thay vì limit() cho đúng chuẩn Eloquent builder
+            ->take($limit)
             ->get();
 
         if ($topProducts->isEmpty()) {
             return collect([]);
         }
 
-        // 3. Eager Loading thủ công (Manual Eager Loading)
-        // Dùng withTrashed() để lấy cả sản phẩm đã ngừng kinh doanh (Soft Delete)
+        // Manual eager load (with soft deleted)
         $medicines = Medicine::withTrashed()
             ->whereIn('id', $topProducts->where('item_type', 'medicine')->pluck('item_id'))
             ->get()
@@ -67,7 +72,7 @@ class ReportController extends Controller
             ->get()
             ->keyBy('id');
 
-        // 4. Mapping Data
+        // Mapping data
         return $topProducts->map(function ($item) use ($medicines, $goods) {
             $product = null;
 
@@ -82,11 +87,214 @@ class ReportController extends Controller
                 'type'     => $item->item_type,
                 // Ưu tiên tên hiện tại, nếu không có (bị xóa cứng) thì dùng tên lịch sử
                 'name'     => $product ? ($product->ten_thuoc ?? $product->ten_hang_hoa) : $item->historical_name,
-                'stocks'   => (int) ($product->ton_kho ?? 0),
-                'price'    => (float) ($product->gia_ban ?? 0), // Giá hiện tại
-                'sales'    => (int) $item->total_sold,
-                'earnings' => (float) $item->total_earnings,
+                'stocks'   => (int)($product->ton_kho ?? 0),
+                'price'    => (float)($product->gia_ban ?? 0),
+                'sales'    => (int)$item->total_sold,
+                'earnings' => (float)$item->total_earnings,
             ];
         });
     }
+
+    /**
+     * Hiển thị trang báo cáo Top 10 sản phẩm được đặt hàng nhiều nhất
+     */
+    public function topStockImports()
+    {
+        $stockImports = $this->getTopStockImports(10);
+
+        return Inertia::render('Admin/Reports/DashboardStockImports', [
+            'topProducts' => $stockImports, 
+        ]);
+    }
+
+    /**
+     * Lấy Top N sản phẩm được nhập nhiều nhất (dựa trên tổng số lượng nhập)
+     * Chỉ tính đơn đã hoàn thành (completed), chỉ lấy Medicine và Goods
+     *
+     * @param int $limit Số lượng sản phẩm cần lấy (mặc định 10)
+     * @return \Illuminate\Support\Collection
+     */
+    private function getTopStockImports($limit = 10)
+    {
+        $types = ['medicine', 'goods'];
+
+        $topProducts = StockImportItem::query()
+            ->join('stock_imports', 'stock_import_items.stock_import_id', '=', 'stock_imports.id')
+            ->whereIn('stock_import_items.product_type', $types)
+            ->selectRaw('
+                stock_import_items.product_id,
+                stock_import_items.product_type,
+                SUM(stock_import_items.quantity) as total_imported,
+                SUM(stock_import_items.total_price) as total_cost,
+                AVG(stock_import_items.unit_price) as avg_unit_price')
+            ->groupBy('stock_import_items.product_id', 'stock_import_items.product_type')
+            ->orderByDesc('total_imported')
+            ->take($limit)
+            ->get();
+
+        if ($topProducts->isEmpty()) {
+            return collect([]);
+        }
+
+        // Manual eager load (with soft deleted)
+        $medicines = Medicine::withTrashed()
+            ->whereIn('id', $topProducts->where('product_type', 'medicine')->pluck('product_id'))
+            ->get()
+            ->keyBy('id');
+
+        $goods = Goods::withTrashed()
+            ->whereIn('id', $topProducts->where('product_type', 'goods')->pluck('product_id'))
+            ->get()
+            ->keyBy('id');
+
+        // Mapping data
+        return $topProducts->map(function ($item) use ($medicines, $goods) {
+            $product = null;
+
+            if ($item->product_type === 'medicine') {
+                $product = $medicines->get($item->product_id);
+            } elseif ($item->product_type === 'goods') {
+                $product = $goods->get($item->product_id);
+            }
+
+            return [
+                'id'             => $item->product_id,
+                'type'           => $item->product_type,
+                'name'           => $product ? ($product->ten_thuoc ?? $product->ten_hang_hoa) : 'N/A',
+                'stocks'         => (int)($product->ton_kho ?? 0),
+                'price'          => (float)($product->gia_ban ?? 0),
+                'imported'       => (int)$item->total_imported,
+                'total_cost'     => (float)$item->total_cost,
+                'avg_unit_price' => (float)$item->avg_unit_price,
+            ];
+        });
+    }
+
+     /**
+     * Hiển thị trang báo cáo Top 10 sản phẩm được trả hàng nhiều nhất
+     */
+    public function topStockReturns()
+    {
+        $stockReturns = $this->getTopStockReturns(10);
+
+        return Inertia::render('Admin/Reports/DashboardPurchaseRetuns', [ 
+            'topProducts' => $stockReturns,
+        ]);
+    }
+
+    /**
+     * Lấy Top N sản phẩm được nhập nhiều nhất (dựa trên tổng số lượng nhập)
+     * Chỉ tính đơn đã hoàn thành (completed), chỉ lấy Medicine và Goods
+     *
+     * @param int $limit Số lượng sản phẩm cần lấy (mặc định 10)
+     * @return \Illuminate\Support\Collection
+     */
+    private function getTopStockReturns($limit = 10)
+    {
+        $types = ['medicine', 'goods'];
+
+        $topProducts = PurchaseReturnItem::query()
+            ->join('purchase_returns', 'purchase_return_items.purchase_return_id', '=', 'purchase_returns.id')
+            ->whereIn('purchase_return_items.product_type', $types)
+            ->selectRaw('
+                purchase_return_items.product_id,
+                purchase_return_items.product_type,
+                SUM(purchase_return_items.quantity) as total_returned,
+                SUM(purchase_return_items.total_price) as total_cost,
+                AVG(purchase_return_items.unit_price) as avg_unit_price
+            ')
+            ->groupBy('purchase_return_items.product_id', 'purchase_return_items.product_type')
+            ->orderByDesc('total_returned')
+            ->take($limit)
+            ->get();
+
+        if ($topProducts->isEmpty()) {
+            return collect([]);
+        }
+
+        $medicines = Medicine::withTrashed()
+            ->whereIn('id', $topProducts->where('product_type', 'medicine')->pluck('product_id'))
+            ->get()
+            ->keyBy('id');
+
+        $goods = Goods::withTrashed()
+            ->whereIn('id', $topProducts->where('product_type', 'goods')->pluck('product_id'))
+            ->get()
+            ->keyBy('id');
+
+        // Mapping data
+        return $topProducts->map(function ($item) use ($medicines, $goods) {
+            $product = null;
+
+            if ($item->product_type === 'medicine') {
+                $product = $medicines->get($item->product_id);
+            } elseif ($item->product_type === 'goods') {
+                $product = $goods->get($item->product_id);
+            }
+
+            return [
+                'id'             => $item->product_id,
+                'type'           => $item->product_type,
+                'name'           => $product ? ($product->ten_thuoc ?? $product->ten_hang_hoa) : 'N/A',
+                'stocks'         => (int) ($product->ton_kho ?? 0),
+                'price'          => (float) ($product->gia_ban ?? 0),
+                'returned'       => (int) $item->total_returned,
+                'total_cost'     => (float) $item->total_cost,
+                'avg_unit_price' => (float) $item->avg_unit_price,
+            ];
+        });
+    }
+
+     /**
+     * Hiển thị trang báo cáo Top 10 khách hàng mua nhiều nhất
+     */
+    public function topCustomers()
+    {
+        $stockCustomers = $this->getTopCustomers(10);
+        return Inertia::render('Admin/Reports/DashboardTopCustomers', [
+            'topCustomers' => $stockCustomers,
+        ]);
+    }
+
+        /**
+     * Lấy Top N sản phẩm được nhập nhiều nhất (dựa trên tổng số lượng nhập)
+     * Chỉ tính đơn đã hoàn thành (completed), chỉ lấy Medicine và Goods
+     *
+     * @param int $limit Số lượng sản phẩm cần lấy (mặc định 10)
+     * @return \Illuminate\Support\Collection
+     */
+
+     private function getTopCustomers($limit = 10)
+     {
+        $topCustomersQuery = Order::where('payment_status', 'paid')
+            ->whereNotNull('user_id');
+        
+        $topCustomers = $topCustomersQuery
+            ->selectRaw('
+                user_id,
+                COUNT(*) as order_count,
+                SUM(total_amount) as total_spent
+            ')
+            ->groupBy('user_id')
+            ->orderByDesc('total_spent')
+            ->take($limit)
+            ->get();
+        if($topCustomers->isEmpty()) {
+            return collect([]);
+        }
+        $userIds = $topCustomers->pluck('user_id')->unique()->toArray();
+        $users = User::whereIn('id', $userIds)->get()->keyBy('id');
+
+        return $topCustomers->map(function($item) use ($users) {
+            $user = $users->get($item->user_id);
+            return [
+                'id' => $user ? $user->id : $item->user_id,
+                'name' => $user ? $user->name : 'Khách hàng #' . $item->user_id,
+                'email' => $user ? $user->email : 'N/A',
+                'phone' => $user ? $user->phone : 'N/A',
+                'order_count' => (int) $item->order_count,
+                'total_spent' => (float) $item->total_spent,
+            ];
+        });
+     }
 }

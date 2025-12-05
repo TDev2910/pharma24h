@@ -13,17 +13,21 @@ class ChatbotController extends Controller
 {
     protected $productSearch;
 
+    //Khởi tạo ProductSearchService trong service
     public function __construct()
     {
         $this->productSearch = new ProductSearchService();
     }
 
+    //Xử lý chat với Chatbot
     public function chat(Request $request)
     {
+        // Kiểm tra xem câu hỏi của khách có phải là câu hỏi về sản phẩm không
         $request->validate([
             'message' => 'required|string|max:1000',
         ]);
 
+        // Lấy câu hỏi của khách
         $userMessage = $request->input('message');
 
         return response()->eventStream(
@@ -55,7 +59,8 @@ class ChatbotController extends Controller
 
                     $prompt = $this->buildEnhancedPrompt($userMessage, $productInfo);
 
-                    // 3. Gọi Gemini API dùng gemini-2.5-flash
+                    // 3. Gọi Gemini API dùng gemini-2.5-flash 
+                    // (sử dụng gemini-2.5-flash-lite-preview-02-05 để tăng tốc độ phản hồi)
                     $response = Http::timeout(30)->post(
                         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey,
                         [
@@ -113,6 +118,8 @@ class ChatbotController extends Controller
 
     }
 
+
+    //Build prompt cho Gemini API hiểu môi trường làm việc của Chatbot
     private function buildEnhancedPrompt(string $userMessage, string $productInfo): string
     {
         return <<<PROMPT
@@ -145,6 +152,7 @@ class ChatbotController extends Controller
         PROMPT;
     }
 
+    //Kiểm tra xem câu hỏi của khách có phải là câu hỏi về sản phẩm không
     private function isProductQuery(string $message): bool
     {
         $message = mb_strtolower($message, 'UTF-8');

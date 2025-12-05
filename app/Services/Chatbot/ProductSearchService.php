@@ -13,16 +13,15 @@ class ProductSearchService
     public function search(string $message): array
     {
         // 1. Trích xuất từ khóa và giá
-        $keywords    = $this->extractKeywords($message);
-        $priceRange  = $this->extractPriceRange($message);
-        $searchType  = $this->detectSearchType($message);
+        $keywords   = $this->extractKeywords($message);
+        $priceRange = $this->extractPriceRange($message);
+        $searchType = $this->detectSearchType($message);
 
         // 2. Lọc bỏ các từ khóa quá chung chung (thuốc, sản phẩm...)
         $keywords = $this->filterGenericKeywords($keywords);
 
-        // 3. [QUAN TRỌNG] Logic "Thoát sớm" (Early Exit)
-        // Nếu sau khi lọc mà không còn từ khóa nào (ví dụ user chỉ chat "Hi", "Xin chào")
-        // VÀ không có khoảng giá -> Trả về rỗng ngay. Không query DB.
+        // 3. Logic "Thoát sớm" (Early Exit)
+        // Nếu sau khi lọc không còn từ khóa và không có khoảng giá -> trả về kết quả rỗng, không truy vấn DB
         if (empty($keywords) && empty($priceRange)) {
             return [
                 'medicines' => collect([]),
@@ -37,17 +36,23 @@ class ProductSearchService
             'services'  => collect([]),
         ];
 
-        // 4. Query Database (chỉ chạy khi có keywords hoặc priceRange)
-        if ($searchType === 'product' || $searchType === 'all') {
-            if ($priceRange && empty($keywords)) {
+        // 4. Truy vấn Database khi có từ khóa hoặc khoảng giá
+        if ($searchType === 'product' || $searchType === 'all') 
+        {
+            if ($priceRange && empty($keywords)) 
+            {
                 $result['medicines'] = $this->searchMedicinesByPrice($priceRange);
-                $result['goods']     = $this->searchGoodsByPrice($priceRange);
-            } elseif (!empty($keywords)) {
+                $result['goods'] = $this->searchGoodsByPrice($priceRange);
+            } 
+            elseif (!empty($keywords)) 
+            {
                 $result['medicines'] = $this->searchMedicines($keywords, $priceRange);
-                $result['goods']     = $this->searchGoods($keywords, $priceRange);
-            } elseif ($priceRange) {
+                $result['goods'] = $this->searchGoods($keywords, $priceRange);
+            } 
+            elseif ($priceRange) 
+            {
                 $result['medicines'] = $this->searchMedicinesByPrice($priceRange);
-                $result['goods']     = $this->searchGoodsByPrice($priceRange);
+                $result['goods'] = $this->searchGoodsByPrice($priceRange);
             }
         }
 
@@ -77,7 +82,7 @@ class ProductSearchService
                     ->orWhere('ten_viet_tat', 'like', '%' . $keyword . '%')
                     ->orWhere('ma_hang', 'like', '%' . $keyword . '%')
                     ->orWhere('ma_vach', 'like', '%' . $keyword . '%')
-                    ->orWhere('hoat_chat', 'like', '%' . $keyword . '%'); // Thêm tìm theo hoạt chất
+                    ->orWhere('hoat_chat', 'like', '%' . $keyword . '%'); 
             });
         }
 
@@ -221,22 +226,30 @@ class ProductSearchService
         return $price ? (int) $price : null;
     }
 
-    // phát hiện loại tìm kiếm (thuốc, sản phẩm, dịch vụ)
+    // Phát hiện loại tìm kiếm mà khách hàng muốn: "thuốc/sản phẩm", "dịch vụ" hay "cả hai"
     private function detectSearchType(string $message): string
     {
-        $message         = mb_strtolower($message, 'UTF-8');
-        $productKeywords = ['sản phẩm', 'thuốc', 'hàng hóa', 'kem', 'viên', 'siro', 'chai', 'hộp', 'hũ'];
-        $serviceKeywords = ['dịch vụ', 'khám', 'tư vấn', 'bác sĩ', 'doctor'];
+        $message = mb_strtolower($message, 'UTF-8');
+
+        $productKeywords = [
+            'sản phẩm', 'thuốc', 'hàng hóa',
+            'kem', 'viên', 'siro', 'chai', 'hộp', 'hũ'
+        ];
+        $serviceKeywords = [
+            'dịch vụ', 'khám', 'tư vấn', 'bác sĩ', 'doctor'
+        ];
 
         $hasProduct = false;
         $hasService = false;
 
+        // Kiểm tra từ khóa liên quan đến sản phẩm/thuốc
         foreach ($productKeywords as $keyword) {
             if (mb_strpos($message, $keyword) !== false) {
                 $hasProduct = true;
                 break;
             }
         }
+        // Kiểm tra từ khóa liên quan đến dịch vụ
         foreach ($serviceKeywords as $keyword) {
             if (mb_strpos($message, $keyword) !== false) {
                 $hasService = true;
@@ -244,9 +257,11 @@ class ProductSearchService
             }
         }
 
+        // Ưu tiên phân loại rõ ràng, nếu có cả hai thì trả về 'all'
         if ($hasProduct && !$hasService) {
             return 'product';
-        } elseif ($hasService && !$hasProduct) {
+        }
+        if ($hasService && !$hasProduct) {
             return 'service';
         }
         return 'all';

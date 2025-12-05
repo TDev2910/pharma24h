@@ -272,5 +272,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     //Report Routes
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/top-products-sell', [ReportController::class, 'topProductsSell'])->name('top-products-sell');
+        Route::get('/top-stock-imports', [ReportController::class, 'topStockImports'])->name('top-stock-imports');
+        Route::get('/top-stock-returns', [ReportController::class, 'topStockReturns'])->name('top-stock-returns');
+        Route::get('/top-customers', [ReportController::class, 'topCustomers'])->name('top-customers');
     });
 });

@@ -59,12 +59,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is staff
+    */
+    public function isStaff()
+    {
+        return $this->role === 'staff';
+    }
+    
+    /**
      * Check if user is regular user
      */
     public function isUser()
     {
         return $this->role === 'user';
     }
+
+    
 
     public function orders()
     {
@@ -87,13 +97,6 @@ class User extends Authenticatable
     public function service_bookings()
     {
         return $this->hasMany(ServiceBooking::class);
-    }
-    /**
-     * Check if user is staff
-     */
-    public function isStaff()
-    {
-        return $this->role === 'staff';
     }
 
     /**

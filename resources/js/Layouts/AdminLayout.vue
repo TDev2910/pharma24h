@@ -71,12 +71,12 @@
           <span class="nav-item">Báo cáo</span>
           <div class="nav-dropdown">
             <div class="dropdown-col">
-              <a href="" class="dropdown-link">Đặt hàng</a>
-              <a href="" class="dropdown-link">Trả hàng</a>
+              <a href="/admin/reports/top-stock-imports" class="dropdown-link">Đặt hàng</a>
+              <a href="/admin/reports/top-stock-returns" class="dropdown-link">Trả hàng</a>
               <a href="/admin/reports/top-products-sell" class="dropdown-link">Hàng hóa</a>
             </div>
             <div class="dropdown-col">
-              <a href="" class="dropdown-link">Khách hàng</a>
+              <a href="/admin/reports/top-customers" class="dropdown-link">Khách hàng</a>
               <a href="" class="dropdown-link">Nhà cung cấp</a>
               <a href="" class="dropdown-link">Nhân viên</a>
             </div>
