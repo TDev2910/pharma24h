@@ -77,7 +77,7 @@
             </div>
             <div class="dropdown-col">
               <a href="/admin/reports/top-customers" class="dropdown-link">Khách hàng</a>
-              <a href="" class="dropdown-link">Nhà cung cấp</a>
+              <a href="/admin/reports/top-suppliers" class="dropdown-link">Nhà cung cấp</a>
               <a href="" class="dropdown-link">Nhân viên</a>
             </div>
           </div>

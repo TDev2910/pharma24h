@@ -1,11 +1,8 @@
 <template>
   <div class="dashboard-container">
-    <!-- Main Layout -->
     <div class="dashboard-layout">
-      <!-- Main Content -->
       <main class="main-content">
 
-        <!-- Stats Cards -->
         <div class="stats-grid">
           <div class="stat-card" style="background: #F5FAE1;">
             <div class="stat-label">Tổng sản phẩm</div>
@@ -24,94 +21,51 @@
             <div class="stat-value">{{ formatCurrency(stats.totalRevenue) }}</div>
           </div>
         </div>
-        <!-- Service Chart Row -->
+
         <div class="charts-row service-chart-row">
-          <!-- Service Chart -->
           <div class="chart-card">
             <div class="chart-header">
               <h3>Tổng quan doanh thu</h3>
               <div class="chart-controls">
-                <button class="chart-btn" :class="{ active: totalRevenuePeriod === 'day' }"
-                  @click="setTotalRevenuePeriod('day')">
-                  Ngày
-                </button>
-                <button class="chart-btn" :class="{ active: totalRevenuePeriod === 'week' }"
-                  @click="setTotalRevenuePeriod('week')">
-                  Tuần
-                </button>
-                <button class="chart-btn" :class="{ active: totalRevenuePeriod === 'month' }"
-                  @click="setTotalRevenuePeriod('month')">
-                  Tháng
-                </button>
-                <button class="chart-btn" :class="{ active: totalRevenuePeriod === 'year' }"
-                  @click="setTotalRevenuePeriod('year')">
-                  Năm
-                </button>
+                <Dropdown v-model="totalRevenuePeriod" :options="periodOptions" optionLabel="label" optionValue="value"
+                  placeholder="Tháng này" class="period-dropdown" />
               </div>
             </div>
-            <Chart type="bar" :data="totalRevenueChartData" :options="totalRevenueChartOptions" />
+            <Chart type="bar" style="height: 260px;" :data="totalRevenueChartData"
+              :options="totalRevenueChartOptions" />
           </div>
         </div>
-        <!-- Charts Row -->
+
         <div class="charts-row">
-          <!-- Sales Revenue Chart -->
-          <div class="chart-card">
-            <div class="chart-header">
-              <h3>Doanh thu đơn hàng</h3>
-              <div class="chart-controls">
-                <button class="chart-btn" :class="{ active: orderRevenuePeriod === 'day' }"
-                  @click="setOrderRevenuePeriod('day')">
-                  Ngày
-                </button>
-                <button class="chart-btn" :class="{ active: orderRevenuePeriod === 'week' }"
-                  @click="setOrderRevenuePeriod('week')">
-                  Tuần
-                </button>
-                <button class="chart-btn" :class="{ active: orderRevenuePeriod === 'month' }"
-                  @click="setOrderRevenuePeriod('month')">
-                  Tháng
-                </button>
-                <button class="chart-btn" :class="{ active: orderRevenuePeriod === 'year' }"
-                  @click="setOrderRevenuePeriod('year')">
-                  Năm
-                </button>
+
+          <div class="left-chart-column" style="display: flex; flex-direction: column; gap: 20px;">
+
+            <div class="chart-card">
+              <div class="chart-header">
+                <h3>Doanh thu đơn hàng</h3>
+                <div class="chart-controls">
+                  <Dropdown v-model="orderRevenuePeriod" :options="periodOptions" optionLabel="label"
+                    optionValue="value" placeholder="Tháng này" class="period-dropdown" />
+                </div>
               </div>
+              <Chart v-if="!loadingOrderRevenue" type="bar" style="height: 260px;" :data="orderRevenueChartData"
+                :options="orderRevenueChartOptions" />
+              <div v-else class="chart-loading">Đang tải dữ liệu...</div>
             </div>
-            <!-- Biểu đồ Doanh thu Đơn hàng -->
-            <Chart v-if="!loadingOrderRevenue" type="bar" :data="orderRevenueChartData"
-              :options="orderRevenueChartOptions" />
-            <div v-else class="chart-loading">Đang tải dữ liệu...</div>
-            <!-- Biểu đồ Doanh thu dịch vụ -->
             <div class="chart-card">
               <div class="chart-header">
                 <h3>Doanh thu dịch vụ</h3>
                 <div class="chart-controls">
-                  <button class="chart-btn" :class="{ active: serviceRevenuePeriod === 'day' }"
-                    @click="setServiceRevenuePeriod('day')">
-                    Ngày
-                  </button>
-                  <button class="chart-btn" :class="{ active: serviceRevenuePeriod === 'week' }"
-                    @click="setServiceRevenuePeriod('week')">
-                    Tuần
-                  </button>
-                  <button class="chart-btn" :class="{ active: serviceRevenuePeriod === 'month' }"
-                    @click="setServiceRevenuePeriod('month')">
-                    Tháng
-                  </button>
-                  <button class="chart-btn" :class="{ active: serviceRevenuePeriod === 'year' }"
-                    @click="setServiceRevenuePeriod('year')">
-                    Năm
-                  </button>
+                  <Dropdown v-model="serviceRevenuePeriod" :options="periodOptions" optionLabel="label"
+                    optionValue="value" placeholder="Tháng này" class="period-dropdown" />
                 </div>
               </div>
-              <Chart v-if="!loadingServiceRevenue" type="bar" :data="serviceRevenueChartData"
+              <Chart v-if="!loadingServiceRevenue" type="bar" style="height: 260px;" :data="serviceRevenueChartData"
                 :options="serviceRevenueChartOptions" />
               <div v-else class="chart-loading">Đang tải dữ liệu...</div>
             </div>
+
           </div>
-
-
-          <!-- Top Categories Chart -->
           <div class="chart-card">
             <div class="chart-header">
               <h3>Danh mục</h3>
@@ -132,9 +86,7 @@
           </div>
         </div>
 
-        <!-- Bottom Row -->
         <div class="bottom-row">
-          <!-- Recent Activity -->
           <div class="activity-card">
             <div class="card-header">
               <h3>Khách hàng mua nhiều nhất</h3>
@@ -160,7 +112,6 @@
             </div>
           </div>
 
-          <!-- Top Products -->
           <div class="products-card">
             <div class="card-header">
               <h3>Sản phẩm được mua nhiều nhất</h3>
@@ -199,18 +150,16 @@
 
 <script>
 import Chart from 'primevue/chart';
+import Dropdown from 'primevue/dropdown';
 import axios from 'axios';
 
 export default {
   name: 'AdminDashboard',
   components: {
-    Chart
+    Chart,
+    Dropdown
   },
   props: {
-    topCustomers: {
-      type: Array,
-      default: () => [],
-    },
     stats: {
       type: Object,
       default: () => ({
@@ -240,82 +189,60 @@ export default {
   data() {
     return {
       // Order Revenue Data
-      orderRevenuePeriod: 'month',
-      serviceRevenuePeriod: 'month',
-      totalRevenuePeriod: 'month',
+      orderRevenuePeriod: 'thisMonth',
+      serviceRevenuePeriod: 'thisMonth',
+      totalRevenuePeriod: 'thisMonth',
       loadingOrderRevenue: false,
       loadingServiceRevenue: false,
       loadingTotalRevenue: false,
-      orderRevenueData: {
-        labels: [],
-        revenues: []
-      },
-      serviceRevenueData: {
-        labels: [],
-        revenues: []
-      },
-      totalRevenueData: {
-        labels: [],
-        revenues: []
-      },
+
+      // Options cho dropdown
+      periodOptions: [
+        { label: 'Hôm nay', value: 'today' },
+        { label: 'Hôm qua', value: 'yesterday' },
+        { label: '7 ngày qua', value: 'last7days' },
+        { label: 'Tháng này', value: 'thisMonth' },
+        { label: 'Tháng trước', value: 'lastMonth' }
+      ],
+
+      orderRevenueData: { labels: [], revenues: [] },
+      serviceRevenueData: { labels: [], revenues: [] },
+      totalRevenueData: { labels: [], revenues: [] },
+
       // Total Revenue Chart Options
       totalRevenueChartOptions: {
         plugins: {
-          legend: {
-            display: false
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
-              label: (context) => {
-                return this.formatCurrency(context.parsed.y);
-              }
+              label: (context) => this.formatCurrency(context.parsed.y)
             }
           }
         },
         scales: {
-          x: {
-            grid: {
-              display: false
-            }
-          },
+          x: { grid: { display: false } },
           y: {
             beginAtZero: true,
-            ticks: {
-              callback: (value) => {
-                return this.formatCurrency(value);
-              }
-            }
+            ticks: { callback: (value) => this.formatCurrency(value) }
           }
         },
         maintainAspectRatio: false
       },
-      // Service Revenue Chart Options
+      // Order Revenue Chart Options
       orderRevenueChartOptions: {
         plugins: {
-          legend: {
-            display: false
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
-              label: (context) => {
-                return this.formatCurrency(context.parsed.y);
-              }
+              label: (context) => this.formatCurrency(context.parsed.y)
             }
           }
         },
         scales: {
-          x: {
-            grid: {
-              display: false
-            }
-          },
+          x: { grid: { display: false } },
           y: {
             beginAtZero: true,
-            ticks: {
-              callback: (value) => {
-                return this.formatCurrency(value);
-              }
-            }
+            ticks: { callback: (value) => this.formatCurrency(value) }
           }
         },
         maintainAspectRatio: false
@@ -323,105 +250,32 @@ export default {
       // Service Revenue Chart Options
       serviceRevenueChartOptions: {
         plugins: {
-          legend: {
-            display: false
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
-              label: (context) => {
-                return this.formatCurrency(context.parsed.y);
-              }
+              label: (context) => this.formatCurrency(context.parsed.y)
             }
           }
         },
         scales: {
-          x: {
-            grid: {
-              display: false
-            }
-          },
+          x: { grid: { display: false } },
           y: {
             beginAtZero: true,
-            ticks: {
-              callback: (value) => {
-                return this.formatCurrency(value);
-              }
-            }
+            ticks: { callback: (value) => this.formatCurrency(value) }
           }
         },
         maintainAspectRatio: false
       },
-
-      // Bar Chart Data for Sales Revenue (old - có thể xóa sau)
-      barChartData: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-        datasets: [
-          {
-            label: 'One-Time Revenue',
-            data: [6000, 8000, 12000, 6000, 10000, 15000, 18000, 20000],
-            backgroundColor: '#93c5fd'
-          },
-          {
-            label: 'Recurring Revenue',
-            data: [15000, 18000, 20000, 25000, 22000, 25000, 28000, 30000],
-            backgroundColor: '#3b82f6'
-          }
-        ]
-      },
-      barChartOptions: {
-        plugins: {
-          legend: {
-            position: 'top',
-            labels: {
-              usePointStyle: true,
-              padding: 15
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: function (context) {
-                let label = context.dataset.label || '';
-                if (label) {
-                  label += ': ';
-                }
-                label += '$' + context.parsed.y.toLocaleString();
-                return label;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            stacked: false,
-            grid: {
-              display: false
-            }
-          },
-          y: {
-            stacked: false,
-            beginAtZero: true,
-            ticks: {
-              callback: function (value) {
-                return '$' + value.toLocaleString();
-              }
-            }
-          }
-        },
-        maintainAspectRatio: false
-      },
+      // Doughnut Chart Options
       chartOptions: {
         plugins: {
-          legend: {
-            display: false
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
               label: function (context) {
                 let label = context.label || '';
-                if (label) {
-                  label += ': ';
-                }
-                label += '$' + context.parsed.toLocaleString();
+                if (label) { label += ': '; }
+                label += context.parsed.toLocaleString();
                 return label;
               }
             }
@@ -430,85 +284,21 @@ export default {
         cutout: '60%',
         maintainAspectRatio: false
       },
-      // Service Chart Data
-      serviceChartData: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-        datasets: [
-          {
-            label: 'Service Revenue',
-            data: [5000, 7000, 9000, 8000, 11000, 13000, 15000, 17000],
-            backgroundColor: '#10b981'
-          },
-          {
-            label: 'Service Orders',
-            data: [12000, 14000, 16000, 15000, 18000, 20000, 22000, 24000],
-            backgroundColor: '#059669'
-          }
-        ]
-      },
-      serviceChartOptions: {
-        plugins: {
-          legend: {
-            position: 'top',
-            labels: {
-              usePointStyle: true,
-              padding: 15
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: function (context) {
-                let label = context.dataset.label || '';
-                if (label) {
-                  label += ': ';
-                }
-                label += '$' + context.parsed.y.toLocaleString();
-                return label;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            stacked: false,
-            grid: {
-              display: false
-            }
-          },
-          y: {
-            stacked: false,
-            beginAtZero: true,
-            ticks: {
-              callback: function (value) {
-                return '$' + value.toLocaleString();
-              }
-            }
-          }
-        },
-        maintainAspectRatio: false
-      }
     };
   },
   computed: {
-    // Cập nhật chartData với dữ liệu thực
     chartData() {
       return {
         labels: ['Thuốc', 'Vật tư y tế', 'Dịch vụ'],
-        datasets: [
-          {
-            data: [
-              this.categoryStats.medicineCount,
-              this.categoryStats.goodsCount,
-              this.categoryStats.serviceCount
-            ],
-            backgroundColor: [
-              '#3b82f6',
-              '#10b981',
-              '#f59e0b'
-            ],
-            borderWidth: 0
-          }
-        ]
+        datasets: [{
+          data: [
+            this.categoryStats.medicineCount,
+            this.categoryStats.goodsCount,
+            this.categoryStats.serviceCount
+          ],
+          backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+          borderWidth: 0
+        }]
       };
     },
     categoriesList() {
@@ -528,43 +318,76 @@ export default {
         };
       });
     },
-
     totalRevenueChartData() {
+      const colorPalette = [
+        '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
+        '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16',
+        '#f97316', '#6366f1', '#14b8a6', '#a855f7',
+        '#22c55e', '#eab308', '#f43f5e', '#0ea5e9'
+      ];
+
       return {
         labels: this.totalRevenueData.labels,
-        datasets: [
-          {
-            label: 'Doanh thu tổng quan',
-            data: this.totalRevenueData.revenues,
-            backgroundColor: '#3b82f6'
-          }
-        ]
+        datasets: [{
+          label: 'Doanh thu tổng quan',
+          data: this.totalRevenueData.revenues,
+          backgroundColor: this.totalRevenueData.revenues.map((_, index) =>
+            colorPalette[index % colorPalette.length]
+          )
+        }]
       };
     },
-    // Computed cho Order Revenue Chart
     orderRevenueChartData() {
+      const colorPalette = [
+        '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
+        '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16',
+        '#f97316', '#6366f1', '#14b8a6', '#a855f7',
+        '#22c55e', '#eab308', '#f43f5e', '#0ea5e9'
+      ];
+
       return {
         labels: this.orderRevenueData.labels,
-        datasets: [
-          { 
-            label: 'Doanh thu đơn hàng',
-            data: this.orderRevenueData.revenues,
-            backgroundColor: '#3b82f6'
-          }
-        ]
+        datasets: [{
+          label: 'Doanh thu đơn hàng',
+          data: this.orderRevenueData.revenues,
+          backgroundColor: this.orderRevenueData.revenues.map((_, index) =>
+            colorPalette[index % colorPalette.length]
+          )
+        }]
       };
     },
     serviceRevenueChartData() {
+      const colorPalette = [
+        '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
+        '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16',
+        '#f97316', '#6366f1', '#14b8a6', '#a855f7',
+        '#22c55e', '#eab308', '#f43f5e', '#0ea5e9'
+      ];
+
       return {
         labels: this.serviceRevenueData.labels,
-        datasets: [
-          {
-            label: 'Doanh thu dịch vụ',
-            data: this.serviceRevenueData.revenues,
-            backgroundColor: '#A8CD89'
-          }
-        ]
+        datasets: [{
+          label: 'Doanh thu dịch vụ',
+          data: this.serviceRevenueData.revenues,
+          backgroundColor: this.serviceRevenueData.revenues.map((_, index) =>
+            colorPalette[index % colorPalette.length]
+          )
+        }]
       };
+    }
+  },
+  watch: {
+    totalRevenuePeriod(newValue) {
+      console.log('Total Revenue Period changed to:', newValue);
+      this.fetchTotalRevenue(newValue);
+    },
+    orderRevenuePeriod(newValue) {
+      console.log('Order Revenue Period changed to:', newValue);
+      this.fetchOrderRevenue(newValue);
+    },
+    serviceRevenuePeriod(newValue) {
+      console.log('Service Revenue Period changed to:', newValue);
+      this.fetchServiceRevenue(newValue);
     }
   },
   methods: {
@@ -575,408 +398,145 @@ export default {
         currency: 'VND'
       }).format(value);
     },
-
     async fetchTotalRevenue(period) {
+      console.log('Fetching total revenue with period:', period);
       this.loadingTotalRevenue = true;
       try {
-        const response = await axios.get('/admin/dashboard/revenue/total', {
-          params: { period }
-        });
-
+        const response = await axios.get('/admin/dashboard/revenue/total', { params: { period } });
+        console.log('Total revenue response:', response.data);
         if (response.data.success) {
           this.totalRevenueData = {
             labels: response.data.data.labels,
             revenues: response.data.data.revenues
           };
+          console.log('Total revenue data updated:', this.totalRevenueData);
         }
       } catch (error) {
         console.error('Error fetching total revenue:', error);
-        this.totalRevenueData = {
-          labels: [],
-          revenues: []
-        };
       } finally {
         this.loadingTotalRevenue = false;
       }
     },
-    // Fetch doanh thu đơn hàng từ API
     async fetchOrderRevenue(period) {
+      console.log('Fetching order revenue with period:', period);
       this.loadingOrderRevenue = true;
       try {
-        const response = await axios.get('/admin/dashboard/revenue/orders', {
-          params: { period }
-        });
-
+        const response = await axios.get('/admin/dashboard/revenue/orders', { params: { period } });
+        console.log('Order revenue response:', response.data);
         if (response.data.success) {
           this.orderRevenueData = {
             labels: response.data.data.labels,
             revenues: response.data.data.revenues
           };
+          console.log('Order revenue data updated:', this.orderRevenueData);
         }
       } catch (error) {
         console.error('Error fetching order revenue:', error);
-        this.orderRevenueData = {
-          labels: [],
-          revenues: []
-        };
       } finally {
         this.loadingOrderRevenue = false;
       }
     },
     async fetchServiceRevenue(period) {
+      console.log('Fetching service revenue with period:', period);
       this.loadingServiceRevenue = true;
       try {
-        const response = await axios.get('/admin/dashboard/revenue/services', {
-          params: { period }
-        });
-
+        const response = await axios.get('/admin/dashboard/revenue/services', { params: { period } });
+        console.log('Service revenue response:', response.data);
         if (response.data.success) {
           this.serviceRevenueData = {
             labels: response.data.data.labels,
             revenues: response.data.data.revenues
           };
+          console.log('Service revenue data updated:', this.serviceRevenueData);
         }
       } catch (error) {
         console.error('Error fetching service revenue:', error);
-        this.serviceRevenueData = {
-          labels: [],
-          revenues: []
-        };
       } finally {
         this.loadingServiceRevenue = false;
       }
     },
-
-
-    // Set period cho đơn hàng
-    setOrderRevenuePeriod(period) {
-      this.orderRevenuePeriod = period;
-      this.fetchOrderRevenue(period);
-    },
-    setServiceRevenuePeriod(period) {
-      this.serviceRevenuePeriod = period;
-      this.fetchServiceRevenue(period);
-    },
-    setTotalRevenuePeriod(period) {
-      this.totalRevenuePeriod = period;
-      this.fetchTotalRevenue(period);
-    }
   },
-
-  // Lifecycle hook
   mounted() {
-    // Fetch dữ liệu ban đầu với period mặc định
     this.fetchOrderRevenue(this.orderRevenuePeriod);
     this.fetchServiceRevenue(this.serviceRevenuePeriod);
+    this.fetchTotalRevenue(this.totalRevenuePeriod);
   }
 };
 </script>
 
 <style scoped>
+/* =========== CSS QUAN TRỌNG ĐỂ SỬA LỖI DROPDOWN =========== */
+
+/* 1. Cho phép dropdown tràn ra ngoài card */
+.chart-card {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: visible !important;
+  /* QUAN TRỌNG: Cho phép tràn */
+}
+
+/* 2. Tạo stacking context mới và đưa header lên cao */
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 20;
+  /* QUAN TRỌNG: Nổi lên trên biểu đồ */
+}
+
+/* 3. Đưa controls lên cao hơn nữa nếu cần */
+.chart-controls {
+  display: flex;
+  gap: 8px;
+  position: relative;
+  z-index: 21;
+}
+
+/* 4. Dropdown menu phải nổi cao nhất */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  min-width: 160px;
+  z-index: 9999;
+  /* Luôn trên cùng */
+  overflow: visible;
+}
+
+/* =========== CÁC CSS KHÁC (GIỮ NGUYÊN) =========== */
 .dashboard-container {
   min-height: 100vh;
   background: #f8f9fa;
 }
 
-/* Header Styles */
-.dashboard-header {
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 24px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.header-top-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header-text {
-  font-size: 14px;
-  color: #374151;
-}
-
-.status-badge {
-  font-size: 12px;
-  color: #10b981;
-  background: #d1fae5;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.follow-btn {
-  background: #f3f4f6;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.header-top-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.header-icon {
-  color: #6b7280;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.header-icon.small {
-  font-size: 14px;
-}
-
-.header-icon.large {
-  font-size: 24px;
-}
-
-.get-touch-btn {
-  background: #1f2937;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.header-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 24px;
-}
-
-.header-bottom-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo-text {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1f2937;
-}
-
-.header-bottom-center {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.user-icons {
-  display: flex;
-  gap: 4px;
-}
-
-.search-bar {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-icon {
-  position: absolute;
-  left: 12px;
-  color: #9ca3af;
-  font-size: 16px;
-}
-
-.search-input {
-  padding: 8px 12px 8px 36px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  width: 300px;
-  font-size: 14px;
-}
-
-/* Layout */
 .dashboard-layout {
   display: flex;
 }
 
-/* Sidebar Styles */
-.sidebar {
-  width: 260px;
-  background: white;
-  border-right: 1px solid #e5e7eb;
-  height: calc(100vh - 120px);
-  overflow-y: auto;
-  padding: 24px 16px;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar-logo {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  margin-bottom: 24px;
-  font-weight: 700;
-  font-size: 18px;
-  color: #1f2937;
-}
-
-.menu-section {
-  margin-bottom: 32px;
-}
-
-.menu-title {
-  font-size: 11px;
-  font-weight: 600;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 12px;
-  padding: 0 12px;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px;
-  margin-bottom: 4px;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #6b7280;
-  transition: all 0.2s;
-}
-
-.menu-item:hover {
-  background: #f3f4f6;
-}
-
-.menu-item.active {
-  background: #f3f4f6;
-  color: #1f2937;
-  font-weight: 600;
-}
-
-.menu-item i {
-  margin-right: 12px;
-  font-size: 18px;
-}
-
-.menu-item.has-submenu {
-  position: relative;
-}
-
-.menu-item-content {
-  display: flex;
-  align-items: center;
-  flex: 1;
-}
-
-.submenu {
-  display: none;
-  margin-top: 4px;
-  padding-left: 40px;
-}
-
-.submenu-item {
-  padding: 8px 12px;
-  color: #6b7280;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.submenu-item:hover {
-  color: #1f2937;
-}
-
-.sidebar-bottom {
-  margin-top: auto;
-  padding-top: 24px;
-}
-
-.dark-mode-toggle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  margin-bottom: 16px;
-  color: #6b7280;
-}
-
-.toggle-switch {
-  width: 40px;
-  height: 20px;
-  background: #e5e7eb;
-  border-radius: 10px;
-  position: relative;
-  cursor: pointer;
-}
-
-.toggle-switch::after {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  background: white;
-  border-radius: 50%;
-  top: 2px;
-  left: 2px;
-  transition: all 0.2s;
-}
-
-.premium-card {
-  background: #f3f4f6;
-  border-radius: 12px;
-  padding: 16px;
-}
-
-.premium-title {
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 8px;
-}
-
-.premium-text {
-  font-size: 12px;
-  color: #6b7280;
-  margin-bottom: 12px;
-}
-
-.upgrade-btn {
-  background: #1f2937;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  width: 100%;
-}
-
-/* Main Content Styles */
 .main-content {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
   height: calc(100vh - 120px);
+
+  /* Ẩn scrollbar nhưng vẫn cho phép scroll */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE và Edge */
 }
 
-.page-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 24px;
+.main-content::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 
 .stats-grid {
@@ -1016,63 +576,35 @@ export default {
   grid-template-columns: 1fr;
 }
 
-.chart-card {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+/* PrimeVue Dropdown Styles */
+.period-dropdown {
+  min-width: 140px;
 }
 
-.chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.chart-header h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.chart-controls {
-  display: flex;
-  gap: 8px;
-}
-
-.chart-btn {
-  padding: 6px 12px;
-  border: 1px solid #e5e7eb;
-  background: white;
+.period-dropdown :deep(.p-dropdown) {
+  border: 1px solid #3b82f6;
   border-radius: 6px;
   font-size: 12px;
-  cursor: pointer;
-}
-
-.chart-btn.active {
-  background: #1f2937;
-  color: white;
-  border-color: #1f2937;
-}
-
-.chart-placeholder {
-  height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f9fafb;
-  border-radius: 8px;
-  color: #9ca3af;
-}
-
-.chart-card :deep(.p-chart) {
-  height: 300px;
   width: 100%;
 }
 
-.chart-card :deep(canvas) {
-  max-height: 300px;
+.period-dropdown :deep(.p-dropdown-label) {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #374151;
+}
+
+.period-dropdown :deep(.p-dropdown-trigger) {
+  width: 2rem;
+}
+
+.period-dropdown :deep(.p-dropdown-panel) {
+  font-size: 12px;
+}
+
+.period-dropdown :deep(.p-dropdown-item) {
+  padding: 10px 12px;
+  font-size: 13px;
 }
 
 .chart-loading {
@@ -1166,14 +698,6 @@ export default {
   color: #1f2937;
 }
 
-.see-all-btn {
-  color: #3b82f6;
-  background: none;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-}
-
 .activity-list {
   display: flex;
   flex-direction: column;
@@ -1216,35 +740,6 @@ export default {
 .activity-badge.new-order {
   background: #dbeafe;
   color: #1e40af;
-}
-
-.activity-badge.low-stock {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.activity-badge.campaign {
-  background: #e0e7ff;
-  color: #3730a3;
-}
-
-.activity-badge.system {
-  background: #f3f4f6;
-  color: #374151;
-}
-
-.card-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.action-btn {
-  padding: 6px 12px;
-  border: 1px solid #e5e7eb;
-  background: white;
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
 }
 
 .products-table {

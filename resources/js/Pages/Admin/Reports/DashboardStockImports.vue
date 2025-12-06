@@ -108,7 +108,8 @@
         </div>
 
         <div v-else class="chart-container pie-chart-mode">
-          <Chart type="pie" :data="chartData" :options="chartOptions" class="w-full md:w-[30rem] mx-auto" style="height: 400px;" />
+          <Chart type="pie" :data="chartData" :options="chartOptions" class="w-full md:w-[30rem] mx-auto"
+            style="height: 400px;" />
         </div>
 
       </main>
@@ -157,17 +158,17 @@ export default {
             display: true,
             position: 'bottom', // Đặt chú thích xuống dưới đáy
             labels: {
-                usePointStyle: true, // Dùng dấu chấm tròn đẹp hơn
-                padding: 20,
-                font: {
-                    size: 14
-                }
+              usePointStyle: true, // Dùng dấu chấm tròn đẹp hơn
+              padding: 20,
+              font: {
+                size: 14
+              }
             }
           },
           // Cấu hình Tooltip để hiện %
           tooltip: {
             callbacks: {
-              label: function(context) {
+              label: function (context) {
                 let label = context.label || '';
                 let value = context.raw || 0;
                 // Lấy tổng giá trị của cả biểu đồ tròn
@@ -209,7 +210,7 @@ export default {
       // Vẫn cho phép lọc theo tên/mã hàng để xem tỷ trọng của một nhóm hàng cụ thể
       if (this.filter.searchQuery) {
         const query = this.filter.searchQuery.toLowerCase();
-        products = products.filter(p => 
+        products = products.filter(p =>
           p.name.toLowerCase().includes(query) ||
           p.id.toString().includes(query)
         );
@@ -234,11 +235,11 @@ export default {
 
       // Kiểm tra nếu không có dữ liệu
       if (totalMedicine === 0 && totalGoods === 0) {
-          // Trả về dữ liệu rỗng để tránh lỗi biểu đồ
-          return {
-              labels: ['Không có dữ liệu'],
-              datasets: [{ data: [0], backgroundColor: ['#e0e0e0'] }]
-          };
+        // Trả về dữ liệu rỗng để tránh lỗi biểu đồ
+        return {
+          labels: ['Không có dữ liệu'],
+          datasets: [{ data: [0], backgroundColor: ['#e0e0e0'] }]
+        };
       }
 
       // 3. Cấu trúc dữ liệu cho Pie Chart
@@ -290,59 +291,231 @@ export default {
   background-color: #f9f9f9;
   min-height: 100vh;
 }
-.page-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: #111; }
-.layout-wrapper { display: flex; gap: 0; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); overflow: hidden; min-height: 600px; }
-.sidebar { width: 260px; flex-shrink: 0; border-right: 1px solid #e0e0e0; padding: 20px; background: #fff; }
-.filter-group { margin-bottom: 20px; }
-.label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 8px; }
-.toggle-container { background-color: #f0f2f5; border-radius: 18px; padding: 2px; display: flex; }
-.toggle-btn { flex: 1; border: none; background: transparent; padding: 6px 0; border-radius: 16px; font-size: 13px; cursor: pointer; color: #666; transition: all 0.2s; }
-.toggle-btn.active { background-color: #007bff; color: white; font-weight: 500; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-.form-input { width: 100%; padding: 8px 10px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 14px; outline: none; box-sizing: border-box; }
-.form-input:focus { border-color: #40a9ff; }
-.radio-list { display: flex; flex-direction: column; gap: 8px; }
-.radio-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
-.radio-item:hover { background-color: #f5f5f5; }
-.radio-item.selected { border-color: #40a9ff; background-color: #e6f7ff; }
-.radio-left { display: flex; align-items: center; gap: 8px; font-size: 13px; }
-.icon-arrow, .icon-calendar { color: #999; font-size: 14px; }
-.main-content { flex: 1; padding: 24px; background-color: #fff; display: flex; flex-direction: column; }
-.content-header-text { text-align: center; color: #666; font-size: 14px; margin-bottom: 24px; }
-.products-table-wrapper { overflow-x: auto; }
-.products-table table { width: 100%; border-collapse: collapse; }
-.products-table th { background-color: #f9fafb; text-align: left; padding: 12px 16px; font-size: 13px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb; }
-.products-table td { padding: 12px 16px; border-bottom: 1px solid #e5e7eb; font-size: 13px; color: #374151; }
-.products-table tr:hover td { background-color: #f9fafb; }
-.badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; }
-.badge-medicine { background-color: #dbeafe; color: #1e40af; }
-.badge-goods { background-color: #fef3c7; color: #92400e; }
-.cost { color: #dc2626; }
-.empty-state { text-align: center; padding: 30px; color: #999; }
+
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #111;
+}
+
+.layout-wrapper {
+  display: flex;
+  gap: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  min-height: 600px;
+}
+
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  border-right: 1px solid #e0e0e0;
+  padding: 20px;
+  background: #fff;
+}
+
+.filter-group {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.toggle-container {
+  background-color: #f0f2f5;
+  border-radius: 18px;
+  padding: 2px;
+  display: flex;
+}
+
+.toggle-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 6px 0;
+  border-radius: 16px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.toggle-btn.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #40a9ff;
+}
+
+.radio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radio-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.radio-item:hover {
+  background-color: #f5f5f5;
+}
+
+.radio-item.selected {
+  border-color: #40a9ff;
+  background-color: #e6f7ff;
+}
+
+.radio-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.icon-arrow,
+.icon-calendar {
+  color: #999;
+  font-size: 14px;
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-header-text {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.products-table-wrapper {
+  overflow-x: auto;
+}
+
+.products-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.products-table th {
+  background-color: #f9fafb;
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.products-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 13px;
+  color: #374151;
+}
+
+.products-table tr:hover td {
+  background-color: #f9fafb;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.badge-medicine {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-goods {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.cost {
+  color: #dc2626;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 30px;
+  color: #999;
+}
 
 /* Container chứa biểu đồ */
 .chart-container {
   padding: 20px;
   background: white;
   border-radius: 8px;
-  flex: 1; /* Để nó chiếm hết chiều cao còn lại */
-  display: flex; /* Để căn giữa biểu đồ tròn */
+  flex: 1;
+  /* Để nó chiếm hết chiều cao còn lại */
+  display: flex;
+  /* Để căn giữa biểu đồ tròn */
   align-items: center;
   justify-content: center;
 }
 
 /* Style riêng khi ở chế độ Pie Chart để căn giữa đẹp hơn */
 .pie-chart-mode {
-    /* Có thể thêm background nhẹ để làm nổi bật biểu đồ tròn */
-    /* background-color: #f8f9fa; */
+  /* Có thể thêm background nhẹ để làm nổi bật biểu đồ tròn */
+  /* background-color: #f8f9fa; */
 }
 
 /* Class tiện ích để set chiều cao/rộng như yêu cầu (nếu không dùng Tailwind) */
-.w-\[30rem\] { width: 30rem; }
-.md\:w-\[30rem\] { 
-    @media (min-width: 768px) {
-        width: 30rem; 
-    }
+.w-\[30rem\] {
+  width: 30rem;
 }
-.mx-auto { margin-left: auto; margin-right: auto; }
-.w-full { width: 100%; }
+
+.md\:w-\[30rem\] {
+  @media (min-width: 768px) {
+    width: 30rem;
+  }
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.w-full {
+  width: 100%;
+}
 </style>

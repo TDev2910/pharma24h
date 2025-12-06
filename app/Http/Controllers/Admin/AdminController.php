@@ -178,7 +178,8 @@ class AdminController extends \App\Http\Controllers\Controller
     }
 
     /**
-     * Lấy doanh thu đơn hàng theo period (day/week/month/year)
+     * Lấy doanh thu đơn hàng theo period
+     * Hỗ trợ: today, yesterday, last7days, thisMonth, lastMonth, day, week, month, year
      * 
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -189,6 +190,78 @@ class AdminController extends \App\Http\Controllers\Controller
         $query = Order::where('payment_status', 'paid');
 
         switch ($period) {
+            case 'today':
+                // Chỉ lấy hôm nay
+                $query->whereDate('created_at', today());
+                $results = $query
+                    ->selectRaw('DATE(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->map(function ($item) {
+                    return date('d/m', strtotime($item->period));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
+            case 'yesterday':
+                // Chỉ lấy hôm qua
+                $query->whereDate('created_at', today()->subDay());
+                $results = $query
+                    ->selectRaw('DATE(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->map(function ($item) {
+                    return date('d/m', strtotime($item->period));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
+            case 'last7days':
+                // Lấy 7 ngày qua
+                $query->where('created_at', '>=', now()->subDays(7));
+                $results = $query
+                    ->selectRaw('DATE(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->map(function ($item) {
+                    return date('d/m', strtotime($item->period));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
+            case 'thisMonth':
+                // Lấy tháng này
+                $query->whereYear('created_at', now()->year)
+                      ->whereMonth('created_at', now()->month);
+                $results = $query
+                    ->selectRaw('DATE(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->map(function ($item) {
+                    return date('d/m', strtotime($item->period));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
+            case 'lastMonth':
+                // Lấy tháng trước
+                $query->whereYear('created_at', now()->subMonth()->year)
+                      ->whereMonth('created_at', now()->subMonth()->month);
+                $results = $query
+                    ->selectRaw('DATE(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->map(function ($item) {
+                    return date('d/m', strtotime($item->period));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
             case 'day':
                 // Lấy 30 ngày gần nhất
                 $query->where('created_at', '>=', now()->subDays(30));
@@ -267,6 +340,78 @@ class AdminController extends \App\Http\Controllers\Controller
         $query = ServiceBooking::where('payment_status', 'paid');
 
         switch ($period) {
+            case 'today':
+                // Chỉ lấy hôm nay
+                $query->whereDate('created_at', today());
+                $results = $query
+                    ->selectRaw('DATE(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->map(function ($item) {
+                    return date('d/m', strtotime($item->period));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
+            case 'yesterday':
+                // Chỉ lấy hôm qua
+                $query->whereDate('created_at', today()->subDay());
+                $results = $query
+                    ->selectRaw('DATE(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->map(function ($item) {
+                    return date('d/m', strtotime($item->period));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
+            case 'last7days':
+                // Lấy 7 ngày qua
+                $query->where('created_at', '>=', now()->subDays(7));
+                $results = $query
+                    ->selectRaw('DATE(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->map(function ($item) {
+                    return date('d/m', strtotime($item->period));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
+            case 'thisMonth':
+                // Lấy tháng này
+                $query->whereYear('created_at', now()->year)
+                      ->whereMonth('created_at', now()->month);
+                $results = $query
+                    ->selectRaw('DATE(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->map(function ($item) {
+                    return date('d/m', strtotime($item->period));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
+            case 'lastMonth':
+                // Lấy tháng trước
+                $query->whereYear('created_at', now()->subMonth()->year)
+                      ->whereMonth('created_at', now()->subMonth()->month);
+                $results = $query
+                    ->selectRaw('DATE(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                $labels = $results->map(function ($item) {
+                    return date('d/m', strtotime($item->period));
+                })->toArray();
+                $revenues = $results->pluck('revenue')->toArray();
+                break;
+
             case 'day':
                 $query->where('created_at', '>=', now()->subDays(30));
                 $results = $query
@@ -337,6 +482,116 @@ class AdminController extends \App\Http\Controllers\Controller
         $labels = [];
         $revenues = [];
         switch ($period) {
+            case 'today':
+                // Chỉ lấy hôm nay
+                $orderData = Order::where('payment_status', 'paid')
+                    ->whereDate('created_at', today())
+                    ->selectRaw('DATE(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $serviceData = ServiceBooking::where('payment_status', 'paid')
+                    ->whereDate('created_at', today())
+                    ->selectRaw('DATE(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $allPeriods = collect($orderData->keys())
+                    ->merge($serviceData->keys())->unique()->sort()->values();
+                foreach ($allPeriods as $periodVal) {
+                    $labels[] = date('d/m', strtotime($periodVal));
+                    $total = (float)($orderData[$periodVal] ?? 0) + (float)($serviceData[$periodVal] ?? 0);
+                    $revenues[] = $total;
+                }
+                break;
+
+            case 'yesterday':
+                // Chỉ lấy hôm qua
+                $orderData = Order::where('payment_status', 'paid')
+                    ->whereDate('created_at', today()->subDay())
+                    ->selectRaw('DATE(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $serviceData = ServiceBooking::where('payment_status', 'paid')
+                    ->whereDate('created_at', today()->subDay())
+                    ->selectRaw('DATE(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $allPeriods = collect($orderData->keys())
+                    ->merge($serviceData->keys())->unique()->sort()->values();
+                foreach ($allPeriods as $periodVal) {
+                    $labels[] = date('d/m', strtotime($periodVal));
+                    $total = (float)($orderData[$periodVal] ?? 0) + (float)($serviceData[$periodVal] ?? 0);
+                    $revenues[] = $total;
+                }
+                break;
+
+            case 'last7days':
+                // Lấy 7 ngày qua
+                $from = now()->subDays(7);
+                $orderData = Order::where('payment_status', 'paid')
+                    ->where('created_at', '>=', $from)
+                    ->selectRaw('DATE(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $serviceData = ServiceBooking::where('payment_status', 'paid')
+                    ->where('created_at', '>=', $from)
+                    ->selectRaw('DATE(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $allPeriods = collect($orderData->keys())
+                    ->merge($serviceData->keys())->unique()->sort()->values();
+                foreach ($allPeriods as $periodVal) {
+                    $labels[] = date('d/m', strtotime($periodVal));
+                    $total = (float)($orderData[$periodVal] ?? 0) + (float)($serviceData[$periodVal] ?? 0);
+                    $revenues[] = $total;
+                }
+                break;
+
+            case 'thisMonth':
+                // Lấy tháng này
+                $orderData = Order::where('payment_status', 'paid')
+                    ->whereYear('created_at', now()->year)
+                    ->whereMonth('created_at', now()->month)
+                    ->selectRaw('DATE(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $serviceData = ServiceBooking::where('payment_status', 'paid')
+                    ->whereYear('created_at', now()->year)
+                    ->whereMonth('created_at', now()->month)
+                    ->selectRaw('DATE(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $allPeriods = collect($orderData->keys())
+                    ->merge($serviceData->keys())->unique()->sort()->values();
+                foreach ($allPeriods as $periodVal) {
+                    $labels[] = date('d/m', strtotime($periodVal));
+                    $total = (float)($orderData[$periodVal] ?? 0) + (float)($serviceData[$periodVal] ?? 0);
+                    $revenues[] = $total;
+                }
+                break;
+
+            case 'lastMonth':
+                // Lấy tháng trước
+                $orderData = Order::where('payment_status', 'paid')
+                    ->whereYear('created_at', now()->subMonth()->year)
+                    ->whereMonth('created_at', now()->subMonth()->month)
+                    ->selectRaw('DATE(created_at) as period, SUM(total_amount) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $serviceData = ServiceBooking::where('payment_status', 'paid')
+                    ->whereYear('created_at', now()->subMonth()->year)
+                    ->whereMonth('created_at', now()->subMonth()->month)
+                    ->selectRaw('DATE(created_at) as period, SUM(price) as revenue')
+                    ->groupBy('period')->orderBy('period')->get()
+                    ->pluck('revenue', 'period');
+                $allPeriods = collect($orderData->keys())
+                    ->merge($serviceData->keys())->unique()->sort()->values();
+                foreach ($allPeriods as $periodVal) {
+                    $labels[] = date('d/m', strtotime($periodVal));
+                    $total = (float)($orderData[$periodVal] ?? 0) + (float)($serviceData[$periodVal] ?? 0);
+                    $revenues[] = $total;
+                }
+                break;
+
             case 'day':
                 $from = now()->subDays(30);
                 $orderData = Order::where('payment_status', 'paid')

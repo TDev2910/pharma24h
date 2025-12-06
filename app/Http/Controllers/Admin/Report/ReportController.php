@@ -14,6 +14,7 @@ use App\Models\StockImport;
 use App\Models\Inventory\PurchaseReturnItem;
 use App\Models\Inventory\PurchaseReturn;
 use App\Models\User;
+use App\Models\Supplier;
 
 class ReportController extends Controller
 {
@@ -297,4 +298,49 @@ class ReportController extends Controller
             ];
         });
      }
+
+    public function topSuppliers()
+    {
+        $stockSuppliers = $this->getTopSuppliers(10);
+        return Inertia::render('Admin/Reports/DashboardTopSuppliers', [
+            'topSuppliers' => $stockSuppliers,
+        ]);
+    }
+
+    private function getTopSuppliers($limit = 10)
+    {
+        $topSuppliers = StockImport::query()
+            ->join('stock_import_items', 'stock_imports.id', '=', 'stock_import_items.stock_import_id')
+            ->join('suppliers', 'stock_imports.supplier_id', '=', 'suppliers.id')
+            // Bỏ filter status hoặc mở rộng
+            // ->where('stock_imports.status', 'completed') // Bỏ dòng này hoặc thay bằng whereIn
+            ->selectRaw('
+                suppliers.id,
+                suppliers.ten_nha_cung_cap,
+                suppliers.email,
+                suppliers.ten_cong_ty,
+                suppliers.ma_so_thue,
+                SUM(stock_import_items.quantity) as total_imported
+            ')
+            ->groupBy('suppliers.id', 'suppliers.ten_nha_cung_cap', 'suppliers.email', 'suppliers.ten_cong_ty', 'suppliers.ma_so_thue')
+            ->orderByDesc('total_imported')
+            ->take($limit)
+            ->get();
+        
+        if($topSuppliers->isEmpty()) {
+            return collect([]);
+        }
+        
+        // Sửa: Dùng $topSuppliers thay vì $topSuppliersQuery, và không cần $suppliers nữa
+        return $topSuppliers->map(function($item) {
+            return [
+                'id' => $item->id,
+                'name' => $item->ten_nha_cung_cap, // Đổi tên để khớp với Vue
+                'email' => $item->email ?? 'N/A',
+                'company_name' => $item->ten_cong_ty ?? 'N/A', // Đổi tên
+                'tax_code' => $item->ma_so_thue ?? 'N/A', // Đổi tên
+                'total_imported' => (int) $item->total_imported, // Giữ nguyên hoặc đổi thành order_count nếu cần
+            ];
+        });
+    }    
 }
