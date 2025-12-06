@@ -1,111 +1,128 @@
 <template>
-  <footer class="footer-section bg-white border-top" style="margin-top:25px;">
-    <!-- Main Footer Content -->
-    <div class="container-fluid px-0">
-      <div class="row g-0">
-        <!-- Contact Information Section - BÊN TRÁI -->
-        <div class="col-lg-6">
-          <div class="contact-section p-3 p-lg-4">
-            <!-- Brand -->
-            <div class="footer-brand mb-3">
-              <h5 class="d-flex align-items-center mb-3">
-                <i class="" style="font-size: 1.5rem;"></i>
-                <span class="brand-text">Pharma PCT</span>
-              </h5>
+  <footer class="footer-dark">
+    <div class="container pt-5 pb-4">
+      <div class="row g-4">
+
+        <div class="col-lg-4 col-md-6">
+          <div class="footer-brand mb-4">
+            <span class="fw-bold fs-4 text-white">Pharma PCT</span>
+          </div>
+          <p class="text-gray-400 mb-4 text-justify">
+            Sứ mệnh của chúng tôi là cung cấp các giải pháp dược phẩm tiên tiến,
+            cải thiện sức khỏe và cuộc sống của mọi người trên toàn cầu thông qua
+            nghiên cứu và đổi mới không ngừng.
+          </p>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <h5 class="text-white fw-bold mb-4">Thông tin liên hệ</h5>
+          <ul class="list-unstyled contact-info">
+            <li class="d-flex mb-3">
+              <i class="fas fa-map-marker-alt mt-1 me-3 text-white"></i>
+              <span class="text-gray-400">
+                <strong>Trụ sở chính:</strong><br>
+                12 Đô Lương, Phường 11, Vũng Tàu,<br>
+                Bà Rịa - Vũng Tàu, Việt Nam
+              </span>
+            </li>
+            <li class="d-flex mb-3">
+              <i class="fas fa-phone-alt mt-1 me-3 text-white"></i>
+              <span class="text-gray-400">
+                <strong>Điện thoại:</strong><br>
+                <a href="tel:0901645269" class="text-gray-400 text-decoration-none hover-white">
+                  0901 645 269
+                </a>
+                <br>
+                <small>(Thứ 2 - CN: 7:00 - 22:00)</small>
+              </span>
+            </li>
+            <li class="d-flex mb-3">
+              <i class="fas fa-envelope mt-1 me-3 text-white"></i>
+              <span class="text-gray-400">
+                <strong>Email:</strong><br>
+                <a href="mailto:info@pharmapct.vn" class="text-gray-400 text-decoration-none hover-white">
+                  info@pharmapct.vn
+                </a>
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12">
+          <div class="row">
+            <div class="col-12 mb-4">
+              <div class="social-links d-flex gap-3">
+                <a href="https://www.facebook.com/chokiot" target="_blank" class="social-btn">
+                  <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="social-btn">
+                  <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="social-btn">
+                  <i class="fab fa-youtube"></i>
+                </a>
+                <a href="#" class="social-btn">
+                  <i class="fab fa-linkedin-in"></i>
+                </a>
+              </div>
             </div>
 
-            <div class="row">
-              <!-- Contact Details -->
-              <div class="col-md-6">
-                <h6 class="contact-title mb-2">Kết nối với chúng tôi</h6>
-
-                <div class="contact-item mb-2">
-                  <i class="fas fa-phone text-primary me-2"></i>
-                  <a href="tel:0980xxxxxx" class="contact-link">0901645269</a>
+            <div class="col-12">
+              <ul class="list-unstyled footer-links">
+                <li class="mb-2"><a href="#">Chính sách bảo mật</a></li>
+                <li class="mb-2"><a href="#">Điều khoản sử dụng</a></li>
+                <li class="mb-2"><a href="#">Sơ đồ trang web</a></li>
+                <li class="mb-2"><a href="#">Khả năng truy cập</a></li>
+              </ul>
+            </div>
+            <div class="payment-support mt-3">
+              <h6 class="text-white fw-bold mb-3">Hỗ trợ thanh toán</h6>
+              <div class="payment-icons">
+                <div class="payment-icon bg-white rounded p-1">
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png"
+                    alt="Visa" title="Visa">
                 </div>
-
-                <div class="contact-item mb-2">
-                  <i class="fab fa-facebook text-primary me-2"></i>
-                  <a href="https://www.facebook.com/chokiot" target="_blank" class="contact-link">
-                    www.facebook.com/pharmapct
-                  </a>
+                <div class="payment-icon bg-white rounded p-1">
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png"
+                    alt="MasterCard" title="MasterCard">
                 </div>
-
-                <div class="contact-item">
-                  <i class="fas fa-envelope text-primary me-2"></i>
-                  <a href="mailto:info@mediaid.vn" class="contact-link">info@pharmapct.vn</a>
+                <div class="payment-icon bg-white rounded p-1">
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/JCB_logo.svg/1200px-JCB_logo.svg.png"
+                    alt="JCB" title="JCB">
                 </div>
-              </div>
-
-              <!-- Store System -->
-              <div class="col-md-6">
-                <h6 class="contact-title mb-2">Hệ thống cửa hàng</h6>
-
-                <div class="store-item mb-2">
-                  <i class="fas fa-map-marker-alt text-primary me-2"></i>
-                  <div class="store-info">
-                    <strong>Chi nhánh Vũng Tàu</strong><br>
-                    <small class="text-muted">12 Đô Lương, Phường 11, Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam</small>
-                  </div>
+                <div class="payment-icon bg-white rounded p-1">
+                  <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo" title="MoMo">
                 </div>
-
-                <div class="store-item">
-                  <i class="fas fa-clock text-primary me-2"></i>
-                  <div class="store-info">
-                    <strong>Giờ làm việc</strong><br>
-                    <small class="text-muted">Thứ 2 - CN: 7:00 - 22:00</small>
-                  </div>
+                <div class="payment-icon bg-white rounded p-1">
+                  <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ZaloPay-Square.png" alt="ZaloPay"
+                    title="ZaloPay">
+                </div>
+                <div class="payment-icon bg-white rounded p-1">
+                  <img src="https://vnpay.vn/assets/images/logo-icon/logo-primary.svg" alt="VNPAY" title="VNPAY">
                 </div>
               </div>
-
-              <!-- openstreetmap -->
-              <div class="col-md-6" style="margin-left: 1000px; margin-top: -200px;">
-                <iframe
-                  frameborder="0"
-                  style="border:0"
-                  scrolling="no"
-                  marginheight="0"
-                  marginwidth="0"
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=107.077%2C10.363%2C107.081%2C10.365&layer=mapnik&marker=10.3638%2C107.079">
-                </iframe>
-                <br/>
-                <small>
-                  <a href="https://www.openstreetmap.org/#map=19/10.3638/107.079" target="_blank">Xem bản đồ mở rộng</a>
-                </small>
-              </div>
-            </div>          
+            </div>
           </div>
         </div>
+
       </div>
     </div>
 
-    <!-- Bottom Footer -->
-    <div class="footer-bottom bg-light py-2">
-      <div class="container">
-        <div class="row align-items-center">
-          <div class="col-md-6">
-            <p class="mb-0 text-muted small">
-              © {{ currentYear }} Pharma PCT. Bản quyền thuộc về công ty TNHH Pharma PCT Việt Nam.
-            </p>
-          </div>
-          <div class="col-md-6 text-md-end">
-            <div class="footer-links">
-              <a href="#privacy" class="text-muted me-3 small">Chính sách bảo mật</a>
-              <a href="#terms" class="text-muted me-3 small">Điều khoản sử dụng</a>
-              <a href="#sitemap" class="text-muted small">Sơ đồ trang</a>
-            </div>
-          </div>
-        </div>
+    <div class="footer-bottom py-3">
+      <div class="container text-center">
+        <p class="mb-0 text-gray-500 small">
+          © {{ currentYear }} Pharma PCT. Bản quyền thuộc về công ty TNHH Pharma PCT Việt Nam.
+        </p>
       </div>
     </div>
   </footer>
 
-  <!-- Floating Contact Buttons -->
   <div class="floating-contacts">
-    <!-- Zalo Button -->
     <a href="https://zalo.me/0376193244" target="_blank" class="floating-btn floating-zalo">
-      <i class="fab fa-viber"></i>
-    </a>
+      <i class="fas fa-comment-dots"></i> </a>
 
     <a href="https://www.facebook.com/dat.hocongthien" target="_blank" class="floating-btn floating-facebook">
       <i class="fab fa-facebook-messenger"></i>
@@ -114,17 +131,13 @@
     <ChatbotFloatingButton />
     <VchatWidget :auth="auth" />
   </div>
-
-
-  <!-- vChat Widget -->
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import VchatWidget from '@/Components/VchatWidget.vue'
 import ChatbotFloatingButton from '@/Components/ChatbotFloatingButton.vue'
 
-// Props từ Inertia
 const props = defineProps({
   auth: {
     type: Object,
@@ -132,49 +145,104 @@ const props = defineProps({
   }
 })
 
-// Computed property for current year
 const currentYear = computed(() => new Date().getFullYear())
-
 </script>
 
 <style scoped>
-/* CSS để định vị vChat widget dưới nút message */
-:deep(.vchat-widget),
-:deep(#vchat-widget),
-:deep([id*="vchat"]) {
-  position: fixed;
-  bottom: 90px;
-  /* Dưới nút message (80px + 10px margin) */
-  right: 20px;
-  z-index: 999;
-  /* Đảm bảo không bị ảnh hưởng bởi scrollbar */
-  transform: translateZ(0);
-  will-change: transform;
+/* 1. Dark Footer Styles (Giống ảnh mẫu) */
+.footer-dark {
+  background-color: #162E44;
+  /* Màu xanh đen đậm */
+  color: #fff;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  margin-top: 50px;
 }
 
-/* Điều chỉnh cho mobile */
-@media (max-width: 767.98px) {
-
-  :deep(.vchat-widget),
-  :deep(#vchat-widget),
-  :deep([id*="vchat"]) {
-    bottom: 80px;
-    right: 15px;
-  }
+.text-gray-400 {
+  color: #cbd5e1;
+  /* Màu chữ xám sáng */
+  line-height: 1.6;
+  font-size: 0.95rem;
 }
 
-/* Điều chỉnh cho desktop có scrollbar */
-@media (min-width: 768px) {
-
-  :deep(.vchat-widget),
-  :deep(#vchat-widget),
-  :deep([id*="vchat"]) {
-    /* Tính toán lại vị trí để tránh scrollbar */
-    right: calc(20px + env(scrollbar-gutter, 0px));
-  }
+.text-gray-500 {
+  color: #94a3b8;
 }
 
-/* Floating Contacts */
+.hover-white:hover {
+  color: #fff !important;
+  text-decoration: underline !important;
+}
+
+/* 2. Social Buttons */
+.social-btn {
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  /* Bo góc vuông nhẹ giống mẫu */
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+/* CSS cho phần thanh toán */
+.payment-icons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 8px;
+  max-width: 200px; /* Giới hạn chiều rộng để icon không quá rộng */
+}
+
+.payment-icon {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.payment-icon:hover {
+  transform: translateY(-2px);
+}
+
+.payment-icon img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.social-btn:hover {
+  background-color: #fff;
+  color: #0f1c2e;
+}
+
+/* 3. Footer Links */
+.footer-links a {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #fff;
+}
+
+/* 4. Bottom Bar */
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #0F2233;
+  /* Đậm hơn nền chính chút */
+}
+
+/* 5. Floating Contacts (Giữ nguyên style cũ của bạn) */
 .floating-contacts {
   position: fixed;
   right: 20px;
@@ -184,7 +252,6 @@ const currentYear = computed(() => new Date().getFullYear())
   flex-direction: column;
   gap: 0.75rem;
   align-items: center;
-  /* Căn giữa các nút */
 }
 
 .floating-btn {
@@ -198,59 +265,47 @@ const currentYear = computed(() => new Date().getFullYear())
   text-decoration: none;
   box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
 .floating-zalo {
   background: #28a745;
+  /* Màu Zalo */
   animation: pulse-phone 2s infinite;
 }
 
+.floating-facebook {
+  background: #1877f2;
+  /* Màu Messenger */
+}
 
 .floating-btn:hover {
   transform: scale(1.1);
-  color: #fff;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes pulse-phone {
+  0% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4);
+  }
 
-  0%,
+  70% {
+    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+  }
+
   100% {
-    box-shadow: 0 3px 15px rgba(40, 167, 69, 0.4);
-  }
-
-  50% {
-    box-shadow: 0 3px 20px rgba(40, 167, 69, 0.7);
-    transform: scale(1.05);
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
   }
 }
 
-
-/* Responsive Design */
-@media (max-width: 991.98px) {
-  .floating-contacts {
-    right: 15px;
-    bottom: 70px;
+/* Responsive adjustment */
+@media (max-width: 768px) {
+  .footer-dark {
+    text-align: left;
   }
 
-  .floating-btn {
-    width: 45px;
-    height: 45px;
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 767.98px) {
-  .floating-contacts {
-    right: 10px;
-    bottom: 60px;
-  }
-
-  .floating-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 0.9rem;
+  .social-links {
+    margin-bottom: 20px;
   }
 }
 </style>
