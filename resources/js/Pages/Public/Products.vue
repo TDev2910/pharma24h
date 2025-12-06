@@ -292,10 +292,10 @@ function formatPrice(amount) {
 async function addToCartHandler(product) {
   try {
     const response = await axios.post('/cart/add', {
-      item_id: product.id,           // ✅ Dùng product từ tham số
-      item_type: product.type,        // ✅ Dùng product.type
+      item_id: product.id,            
+      item_type: product.type,   
       quantity: 1,
-      is_promotion: isPromotionActive(product)  // ✅ Gọi function với product
+      is_promotion: isPromotionActive(product)  
     });
     if (response.data.success) {
       window.dispatchEvent(new CustomEvent('cart-updated'));
@@ -318,44 +318,6 @@ async function addToCartHandler(product) {
     }
   }
 }
-
-//thêm sản phẩm vào giỏ hàng
-// async function addToCart({ id, type }) {
-//   try {
-//     const response = await axios.post('/cart/add', {
-//       item_id: id,
-//       item_type: type,
-//       quantity: 1
-//     });
-
-//     if (response.data.success) {
-//       // 1. Cập nhật số lượng giỏ hàng
-//       window.dispatchEvent(new CustomEvent('cart-updated'));
-
-//       // 2. Tự động mở dropdown giỏ hàng
-//       const cartDropdown = document.querySelector('#cartDropdown');
-//       if (cartDropdown && typeof bootstrap !== 'undefined') {
-//         const bsDropdown = new bootstrap.Dropdown(cartDropdown);
-//         bsDropdown.show();
-//       }
-
-//       // 3. Load cart items (gọi function từ cart.js)
-//       if (typeof window.loadCartItems === 'function') {
-//         setTimeout(() => window.loadCartItems(), 100);
-//       }
-
-//       // 4. Hiển thị thông báo sau khi thêm vào giỏ hàng
-//       if (typeof window.showNotification === 'function') {
-//         window.showNotification('Đã thêm vào giỏ hàng!', 'success');
-//       }
-//     }
-//   } catch (e) {
-//     console.error('Error adding to cart:', e);
-//     if (typeof window.showNotification === 'function') {
-//       window.showNotification('Có lỗi xảy ra!', 'error');
-//     }
-//   }
-// }
 
 //chuyển hướng đến trang chi tiết sản phẩm
 function goToProductDetail(product) {
@@ -496,6 +458,7 @@ onMounted(() => {
   background-color: #1650cf;
   border-color: #1650cf;
 }
+
 
 /* Responsive */
 @media (max-width: 767px) {
