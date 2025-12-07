@@ -72,10 +72,7 @@ class EmployeeController extends Controller
     {
         try {
             $validated = $request->validated();
-            // Debug: Kiểm tra dữ liệu đã validate
-            \Log::info('Employee creation data:', $validated);
-            \Log::info('Branch ID:', ['branch_id' => $validated['branch_id'] ?? 'null']);
-            
+
             $employee = $this->employeeService->createEmployee($validated);
 
             // Trả về JSON nếu request là AJAX/axios
@@ -89,11 +86,6 @@ class EmployeeController extends Controller
 
             return redirect()->back()->with('success', 'Thêm nhân viên thành công!');
         } catch (Exception $e) {
-            // Log lỗi để debug
-            \Log::error('Error creating employee: ' . $e->getMessage(), [
-                'exception' => $e,
-                'trace' => $e->getTraceAsString()
-            ]);
 
             // Trả về JSON nếu request là AJAX/axios
             if ($request->expectsJson() || $request->ajax()) {

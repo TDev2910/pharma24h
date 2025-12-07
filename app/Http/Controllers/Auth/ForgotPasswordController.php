@@ -169,10 +169,10 @@ class ForgotPasswordController extends Controller
         $idToken = $request->idToken;
         $otp = $request->otp;
 
-        // ✅ Chuyển đổi từ +84376193244 thành 0376193244
+        //Chuyển đổi từ +84376193244 thành 0376193244
         $normalizedPhone = $this->normalizePhoneForDatabase($phone);
 
-        // ✅ Tìm user với số điện thoại đã chuẩn hóa
+        //Tìm user với số điện thoại đã chuẩn hóa
         $user = User::where('phone', $normalizedPhone)->first();
 
         if (!$user) {
@@ -186,7 +186,7 @@ class ForgotPasswordController extends Controller
             return back()->withErrors(['phone' => 'Số điện thoại chưa được đăng ký tài khoản']);
         }
 
-        // ✅ Nếu có uid và idToken -> OTP đúng (đã verify với Firebase thành công)
+        //Nếu có uid và idToken -> OTP đúng (đã verify với Firebase thành công)
         if ($uid && $idToken) {
             // Xóa attempts counter và cache cũ
             $otpKey = "phone_otp_attempts_{$phone}";
@@ -204,18 +204,19 @@ class ForgotPasswordController extends Controller
                     'verified' => true,
                     'user_id' => $user->id
                 ],
-                // ✅ Lưu email của user vào reset_email
+                // ưu email của user vào reset_email
                 'reset_email' => $user->email
             ]);
 
-            // Handle AJAX request - Kiểm tra header để đảm bảo trả về JSON
+            // Kiểm tra header để đảm bảo trả về JSON
             if (
                 $request->ajax() ||
                 $request->wantsJson() ||
                 $request->header('X-Requested-With') === 'XMLHttpRequest' ||
                 $request->header('Accept') === 'application/json' ||
                 str_contains($request->header('Accept', ''), 'application/json')
-            ) {
+            ) 
+            {
                 return response()->json([
                     'success' => true,
                     'message' => 'Xác thực thành công!',
@@ -227,7 +228,7 @@ class ForgotPasswordController extends Controller
                 ->with('success', 'Xác thực thành công! Vui lòng đặt mật khẩu mới.');
         }
 
-        // ✅ Nếu không có uid/idToken nhưng có otp -> OTP sai, cần đếm attempts
+        //Nếu không có uid/idToken nhưng có otp -> OTP sai, cần đếm attempts
         if ($otp) {
             $otpKey = "phone_otp_attempts_{$phone}";
 
@@ -385,7 +386,7 @@ class ForgotPasswordController extends Controller
         ]);
 
         try {
-            // ✅ SỬA: Chuẩn hóa số điện thoại
+            // Chuẩn hóa số điện thoại
             $normalizedPhone = $this->normalizePhoneForDatabase($request->phone);
 
             // Tìm user theo phone number đã chuẩn hóa
@@ -410,7 +411,7 @@ class ForgotPasswordController extends Controller
                     'verified' => true,
                     'user_id' => $user->id
                 ],
-                // ✅ THÊM: Lưu email của user vào reset_email
+                // Lưu email của user vào reset_email
                 'reset_email' => $user->email
             ]);
 

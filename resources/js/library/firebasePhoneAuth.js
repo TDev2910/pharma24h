@@ -1,23 +1,21 @@
 import { auth } from './firebase.js';
-import { 
-    signInWithPhoneNumber, 
+import {
+    signInWithPhoneNumber,
     RecaptchaVerifier,
     PhoneAuthProvider,
     signInWithCredential
-} 
-from 'firebase/auth';
+}
+    from 'firebase/auth';
 
-class FirebasePhoneAuthService 
-{
-    constructor() 
-    {
+class FirebasePhoneAuthService {
+    constructor() {
         this.recaptchaVerifier = null;
         this.confirmationResult = null;
         this.rateLimitKey = 'firebase_otp_attempts';
         this.maxAttempts = 3;
         this.cooldownTime = 60 * 1000; // 1 phút
         this.otpExpiryTime = 2 * 60 * 1000; // 2 phút (Firebase thực tế chỉ cho phép 1-2 phút)
-        
+
         // Khôi phục confirmationResult từ localStorage nếu có
         this.restoreConfirmationResult();
     }
@@ -29,14 +27,14 @@ class FirebasePhoneAuthService
         try {
             const savedVerificationId = localStorage.getItem('firebase_verification_id');
             const savedPhone = localStorage.getItem('firebase_phone');
-            
+
             if (savedVerificationId && savedPhone) {
                 // Tạo lại confirmationResult object từ verificationId đã lưu
                 this.confirmationResult = {
                     verificationId: savedVerificationId,
                     _phoneNumber: savedPhone
                 };
-                
+
                 // ConfirmationResult restored from localStorage
             }
         } catch (error) {
@@ -66,7 +64,7 @@ class FirebasePhoneAuthService
     }
 
     /**
-     * Khởi tạo reCAPTCHA verifier
+     * Khởi tạo reCAPTCHA verifier xác thực không phải robot
      * @param {string} containerId - ID của element chứa reCAPTCHA
      */
     initRecaptcha(containerId) {
@@ -97,12 +95,12 @@ class FirebasePhoneAuthService
         const attempts = JSON.parse(localStorage.getItem(this.rateLimitKey) || '[]');
         const now = Date.now();
         const recentAttempts = attempts.filter(time => now - time < this.cooldownTime);
-        
+
         if (recentAttempts.length >= this.maxAttempts) {
             const remainingTime = Math.ceil((recentAttempts[0] + this.cooldownTime - now) / 1000);
             throw new Error(`Quá nhiều yêu cầu. Vui lòng đợi ${remainingTime} giây.`);
         }
-        
+
         attempts.push(now);
         localStorage.setItem(this.rateLimitKey, JSON.stringify(attempts));
     }
@@ -132,36 +130,36 @@ class FirebasePhoneAuthService
         try {
             // Kiểm tra rate limiting
             this.checkRateLimit();
-            
+
             // Đảm bảo phone number có format đúng
             const formattedPhone = this.formatPhoneNumber(phoneNumber);
-            
+
             // Retry logic cho Firebase 503 errors
             let retryCount = 0;
             const maxRetries = 3;
             let lastError;
-            
+
             while (retryCount < maxRetries) {
                 try {
                     this.confirmationResult = await signInWithPhoneNumber(
-                        auth, 
-                        formattedPhone, 
+                        auth,
+                        formattedPhone,
                         this.recaptchaVerifier
                     );
                     break; // Thành công, thoát vòng lặp
                 } catch (error) {
                     retryCount++;
                     lastError = error;
-                    
+
                     // Chỉ retry với lỗi 503 hoặc network errors
-                    if (error.code === 'auth/network-request-failed' || 
+                    if (error.code === 'auth/network-request-failed' ||
                         error.code === 'auth/error-code:-39' ||
                         error.message.includes('503')) {
-                        
+
                         if (retryCount >= maxRetries) {
                             throw error; // Throw lỗi cuối cùng
                         }
-                        
+
                         // Đợi 2-5 giây trước khi retry (exponential backoff)
                         const waitTime = Math.min(2000 * Math.pow(2, retryCount - 1), 10000);
                         await new Promise(resolve => setTimeout(resolve, waitTime));
@@ -171,12 +169,12 @@ class FirebasePhoneAuthService
                     }
                 }
             }
-            
+
             //Kiểm tra confirmationResult sau khi retry
             if (!this.confirmationResult) {
                 throw new Error('Không thể kết nối đến Firebase sau nhiều lần thử');
             }
-            
+
             // Lưu verificationId vào localStorage để khôi phục sau khi reload
             if (this.confirmationResult && this.confirmationResult.verificationId) {
                 this.saveConfirmationResult(
@@ -184,10 +182,10 @@ class FirebasePhoneAuthService
                     formattedPhone
                 );
             }
-            
+
             // Lưu thời gian gửi OTP
             this.saveOTPTime();
-            
+
             return {
                 success: true,
                 message: 'Mã OTP đã được gửi đến số điện thoại của bạn. Mã có hiệu lực trong 2 phút.',
@@ -195,10 +193,10 @@ class FirebasePhoneAuthService
             };
         } catch (error) {
             console.error('Error sending OTP:', error);
-            
+
             //Xử lý lỗi và thông báo các lỗi trong console
             let errorMessage = 'Có lỗi xảy ra khi gửi OTP';
-            
+
             if (error.code === 'auth/error-code:-39' || error.message.includes('503')) {
                 errorMessage = 'Firebase service tạm thời không khả dụng. Vui lòng thử lại sau ít phút.';
             } else if (error.code === 'auth/too-many-requests') {
@@ -208,7 +206,7 @@ class FirebasePhoneAuthService
             } else if (error.code === 'auth/quota-exceeded') {
                 errorMessage = 'Đã vượt quá hạn mức gửi SMS. Vui lòng thử lại sau.';
             }
-            
+
             return {
                 success: false,
                 message: errorMessage,
@@ -226,7 +224,7 @@ class FirebasePhoneAuthService
         try {
             // Trim và validate OTP code
             const trimmedOtp = String(otpCode).trim();
-            
+
             if (!trimmedOtp || trimmedOtp.length === 0) {
                 return {
                     success: false,
@@ -234,12 +232,12 @@ class FirebasePhoneAuthService
                     error: new Error('Empty OTP code')
                 };
             }
-            
+
             // Khôi phục confirmationResult nếu chưa có
             if (!this.confirmationResult || !this.confirmationResult.verificationId) {
                 this.restoreConfirmationResult();
             }
-            
+
             //Kiểm tra confirmationResult tồn tại
             if (!this.confirmationResult) {
                 return {
@@ -248,7 +246,7 @@ class FirebasePhoneAuthService
                     expired: true
                 };
             }
-            
+
             if (!this.confirmationResult.verificationId) {
                 return {
                     success: false,
@@ -256,38 +254,38 @@ class FirebasePhoneAuthService
                     expired: true
                 };
             }
-    
+
             // Bỏ qua check isOTPExpired() - Để Firebase tự xử lý expiry
             // Firebase verification code thường hết hạn sau 1-2 phút
             // Nếu hết hạn, Firebase sẽ trả về lỗi auth/code-expired
-    
+
             const credential = PhoneAuthProvider.credential(
                 this.confirmationResult.verificationId,
                 trimmedOtp
             );
-            
+
             const result = await signInWithCredential(auth, credential);
-            
+
             // Xóa thời gian OTP và verificationId sau khi xác thực thành công
             localStorage.removeItem('otp_sent_time');
             this.clearConfirmationResult();
-            
+
             return {
                 success: true,
                 user: result.user,
                 message: 'Xác thực thành công'
             };
-            
+
         } catch (error) {
             console.error('Error verifying OTP:', error);
-            
+
             // Xử lý lỗi code-expired từ Firebase
             if (error.code === 'auth/code-expired') {
                 // Xóa verificationId khi code expired để force user phải gửi lại OTP
                 this.clearConfirmationResult();
                 localStorage.removeItem('otp_sent_time');
             }
-            
+
             return {
                 success: false,
                 message: this.getErrorMessage(error.code),
@@ -341,7 +339,7 @@ class FirebasePhoneAuthService
             'auth/operation-not-allowed': 'Thao tác không được phép',
             'auth/network-request-failed': 'Lỗi kết nối mạng'
         };
-        
+
         return errorMessages[errorCode] || 'Có lỗi xảy ra, vui lòng thử lại';
     }
 

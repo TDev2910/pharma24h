@@ -4,7 +4,6 @@ namespace App\Services\Shipping;
 
 use App\Models\Order;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class GHNService
 {
@@ -403,9 +402,6 @@ class GHNService
         if (isset($order->district_id) && $order->district_id) {
             return (int) $order->district_id;
         }
-        
-        // Nếu không có, có thể implement logic convert tên → ID sau
-        // Tạm thời return null
         return null;
     }
 
@@ -419,8 +415,6 @@ class GHNService
             return $order->ward_code;
         }
         
-        // Nếu không có, có thể implement logic convert tên → Code sau
-        // Tạm thời return null
         return null;
     }
 

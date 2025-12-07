@@ -1,13 +1,6 @@
 <template>
-  <Dialog 
-    :visible="visible" 
-    @update:visible="$emit('close')"
-    :header="modalTitle" 
-    :style="{ width: '900px' }"
-    modal
-    :closable="true"
-    :loading="loading"
-  >
+  <Dialog :visible="visible" @update:visible="$emit('close')" :header="modalTitle" :style="{ width: '900px' }" modal
+    :closable="true" :loading="loading">
     <div v-if="loading" class="text-center py-5">
       <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
       <p class="mt-3">Đang tải dữ liệu...</p>
@@ -24,54 +17,54 @@
           <h6 class="fw-bold mb-3">Thông tin đơn hàng</h6>
           <div class="order-info">
             <p class="mb-2">
-              <strong>Mã đơn hàng:</strong> 
+              <strong>Mã đơn hàng:</strong>
               <span>{{ order.order_code }}</span>
             </p>
             <p class="mb-2">
-              <strong>Ngày đặt:</strong> 
+              <strong>Ngày đặt:</strong>
               <span>{{ formatDate(order.created_at) }}</span>
             </p>
             <p class="mb-2">
-              <strong>Trạng thái:</strong> 
+              <strong>Trạng thái:</strong>
               <span :class="getStatusBadgeClass(order.order_status)">
                 {{ getStatusText(order.order_status) }}
               </span>
             </p>
             <p class="mb-2">
-              <strong>Trạng thái thanh toán:</strong> 
+              <strong>Trạng thái thanh toán:</strong>
               <span v-if="isCancelled" class="badge bg-danger">Đơn hàng đã bị hủy</span>
               <span v-else :class="getPaymentStatusBadgeClass(order.payment_status)">
                 {{ getPaymentStatusText(order.payment_status) }}
               </span>
             </p>
             <p class="mb-0">
-              <strong>Ghi chú:</strong> 
+              <strong>Ghi chú:</strong>
               <span>{{ order.note || 'Không có' }}</span>
             </p>
           </div>
         </div>
-        
+
         <div class="col-md-6">
           <h6 class="fw-bold mb-3">Thông tin khách hàng</h6>
           <div class="customer-info">
             <p class="mb-2">
-              <strong>Tên khách hàng:</strong> 
+              <strong>Tên khách hàng:</strong>
               <span>{{ order.customer_name || 'N/A' }}</span>
             </p>
             <p class="mb-2">
-              <strong>Số điện thoại:</strong> 
+              <strong>Số điện thoại:</strong>
               <span>{{ order.customer_phone || 'N/A' }}</span>
             </p>
             <p class="mb-2">
-              <strong>Email:</strong> 
+              <strong>Email:</strong>
               <span>{{ order.customer_email || 'N/A' }}</span>
             </p>
             <p class="mb-0" v-if="order.delivery_method === 'shipping'">
-              <strong>Địa chỉ giao hàng:</strong> 
+              <strong>Địa chỉ giao hàng:</strong>
               <span>{{ getFullAddress() || 'N/A' }}</span>
             </p>
             <p class="mb-0" v-else-if="order.delivery_method === 'pickup'">
-              <strong>Địa điểm nhận hàng:</strong> 
+              <strong>Địa điểm nhận hàng:</strong>
               <span>{{ order.pickup_location || 'N/A' }}</span>
             </p>
           </div>
@@ -81,12 +74,7 @@
       <!-- Danh sách sản phẩm -->
       <div class="mb-4">
         <h6 class="fw-bold mb-3">Danh sách sản phẩm</h6>
-        <DataTable 
-          :value="items" 
-          class="order-items-table"
-          :paginator="false"
-          :rows="10"
-        >
+        <DataTable :value="items" class="order-items-table" :paginator="false" :rows="10">
           <Column header="STT" style="width: 60px">
             <template #body="slotProps">
               {{ slotProps.index + 1 }}
@@ -136,36 +124,36 @@
           <h6 class="fw-bold mb-3">Thông tin thanh toán</h6>
           <div class="payment-info">
             <p class="mb-2">
-              <strong>Phương thức:</strong> 
+              <strong>Phương thức:</strong>
               <span>{{ getPaymentMethodText(order.payment_method) }}</span>
             </p>
             <p class="mb-2">
-              <strong>Trạng thái:</strong> 
+              <strong>Trạng thái:</strong>
               <span v-if="isCancelled" class="badge bg-danger">Đơn hàng đã bị hủy</span>
               <span v-else :class="getPaymentStatusBadgeClass(order.payment_status)">
                 {{ getPaymentStatusText(order.payment_status) }}
               </span>
             </p>
             <p class="mb-0" v-if="order.transaction_id">
-              <strong>Mã giao dịch:</strong> 
+              <strong>Mã giao dịch:</strong>
               <span>{{ order.transaction_id }}</span>
             </p>
           </div>
         </div>
-        
+
         <div class="col-md-6">
           <h6 class="fw-bold mb-3">Thông tin vận chuyển</h6>
           <div class="delivery-info">
             <p class="mb-2">
-              <strong>Phương thức:</strong> 
+              <strong>Phương thức:</strong>
               <span>{{ getDeliveryMethodText(order.delivery_method) }}</span>
             </p>
             <p class="mb-0" v-if="order.delivery_method === 'shipping'">
-              <strong>Địa chỉ:</strong> 
+              <strong>Địa chỉ:</strong>
               <span>{{ getFullAddress() || 'N/A' }}</span>
             </p>
             <p class="mb-0" v-else-if="order.delivery_method === 'pickup'">
-              <strong>Địa điểm nhận hàng:</strong> 
+              <strong>Địa điểm nhận hàng:</strong>
               <span>{{ order.pickup_location || 'N/A' }}</span>
             </p>
           </div>
@@ -178,36 +166,36 @@
           <i class="pi pi-truck text-primary"></i>
           <h6 class="fw-bold mb-0">Thông tin Giao hàng nhanh (GHN)</h6>
         </div>
-        
+
         <div v-if="order.ghn_order_code" class="ghn-details">
           <div class="row">
             <div class="col-md-6">
               <p class="mb-2">
-                <strong>Mã vận đơn GHN:</strong> 
+                <strong>Mã vận đơn GHN:</strong>
                 <span class="text-primary fw-bold">{{ order.ghn_order_code }}</span>
               </p>
               <p class="mb-2">
-                <strong>Trạng thái GHN:</strong> 
+                <strong>Trạng thái GHN:</strong>
                 <span :class="getGHNStatusBadgeClass(order.ghn_status)">
                   {{ getGHNStatusText(order.ghn_status) }}
                 </span>
               </p>
               <p class="mb-2" v-if="order.ghn_fee">
-                <strong>Phí vận chuyển:</strong> 
+                <strong>Phí vận chuyển:</strong>
                 <span>{{ formatCurrency(order.ghn_fee) }}</span>
               </p>
             </div>
             <div class="col-md-6">
               <p class="mb-2" v-if="order.ghn_expected_delivery_time">
-                <strong>Dự kiến giao hàng:</strong> 
+                <strong>Dự kiến giao hàng:</strong>
                 <span>{{ formatDate(order.ghn_expected_delivery_time) }}</span>
               </p>
               <p class="mb-2" v-if="order.ghn_shipper_name">
-                <strong>Tên shipper:</strong> 
+                <strong>Tên shipper:</strong>
                 <span>{{ order.ghn_shipper_name }}</span>
               </p>
               <p class="mb-2" v-if="order.ghn_shipper_phone">
-                <strong>SĐT shipper:</strong> 
+                <strong>SĐT shipper:</strong>
                 <span>{{ order.ghn_shipper_phone }}</span>
               </p>
               <p class="mb-0" v-if="order.ghn_tracking_url">
@@ -218,7 +206,7 @@
             </div>
           </div>
         </div>
-        
+
         <div v-else class="ghn-create-section">
           <div class="alert alert-info d-flex align-items-center gap-2">
             <i class="pi pi-info-circle"></i>
@@ -226,7 +214,8 @@
           </div>
           <div v-if="!order.district_id || !order.ward_code" class="alert alert-warning mt-2">
             <i class="pi pi-exclamation-triangle"></i>
-            <span>Đơn hàng thiếu thông tin địa chỉ (district_id hoặc ward_code). Vui lòng kiểm tra lại địa chỉ giao hàng.</span>
+            <span>Đơn hàng thiếu thông tin địa chỉ (district_id hoặc ward_code). Vui lòng kiểm tra lại địa chỉ giao
+              hàng.</span>
           </div>
         </div>
       </div>
@@ -259,49 +248,19 @@
 
     <template #footer>
       <div class="w-100 d-flex flex-column gap-2">
-        <textarea
-          v-if="order?.cancellation_status === 'requested'"
-          v-model="adminNote"
-          class="form-control"
-          rows="2"
-          placeholder="Nhập ghi chú cho khách hàng (bắt buộc khi từ chối)"
-        ></textarea>
+        <textarea v-if="order?.cancellation_status === 'requested'" v-model="adminNote" class="form-control" rows="2"
+          placeholder="Nhập ghi chú cho khách hàng (bắt buộc khi từ chối)"></textarea>
 
         <div class="d-flex justify-content-end gap-2">
-          <Button 
-            label="Đóng" 
-            severity="secondary" 
-            @click="closeModal"
-          />
-          <Button 
+          <Button label="Đóng" severity="secondary" @click="closeModal" />
+          <Button
             v-if="order && order.delivery_method === 'shipping' && !order.ghn_order_code && order.district_id && order.ward_code"
-            label="Tạo đơn GHN" 
-            icon="pi pi-truck"
-            severity="info"
-            :loading="creatingGHN"
-            @click="createGHNOrder"
-          />
-          <Button 
-            v-if="order"
-            label="In hóa đơn" 
-            icon="pi pi-print"
-            severity="success"
-            @click="printInvoice"
-          />
-          <Button
-            v-if="order?.cancellation_status === 'requested'"
-            label="Từ chối hủy"
-            severity="warning"
-            :loading="processing"
-            @click="processCancellation('reject')"
-          />
-          <Button
-            v-if="order?.cancellation_status === 'requested'"
-            label="Xác nhận hủy"
-            severity="danger"
-            :loading="processing"
-            @click="processCancellation('approve')"
-          />
+            label="Tạo đơn GHN" icon="pi pi-truck" severity="info" :loading="creatingGHN" @click="createGHNOrder" />
+          <Button v-if="order" label="In hóa đơn" icon="pi pi-print" severity="success" @click="printInvoice" />
+          <Button v-if="order?.cancellation_status === 'requested'" label="Từ chối hủy" severity="warning"
+            :loading="processing" @click="processCancellation('reject')" />
+          <Button v-if="order?.cancellation_status === 'requested'" label="Xác nhận hủy" severity="danger"
+            :loading="processing" @click="processCancellation('approve')" />
         </div>
       </div>
     </template>
@@ -385,7 +344,7 @@ export default {
 
       try {
         const response = await axios.get(`/admin/orders/${this.orderId}`);
-        
+
         if (response.data?.success) {
           this.order = response.data.order;
           this.items = response.data.items || [];
@@ -400,11 +359,11 @@ export default {
         this.loading = false;
       }
     },
-    
+
     closeModal() {
       this.$emit('close');
     },
-    
+
     resetModal() {
       this.order = null;
       this.items = [];
@@ -413,13 +372,13 @@ export default {
       this.adminNote = '';
       this.processing = false;
     },
-    
+
     printInvoice() {
       if (!this.order?.id) return;
       const url = `/admin/orders/${this.order.id}/invoice`;
       window.open(url, '_blank');
     },
-    
+
     formatDate(dateString) {
       if (!dateString) return 'N/A';
       const date = new Date(dateString);
@@ -430,14 +389,14 @@ export default {
       const minutes = String(date.getMinutes()).padStart(2, '0');
       return `${day}/${month}/${year} ${hours}:${minutes}`;
     },
-    
+
     formatCurrency(amount) {
       return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND'
       }).format(amount);
     },
-    
+
     getStatusBadgeClass(status) {
       const s = (status || '').toString().toLowerCase();
       if (s === 'pending' || s === 'new') {
@@ -451,7 +410,7 @@ export default {
       }
       return 'badge bg-secondary';
     },
-    
+
     getStatusText(status) {
       const s = (status || '').toString().toLowerCase();
       if (s === 'pending' || s === 'new') {
@@ -465,7 +424,7 @@ export default {
       }
       return 'Không xác định';
     },
-    
+
     getPaymentStatusBadgeClass(status) {
       const s = (status || '').toString().toLowerCase();
       if (s === 'pending' || s === 'unpaid') {
@@ -481,7 +440,7 @@ export default {
       }
       return 'badge bg-secondary';
     },
-    
+
     getPaymentStatusText(status) {
       const s = (status || '').toString().toLowerCase();
       if (s === 'pending' || s === 'unpaid') {
@@ -497,10 +456,10 @@ export default {
       }
       return 'Không xác định';
     },
-    
+
     getPaymentMethodText(method) {
       const m = (method || '').toString().toLowerCase();
-      switch(m) {
+      switch (m) {
         case 'cash':
           return 'Tiền mặt';
         case 'transfer':
@@ -515,7 +474,7 @@ export default {
           return method || 'Không xác định';
       }
     },
-    
+
     getDeliveryMethodText(method) {
       const m = (method || '').toString().toLowerCase();
       if (m === 'shipping') {
@@ -581,7 +540,7 @@ export default {
       };
       return map[reason] || reason || 'Không xác định';
     },
-    
+
     getFullAddress() {
       if (!this.order) return '';
       const addressParts = [
@@ -593,28 +552,31 @@ export default {
       return addressParts.join(', ');
     },
 
+    //xử lý tạo đơn GHN
     async createGHNOrder() {
       if (!this.order?.id) return;
 
       if (!confirm('Bạn có chắc chắn muốn tạo đơn GHN cho đơn hàng này?')) {
         return;
       }
-      
 
+      //
       try {
         this.creatingGHN = true;
         const response = await axios.post(`/admin/ghn/orders/${this.order.id}/create`);
-        
+
+        //thông báo thành công
         if (response.data?.success) {
           this.$emit('alert', {
             type: 'success',
             message: response.data.message || 'Tạo đơn GHN thành công!'
           });
-          
+
           // Reload order details để cập nhật thông tin GHN
           await this.loadOrderDetails();
           this.$emit('updated');
         } else {
+          //thông báo lỗi
           this.$emit('alert', {
             type: 'error',
             message: response.data?.message || 'Không thể tạo đơn GHN.'
@@ -622,6 +584,7 @@ export default {
         }
       } catch (error) {
         console.error('createGHNOrder error:', error);
+        //thông báo lỗi
         this.$emit('alert', {
           type: 'error',
           message: error.response?.data?.message || 'Đã xảy ra lỗi khi tạo đơn GHN.'
@@ -631,6 +594,7 @@ export default {
       }
     },
 
+    //xử lý lấy trạng thái GHN
     getGHNStatusBadgeClass(status) {
       if (!status) return 'badge bg-secondary';
       const s = status.toString().toLowerCase();
@@ -647,6 +611,7 @@ export default {
       return statusMap[s] || 'badge bg-secondary';
     },
 
+    //xử lý lấy text trạng thái GHN
     getGHNStatusText(status) {
       if (!status) return 'Chưa có';
       const s = status.toString().toLowerCase();

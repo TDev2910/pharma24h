@@ -91,22 +91,6 @@ class OrdersController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(Request $request, string $order)
@@ -375,5 +359,88 @@ class OrdersController extends Controller
         }
 
         return back()->with('success', 'Đã từ chối yêu cầu hủy đơn hàng.');
+    }
+
+    public function transport(Request $request) 
+    {
+        // 1. Định nghĩa Status Map ra ngoài để không phải khai báo lại trong mỗi vòng lặp
+        $statusMap = [
+            'ready_to_pick' => 'delivering',
+            'picking'       => 'delivering',
+            'storing'       => 'delivering',
+            'transporting'  => 'delivering',
+            'delivering'    => 'delivering',
+            'delivered'     => 'completed',
+            'return'        => 'cancelled',
+            'cancel'        => 'cancelled',
+        ];
+
+        // 2. Khởi tạo Query
+        $query = Order::query()
+            ->where('delivery_method', 'shipping')
+            ->whereNotNull('ghn_order_code');
+
+        $query->when($request->filled('status'), function ($q) use ($request) {
+            $q->where('ghn_status', $request->status);
+        });
+
+        $query->when($request->partner === 'ghn', function ($q) {
+        });
+
+        $query->when(
+            $request->filled('cod') && $request->cod !== 'all',
+            function ($q) use ($request) {
+                if ($request->cod === 'yes') {
+                    $q->where('ghn_cod_amount', '>', 0);
+                } else {
+                    $q->where(function ($subQ) {
+                        $subQ->whereNull('ghn_cod_amount')
+                            ->orWhere('ghn_cod_amount', 0);
+                    });
+                }
+            }
+        );
+
+        $query->when($request->filled('search'), function ($q) use ($request) {
+            $q->where('ghn_order_code', 'like', '%' . $request->search . '%');
+        });
+
+        // 4. Quan trọng: Sử dụng PAGINATE thay vì GET để tránh crash server khi dữ liệu lớn
+        // latest() mặc định dùng cột created_at, nếu muốn ghn_created_at phải chỉ định rõ
+        $orders = $query->latest('ghn_created_at')
+            ->paginate(20) // Lấy 20 bản ghi mỗi trang
+            ->withQueryString(); // Giữ lại các params trên URL khi chuyển trang
+
+        // 5. Transform dữ liệu bằng 'through' (dành cho Paginator)
+        $orders->through(function ($order) use ($statusMap) {
+            $displayStatus = $statusMap[$order->ghn_status] ?? 'delivering';
+            // Check date an toàn để tránh lỗi call format on null
+            $createdDate = $order->ghn_created_at ?? $order->created_at; 
+            $deliveryDate = $order->ghn_expected_delivery_time;
+
+            return [
+                'id'                   => $order->id,
+                'code'                 => $order->ghn_order_code,
+                'order_code'           => $order->order_code,
+                'created_at'           => $createdDate?->format('Y-m-d H:i:s'),
+                'created_at_formatted' => $createdDate?->format('d/m/Y H:i'),
+                'date'                 => $createdDate?->format('Y-m-d'),
+                'customer_name'        => $order->customer_name,
+                'partner'              => 'ghn',
+                'status'               => $displayStatus,
+                'ghn_status'           => $order->ghn_status,
+                'cod'                  => ($order->ghn_cod_amount ?? 0) > 0,
+                'cod_amount'           => $order->ghn_cod_amount ?? 0,
+                'delivery_time'        => $deliveryDate?->format('d/m/Y H:i'),
+                'shipper_name'         => $order->ghn_shipper_name,
+                'shipper_phone'        => $order->ghn_shipper_phone,
+                'tracking_url'         => $order->ghn_tracking_url,
+            ];
+        });
+
+        return Inertia::render('Admin/Orders/Products/Transport/TransportDashboard', [
+            'orders' => $orders, 
+            'filters' => $request->only(['status', 'partner', 'cod', 'search']),
+        ]);
     }
 }

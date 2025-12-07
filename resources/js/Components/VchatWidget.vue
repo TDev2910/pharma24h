@@ -6,12 +6,13 @@
 <script setup>
 import { onMounted } from 'vue'
 
+//cấu hình vchat widget
 onMounted(() => {
   const script = document.createElement('script')
   script.type = 'text/javascript'
   script.async = true
   script.defer = true
-  script.textContent = `
+  script.textContent = ` 
     var __vnp = {
       code: 28492,
       key: '',
@@ -27,27 +28,22 @@ onMounted(() => {
       s[0].parentNode.insertBefore(ga, s[0]);
     })();
   `
-  
+
   document.head.appendChild(script)
   setTimeout(() => {
     const vchatWidget = document.querySelector('.vchat-widget, [class*="vchat"], #vchat-widget');
     if (vchatWidget) {
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       const rightPosition = 20 + scrollbarWidth;
-      
+
       vchatWidget.style.right = rightPosition + 'px';
       vchatWidget.style.bottom = '90px';
       vchatWidget.style.position = 'fixed';
       vchatWidget.style.zIndex = '999';
-      
-      console.log('vChat widget position adjusted for scrollbar:', rightPosition + 'px');
     }
   }, 2000);
-  
-  console.log('vChat widget script loaded')
+
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

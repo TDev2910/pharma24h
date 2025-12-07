@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\Shipping\GHNService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class GHNController extends Controller
 {
@@ -47,8 +46,9 @@ class GHNController extends Controller
         }
 
         try {
-            $result = $this->ghnService->createOrder($order);
+            $result = $this->ghnService->createOrder($order); //tạo đơn GHN
 
+            //thông báo thành công
             if ($result['success']) {
                 // Cập nhật thông tin GHN cơ bản vào Order
                 $order->ghn_order_code = $result['order_code'];
@@ -122,12 +122,6 @@ class GHNController extends Controller
             ], 400);
 
         } catch (\Exception $e) {
-            Log::error("Error creating GHN order for Order #{$order->id}", [
-                'order_id' => $order->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi hệ thống: ' . $e->getMessage()
@@ -146,6 +140,7 @@ class GHNController extends Controller
 
         $order = Order::findOrFail($request->order_id);
 
+        //Trường hợp đơn hàng đặt nhận tại cửa hàng
         if (!$order->isShipping()) {
             return response()->json([
                 'success' => false,
@@ -229,27 +224,27 @@ class GHNController extends Controller
     /**
      * Test kết nối GHN API
      */
-    public function testConnection()
-    {
-        try {
-            $result = $this->ghnService->getProvinces();
-            return response()->json([
-                'success' => true,
-                'ghn_api_result' => $result,
-                'config' => [
-                    'base_url' => config('services.ghn.base_url'),
-                    'token_set' => !empty(config('services.ghn.token')),
-                    'token_length' => strlen(config('services.ghn.token') ?? ''),
-                ]
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ], 500);
-        }
-    }
+    // public function testConnection()
+    // {
+    //     try {
+    //         $result = $this->ghnService->getProvinces();
+    //         return response()->json([
+    //             'success' => true,
+    //             'ghn_api_result' => $result,
+    //             'config' => [
+    //                 'base_url' => config('services.ghn.base_url'),
+    //                 'token_set' => !empty(config('services.ghn.token')),
+    //                 'token_length' => strlen(config('services.ghn.token') ?? ''),
+    //             ]
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'error' => $e->getMessage(),
+    //             'trace' => $e->getTraceAsString()
+    //         ], 500);
+    //     }
+    // }
 
     /**
      * Map địa chỉ (tên) sang GHN ID
@@ -506,13 +501,7 @@ class GHNController extends Controller
                         }
                     }
                 } else {
-                    // Trường hợp KHÔNG có trong map - Log để theo dõi
-                    Log::warning("GHN sync warning: Unknown status '{$ghnCurrentStatus}' for Order #{$order->id}", [
-                        'order_id' => $order->id,
-                        'ghn_order_code' => $order->ghn_order_code,
-                        'unknown_status' => $ghnCurrentStatus,
-                        'current_order_status' => $order->order_status
-                    ]);
+                    // Trường hợp KHÔNG có trong map - Không ghi log
                     // Không cập nhật order_status để tránh sai lệch
                 }
             }
@@ -532,14 +521,7 @@ class GHNController extends Controller
             ]);
         } 
         catch (\Exception $e) {
-            // Log lỗi hệ thống để debug
-            Log::error("GHN Sync Error Order #{$order->id}", [
-                'order_id' => $order->id,
-                'ghn_order_code' => $order->ghn_order_code ?? null,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
+            // Không log lỗi hệ thống
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi hệ thống: ' . $e->getMessage()

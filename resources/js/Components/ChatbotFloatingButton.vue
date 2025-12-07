@@ -4,7 +4,7 @@
     <button @click="toggleChat" class="floating-btn floating-chatbot">
       <img :src="robotImageUrl" alt="Chatbot" class="robot-icon" />
     </button>
-    
+
     <!-- Sidebar Widget -->
     <Transition name="sidebar">
       <div v-if="isOpen" class="chatbot-sidebar">
@@ -59,7 +59,8 @@ const closeChat = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent; /* Không có background */
+  background: transparent;
+  /* Không có background */
   font-size: 20px;
   color: white;
   box-shadow: none;
@@ -186,7 +187,7 @@ const closeChat = () => {
     right: 20px;
     bottom: 20px;
   }
-  
+
   .floating-btn {
     bottom: 15px;
     right: 15px;

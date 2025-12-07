@@ -22,10 +22,14 @@
         </div>
         <div class="nav-item dropdown">
           <span class="nav-item">Trung tâm dịch vụ</span>
-          <div class="nav-dropdown nav-dropdown-short">
+          <div class="nav-dropdown">
             <div class="dropdown-col">
               <div class="dropdown-title">Tổng quan</div>
               <a href="/admin/orders" class="dropdown-link">Quản lý đơn hàng</a>
+              <a href="/admin/orders/transport" class="dropdown-link">Vận đơn</a>
+            </div>
+            <div class="dropdown-col">
+              <div class="dropdown-title">Dịch vụ </div>
               <a href="/admin/services-dashboard" class="dropdown-link">Quản lý dịch vụ</a>
             </div>
           </div>

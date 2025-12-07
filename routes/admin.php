@@ -122,6 +122,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // ORDER MANAGEMENT ROUTES
 
     // Orders
+    Route::get('orders/transport', [OrdersController::class, 'transport'])->name('orders.transport');
     Route::resource('orders', OrdersController::class)->names('orders');
     Route::post('orders/{order}/update-status', [OrdersController::class, 'updateStatus'])->name('orders.update-status');
     Route::get('orders/{order}/invoice', [OrdersController::class, 'printInvoice'])->name('orders.invoice');

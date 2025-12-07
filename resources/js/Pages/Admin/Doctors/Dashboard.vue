@@ -233,7 +233,7 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import CreateDoctorModal from './Modals/Create.vue'
 import EditDoctorModal from './Modals/Edit.vue'
-import '@Admin/doctors/doctors.css';  // THÊM DÒNG NÀY
+import '@Admin/doctors/doctors.css';  
 import axios from 'axios'
 
 export default {

@@ -36,6 +36,7 @@ const primevueOptions = {
   }
 }
 
+//khởi tạo spa
 createInertiaApp({
   resolve: (name) => {
     const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })

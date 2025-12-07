@@ -62,7 +62,7 @@
       <main class="main-content">
         <div class="content-header-text">
           <span v-if="filter.viewMode === 'report'">
-            Chi tiết nhập hàng
+            Top 10 sản phẩm đặt hàng nhiều nhất
           </span>
           <span v-else>
             Tỷ trọng số lượng nhập: Thuốc vs Vật tư y tế
