@@ -3,37 +3,21 @@
     <div class="top-bar">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input 
-          type="text" 
-          placeholder="Tìm theo mã vận đơn..." 
-          :value="searchQuery"
-          @input="$emit('update:searchQuery', $event.target.value)"
-        >
-      </div>
-      <div class="actions">
-        <Button label="📄 Xuất file" icon="pi pi-file-export" class="p-button-outlined" />
+        <input type="text" placeholder="Tìm theo mã vận đơn..." :value="searchQuery"
+          @input="$emit('update:searchQuery', $event.target.value)">
       </div>
     </div>
 
     <!-- PrimeVue DataTable -->
     <div class="table-container">
-      <DataTable 
-        :value="orders.data" 
-        :paginator="true"
-        :rows="pagination.per_page || 20"
-        :totalRecords="pagination.total || 0"
-        :first="first"
-        @page="onPageChange"
+      <DataTable :value="orders.data" :paginator="true" :rows="pagination.per_page || 20"
+        :totalRecords="pagination.total || 0" :first="first" @page="onPageChange"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[10, 20, 30, 50]"
-        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} vận đơn"
-        dataKey="id"
-        :loading="loading"
-        stripedRows
-        responsiveLayout="scroll"
-        emptyMessage="Không có vận đơn nào"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} vận đơn" dataKey="id"
+        :loading="loading" stripedRows responsiveLayout="scroll" emptyMessage="Không có vận đơn nào"
         tableStyle="min-width: 50rem">
-        
+
         <!-- Mã vận đơn -->
         <Column field="code" header="Mã vận đơn" sortable style="width: 15%">
           <template #body="{ data }">
@@ -65,20 +49,14 @@
         <!-- Đối tác giao hàng -->
         <Column field="partner" header="Đối tác giao hàng" style="width: 12%">
           <template #body="{ data }">
-            <Tag 
-              :value="data.partner.toUpperCase()" 
-              :severity="data.partner === 'ghn' ? 'info' : 'success'"
-            />
+            <Tag :value="data.partner.toUpperCase()" :severity="data.partner === 'ghn' ? 'info' : 'success'" />
           </template>
         </Column>
 
         <!-- Trạng thái giao -->
         <Column field="status" header="Trạng thái giao" style="width: 12%">
           <template #body="{ data }">
-            <Tag 
-              :value="getStatusText(data.status)" 
-              :severity="getStatusSeverity(data.status)"
-            />
+            <Tag :value="getStatusText(data.status)" :severity="getStatusSeverity(data.status)" />
           </template>
         </Column>
 
@@ -93,7 +71,9 @@
         <Column header="Thao tác" style="width: 10%">
           <template #body="{ data }">
             <Button icon="pi pi-external-link" class="p-button-sm p-button-secondary p-button-text"
-              @click="openTracking(data.tracking_url)" v-tooltip.top="'Theo dõi vận đơn'" />
+              :disabled="!getTrackingUrl(data) || getTrackingUrl(data) === '#'"
+              @click="openTracking(getTrackingUrl(data))"
+              v-tooltip.top="getTrackingUrl(data) && getTrackingUrl(data) !== '#' ? 'Theo dõi vận đơn trên GHN' : 'Chưa có mã vận đơn'" />
           </template>
         </Column>
       </DataTable>
@@ -184,8 +164,20 @@ export default {
     viewDetail(order) {
       this.$emit('view-detail', order)
     },
+    getTrackingUrl(order) {
+      // Kiểm tra nếu không có mã vận đơn
+      if (!order?.code) return '#'
+      // Nếu có tracking_url từ database, dùng nó
+      // Nếu không, tạo URL tracking từ mã vận đơn GHN
+      return order.tracking_url || `https://donhang.ghn.vn/?order_code=${order.code}`
+    },
     openTracking(url) {
-      window.open(url, '_blank')
+      // Kiểm tra URL hợp lệ trước khi mở
+      if (!url || url === '#') {
+        console.warn('Tracking URL is not available')
+        return
+      }
+      window.open(url, '_blank', 'noopener,noreferrer')
     }
   }
 }
@@ -233,7 +225,7 @@ export default {
   background: white;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .code-link {

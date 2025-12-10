@@ -25,7 +25,7 @@
         </div>
 
         <!-- Phải -->
-        <div class="d-flex align-items-center gap-2" style="margin-right: 650px;">
+        <div class="d-flex align-items-center gap-2" style="margin-left: auto;">
           <span class="title-filter">Sắp xếp theo:</span>
 
           <button type="button" class="btn-sort" :class="{ 'active': currentSort === 'desc' }"
@@ -37,6 +37,8 @@
             @click="sortProducts('asc')">
             Giá tăng dần
           </button>
+
+          <input type="text" class="form-control" placeholder="Tìm kiếm" style="width: 300px;margin-left: 10px;">
         </div>
       </div>
       <hr class="light-divider" style="width: 215px; background-color: grey;">

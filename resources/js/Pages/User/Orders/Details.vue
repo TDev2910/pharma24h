@@ -27,7 +27,8 @@
       </div>
 
       <div class="cancellation-section">
-        <div v-if="cancellationStatusLabel" class="cancellation-status" :class="`cancellation-${order.cancellation_status}`">
+        <div v-if="cancellationStatusLabel" class="cancellation-status"
+          :class="`cancellation-${order.cancellation_status}`">
           <i class="fas fa-info-circle"></i>
           <span>{{ cancellationStatusLabel }}</span>
         </div>
@@ -38,12 +39,7 @@
           <strong>Lý do khách hàng:</strong> {{ order.cancellation_reason }}
           <p v-if="order.cancellation_user_note">{{ order.cancellation_user_note }}</p>
         </div>
-        <button
-          v-if="canRequestCancellation"
-          type="button"
-          class="btn cancel-btn"
-          @click="openCancelModal"
-        >
+        <button v-if="canRequestCancellation" type="button" class="btn cancel-btn" @click="openCancelModal">
           <i class="fas fa-ban"></i>
           Yêu cầu hủy đơn hàng
         </button>
@@ -56,10 +52,7 @@
       </div>
 
       <!-- GHN Shipping Info -->
-      <div
-        v-if="order.delivery_method === 'shipping'"
-        class="shipping-info-section"
-      >
+      <div v-if="order.delivery_method === 'shipping'" class="shipping-info-section">
         <h3 class="section-title">Thông tin vận chuyển GHN</h3>
         <div class="shipping-row">
           <span>Mã vận đơn:</span>
@@ -75,19 +68,11 @@
         </div>
         <div class="shipping-row" v-if="order.ghn_order_code">
           <span>Tra cứu:</span>
-          <a
-            class="tracking-link"
-            :href="getGHNTrackingUrl(order)"
-            target="_blank"
-            rel="noopener"
-          >
+          <a class="tracking-link" :href="getGHNTrackingUrl(order)" target="_blank" rel="noopener">
             Xem trên GHN
           </a>
         </div>
-        <div
-          class="shipping-row"
-          v-if="order.ghn_shipper_name || order.ghn_shipper_phone"
-        >
+        <div class="shipping-row" v-if="order.ghn_shipper_name || order.ghn_shipper_phone">
           <span>Nhân viên giao:</span>
           <span>
             {{ order.ghn_shipper_name || 'Đang cập nhật' }}
@@ -160,13 +145,8 @@
           </div>
           <div class="form-group">
             <label for="cancel-note">Ghi chú thêm</label>
-            <textarea
-              id="cancel-note"
-              v-model="cancelForm.note"
-              class="form-control"
-              rows="4"
-              placeholder="Bạn có thể mô tả chi tiết hơn lý do hủy..."
-            ></textarea>
+            <textarea id="cancel-note" v-model="cancelForm.note" class="form-control" rows="4"
+              placeholder="Bạn có thể mô tả chi tiết hơn lý do hủy..."></textarea>
             <small v-if="cancelForm.errors.note" class="text-error">{{ cancelForm.errors.note }}</small>
           </div>
           <div class="modal-actions">
@@ -183,36 +163,27 @@
         </form>
       </div>
       <div v-if="order.is_shipping && order.ghn_order_code" class="shipping-info-section">
-     <h3 class="section-title">Vận chuyển GHN</h3>
-     <div class="shipping-row">
-       <span>Mã vận đơn:</span>
-       <strong>{{ order.ghn_order_code }}</strong>
-     </div>
-     <div class="shipping-row">
-       <span>Trạng thái:</span>
-       <span class="badge">{{ order.ghn_status_text || 'Đang cập nhật' }}</span>
-     </div>
-     <div class="shipping-row" v-if="order.ghn_expected_delivery_time">
-       <span>Dự kiến giao:</span>
-       <span>{{ formatDateTime(order.ghn_expected_delivery_time) }}</span>
-     </div>
-     <div class="shipping-row">
-       <span>Tra cứu:</span>
-       <a
-         :href="order.ghn_tracking_url || `https://donhang.ghn.vn/?order_code=${order.ghn_order_code}`"
-         target="_blank"
-         rel="noopener"
-       >Xem trên GHN</a>
-     </div>
-     <Button
-       v-if="order.ghn_order_code"
-       label="Cập nhật trạng thái"
-       icon="pi pi-refresh"
-       class="refresh-btn"
-       :loading="refreshing"
-       @click="refreshGHNStatus"
-     />
-   </div>
+        <h3 class="section-title">Vận chuyển GHN</h3>
+        <div class="shipping-row">
+          <span>Mã vận đơn:</span>
+          <strong>{{ order.ghn_order_code }}</strong>
+        </div>
+        <div class="shipping-row">
+          <span>Trạng thái:</span>
+          <span class="badge">{{ order.ghn_status_text || 'Đang cập nhật' }}</span>
+        </div>
+        <div class="shipping-row" v-if="order.ghn_expected_delivery_time">
+          <span>Dự kiến giao:</span>
+          <span>{{ formatDateTime(order.ghn_expected_delivery_time) }}</span>
+        </div>
+        <div class="shipping-row">
+          <span>Tra cứu:</span>
+          <a :href="order.ghn_tracking_url || `https://donhang.ghn.vn/?order_code=${order.ghn_order_code}`"
+            target="_blank" rel="noopener">Xem trên GHN</a>
+        </div>
+        <Button v-if="order.ghn_order_code" label="Cập nhật trạng thái" icon="pi pi-refresh" class="refresh-btn"
+          :loading="refreshing" @click="refreshGHNStatus" />
+      </div>
     </div>
   </div>
 </template>
@@ -265,9 +236,9 @@ const closeCancelModal = () => {
 const submitCancel = () => {
   if (!props.order) return
   cancelForm.post(`/user/orders/${props.order.id}/request-cancel`, {
-  preserveScroll: true,
-  onSuccess: () => closeCancelModal()
-})
+    preserveScroll: true,
+    onSuccess: () => closeCancelModal()
+  })
 }
 // Helper functions
 const formatOrderCode = (id) => {
