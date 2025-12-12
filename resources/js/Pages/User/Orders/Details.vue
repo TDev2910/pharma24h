@@ -72,6 +72,10 @@
             Xem trên GHN
           </a>
         </div>
+        <div class="shipping-row" v-if="order.ghn_order_code">
+          <span>Trạng thái:</span>
+          <span class="badge" :class="getGHNStatusClass(order.ghn_status)">{{ order.ghn_status_text || 'Đang cập nhật' }}</span>
+        </div>
         <div class="shipping-row" v-if="order.ghn_shipper_name || order.ghn_shipper_phone">
           <span>Nhân viên giao:</span>
           <span>

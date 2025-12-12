@@ -1,346 +1,233 @@
 <template>
-  <div class="user-layout">
-    <div class="dashboard-container">
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <div class="sidebar-header">
-          <h3><i class="fas fa-heartbeat me-2"></i>Sức Khỏe 24h</h3>
-        </div>
-
-        <div class="user-info">
-          <div class="user-avatar">
-            <img v-if="auth?.user?.avatar" :src="`/storage/avatars/${auth.user.avatar}`" alt="Avatar"
-              class="avatar-img" />
-            <i v-else class="fas fa-user"></i>
-          </div>
-          <div class="user-details">
-            <h5>{{ auth?.user?.name || 'User' }}</h5>
-            <small>{{ auth?.user?.email || 'user@example.com' }}</small>
+  <div class="app-wrapper">
+    <aside class="sidebar">
+      <div class="sidebar-content">
+        <div class="user-card">
+          <img v-if="auth?.user?.avatar" :src="`/storage/avatars/${auth.user.avatar}`" class="avatar" />
+          <div v-else class="avatar-placeholder">{{ auth?.user?.name?.charAt(0) || 'U' }}</div>
+          <div class="user-meta">
+            <span class="name">{{ auth?.user?.name || 'Người dùng' }}</span>
+            <span class="role">{{ getUserRoleDisplay() }}</span>
           </div>
         </div>
 
-        <ul class="sidebar-menu">
-          <!-- Dashboard Overview -->
-          <li>
-            <Link href="/user/dashboard" :class="{ active: page.url.startsWith('/user/dashboard') }">
-              <i class="fas fa-tachometer-alt"></i>Tổng quan
-            </Link>
-          </li>
-
-          <!-- Account Settings -->
-          <li>
-            <Link href="/user/profile-settings" :class="{ active: page.url.startsWith('/user/profile-settings') }">
-              <i class="fas fa-user-cog"></i>Cài đặt hồ sơ
-            </Link>
-          </li>
-
-          <!-- Đơn hàng của tôi -->
-          <li>
-            <Link href="/user/orders" :class="{ active: page.url.startsWith('/user/orders') }">
-              <i class="fas fa-clipboard-list"></i>Đơn hàng
-            </Link>
-          </li>
-
-          <!-- Hồ sơ sức khỏe -->
-          <li>
-            <Link href="/user/services" :class="{ active: page.url.startsWith('/user/services') }">
-              <i class="fas fa-file-medical"></i>Dịch vụ
-            </Link>
-          </li>
-
-          <!-- Thông báo -->
-          <li>
-            <Link href="/user/notifications" :class="{ active: page.url.startsWith('/user/notifications') }">
-              <i class="fas fa-bell"></i>Thông báo
-              <span v-if="unreadCount > 0" class="notification-badge">{{ unreadCount > 99 ? '99+' : unreadCount
-                }}</span>
-            </Link>
-          </li>
-
-          <!-- Divider -->
-          <li class="divider"></li>
-
-          <!-- Trang chủ -->
-          <li>
-            <Link href="/">
-              <i class="fas fa-home"></i>Trang chủ
-            </Link>
-          </li>
-
-          <!-- Đăng xuất -->
-          <li>
-            <form @submit.prevent="handleLogout" style="display: inline;">
-              <button type="submit" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i>Đăng xuất
-              </button>
-            </form>
-          </li>
-        </ul>
+        <nav class="nav-menu">
+          <Link href="/user/dashboard" :class="{ 'active': page.url.startsWith('/user/dashboard') }" class="nav-item">
+            <i class="fas fa-th-large"></i> <span>Tổng quan</span>
+          </Link>
+          <Link href="/user/orders" :class="{ 'active': page.url.startsWith('/user/orders') }" class="nav-item">
+            <div class="nav-item-content">
+              <span><i class="fas fa-box"></i> Đơn hàng</span>
+            </div>
+          </Link>
+          <Link href="/user/services" :class="{ 'active': page.url.startsWith('/user/services') }" class="nav-item">
+            <i class="fas fa-file-medical"></i> <span>Dịch vụ</span>
+          </Link>
+          <Link href="/user/notifications" :class="{ 'active': page.url.startsWith('/user/notifications') }" class="nav-item">
+            <div class="nav-item-content">
+              <span><i class="fas fa-bell"></i> Thông báo</span>
+              <span class="dot" v-if="unreadNotificationsCount > 0"></span>
+            </div>
+          </Link>
+          <Link href="/user/profile-settings" :class="{ 'active': page.url.startsWith('/user/profile-settings') }" class="nav-item">
+            <i class="fas fa-user-cog"></i> <span>Cài đặt hồ sơ</span>
+          </Link>
+        </nav>
       </div>
 
-      <!-- Main Content -->
-      <div class="main-content">
-        <!-- Page Header -->
-        <div v-if="pageTitle || pageDescription" class="page-header">
-          <h1>{{ pageTitle || 'Dashboard' }}</h1>
-          <p v-if="pageDescription">{{ pageDescription }}</p>
-        </div>
+      <div class="sidebar-footer">
+        <Link href="/logout" method="post" as="button" class="nav-item logout">
+          <i class="fas fa-sign-out-alt"></i> <span>Đăng xuất</span>
+        </Link>
+      </div>
+    </aside>
 
-        <!-- Page Content -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="page-title">
+          <h2>{{ pageTitle || 'Dashboard' }}</h2>
+          <span class="date">{{ currentDate }}</span>
+        </div>
+        
+        <div class="topbar-actions">
+           <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Tìm kiếm thuốc, đơn hàng..." />
+          </div>
+          <button class="icon-btn"><i class="fas fa-bell"></i></button>
+          <button class="icon-btn"><i class="fas fa-question-circle"></i></button>
+        </div>
+      </header>
+
+      <main class="page-content">
         <slot />
-      </div>
+      </main>
     </div>
 
-    <!-- Toast for notifications -->
     <Toast />
   </div>
 </template>
 
 <script setup>
-import { Link, router, usePage } from '@inertiajs/vue3'
+import { Link, usePage } from '@inertiajs/vue3'
+import { computed } from 'vue'
 import Toast from 'primevue/toast'
-import axios from 'axios'
-import { ref, onMounted, onUnmounted } from 'vue'
 
-// Props từ Inertia
 const props = defineProps({
-  auth: {
-    type: Object,
-    default: () => ({ user: null })
-  },
-  pageTitle: {
-    type: String,
-    default: ''
-  },
-  pageDescription: {
-    type: String,
-    default: ''
-  },
-  unreadNotificationsCount: {
-    type: Number,
-    default: 0
-  }
+  auth: Object,
+  pageTitle: String,
+  unreadNotificationsCount: Number
 })
 
-// Get current page from Inertia
+// Lấy thông tin auth từ Inertia
 const page = usePage()
+const auth = page.props.auth || props.auth
 
-const pageTitle = page.props.pageTitle || ''
-const pageDescription = page.props.pageDescription || ''
-const unreadCount = ref(props.unreadNotificationsCount || 0)
-let pollingInterval = null
+const pendingOrders = 3 // Mock data styling
 
-onMounted(() => {
-  // Polling mỗi 30 giây để kiểm tra notifications mới
-
-  pollingInterval = setInterval(() => {
-    axios.get('/user/notifications/unread-count')
-      .then(response => {
-        unreadCount.value = response.data.count || 0
-      })
-      .catch(() => { })
-  }, 30000) // 30 giây
-})
-
-onUnmounted(() => {
-  if (pollingInterval) {
-    clearInterval(pollingInterval)
+// Hàm hiển thị role bằng tiếng Việt
+const getUserRoleDisplay = () => {
+  const role = auth?.user?.role
+  if (!role) return 'Khách hàng'
+  
+  const roleMap = {
+    'staff': 'Nhân viên',
+    'admin': 'Quản trị viên',
+    'user': 'Khách hàng'
   }
-})
-// Handle logout
-const handleLogout = () => {
-  router.post('/logout')
+  
+  return roleMap[role] || 'Khách hàng'
 }
+
+const currentDate = computed(() => {
+  return new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })
+})
 </script>
 
 <style scoped>
-/* USER LAYOUT STYLES */
-
-.user-layout {
-  font-family: 'Inter', sans-serif;
-  background: #f8fafc;
-  min-height: 100vh;
-}
-
-.dashboard-container {
+/* --- RESET & LAYOUT --- */
+.app-wrapper {
   display: flex;
   min-height: 100vh;
+  background-color: #F8FAFC;
+  font-family: 'Inter', sans-serif;
 }
 
-/* Sidebar */
+/* --- SIDEBAR --- */
 .sidebar {
-  width: 280px;
+  width: 260px;
   background: white;
-  border-right: 1px solid #e2e8f0;
-  padding: 30px 0;
+  border-right: 1px solid #E2E8F0;
+  display: flex;
+  flex-direction: column;
   position: fixed;
   height: 100vh;
-  overflow-y: auto;
+  z-index: 50;
 }
 
 .sidebar-header {
-  padding: 0 30px 30px;
-  border-bottom: 1px solid #e2e8f0;
-  margin-bottom: 30px;
-}
-
-.sidebar-header h3 {
-  color: #1e293b;
-  font-weight: 700;
-  font-size: 24px;
-  margin: 0;
-}
-
-.user-info {
+  height: 70px;
   display: flex;
   align-items: center;
-  padding: 0 30px 20px;
-  margin-bottom: 20px;
+  padding: 0 24px;
 }
 
-.user-avatar {
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 32px; height: 32px; background: #3B82F6; color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.brand-name { font-weight: 700; font-size: 18px; color: #1E293B; }
+
+.sidebar-content { padding: 20px 16px; flex: 1; overflow-y: auto; }
+
+/* User Card in Sidebar */
+.user-card {
+  background: #F1F5F9;
   border-radius: 12px;
+  padding: 12px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 20px;
-  margin-right: 15px;
-  overflow: hidden;
+  gap: 12px;
+  margin-bottom: 24px;
 }
+.avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.avatar-placeholder { width: 40px; height: 40px; border-radius: 50%; background: #CBD5E1; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+.user-meta { display: flex; flex-direction: column; }
+.user-meta .name { font-weight: 600; font-size: 14px; color: #1E293B; }
+.user-meta .role { font-size: 12px; color: #64748B; }
 
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 12px;
-}
-
-.user-details h5 {
-  margin: 0;
-  font-weight: 600;
-  color: #1e293b;
-  font-size: 14px;
-}
-
-.user-details small {
-  color: #64748b;
-  font-size: 12px;
-  display: block;
-}
-
-.sidebar-menu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar-menu li {
-  margin-bottom: 2px;
-}
-
-.sidebar-menu li.divider {
-  margin: 20px 0;
-  border-top: 1px solid #e2e8f0;
-  padding: 0;
-}
-
-.sidebar-menu a,
-.logout-btn {
+/* Nav Menu */
+.nav-item {
   display: flex;
   align-items: center;
-  padding: 12px 30px;
-  color: #64748b;
+  padding: 12px 16px;
+  color: #64748B;
   text-decoration: none;
-  transition: all 0.2s ease;
-  font-size: 14px;
+  border-radius: 8px;
+  margin-bottom: 4px;
   font-weight: 500;
-  background: none;
-  border: none;
-  width: 100%;
-  text-align: left;
+  transition: all 0.2s;
   cursor: pointer;
-  font-family: inherit;
+  border: none;
+  background: none;
+  width: 100%;
+  font-size: 14px;
 }
 
-.sidebar-menu a {
-  position: relative;
-}
+.nav-item i { width: 24px; font-size: 16px; }
 
-.notification-badge {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: #ef4444;
-  color: white;
-  border-radius: 12px;
-  padding: 2px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  min-width: 20px;
-  text-align: center;
-}
+.nav-item:hover { background: #F8FAFC; color: #3B82F6; }
+.nav-item.active { background: #EFF6FF; color: #3B82F6; font-weight: 600; }
 
-.logout-btn {
-  color: #64748b;
-}
+.nav-item-content { display: flex; justify-content: space-between; width: 100%; align-items: center; }
+.badge { background: #EF4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
+.dot { width: 8px; height: 8px; background: #3B82F6; border-radius: 50%; }
 
-.sidebar-menu a:hover,
-.sidebar-menu a.active,
-.logout-btn:hover {
-  background: #f1f5f9;
-  color: #3b82f6;
-}
+.sidebar-footer { padding: 16px; border-top: 1px solid #E2E8F0; }
+.logout { color: #EF4444; }
+.logout:hover { background: #FEF2F2; color: #DC2626; }
 
-.sidebar-menu a i,
-.logout-btn i {
-  width: 20px;
-  margin-right: 12px;
-  font-size: 16px;
-}
-
-/* Main Content */
-.main-content {
+/* --- MAIN WRAPPER --- */
+.main-wrapper {
+  margin-left: 260px; /* Width of Sidebar */
   flex: 1;
-  margin-left: 280px;
-  padding: 40px;
+  display: flex;
+  flex-direction: column;
 }
 
-.page-header {
-  margin-bottom: 40px;
+/* --- TOPBAR --- */
+.topbar {
+  height: 70px;
+  background: white; /* Or transparent depending on preference */
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #E2E8F0;
+  position: sticky;
+  top: 0;
+  z-index: 40;
 }
 
-.page-header h1 {
-  color: #1e293b;
-  font-weight: 700;
-  font-size: 32px;
-  margin-bottom: 8px;
-}
+.page-title h2 { font-size: 20px; font-weight: 700; margin: 0; color: #1E293B; }
+.page-title .date { font-size: 13px; color: #94A3B8; }
 
-.page-header p {
-  color: #64748b;
-  font-size: 16px;
-  margin: 0;
-}
+.topbar-actions { display: flex; align-items: center; gap: 16px; }
+.search-box { background: #F1F5F9; border-radius: 8px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; width: 300px; }
+.search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: #334155; }
+.search-box i { color: #94A3B8; }
+.icon-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #E2E8F0; background: white; color: #64748B; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+.icon-btn:hover { background: #F8FAFC; color: #3B82F6; }
+
+/* --- CONTENT --- */
+.page-content { padding: 32px; }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-  }
-
-  .main-content {
-    margin-left: 0;
-    padding: 20px;
-  }
-
-  .page-header h1 {
-    font-size: 24px;
-  }
+@media (max-width: 1024px) {
+  .sidebar { width: 80px; }
+  .logo span, .user-meta, .nav-item span:not(.badge), .sidebar-footer span { display: none; }
+  .user-card { justify-content: center; padding: 8px; }
+  .nav-item { justify-content: center; padding: 16px 0; }
+  .nav-item i { margin: 0; }
+  .main-wrapper { margin-left: 80px; }
+  .search-box { display: none; }
 }
 </style>

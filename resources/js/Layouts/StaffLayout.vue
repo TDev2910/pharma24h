@@ -1,10 +1,10 @@
 <template>
   <div class="layout-wrapper">
     <aside class="sidebar">
-      <div class="sidebar-header">s
+      <div class="sidebar-header">
         <div class="app-name">
-          <h1 class="brand">PharmaPro</h1>
-          <span class="sub-brand">Quản lý nhà thuốc</span>
+          <h1 class="brand">Dashboard Staff</h1>
+          <span class="sub-brand">Xin chào, {{ auth?.user?.name || 'Nhân viên' }}</span>
         </div>
       </div>
 
@@ -89,7 +89,6 @@
       <header class="topbar">
          <div class="page-breadcrumb">
             <span class="font-bold text-xl">Dashboard</span>
-            <span class="version-badge">V1.2.0</span>
          </div>
          <div class="topbar-actions">
             <div class="search-box">
