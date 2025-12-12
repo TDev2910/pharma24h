@@ -1,6 +1,5 @@
 <template>
   <div class="admin-layout">
-    <!-- Admin Navigation - Giữ nguyên cấu trúc navbar phức tạp -->
     <nav class="navbaradmin">
       <div class="nav-menu">
         <a href="/admin/admindashboard" class="nav-item active">Tổng Quan</a>
@@ -107,137 +106,13 @@
 <script setup>
 import Toast from 'primevue/toast'
 
-
-// Admin layout component - có thể đặt provide/inject, breadcrumb… ở đây
 </script>
 
 <style>
-/* CSS cho Admin Layout - không import external CSS để tránh lỗi build */
+@import '@Admin/AdminLayout.css';
+</style>
 
-/* Reset global styles để header nằm sát trên cùng */
-html,
-body {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-.admin-layout {
-  margin: 0;
-  padding: 0;
-  position: relative;
-}
-
-.navbaradmin {
-  background: #696FC7;
-  padding: 0 24px;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  margin: 0;
-}
-
-.nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
-
-.nav-item {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 17px;
-  padding: 0 8px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-/* .nav-item:hover {
-  background: #1db46a;
-  color: white;
-} */
-
-.nav-item.active {
-  color: white;
-}
-
-.dropdown {
-  position: relative;
-}
-
-.nav-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  padding: 16px;
-  display: none;
-  min-width: 300px;
-  z-index: 1000;
-  flex-direction: row;
-  gap: 24px;
-}
-
-.dropdown:hover .nav-dropdown {
-  display: flex;
-}
-
-.nav-dropdown-short {
-  min-width: 200px;
-  flex-direction: column;
-}
-
-.dropdown-col {
-  flex: 1;
-  min-width: 120px;
-}
-
-.dropdown-col:last-child {
-  margin-bottom: 0;
-}
-
-.dropdown-title {
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 8px;
-  font-size: 14px;
-}
-
-.dropdown-link {
-  display: block;
-  color: #64748b;
-  text-decoration: none;
-  padding: 6px 0;
-  font-size: 14px;
-  transition: color 0.2s ease;
-}
-
-/* .dropdown-link:hover {
-  color: #3b82f6;
-} */
-
-.sell-btn {
-  background: #10b981;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.sell-btn:hover {
-  background: #696FC7;
-}
-
-/* Scoped styles cho các component con */
+<style>
 :deep(.nav-item) {
   color: #fff;
   text-decoration: none;
@@ -305,10 +180,6 @@ body {
   font-size: 14px;
   transition: color 0.2s ease;
 }
-
-/* :deep(.dropdown-link:hover) {
-  color: #09f884;
-} */
 
 /* Chỉ override Bootstrap button styles để không xung đột với PrimeVue */
 .admin-layout :deep(.p-button-group .p-button.btn) {

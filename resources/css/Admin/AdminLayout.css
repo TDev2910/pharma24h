@@ -1,0 +1,112 @@
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.admin-layout {
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.admin-layout .navbaradmin {
+  background: #696FC7;
+  padding: 0 24px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  margin: 0;
+}
+
+.admin-layout .nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.admin-layout .nav-item {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 17px;
+  padding: 0 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.admin-layout .nav-item.active {
+  color: white;
+}
+
+.admin-layout .dropdown {
+  position: relative;
+}
+
+.admin-layout .nav-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  display: none;
+  min-width: 300px;
+  z-index: 1000;
+  flex-direction: row;
+  gap: 24px;
+}
+
+.admin-layout .dropdown:hover .nav-dropdown {
+  display: flex;
+}
+
+.admin-layout .nav-dropdown-short {
+  min-width: 200px;
+  flex-direction: column;
+}
+
+.admin-layout .dropdown-col {
+  flex: 1;
+  min-width: 120px;
+}
+
+.admin-layout .dropdown-col:last-child {
+  margin-bottom: 0;
+}
+
+.admin-layout .dropdown-title {
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.admin-layout .dropdown-link {
+  display: block;
+  color: #64748b;
+  text-decoration: none;
+  padding: 6px 0;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.admin-layout .sell-btn {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.admin-layout .sell-btn:hover {
+  background: #696FC7;
+}

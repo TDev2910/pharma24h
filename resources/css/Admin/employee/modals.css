@@ -1,0 +1,145 @@
+/* Employee Modals CSS */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.salary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.address-field {
+    grid-column: 1 / -1;
+}
+
+.field-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.required {
+    color: #ef4444;
+}
+
+.field-input {
+    width: 100%;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.field-textarea {
+    width: 100%;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.input-group .field-input {
+    flex: 1;
+}
+
+.generate-btn {
+    flex-shrink: 0;
+}
+
+/* Dynamic sections */
+.dynamic-section {
+    margin-bottom: 24px;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.dynamic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dynamic-item {
+    padding: 12px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+.dynamic-item-fields {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Error */
+.p-error {
+    color: #ef4444;
+    font-size: 12px;
+}
+
+.p-invalid {
+    border-color: #ef4444 !important;
+}
+
+.text-muted {
+    color: #6b7280;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* Footer */
+.flex {
+    display: flex;
+}
+
+.justify-end {
+    justify-content: flex-end;
+}
+
+.gap-2 {
+    gap: 8px;
+}
+
+/* Create Schedule Modal */
+.create-schedule-modal {
+    padding: 8px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+}

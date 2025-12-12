@@ -537,109 +537,13 @@
   }
   </script>
   
-  <style scoped>
-  .services-page {
-    padding: 20px;
-  }
+  <style>
+  /* Import CSS file - CSS thông thường được tách ra */
+  @import '@Staff/order-services.css';
+  </style>
   
-  /* Header Control Bar */
-  .header-control-bar {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e9ecef;
-  }
-  
-  .controls-section {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  
-  .title-section h4 {
-    color: #2c3e50;
-    margin: 0;
-    font-weight: 600;
-    font-size: 18px;
-  }
-  
-  /* Search Box */
-  .search-wrapper {
-    flex: 1;
-    max-width: 465px;
-    min-width: 280px;
-  }
-  
-  .search-wrapper .input-group {
-    position: relative;
-  }
-  
-  .search-wrapper .input-group-text {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
-    border: none;
-    color: #6c757d;
-    z-index: 2;
-    pointer-events: none;
-  }
-  
-  .search-wrapper .form-control {
-    padding-left: 40px !important;
-    padding-right: 16px !important;
-    border: 2px solid #91C4C3 !important;
-    border-radius: 8px !important;
-    height: 42px !important;
-    font-size: 14px !important;
-    background: #fff !important;
-    transition: all 0.2s ease !important;
-  }
-  
-  .search-wrapper .form-control:focus {
-    border-color: #007bff !important;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1) !important;
-    outline: none !important;
-  }
-  
-  /* Utility Options */
-  .ultility-options {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  
-  .utility-icons {
-    display: flex;
-    gap: 8px;
-  }
-  
-  .btn {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
-    padding: 8px 10px;
-    color: #6c757d;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .btn:hover {
-    background: #e9ecef;
-    color: #495057;
-  }
-  
-  .btn i {
-    font-size: 14px;
-  }
-  
-  
+  <style>
+  /* Giữ nguyên tất cả :deep() trong file Vue */
   :deep(.p-datatable .p-button),
   :deep(.p-datatable .p-button .p-button-icon),
   :deep(.p-datatable .p-button .p-button-label) {
@@ -652,22 +556,6 @@
   :deep(.p-datatable tbody tr td .p-button) {
     opacity: 1 !important;
     visibility: visible !important;
-  }
-  
-  /* Table Container */
-  .table-container {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e9ecef;
-    margin-top: 20px;
-  }
-  
-  /* Service name styling */
-  .service-name {
-    font-weight: 500;
-    color: #495057;
   }
   
   /* DataTable Styling */
@@ -726,165 +614,6 @@
     border-right: none;
   }
   
-  /* Booking Detail Container */
-  .booking-detail-container {
-    background: #f8f9fa;
-    border-top: 1px solid #e9ecef;
-    padding: 0;
-  }
-  
-  .detail-tabs {
-    display: flex;
-    border-bottom: 1px solid #e9ecef;
-    background: #ffffff;
-  }
-  
-  .detail-tabs .tab {
-    background: none;
-    border: none;
-    padding: 12px 20px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    color: #6c757d;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s ease;
-  }
-  
-  .detail-tabs .tab:hover {
-    color: #495057;
-    background: #f8f9fa;
-  }
-  
-  .detail-tabs .tab.active {
-    color: #007bff;
-    border-bottom-color: #007bff;
-    background: #ffffff;
-  }
-  
-  .detail-content {
-    padding: 20px;
-    background: #ffffff;
-  }
-  
-  .tab-content {
-    animation: fadeIn 0.3s ease-in-out;
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-  
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .detail-content .table {
-    margin-bottom: 0;
-  }
-  
-  .detail-content .table td {
-    padding: 8px 0;
-    border: none;
-    vertical-align: top;
-  }
-  
-  .detail-content .fw-bold {
-    color: #495057;
-    font-weight: 600;
-  }
-  
-  .detail-content .badge {
-    font-size: 12px;
-    padding: 4px 8px;
-  }
-  
-  .detail-content .text-primary {
-    color: #007bff !important;
-    font-weight: 600;
-  }
-  
-  .detail-content .text-primary i {
-    font-size: 16px;
-  }
-  
-  /* Action buttons in detail */
-  .action-buttons-container {
-    padding: 20px;
-  }
-  
-  .action-buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  
-  .action-buttons .p-button {
-    margin-bottom: 8px;
-  }
-  
-  .action-buttons .p-button-sm {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-  
-  /* Filter Modal */
-  .filter-content {
-    padding: 20px 0;
-  }
-  
-  .filter-content .form-label {
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 8px;
-  }
-  
-  .filter-content .form-select {
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 14px;
-  }
-  
-  /* Responsive improvements */
-  @media (max-width: 768px) {
-    .table-container {
-      padding: 10px;
-      margin-top: 10px;
-    }
-  
-    :deep(.p-datatable .p-datatable-thead > tr > th),
-    :deep(.p-datatable .p-datatable-tbody > tr > td) {
-      padding: 12px 8px;
-      font-size: 13px;
-    }
-  
-    .detail-content {
-      padding: 15px;
-    }
-  
-    .detail-tabs .tab {
-      padding: 10px 15px;
-      font-size: 13px;
-    }
-  
-    .detail-content .row {
-      margin: 0;
-    }
-  
-    .detail-content .col-md-6 {
-      margin-bottom: 20px;
-    }
-  
-    .action-buttons {
-      flex-direction: column;
-    }
-  }
-  
   /* Pagination styling */
   :deep(.p-paginator) {
     font-size: 12px;
@@ -894,5 +623,14 @@
   :deep(.p-paginator .p-paginator-pages .p-paginator-page) {
     font-size: 12px;
     padding: 4px 8px;
+  }
+  
+  /* Responsive improvements */
+  @media (max-width: 768px) {
+    :deep(.p-datatable .p-datatable-thead > tr > th),
+    :deep(.p-datatable .p-datatable-tbody > tr > td) {
+      padding: 12px 8px;
+      font-size: 13px;
+    }
   }
   </style>

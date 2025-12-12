@@ -508,388 +508,119 @@ export default {
 }
 </script>
 
-<style scoped>
-.employees-page {
-  padding: 20px;
-}
-
-/* Header Control Bar */
-.header-control-bar {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e9ecef;
-}
-
-.controls-section {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.title-section h4 {
-  color: #2c3e50;
-  margin: 0;
-  font-weight: 600;
-  font-size: 18px;
-}
-
-/* Search Box */
-.search-wrapper {
-  flex: 1;
-  max-width: 465px;
-  min-width: 280px;
-}
-
-.search-wrapper .input-group {
-  position: relative;
-}
-
-.search-wrapper .input-group-text {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  color: #6c757d;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.search-wrapper .form-control {
-  padding-left: 40px !important;
-  padding-right: 16px !important;
-  border: 2px solid #91C4C3 !important;
-  border-radius: 8px !important;
-  height: 42px !important;
-  font-size: 14px !important;
-  background: #fff !important;
-  transition: all 0.2s ease !important;
-}
-
-.search-wrapper .form-control:focus {
-  border-color: #007bff !important;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1) !important;
-  outline: none !important;
-}
-
-/* Utility Options */
-.ultility-options {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.utility-icons {
-  display: flex;
-  gap: 8px;
-}
-
-.btn {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 6px;
-  padding: 8px 10px;
-  color: #6c757d;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn:hover {
-  background: #e9ecef;
-  color: #495057;
-}
-
-.btn i {
-  font-size: 14px;
-}
-
-/* Table Container */
-.table-container {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e9ecef;
-  margin-top: 20px;
-}
-
-/* Action Buttons */
-.action-buttons {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  align-items: center;
-}
-
-.action-buttons .p-button {
-  width: 32px;
-  height: 32px;
-}
-
-/* Avatar styling */
-.avatar-image {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #e9ecef;
-}
-
-.no-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #f8f9fa;
-  border: 2px solid #e9ecef;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #6c757d;
-}
-
-.no-avatar i {
-  font-size: 18px;
-}
-
-/* DataTable Styling */
-:deep(.p-datatable) {
-  border-radius: 8px;
-  overflow: hidden;
-  border: 2px solid #000;
-}
-
-:deep(.p-datatable .p-datatable-header) {
-  background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
-  padding: 16px 20px;
-}
-
-:deep(.p-datatable .p-datatable-thead > tr > th) {
-  background: #B4DEBD;
-  color: #495057;
-  font-weight: 600;
-  border-bottom: 2px solid #e9ecef;
-  padding: 16px 20px;
-  font-size: 14px;
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr) {
-  transition: all 0.2s ease;
-  border-bottom: 1px solid #f1f3f4;
-}
-
-/* Striped rows styling */
-:deep(.p-datatable .p-datatable-tbody > tr:nth-child(even)) {
-  background: #f8f9fa;
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr:nth-child(odd)) {
-  background: #ffffff;
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr:hover) {
-  background: #e3f2fd !important;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-  padding: 16px 20px;
-  color: #495057;
-  font-size: 14px;
-  vertical-align: middle;
-  border-right: 1px solid #e9ecef;
-  border-bottom: 1px solid #f1f3f4;
-}
-
-/* Loại bỏ viền dọc của cột cuối cùng */
-:deep(.p-datatable .p-datatable-tbody > tr > td:last-child) {
-  border-right: none;
-}
-
-/* Loading state styling */
-:deep(.p-datatable .p-datatable-loading-overlay) {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(2px);
-}
-
-:deep(.p-datatable .p-datatable-loading-icon) {
-  color: #007bff;
-  font-size: 24px;
-}
-
-/* Empty state styling */
-:deep(.p-datatable .p-datatable-emptymessage) {
-  padding: 40px 20px;
-  color: #6c757d;
-  font-size: 16px;
-  text-align: center;
-  background: #f8f9fa;
-}
-
-:deep(.p-datatable .p-button),
-:deep(.p-datatable .p-button .p-button-icon),
-:deep(.p-datatable .p-button .p-button-label) {
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: inline-flex !important;
-}
-
-/* Đảm bảo button trong DataTable luôn hiển thị */
-:deep(.p-datatable tbody tr td .p-button) {
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-/* Doctor Detail Container */
-.doctor-detail-container {
-  background: #f8f9fa;
-  border-top: 1px solid #e9ecef;
-  padding: 0;
-}
-
-.detail-tabs {
-  display: flex;
-  border-bottom: 1px solid #e9ecef;
-  background: #ffffff;
-}
-
-.detail-tabs .tab {
-  background: none;
-  border: none;
-  padding: 12px 20px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #6c757d;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
-}
-
-.detail-tabs .tab:hover {
-  color: #495057;
-  background: #f8f9fa;
-}
-
-.detail-tabs .tab.active {
-  color: #007bff;
-  border-bottom-color: #007bff;
-  background: #ffffff;
-}
-
-.detail-content {
-  padding: 20px;
-  background: #ffffff;
-}
-
-.tab-content {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+<style>
+  /* Import CSS file - CSS thông thường được tách ra */
+  @import '@Admin/employee/dashboard.css';
+  </style>
+  
+  <style>
+  /* Giữ nguyên tất cả :deep() trong file Vue */
+  :deep(.p-datatable) {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #000;
   }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  :deep(.p-datatable .p-datatable-header) {
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 16px 20px;
   }
-}
-
-.detail-content .table {
-  margin-bottom: 0;
-}
-
-.detail-content .table td {
-  padding: 8px 0;
-  border: none;
-  vertical-align: top;
-}
-
-.detail-content .fw-bold {
-  color: #495057;
-  font-weight: 600;
-}
-
-.detail-content .badge {
-  font-size: 12px;
-  padding: 4px 8px;
-}
-
-.detail-content .text-primary {
-  color: #007bff !important;
-  font-weight: 600;
-}
-
-.detail-content .text-primary i {
-  font-size: 16px;
-}
-
-/* Action buttons in detail */
-.detail-content .p-button {
-  margin-right: 8px;
-  margin-bottom: 8px;
-}
-
-.detail-content .p-button-sm {
-  padding: 6px 12px;
-  font-size: 12px;
-}
-
-/* Responsive improvements */
-@media (max-width: 768px) {
-  .table-container {
-    padding: 10px;
-    margin-top: 10px;
+  
+  :deep(.p-datatable .p-datatable-thead > tr > th) {
+    background: #B4DEBD;
+    color: #495057;
+    font-weight: 600;
+    border-bottom: 2px solid #e9ecef;
+    padding: 16px 20px;
+    font-size: 14px;
   }
-
-  :deep(.p-datatable .p-datatable-thead > tr > th),
+  
+  :deep(.p-datatable .p-datatable-tbody > tr) {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f3f4;
+  }
+  
+  /* Striped rows styling */
+  :deep(.p-datatable .p-datatable-tbody > tr:nth-child(even)) {
+    background: #f8f9fa;
+  }
+  
+  :deep(.p-datatable .p-datatable-tbody > tr:nth-child(odd)) {
+    background: #ffffff;
+  }
+  
+  :deep(.p-datatable .p-datatable-tbody > tr:hover) {
+    background: #e3f2fd !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
   :deep(.p-datatable .p-datatable-tbody > tr > td) {
-    padding: 12px 8px;
-    font-size: 13px;
+    padding: 16px 20px;
+    color: #495057;
+    font-size: 14px;
+    vertical-align: middle;
+    border-right: 1px solid #e9ecef;
+    border-bottom: 1px solid #f1f3f4;
   }
-
-  .avatar-image,
-  .no-avatar {
-    width: 32px;
-    height: 32px;
+  
+  /* Loại bỏ viền dọc của cột cuối cùng */
+  :deep(.p-datatable .p-datatable-tbody > tr > td:last-child) {
+    border-right: none;
   }
-
-  .detail-content {
-    padding: 15px;
+  
+  /* Loading state styling */
+  :deep(.p-datatable .p-datatable-loading-overlay) {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(2px);
   }
-
-  .detail-tabs .tab {
-    padding: 10px 15px;
-    font-size: 13px;
+  
+  :deep(.p-datatable .p-datatable-loading-icon) {
+    color: #007bff;
+    font-size: 24px;
   }
-
-  .detail-content .row {
-    margin: 0;
+  
+  /* Empty state styling */
+  :deep(.p-datatable .p-datatable-emptymessage) {
+    padding: 40px 20px;
+    color: #6c757d;
+    font-size: 16px;
+    text-align: center;
+    background: #f8f9fa;
   }
-
-  .detail-content .col-md-6 {
-    margin-bottom: 20px;
+  
+  :deep(.p-datatable .p-button),
+  :deep(.p-datatable .p-button .p-button-icon),
+  :deep(.p-datatable .p-button .p-button-label) {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-flex !important;
   }
-}
-
-/* Pagination styling */
-:deep(.p-paginator) {
-  font-size: 12px;
-  padding: 8px 12px;
-}
-
-:deep(.p-paginator .p-paginator-pages .p-paginator-page) {
-  font-size: 12px;
-  padding: 4px 8px;
-}
-</style>
+  
+  /* Đảm bảo button trong DataTable luôn hiển thị */
+  :deep(.p-datatable tbody tr td .p-button) {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  /* Pagination styling */
+  :deep(.p-paginator) {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+  
+  :deep(.p-paginator .p-paginator-pages .p-paginator-page) {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    :deep(.p-datatable .p-datatable-thead > tr > th),
+    :deep(.p-datatable .p-datatable-tbody > tr > td) {
+      padding: 12px 8px;
+      font-size: 13px;
+    }
+  }
+  </style>

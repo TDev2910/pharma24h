@@ -255,161 +255,13 @@
   })
   </script>
   
-  <style scoped>
-  .stock-products-page {
-    padding: 20px;
-  }
+  <style>
+  /* Import CSS file - CSS thông thường được tách ra */
+  @import '@Staff/stock-products.css';
+  </style>
   
-  /* Header Control Bar */
-  .header-control-bar {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e9ecef;
-  }
-  
-  .controls-section {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  
-  .title-section h4 {
-    color: #2c3e50;
-    margin: 0;
-    font-weight: 600;
-    font-size: 18px;
-  }
-  
-  /* Search Box */
-  .search-wrapper {
-    flex: 1;
-    max-width: 465px;
-    min-width: 280px;
-  }
-  
-  .search-wrapper .input-group {
-    position: relative;
-  }
-  
-  .search-wrapper .input-group-text {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
-    border: none;
-    color: #6c757d;
-    z-index: 2;
-    pointer-events: none;
-  }
-  
-  .search-wrapper .form-control {
-    padding-left: 40px !important;
-    padding-right: 16px !important;
-    border: 2px solid #91C4C3 !important;
-    border-radius: 8px !important;
-    height: 42px !important;
-    font-size: 14px !important;
-    background: #fff !important;
-    transition: all 0.2s ease !important;
-    width: 100%;
-  }
-  
-  .search-wrapper .form-control:focus {
-    border-color: #007bff !important;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1) !important;
-    outline: none !important;
-  }
-  
-  /* Utility Options */
-  .ultility-options {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  
-  .utility-icons {
-    display: flex;
-    gap: 8px;
-  }
-  
-  .btn {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
-    padding: 8px 10px;
-    color: #6c757d;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .btn:hover {
-    background: #e9ecef;
-    color: #495057;
-  }
-  
-  .btn i {
-    font-size: 14px;
-  }
-  
-  /* Table Container */
-  .table-container {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e9ecef;
-    margin-top: 20px;
-  }
-  
-  /* Badge Styling */
-  .badge {
-    font-size: 11px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-weight: 500;
-    display: inline-block;
-  }
-  
-  .bg-secondary {
-    background-color: #6c757d !important;
-    color: white;
-  }
-  
-  .bg-warning {
-    background-color: #ffc107 !important;
-  }
-  
-  .text-dark {
-    color: #212529 !important;
-  }
-  
-  .bg-danger {
-    background-color: #dc3545 !important;
-    color: white;
-  }
-  
-  .bg-success {
-    background-color: #28a745 !important;
-    color: white;
-  }
-  
-  .bg-info {
-    background-color: #17a2b8 !important;
-    color: white;
-  }
-  
-  .bg-primary {
-    background-color: #007bff !important;
-    color: white;
-  }
-  
+  <style>
+  /* Giữ nguyên tất cả :deep() trong file Vue */
   /* DataTable Styling */
   :deep(.p-datatable) {
     border-radius: 8px;
@@ -467,11 +319,6 @@
   
   /* Responsive improvements */
   @media (max-width: 768px) {
-    .table-container {
-      padding: 10px;
-      margin-top: 10px;
-    }
-  
     :deep(.p-datatable .p-datatable-thead > tr > th),
     :deep(.p-datatable .p-datatable-tbody > tr > td) {
       padding: 12px 8px;

@@ -6,15 +6,11 @@
         <div class="sidebar-header">
           <h3><i class="fas fa-heartbeat me-2"></i>Sức Khỏe 24h</h3>
         </div>
-        
+
         <div class="user-info">
           <div class="user-avatar">
-            <img 
-              v-if="auth?.user?.avatar" 
-              :src="`/storage/avatars/${auth.user.avatar}`" 
-              alt="Avatar" 
-              class="avatar-img"
-            />
+            <img v-if="auth?.user?.avatar" :src="`/storage/avatars/${auth.user.avatar}`" alt="Avatar"
+              class="avatar-img" />
             <i v-else class="fas fa-user"></i>
           </div>
           <div class="user-details">
@@ -30,46 +26,47 @@
               <i class="fas fa-tachometer-alt"></i>Tổng quan
             </Link>
           </li>
-          
+
           <!-- Account Settings -->
           <li>
             <Link href="/user/profile-settings" :class="{ active: page.url.startsWith('/user/profile-settings') }">
               <i class="fas fa-user-cog"></i>Cài đặt hồ sơ
             </Link>
           </li>
-          
+
           <!-- Đơn hàng của tôi -->
           <li>
             <Link href="/user/orders" :class="{ active: page.url.startsWith('/user/orders') }">
               <i class="fas fa-clipboard-list"></i>Đơn hàng
             </Link>
           </li>
-          
+
           <!-- Hồ sơ sức khỏe -->
           <li>
             <Link href="/user/services" :class="{ active: page.url.startsWith('/user/services') }">
               <i class="fas fa-file-medical"></i>Dịch vụ
             </Link>
           </li>
-          
+
           <!-- Thông báo -->
           <li>
             <Link href="/user/notifications" :class="{ active: page.url.startsWith('/user/notifications') }">
               <i class="fas fa-bell"></i>Thông báo
-              <span v-if="unreadCount > 0" class="notification-badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
+              <span v-if="unreadCount > 0" class="notification-badge">{{ unreadCount > 99 ? '99+' : unreadCount
+                }}</span>
             </Link>
           </li>
-          
+
           <!-- Divider -->
           <li class="divider"></li>
-          
+
           <!-- Trang chủ -->
           <li>
             <Link href="/">
               <i class="fas fa-home"></i>Trang chủ
             </Link>
           </li>
-          
+
           <!-- Đăng xuất -->
           <li>
             <form @submit.prevent="handleLogout" style="display: inline;">
@@ -93,7 +90,7 @@
         <slot />
       </div>
     </div>
-    
+
     <!-- Toast for notifications -->
     <Toast />
   </div>
@@ -270,7 +267,7 @@ const handleLogout = () => {
 }
 
 .sidebar-menu a {
-  position: relative; 
+  position: relative;
 }
 
 .notification-badge {
@@ -336,15 +333,14 @@ const handleLogout = () => {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
   }
-  
+
   .main-content {
     margin-left: 0;
     padding: 20px;
   }
-  
+
   .page-header h1 {
     font-size: 24px;
   }
 }
 </style>
-

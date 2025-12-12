@@ -38,7 +38,8 @@
             Giá tăng dần
           </button>
 
-          <input type="text" class="form-control" placeholder="Tìm kiếm" style="width: 300px;margin-left: 10px;">
+          <input type="text" class="form-control" placeholder="Tìm kiếm" style="width: 300px;margin-left: 10px;"
+            v-model="searchQuery" @input="handleSearch">
         </div>
       </div>
       <hr class="light-divider" style="width: 215px; background-color: grey;">
@@ -182,6 +183,17 @@ const props = defineProps({
   products: { type: Array, default: () => [] }
 })
 
+const searchQuery = ref('');
+const debounceTimer = ref(null);
+
+function handleSearch() {
+  clearTimeout(debounceTimer.value);
+  debounceTimer.value = setTimeout(() => {
+    applySearch()
+  }, 300)
+}
+
+
 // State để lưu danh sách sản phẩm đã lọc
 const displayedProducts = ref([...props.products])
 
@@ -205,6 +217,26 @@ function sortProducts(order) {
     }
   });
 }
+
+function applySearch() {
+  const query = searchQuery.value.toLowerCase().trim();
+  // Nếu không có từ khóa, hiển thị tất cả sản phẩm gốc
+  if (!query) {
+    displayedProducts.value = [...props.products]
+    return
+  }
+  // Lọc sản phẩm theo tên (có thể mở rộng thêm mã sản phẩm)
+  displayedProducts.value = props.products.filter(product => {
+    const name = (product.name || '').toLowerCase()
+    // Có thể thêm tìm theo mã sản phẩm nếu có
+    return name.includes(query)
+  })
+
+  // Giữ nguyên sắp xếp hiện tại sau khi tìm kiếm
+  if (currentSort.value) {
+    sortProducts(currentSort.value)
+  }
+}
 // Hàm lọc sản phẩm theo giá (Client-side)
 function applyPriceFilter(min, max) {
   let minPrice = min || 0
@@ -216,10 +248,11 @@ function applyPriceFilter(min, max) {
     return
   }
 
-  console.log(`Lọc sản phẩm trong khoảng: ${minPrice}đ đến ${maxPrice === Infinity ? 'vô cùng' : maxPrice + 'đ'}`)
+  // Lấy danh sách sản phẩm đã được lọc theo search (nếu có)
+  const baseProducts = searchQuery.value ? displayedProducts.value : props.products
 
   // Lọc sản phẩm
-  displayedProducts.value = props.products.filter(product => {
+  displayedProducts.value = baseProducts.filter(product => {
     const price = product.gia_ban || 0
     return price >= minPrice && price <= maxPrice
   })
@@ -239,6 +272,7 @@ function setPriceRange(min, max) {
 // Hàm reset bộ lọc
 function resetPriceFilter() {
   displayedProducts.value = [...props.products]
+  searchQuery.value = ''
 
   const minPriceInput = document.getElementById('minPrice')
   const maxPriceInput = document.getElementById('maxPrice')
@@ -266,13 +300,13 @@ function isOutOfStock(product) {
 
 function isButtonDisabled(product) {
   if (isOutOfStock(product)) return true;
-  
+
   // Kiểm tra nếu có khuyến mãi nhưng hết tồn khuyến mãi
   if (isPromotionActive(product)) {
     const tonKhuyenMai = Number(product.ton_khuyen_mai) || 0;
     if (tonKhuyenMai <= 0) return true;
   }
-  
+
   return false;
 }
 
@@ -294,10 +328,10 @@ function formatPrice(amount) {
 async function addToCartHandler(product) {
   try {
     const response = await axios.post('/cart/add', {
-      item_id: product.id,            
-      item_type: product.type,   
+      item_id: product.id,
+      item_type: product.type,
       quantity: 1,
-      is_promotion: isPromotionActive(product)  
+      is_promotion: isPromotionActive(product)
     });
     if (response.data.success) {
       window.dispatchEvent(new CustomEvent('cart-updated'));

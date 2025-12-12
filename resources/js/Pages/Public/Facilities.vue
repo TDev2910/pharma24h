@@ -220,16 +220,10 @@ const doctors = ref([
     name: 'Dr. Nguyen Van A',
     image: '/storage/avatars/doctors/dsd.jpg'
   },
-  // {
-  //   id: 2,
-  //   name: 'Dr. Tran Thi B',
-  //   image: '/storage/avatars/doctors/diddy.jpg'
-  // },
 ]);
 </script>
 
 <style scoped>
-/* --- STYLE HERO SECTION (GIỮ NGUYÊN CỦA BẠN) --- */
 .hero-section {
   background-color: #F0F8FF;
   min-height: 600px;

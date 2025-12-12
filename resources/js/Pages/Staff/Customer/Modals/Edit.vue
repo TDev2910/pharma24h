@@ -413,122 +413,23 @@ export default {
 }
 </script>
 
-<style scoped>
-/* Form Grid Layout */
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px 20px;
-  align-items: start;
-}
+<style>
+/* Import CSS file - CSS thông thường được tách ra */
+@import '@Staff/customer/modals.css';
+</style>
 
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* Address Section */
-.address-section {
-  grid-column: 1 / -1;
-  /* Span across both columns */
-  margin-top: 8px;
-}
-
-.address-container {
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  padding: 16px;
-  background-color: #fff;
-}
-
-.address-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #f1f3f4;
-}
-
-.address-title {
-  font-weight: 600;
-  font-size: 16px;
-  color: #333;
-}
-
-.address-icon {
-  color: #6c757d;
-  font-size: 14px;
-}
-
-.address-input {
-  margin-bottom: 16px;
-}
-
-.address-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px 12px;
-}
-
-
-/* Custom placeholder styling for dropdown */
+<style>
+/* Giữ nguyên tất cả :deep() trong file Vue */
 :deep(.p-select-label) {
   margin-top: -5px !important;
   margin-left: -5px !important;
   line-height: 1.2 !important;
 }
 
-/* Hoặc có thể dùng cách này */
 :deep(.p-placeholder) {
   margin-top: -9px !important;
   margin-left: -9px !important;
   line-height: 1.2 !important;
   font-size: 15px;
-}
-
-.field-label {
-  font-weight: 600;
-  font-size: 15px;
-  color: #333;
-  margin-bottom: 4px;
-}
-
-.field-input {
-  width: 100%;
-  height: 32px !important;
-  border-radius: 6px !important;
-  font-size: 15px !important;
-  padding: 6px 10px !important;
-  border: 1px solid #ced4da !important;
-}
-
-.readonly-input {
-  background-color: #f8f9fa !important;
-  border-color: #e9ecef !important;
-}
-
-
-/* Error styling */
-.p-error {
-  color: #e24c4c;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-.p-invalid {
-  border-color: #e24c4c !important;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .email-field {
-    grid-column: 1;
-  }
 }
 </style>

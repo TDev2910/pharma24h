@@ -414,6 +414,7 @@ export default {
       }
     },
 
+    //đồng bộ trạng thái đơn hàng realtime từ GHN
     async syncGhnStatus() {
       if (!this.order?.id || !this.order?.ghn_order_code) return;
 
@@ -543,60 +544,12 @@ export default {
 </script>
 
 <style scoped>
-.order-info p,
-.customer-info p,
-.payment-info p,
-.delivery-info p {
-  margin-bottom: 8px;
-  font-size: 14px;
-}
+/* Import CSS file - CSS thông thường được tách ra */
+@import '@Staff/orders/modals.css';
+</style>
 
-.order-info strong,
-.customer-info strong,
-.payment-info strong,
-.delivery-info strong {
-  min-width: 140px;
-  display: inline-block;
-  color: #495057;
-}
-
-.badge {
-  display: inline-block;
-  padding: 4px 8px;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 4px;
-}
-
-.bg-warning {
-  background-color: #ffc107 !important;
-  color: #000 !important;
-}
-
-.bg-success {
-  background-color: #198754 !important;
-  color: #fff !important;
-}
-
-.bg-danger {
-  background-color: #dc3545 !important;
-  color: #fff !important;
-}
-
-.bg-info {
-  background-color: #0dcaf0 !important;
-  color: #fff !important;
-}
-
-.bg-secondary {
-  background-color: #6c757d !important;
-  color: #fff !important;
-}
-
-.order-items-table {
-  font-size: 14px;
-}
-
+<style>
+/* Giữ nguyên tất cả :deep() trong file Vue */
 .order-items-table :deep(.p-datatable-thead > tr > th) {
   background: #f8f9fa;
   font-weight: 600;
@@ -605,163 +558,5 @@ export default {
 
 .order-items-table :deep(.p-datatable-tbody > tr > td) {
   padding: 10px;
-}
-
-.order-summary {
-  padding: 16px;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.text-end {
-  text-align: right !important;
-}
-
-.text-center {
-  text-align: center !important;
-}
-
-.fw-bold {
-  font-weight: 600 !important;
-}
-
-.fs-5 {
-  font-size: 1.25rem !important;
-}
-
-.border-top {
-  border-top: 1px solid #dee2e6 !important;
-}
-
-.pt-2 {
-  padding-top: 0.5rem !important;
-}
-
-.mb-0 {
-  margin-bottom: 0 !important;
-}
-
-.mb-2 {
-  margin-bottom: 0.5rem !important;
-}
-
-.mb-3 {
-  margin-bottom: 1rem !important;
-}
-
-.mb-4 {
-  margin-bottom: 1.5rem !important;
-}
-
-.mt-3 {
-  margin-top: 1rem !important;
-}
-
-.mt-4 {
-  margin-top: 1.5rem !important;
-}
-
-.py-3 {
-  padding-top: 0.75rem !important;
-  padding-bottom: 0.75rem !important;
-}
-
-.py-5 {
-  padding-top: 3rem !important;
-  padding-bottom: 3rem !important;
-}
-
-.alert {
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border: 1px solid transparent;
-  border-radius: 0.375rem;
-}
-
-.alert-danger {
-  color: #842029;
-  background-color: #f8d7da;
-  border-color: #f5c2c7;
-}
-
-.ghn-info-section {
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 16px;
-  background: #f8f9fa;
-}
-
-.ghn-details {
-  margin-top: 12px;
-}
-
-.ghn-create-section {
-  margin-top: 12px;
-}
-
-.alert-info {
-  color: #055160;
-  background-color: #cff4fc;
-  border-color: #b6effb;
-}
-
-.alert-warning {
-  color: #664d03;
-  background-color: #fff3cd;
-  border-color: #ffecb5;
-}
-
-.text-primary {
-  color: #0d6efd !important;
-}
-
-.gap-2 {
-  gap: 0.5rem;
-}
-
-.bg-primary {
-  background-color: #0d6efd !important;
-  color: #fff !important;
-}
-
-.btn-sm {
-  padding: 4px 12px;
-  font-size: 13px;
-  border-radius: 4px;
-}
-
-.btn-outline-primary {
-  color: #0d6efd;
-  border-color: #0d6efd;
-  background-color: transparent;
-  text-decoration: none;
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 4px;
-  border: 1px solid;
-  transition: all 0.2s;
-  cursor: pointer;
-}
-
-.btn-outline-primary:hover {
-  color: #fff;
-  background-color: #0d6efd;
-  border-color: #0d6efd;
-}
-
-.d-flex {
-  display: flex !important;
-}
-
-.align-items-center {
-  align-items: center !important;
-}
-
-.justify-content-end {
-  justify-content: flex-end !important;
-}
-
-.justify-content-between {
-  justify-content: space-between !important;
 }
 </style>
