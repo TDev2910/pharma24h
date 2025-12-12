@@ -253,6 +253,9 @@
 
         <div class="d-flex justify-content-end gap-2">
           <Button label="Đóng" severity="secondary" @click="closeModal" />
+          <Button v-if="order && order.delivery_method === 'shipping' && order.ghn_order_code"
+            label="Đồng bộ trạng thái GHN" icon="pi pi-sync" severity="info" :loading="syncingGHN"
+            @click="syncGhnStatus" />
           <Button
             v-if="order && order.delivery_method === 'shipping' && !order.ghn_order_code && order.district_id && order.ward_code"
             label="Tạo đơn GHN" icon="pi pi-truck" severity="info" :loading="creatingGHN" @click="createGHNOrder" />
@@ -591,6 +594,30 @@ export default {
         });
       } finally {
         this.creatingGHN = false;
+      }
+    },
+
+    //đồng bộ trạng thái đơn hàng realtime từ GHN
+    async syncGhnStatus() {
+      if (!this.order?.id || !this.order?.ghn_order_code) return;
+
+      try {
+        this.syncingGHN = true;
+        const response = await axios.post(`/admin/ghn/orders/${this.order.id}/sync-status`);
+
+        if (response.data?.success) {
+          alert('Đồng bộ trạng thái GHN thành công!');
+
+          // Reload order details để cập nhật thông tin
+          await this.loadOrderDetails();
+        } else {
+          alert(response.data?.message || 'Không thể đồng bộ trạng thái GHN.');
+        }
+      } catch (error) {
+        console.error('syncGhnStatus error:', error);
+        alert(error.response?.data?.message || 'Đã xảy ra lỗi khi đồng bộ trạng thái GHN.');
+      } finally {
+        this.syncingGHN = false;
       }
     },
 

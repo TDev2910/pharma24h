@@ -439,9 +439,12 @@ class GHNController extends Controller
         return trim($name);
     }
 
+    /**
+     * Đồng bộ trạng thái GHN và cập nhật trạng thái đơn hàng
+     */
     public function syncGhnStatus(Order $order)
     {
-        if(!$order->ghn_order_code) {
+        if (!$order->ghn_order_code) {
             return response()->json([
                 'success' => false,
                 'message' => 'Đơn hàng chưa có mã vận đơn GHN'
@@ -450,18 +453,19 @@ class GHNController extends Controller
 
         try {
             $result = $this->ghnService->getOrderInfo($order->ghn_order_code);
-            
-            if(!$result['success']) {
+
+            if (!$result['success']) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Không thể lấy thông tin đơn hàng từ GHN'
+                    'message' => $result['message'] ?? 'Lỗi lấy thông tin đơn hàng GHN'
                 ], 400);
             }
+
             $ghnData = $result['data'];
             $oldGhnStatus = $order->ghn_status;
             $oldOrderStatus = $order->order_status;
 
-            // Cập nhật trạng thái đơn hàng
+            // Cập nhật thông tin GHN
             $order->ghn_status = $ghnData['status'] ?? $order->ghn_status;
             $order->ghn_expected_delivery_time = $ghnData['expected_delivery_time'] ?? $order->ghn_expected_delivery_time;
 
@@ -469,22 +473,23 @@ class GHNController extends Controller
             $order->ghn_shipper_name = $ghnData['shipper_name'] ?? $order->ghn_shipper_name;
             $order->ghn_shipper_phone = $ghnData['shipper_phone'] ?? $order->ghn_shipper_phone;
 
-            //status mapping
+            // Status mapping
             $statusMapping = [
-                //nhóm trạng thái đơn hàng chưa xử lý
-                'ready_to_pick' => Order::STATUS['PENDING'], //chờ lấy hàng
-                'picking' => Order::STATUS['PENDING'], //đang lấy hàng
+                // Nhóm trạng thái đơn hàng chưa xử lý
+                'ready_to_pick' => Order::STATUS['PENDING'], // Chờ lấy hàng
+                'picking' => Order::STATUS['PENDING'], // Đang lấy hàng
 
-                //nhóm trạng thái đang giao hàng
-                'transporting' => Order::STATUS['CONFIRMED'], //đang vận chuyển
-                'delivering' => Order::STATUS['CONFIRMED'], //đang giao hàng
+                // Nhóm trạng thái đang giao hàng
+                'transporting' => Order::STATUS['CONFIRMED'], // Đang vận chuyển
+                'delivering' => Order::STATUS['CONFIRMED'], // Đang giao hàng
 
-                //nhóm trạng thái đã hoàn thành
-                'delivered' => Order::STATUS['COMPLETED'], //đã giao hàng
-                'return' => Order::STATUS['COMPLETED'], //trả hàng
-                'cancel' => Order::STATUS['CANCELLED'], //hủy đơn hàng
+                // Nhóm trạng thái đã hoàn thành
+                'delivered' => Order::STATUS['COMPLETED'], // Đã giao hàng
+                'return' => Order::STATUS['COMPLETED'], // Trả hàng
+                'cancel' => Order::STATUS['CANCELLED'], // Hủy đơn hàng
             ];
-            // 3. Xử lý Logic Mapping
+
+            // Xử lý Logic Mapping
             if (isset($ghnData['status'])) {
                 $ghnCurrentStatus = $ghnData['status'];
                 
@@ -501,10 +506,10 @@ class GHNController extends Controller
                         }
                     }
                 } else {
-                    // Trường hợp KHÔNG có trong map - Không ghi log
-                    // Không cập nhật order_status để tránh sai lệch
+                    // Trường hợp KHÔNG có trong map - Không cập nhật order_status để tránh sai lệch
                 }
             }
+
             $order->save();
 
             return response()->json([
@@ -519,9 +524,8 @@ class GHNController extends Controller
                     'status_changed' => $oldOrderStatus !== $order->order_status,
                 ]
             ]);
-        } 
-        catch (\Exception $e) {
-            // Không log lỗi hệ thống
+
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi hệ thống: ' . $e->getMessage()

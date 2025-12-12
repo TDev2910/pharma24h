@@ -227,31 +227,6 @@ class StafGHNController extends Controller
     }
 
     /**
-     * Test kết nối GHN API
-     */
-    public function testConnection()
-    {
-        try {
-            $result = $this->ghnService->getProvinces();
-            return response()->json([
-                'success' => true,
-                'ghn_api_result' => $result,
-                'config' => [
-                    'base_url' => config('services.ghn.base_url'),
-                    'token_set' => !empty(config('services.ghn.token')),
-                    'token_length' => strlen(config('services.ghn.token') ?? ''),
-                ]
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ], 500);
-        }
-    }
-
-    /**
      * Map địa chỉ (tên) sang GHN ID
      */
     public function mapAddressToGHN(Request $request)
