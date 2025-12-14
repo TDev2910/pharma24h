@@ -618,7 +618,7 @@ onMounted(async () => {
 .profile-avatar {
   width: 120px;
   height: 120px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #3b82f6;
   border-radius: 20px;
   margin: 0 auto 20px;
   display: flex;

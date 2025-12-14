@@ -81,9 +81,8 @@
           </div>
 
           <div class="col-lg-4 text-center my-4 my-lg-0">
-            <div class="feature-center-image position-relative">
-              <img src="https://img.freepik.com/free-photo/medium-shot-doctor-reading-paper_23-2149367520.jpg?w=740"
-                alt="Doctor Working" class="img-fluid rounded-4 shadow-lg">
+            <div class="profile-image-wrapper position-relative text-center">
+              <img :src="doctors[4].image" alt="Dược sĩ Đạt" class="img-fluid main-image rounded-4 shadow-lg" />
             </div>
           </div>
 
@@ -220,6 +219,11 @@ const doctors = ref([
     name: 'Dr. Nguyen Van A',
     image: '/storage/avatars/doctors/dsd.jpg'
   },
+  {
+    id: 5,
+    name: 'Dr. Nguyen Van A',
+    image: '/storage/banner/healthy.jpg'
+  },
 ]);
 </script>
 
@@ -309,6 +313,18 @@ const doctors = ref([
   max-width: 300px;
   transition: transform 0.3s ease;
 }
+
+/* Ảnh trong features section - hiển thị toàn bộ */
+.features-section .profile-image-wrapper .main-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 20px;
+  border: 5px solid #f8f9fa;
+}
+
 
 
 /* --- RESPONSIVE --- */
