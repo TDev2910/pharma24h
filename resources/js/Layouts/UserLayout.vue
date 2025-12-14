@@ -32,9 +32,13 @@
           <Link href="/user/profile-settings" :class="{ 'active': page.url.startsWith('/user/profile-settings') }" class="nav-item">
             <i class="fas fa-user-cog"></i> <span>Cài đặt hồ sơ</span>
           </Link>
+          <Link href="/" :class="{ 'active': page.url.startsWith('/') }" class="nav-item">
+            <i class="fas fa-home"></i> <span>Trang chủ</span>
+          </Link>
         </nav>
       </div>
 
+      
       <div class="sidebar-footer">
         <Link href="/logout" method="post" as="button" class="nav-item logout">
           <i class="fas fa-sign-out-alt"></i> <span>Đăng xuất</span>

@@ -74,7 +74,7 @@ createInertiaApp({
     createApp({ render: () => h(App, props) })
       .use(plugin)
       .use(PrimeVue, primevueOptions)
-      .use(ToastService)     // ⚡ cho useToast()
+      .use(ToastService)    
       .component('Link', Link)
       .mount(el)
   }
@@ -90,5 +90,3 @@ document.addEventListener('click', (event) => {
   event.preventDefault()
   router.visit(href)
 })
-
-

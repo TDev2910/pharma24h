@@ -30,16 +30,142 @@ class DashboardController extends Controller
         $ordersCount = $user->orders()->count();
         $bookingsCount = $user->service_bookings()->count();
         $unreadNotificationsCount = $user->unreadNotifications()->count();
+
+        //đơn hàng đang xử lý
+        $processingOrderCount = $user->orders()
+            ->whereIn('order_status', [Order::STATUS['PENDING'], Order::STATUS['NEW']])
+            ->count();
+        
+        //Thông báo mới
+        $newNotificationsCount = $user->notifications()
+            ->whereNull('read_at')
+            ->count();
+            
+        // Lấy 5 thông báo mới nhất
+        $recentNotifications = $user->notifications()
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function ($notification) {
+                $data = $notification->data;
+                
+                // Xác định icon và màu dựa trên type
+                $iconConfig = $this->getNotificationIcon($data['type'] ?? 'default');
+                
+                return [
+                    'id' => $notification->id,
+                    'type' => $data['type'] ?? 'default',
+                    'message' => $data['message'] ?? 'Thông báo mới',
+                    'icon' => $data['icon'] ?? $iconConfig['icon'],
+                    'iconColor' => $iconConfig['color'],
+                    'url' => $data['url'] ?? '#',
+                    'time' => $notification->created_at ? $notification->created_at->diffForHumans() : 'Vừa xong',
+                    'timeFormatted' => $notification->created_at ? $notification->created_at->format('H:i d/m/Y') : '',
+                    'isRead' => $notification->read_at !== null,
+                ];
+            });
+
+          // Lấy 5 đơn hàng gần nhất (format đẹp)
+          $recentOrders = $user->orders()
+              ->with('items')
+              ->latest()
+              ->take(5)
+              ->get()
+              ->map(function ($order) {
+                  // Lấy tên sản phẩm đầu tiên hoặc tổng hợp
+                  $productNames = $order->items->take(2)->map(function ($item) {
+                      return $item->product_name ?? $item->name ?? 'Sản phẩm';
+                  })->toArray();
+
+                  $productDisplay = count($productNames) > 0
+                      ? implode(', ', $productNames) . (count($order->items) > 2 ? '...' : '')
+                      : 'Không có sản phẩm';
+
+                  // Xác định status class dựa trên order_status
+                  $statusClass = $this->getOrderStatusClass($order->order_status);
+                  $statusText = $this->getOrderStatusText($order->order_status);
+
+                  return [
+                      'id'          => $order->id,
+                      'code'        => $order->order_code ?? '#' . str_pad($order->id, 4, '0', STR_PAD_LEFT),
+                      'date'        => $order->created_at ? $order->created_at->format('d/m/Y') : '',
+                      'product'     => $productDisplay,
+                      'total'       => number_format($order->total_amount ?? 0, 0, ',', '.') . '₫',
+                      'status'      => $statusText,
+                      'statusClass' => $statusClass,
+                  ];
+              });
         
         return Inertia::render('User/Dashboard', [
             'ordersCount' => $ordersCount,
             'bookingsCount' => $bookingsCount, 
             'unreadNotificationsCount' => $unreadNotificationsCount,
+            'recentNotifications' => $recentNotifications,
+            'recentOrders' => $recentOrders,
+            'processingOrderCount' => $processingOrderCount,
+            'newNotificationsCount' => $newNotificationsCount,
             'pageTitle' => 'Dashboard',
             'pageDescription' => 'Welcome back! Here\'s your account overview',
         ]);
     }
 
+    private function getOrderStatusClass($status) 
+    {
+        $statusMap = [
+            'new' => 'processing',
+            'pending' => 'processing',
+            'confirmed' => 'processing',
+            'processing' => 'processing',
+            'shipping' => 'shipping',
+            'delivered' => 'completed',
+            'completed' => 'completed',
+            'cancelled' => 'cancelled',
+            'cancellation_requested' => 'processing',
+        ];
+
+        return $statusMap[$status] ?? 'default';
+    }
+    
+    private function getNotificationIcon($type)
+    {
+        $configs = [
+            'order_status_updated' => [
+                'icon' => 'fas fa-truck',
+                'color' => 'blue'
+            ],
+            'service_booking_status_updated' => [
+                'icon' => 'fas fa-file-medical',
+                'color' => 'green'
+            ],
+            'order_cancellation_requested' => [
+                'icon' => 'fas fa-exclamation-triangle',
+                'color' => 'yellow'
+            ],
+            'default' => [
+                'icon' => 'fas fa-bell',
+                'color' => 'blue'
+            ],
+        ];
+        
+        return $configs[$type] ?? $configs['default'];
+    }
+
+    private function getOrderStatusText($status)
+    {
+        $statusMap = [
+            'new' => 'Chờ xử lý',
+            'pending' => 'Chờ xử lý',
+            'confirmed' => 'Đã xác nhận',
+            'processing' => 'Đang xử lý',
+            'shipping' => 'Đang giao',
+            'delivered' => 'Hoàn thành',
+            'completed' => 'Hoàn thành',
+            'cancelled' => 'Đã hủy',
+            'cancellation_requested' => 'Yêu cầu hủy',
+        ];
+        
+        return $statusMap[$status] ?? 'Chờ xử lý';
+    }
 
 
     public function profileSettings()

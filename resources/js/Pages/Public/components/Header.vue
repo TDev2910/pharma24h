@@ -48,7 +48,7 @@
                     <div class="text-muted" style="font-size: 13px;">{{ auth.user.email }}</div>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="/user/profile-settings">
+                    <a class="dropdown-item" href="/user/dashboard">
                       <i class="fas fa-cog me-2"></i>Account Settings
                     </a>
                   </li>
