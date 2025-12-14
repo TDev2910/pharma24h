@@ -323,7 +323,7 @@
 </template>
 
 <script setup>
-import Header from './components/Header.vue'
+import Header from '../components/Header.vue'
 import { router } from '@inertiajs/vue3'
 import { ref } from 'vue'
 

@@ -3,7 +3,8 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
       <div class="container">
         <!-- Menu Toggle for Mobile -->
-        <button class="navbar-toggler border-0 p-0 me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+        <button class="navbar-toggler border-0 p-0 me-3" type="button" data-bs-toggle="offcanvas"
+          data-bs-target="#mobileMenu">
           <i class="fas fa-bars fs-5"></i>
         </button>
 
@@ -39,7 +40,8 @@
             <template v-if="auth.user">
               <!-- Dropdown User Icon -->
               <div class="dropdown">
-                <a href="#" class="action-link me-3 dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" class="action-link me-3 dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown"
+                  aria-expanded="false">
                   <i class="fas fa-user"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -66,24 +68,20 @@
             <template v-else>
               <!-- Nếu chưa đăng nhập -->
               <a href="/login" class="action-link me-3">
-                <i class="fas fa-user"></i> 
+                <i class="fas fa-user"></i>
               </a>
             </template>
 
             <!-- Shopping Cart -->
             <div class="dropdown cart-dropdown">
-              <button type="button" class="action-link position-relative dropdown-toggle border-0 bg-transparent" 
-                      id="cartDropdown" 
-                      data-bs-toggle="dropdown" 
-                      data-bs-auto-close="outside"
-                      aria-expanded="false">
+              <button type="button" class="action-link position-relative dropdown-toggle border-0 bg-transparent"
+                id="cartDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
-                     style="display: none;">0</span>
+                <span class="cart-count position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  style="display: none;">0</span>
               </button>
-              <div class="dropdown-menu dropdown-menu-end cart-dropdown-menu" 
-                   aria-labelledby="cartDropdown" 
-                   style="width: 360px;">
+              <div class="dropdown-menu dropdown-menu-end cart-dropdown-menu" aria-labelledby="cartDropdown"
+                style="width: 360px;">
                 <div class="cart-loading text-center p-3 d-none">
                   <div class="spinner-border spinner-border-sm text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
@@ -99,9 +97,9 @@
                 <div class="cart-footer p-3 border-top">
                   <div class="cart-total d-flex justify-content-between mb-3">
                     <strong>Tổng cộng:</strong>
-                    <span class="cart-total-amount text-danger fw-bold" 
-                          aria-live="polite" 
-                          aria-label="Tổng tiền giỏ hàng">0 VNĐ</span>
+                    <span class="cart-total-amount text-danger fw-bold" aria-live="polite"
+                      aria-label="Tổng tiền giỏ hàng">0
+                      VNĐ</span>
                   </div>
                   <div class="cart-actions d-flex">
                     <a href="/cart" class="btn btn-outline-primary btn-sm me-2 flex-grow-1">Xem giỏ hàng</a>
@@ -115,21 +113,17 @@
 
         <!-- Mobile User Actions -->
         <div class="d-lg-none d-flex align-items-center">
-          <a href="#" class="action-link me-3">   
+          <a href="#" class="action-link me-3">
             <i class="fas fa-user"></i>
           </a>
-          <button type="button" class="action-link position-relative border-0 bg-transparent" 
-                  id="mobilecartDropdown"
-                  data-bs-toggle="dropdown" 
-                  data-bs-auto-close="outside"
-                  aria-expanded="false">
+          <button type="button" class="action-link position-relative border-0 bg-transparent" id="mobilecartDropdown"
+            data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <i class="fas fa-shopping-cart"></i>
             <span class="cart-count position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                 style="display: none;">0</span>
+              style="display: none;">0</span>
           </button>
-          <div class="dropdown-menu dropdown-menu-end cart-dropdown-menu" 
-               aria-labelledby="mobilecartDropdown" 
-               style="width: 360px;">
+          <div class="dropdown-menu dropdown-menu-end cart-dropdown-menu" aria-labelledby="mobilecartDropdown"
+            style="width: 360px;">
             <div class="cart-loading text-center p-3 d-none">
               <div class="spinner-border spinner-border-sm text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
@@ -145,9 +139,8 @@
             <div class="cart-footer p-3 border-top">
               <div class="cart-total d-flex justify-content-between mb-3">
                 <strong>Tổng cộng:</strong>
-                <span class="cart-total-amount text-danger fw-bold" 
-                      aria-live="polite" 
-                      aria-label="Tổng tiền giỏ hàng">0 VNĐ</span>
+                <span class="cart-total-amount text-danger fw-bold" aria-live="polite" aria-label="Tổng tiền giỏ hàng">0
+                  VNĐ</span>
               </div>
               <div class="cart-actions d-flex">
                 <a href="/cart" class="btn btn-outline-primary btn-sm me-2 flex-grow-1">Xem giỏ hàng</a>
@@ -183,21 +176,18 @@
             <a class="nav-link" href="team">Dịch vụ</a>
           </li>
         </ul>
-        
+
         <!-- Thanh tìm kiếm sản phẩm -->
         <div class="mt-3">
           <form class="search-form">
             <div class="search-container">
               <i class="fas fa-search search-icon"></i>
-              <input type="search" 
-                name="q" 
-                class="form-control search-input" 
-                placeholder="Tìm kiếm sản phẩm">
+              <input type="search" name="q" class="form-control search-input" placeholder="Tìm kiếm sản phẩm">
             </div>
           </form>
         </div>
       </div>
-    </div> 
+    </div>
   </header>
 </template>
 
@@ -228,12 +218,12 @@ function handleCartUpdate() {
 
 onMounted(() => {
   window.addEventListener('cart-updated', handleCartUpdate)
-  
+
   // Debug auth data
   console.log('Header mounted, auth data:', props.auth)
   console.log('User data:', props.auth?.user)
   console.log('Is user logged in?', !!props.auth?.user)
-  
+
   // Initialize Bootstrap dropdowns
   const dropdownElementList = document.querySelectorAll('.dropdown-toggle')
   const dropdownList = [...dropdownElementList].map(dropdownToggleEl => new bootstrap.Dropdown(dropdownToggleEl))

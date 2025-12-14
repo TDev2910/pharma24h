@@ -107,7 +107,7 @@ class HomeController extends Controller
             ->sortByDesc('created_at')
             ->values();
 
-        return Inertia::render('Public/Products', [
+        return Inertia::render('Public/Product/Index', [
             'products' => $allProducts
         ]);
     }
@@ -141,7 +141,7 @@ class HomeController extends Controller
             1 => $reviews->where('rating', 1)->count(),
         ];
 
-        return Inertia::render('Public/DetailsProduct', [
+        return Inertia::render('Public/Product/Show', [
             'product' => $product,
             'type' => $type,
             'reviews' => $reviews,
@@ -185,7 +185,7 @@ class HomeController extends Controller
 
         $user = auth()->user();
 
-        return Inertia::render('Public/Services', [
+        return Inertia::render('Public/Service/Index', [
             'services' => $services,
             'auth' => [
                 'user' => $user ? [
@@ -209,7 +209,7 @@ class HomeController extends Controller
 
         $user = auth()->user();
 
-        return Inertia::render('Public/DetailsServices', [
+        return Inertia::render('Public/Service/Show', [
             'service' => $service,
             'auth' => [
                 'user' => $user ? [
