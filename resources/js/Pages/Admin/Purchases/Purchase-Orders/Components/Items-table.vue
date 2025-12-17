@@ -21,11 +21,7 @@
                 <div class="fw-semibold mb-2" style="font-size:20px;color:#2b2f33;">
                   Thêm sản phẩm từ file excel
                 </div>
-                <div class="text-muted mb-3" style="font-size:14px;">
-                  (Tải về file mẫu:
-                  <a href="#" class="ms-1" style="text-decoration:underline;">Excel file</a>)
-                </div>
-                <button type="button" class="btn btn-primary btn-lg" style="border-radius: 5px;" @click="selectFile"
+                <button type="button" class="btn btn-primary btn-lg" style="border-radius: 5px ; background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px;" @click="selectFile"
                   :disabled="isImporting">
                   {{ isImporting ? 'Đang xử lý...' : 'Chọn file dữ liệu' }}
                 </button>

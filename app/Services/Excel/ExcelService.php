@@ -2,17 +2,19 @@
 
 namespace App\Services\Excel;
 
-use Shuchkin\SimpleXLSX; //sử dụng thư viện excel
+use Shuchkin\SimpleXLSX; // sử dụng thư viện excel
 
 class ExcelService
 {
-    //read file excel
+    /**
+     * Đọc file excel và trả về các dòng.
+     */
     public function readRows(string $filePath, array $options = []): array
     {
         $sheetIndex = $options['sheetIndex'] ?? 0;
 
         if ($xlsx = SimpleXLSX::parse($filePath)) {
-            $sheets = $xlsx->sheetNames(); //lấy danh sách sheet có trong file excel
+            $sheets = $xlsx->sheetNames(); // lấy danh sách sheet có trong file excel
             if (!isset($sheets[$sheetIndex])) {
                 throw new \RuntimeException('Sheet index does not exist');
             }
@@ -24,9 +26,13 @@ class ExcelService
         throw new \RuntimeException('Failed to parse Excel file: ' . $error);
     }
 
+    /**
+     * Trích xuất header từ dữ liệu các dòng.
+     */
     public function extractHeader(array $rows): array
     {
         $header = $rows[0] ?? [];
+
         return array_map(function ($value) {
             if (!is_string($value)) {
                 return $value;
@@ -41,13 +47,16 @@ class ExcelService
         }, $header);
     }
 
+    /**
+     * Ghép các row dữ liệu với header (trả về mảng kết hợp).
+     */
     public function combineWithHeader(array $header, array $rows): array
     {
         $dataRows = array_slice($rows, 1);
         $result = [];
 
         foreach ($dataRows as $row) {
-            // Align row size to header length to avoid combine warnings
+            // Căn chỉnh kích thước row với header để tránh lỗi combine
             $row = array_slice(array_pad($row, count($header), null), 0, count($header));
             $assoc = array_combine($header, $row);
             $result[] = $this->normalizeAssocRow($assoc);
@@ -56,6 +65,9 @@ class ExcelService
         return $result;
     }
 
+    /**
+     * Chuẩn hoá giá trị các phần tử trong row (xoá BOM, trim, utf-8, ...).
+     */
     private function normalizeAssocRow(array $row): array
     {
         foreach ($row as $key => $value) {
@@ -72,9 +84,9 @@ class ExcelService
     }
 
     // ===== CÁC METHOD MỚI CHO CẤU TRÚC EXPORT/IMPORT =====
-    
+
     /**
-     * Export dữ liệu ra file Excel
+     * Export dữ liệu ra file Excel.
      */
     public function export(string $type, array $data, string $filename = null)
     {
@@ -83,7 +95,7 @@ class ExcelService
     }
 
     /**
-     * Import dữ liệu từ file Excel
+     * Import dữ liệu từ file Excel.
      */
     public function import(string $type, \Illuminate\Http\UploadedFile $file): array
     {
@@ -92,7 +104,7 @@ class ExcelService
     }
 
     /**
-     * Lấy exporter theo type
+     * Lấy exporter theo type.
      */
     private function getExporter(string $type)
     {
@@ -109,39 +121,39 @@ class ExcelService
     }
 
     /**
-     * Lấy importer theo type
+     * Lấy importer theo type.
      */
     private function getImporter(string $type)
     {
         switch ($type) {
             case 'order':
-                return new \App\Services\Excel\Import\OrderImport(); //nhập đơn hàng
+                return new \App\Services\Excel\Import\OrderImport(); // nhập đơn hàng
             case 'import':
-                return new \App\Services\Excel\Import\StockImportImport(); //nhập hàng
+                return new \App\Services\Excel\Import\StockImportImport(); // nhập hàng
             case 'product':
-                return new \App\Services\Excel\Import\ProductImport(); //nhập sản phẩm
+                return new \App\Services\Excel\Import\ProductImport(); // nhập sản phẩm
             case 'purchase-return':
-                return new \App\Services\Excel\Import\PurchaseReturnImport(); //nhập trả hàng
+                return new \App\Services\Excel\Import\PurchaseReturnImport(); // nhập trả hàng
             default:
                 throw new \InvalidArgumentException("Import type '{$type}' không được hỗ trợ");
         }
     }
 
     /**
-     * Lấy danh sách các loại export/import được hỗ trợ
+     * Lấy danh sách các loại export/import được hỗ trợ.
      */
     public function getSupportedTypes(): array
     {
         return [
-            'order' => 'Đơn hàng',
-            'import' => 'Nhập hàng',
-            'product' => 'Sản phẩm',
+            'order'           => 'Đơn hàng',
+            'import'          => 'Nhập hàng',
+            'product'         => 'Sản phẩm',
             'purchase-return' => 'Trả hàng',
         ];
     }
 
     /**
-     * Validate file Excel
+     * Validate file Excel.
      */
     public function validateFile(\Illuminate\Http\UploadedFile $file): array
     {

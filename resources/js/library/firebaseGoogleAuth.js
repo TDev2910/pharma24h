@@ -84,4 +84,3 @@ class FirebaseGoogleAuthService {
 
 // Export singleton instance
 export default new FirebaseGoogleAuthService();
-

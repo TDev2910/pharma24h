@@ -2,9 +2,8 @@
   <main class="main-content">
     <div class="top-bar">
       <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Tìm theo mã vận đơn..." :value="searchQuery"
-          @input="$emit('update:searchQuery', $event.target.value)">
+        <input type="text" class="form-control" style="border-radius:8px;" placeholder="Tìm theo mã vận đơn..."
+          :value="searchQuery" @input="$emit('update:searchQuery', $event.target.value)">
       </div>
     </div>
 
@@ -15,7 +14,7 @@
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[10, 20, 30, 50]"
         currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} vận đơn" dataKey="id"
-        :loading="loading" stripedRows responsiveLayout="scroll" emptyMessage="Không có vận đơn nào"
+        stripedRows responsiveLayout="scroll" emptyMessage="Không có vận đơn nào"
         tableStyle="min-width: 50rem">
 
         <!-- Mã vận đơn -->
@@ -47,7 +46,7 @@
         </Column>
 
         <!-- Đối tác giao hàng -->
-        <Column field="partner" header="Đối tác giao hàng" style="width: 12%">
+        <Column field="partner" header="Đối tác giao hàng" style="width: 15%">
           <template #body="{ data }">
             <Tag :value="data.partner.toUpperCase()" :severity="data.partner === 'ghn' ? 'info' : 'success'" />
           </template>
@@ -57,13 +56,6 @@
         <Column field="status" header="Trạng thái giao" style="width: 12%">
           <template #body="{ data }">
             <Tag :value="getStatusText(data.status)" :severity="getStatusSeverity(data.status)" />
-          </template>
-        </Column>
-
-        <!-- Thời gian giao hàng -->
-        <Column field="delivery_time" header="Thời gian giao hàng" style="width: 15%">
-          <template #body="{ data }">
-            <span>{{ data.delivery_time || 'Chưa có' }}</span>
           </template>
         </Column>
 

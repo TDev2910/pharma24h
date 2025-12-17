@@ -197,12 +197,8 @@ export default {
   },
 
   mounted() {
-    // Tự động tạo mã khi component mount
-    this.generateCode()
-
-    // Lắng nghe event từ modal payment
-    this.$parent.$on('payment-confirmed', (paymentData) => {
-      this.updatePayment(paymentData)
+    this.$nextTick(() => {
+      this.generateCode()
     })
   }
 }

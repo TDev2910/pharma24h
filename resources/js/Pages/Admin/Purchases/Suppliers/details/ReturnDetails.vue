@@ -1,7 +1,7 @@
 <template>
   <Dialog 
     v-model:visible="dialogVisible" 
-    :header="`Chi tiết phiếu nhập hàng  ${importData?.Code || ''}`" 
+    :header="`Chi tiết phiếu trả hàng  ${importData?.Code || ''}`" 
     :style="{ width: '1100px' , height: '300px' }" 
     :modal="true"
     :closable="true" 

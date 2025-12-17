@@ -356,4 +356,3 @@ class FirebasePhoneAuthService {
 
 // Export singleton instance
 export default new FirebasePhoneAuthService();
-

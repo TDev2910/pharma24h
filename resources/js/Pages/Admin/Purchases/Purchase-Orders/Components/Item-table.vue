@@ -46,7 +46,7 @@
         </Column>
 
         <!-- Empty state template -->
-        <template #empty>
+        <!-- <template #empty>
           <div class="empty-state-container">
             <div class="empty-wrapper">
               <div class="fw-semibold mb-2" style="font-size:20px;color:#2b2f33;">
@@ -62,7 +62,7 @@
               </button>
             </div>
           </div>
-        </template>
+        </template> -->
 
         <!-- Loading template -->
         <template #loading>

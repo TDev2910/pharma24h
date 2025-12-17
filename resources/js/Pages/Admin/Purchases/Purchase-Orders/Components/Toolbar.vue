@@ -184,18 +184,23 @@ export default {
   },
 
   mounted() {
-    // Global keyboard listener cho F3
-    document.addEventListener('keydown', (event) => {
+    // Lưu reference để có thể remove sau
+    this.keydownHandler = (event) => {
       if (event.key === 'F3' && !event.ctrlKey && !event.altKey && !event.metaKey) {
         event.preventDefault()
         this.focusSearch()
       }
-    })
+    }
+    document.addEventListener('keydown', this.keydownHandler)
   },
+
   beforeUnmount() {
     // Cleanup timeout
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout)
+    }
+    if (this.keydownHandler) {
+      document.removeEventListener('keydown', this.keydownHandler)
     }
   }
 }

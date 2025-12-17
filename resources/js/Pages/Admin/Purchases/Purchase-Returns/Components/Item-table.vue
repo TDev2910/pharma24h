@@ -52,10 +52,6 @@
               <div class="fw-semibold mb-2" style="font-size:20px;color:#2b2f33;">
                 Thêm sản phẩm từ file excel
               </div>
-              <div class="text-muted mb-3" style="font-size:14px;">
-                (Tải về file mẫu:
-                <a href="#" class="ms-1" style="text-decoration:underline;">Excel file</a>)
-              </div>
               <button type="button" @click="selectFile" class="btn btn-primary btn-lg"
                 style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;">
                 Chọn file dữ liệu

@@ -73,7 +73,7 @@
       <div class="left-sidebar">
         <div class="filter-section">
           <label>
-            Nhóm hàng
+            Nhóm hàng 
             <a href="#" class="create-link" @click="createCategory">Tạo mới</a>
           </label>
           <div class="category-tree-container">
@@ -105,27 +105,7 @@
             </div>
           </div>
         </div>
-
-        <div class="filter-section">
-          <label>Nhà cung cấp</label>
-          <select class="form-select form-select-sm" v-model="filters.manufacturerId" @change="filterProducts">
-            <option value="">Chọn nhà cung cấp</option>
-            <option v-for="manufacturer in manufacturers" :key="manufacturer.id" :value="manufacturer.id">
-              {{ manufacturer.name }}
-            </option>
-          </select>
-        </div>
-
-        <div class="filter-section">
-          <label>Vị trí</label>
-          <select class="form-select form-select-sm" v-model="filters.positionId" @change="filterProducts">
-            <option value="">Chọn vị trí</option>
-            <option v-for="position in positions" :key="position.id" :value="position.id">
-              {{ position.name }}
-            </option>
-          </select>
-        </div>
-        <!-- test -->
+        <!-- thời gian tạo sản phẩm -->
         <div class="filter-section">
           <h5>Thời gian</h5>
           <div class="radio-options">
@@ -324,16 +304,6 @@
                           </tr>
                         </tbody>
                       </table>
-                    </div>
-
-                    <div class="col-md-6">
-                      <h6 class="text-primary mb-3">
-                        <i class="pi pi-chart-line"></i> Thống kê
-                      </h6>
-                      <div class="text-center text-muted py-4">
-                        <i class="pi pi-chart-bar" style="font-size: 2rem;"></i>
-                        <p class="mt-2">Biểu đồ thống kê tồn kho sẽ được thêm sau</p>
-                      </div>
                     </div>
                   </div>
                 </div>
