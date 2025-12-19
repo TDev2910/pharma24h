@@ -71,53 +71,56 @@
     <div class="main-content">
       <!-- Left Sidebar -->
       <div class="left-sidebar">
-        <div class="filter-section">
-          <label>
-            Nhóm hàng 
-            <a href="#" class="create-link" @click="createCategory">Tạo mới</a>
-          </label>
-          <div class="category-tree-container">
-            <div v-if="loadingCategories" class="category-loading text-center py-3">
-              <i class="pi pi-spinner pi-spin"></i>
-              <small class="text-muted">Đang tải...</small>
+        <div class="filter-card">
+          <div class="filter-header d-flex justify-content-between align-items-center mb-3">
+            <h6 class="m-0 fw-bold text-dark">Nhóm hàng</h6>
+            <button class="btn-create-link" @click="createCategory">
+              Tạo mới
+            </button>
+          </div>
+
+          <div class="category-tree-wrapper">
+            <div v-if="loadingCategories" class="text-center py-4">
+              <i class="pi pi-spinner pi-spin text-primary" style="font-size: 1.5rem"></i>
             </div>
-            <div v-else-if="categoryTreeNodes.length === 0" class="text-center py-3 text-muted">
-              <i class="pi pi-folder-open"></i>
-              <small>Không có nhóm hàng nào</small>
+
+            <div v-else-if="categoryTreeNodes.length === 0" class="text-center py-4 text-muted">
+              <small>Chưa có nhóm hàng</small>
             </div>
+
             <Tree v-else :value="categoryTreeNodes" v-model:selectionKeys="selectedCategoryKeys" selectionMode="single"
               :metaKeySelection="false" @nodeSelect="onCategorySelect" @nodeUnselect="onCategoryUnselect"
-              class="category-tree">
+              class="modern-tree w-full">
               <template #default="slotProps">
-                <div class="category-tree-node">
-                  <span class="category-tree-name">{{ slotProps.node.label }}</span>
-                  <button class="category-tree-edit" @click.stop="editCategory(slotProps.node)" title="Chỉnh sửa">
-                    <i class="pi pi-pencil"></i>
-                  </button>
+                <div class="custom-tree-node">
+                  <span class="node-label">{{ slotProps.node.label }}</span>
+                  <div class="node-actions">
+                    <button class="btn-icon-action edit" @click.stop="editCategory(slotProps.node)" title="Chỉnh sửa">
+                      <i class="pi pi-pencil"></i>
+                    </button>
+                  </div>
                 </div>
               </template>
             </Tree>
-            <div v-if="selectedCategoryName" class="selected-category-info">
-              <small class="text-muted">Đã chọn: <strong>{{ selectedCategoryName }}</strong></small>
-              <button type="button" class="btn-reset-category" @click="resetCategorySelection" title="Xóa lựa chọn">
-                <i class="pi pi-times"></i>
-              </button>
-            </div>
+          </div>
+
+          <div v-if="selectedCategoryName" class="selected-filter-chip mt-3">
+            <span>{{ selectedCategoryName }}</span>
+            <i class="pi pi-times remove-icon" @click="resetCategorySelection" title="Bỏ lọc"></i>
           </div>
         </div>
-        <!-- thời gian tạo sản phẩm -->
-        <div class="filter-section">
-          <h5>Thời gian</h5>
-          <div class="radio-options">
-            <div class="radio-item">
-              <label for="custom">Tùy chỉnh</label>
+
+        <hr class="divider" />
+
+        <div class="filter-card">
+          <h6 class="fw-bold text-dark mb-3">Thời gian</h6>
+          <div class="date-range-wrapper">
+            <div class="d-flex flex-column gap-2">
+              <DatePicker v-model="filters.fromDate" showIcon fluid iconDisplay="input" placeholder="Từ ngày"
+                class="custom-datepicker" />
+              <DatePicker v-model="filters.toDate" showIcon fluid iconDisplay="input" placeholder="Đến ngày"
+                class="custom-datepicker" />
             </div>
-          </div>
-          <div v-if="filters.timeRange === 'thisMonth'" class="date-picker-container d-flex align-items-center"
-            style="gap:8px;">
-            <DatePicker v-model="filters.fromDate" showIcon fluid iconDisplay="input" placeholder="Từ ngày" />
-            <span class="text-muted">→</span>
-            <DatePicker v-model="filters.toDate" showIcon fluid iconDisplay="input" placeholder="Đến ngày" />
           </div>
         </div>
       </div>
@@ -1116,15 +1119,48 @@ export default {
   margin-top: 20px;
 }
 
-/* Left Sidebar */
+/* Sidebar Container */
 .left-sidebar {
-  width: 300px;
+  width: 280px;
   background: #fff;
   border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e9ecef;
+  padding: 24px;
+  /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); */ /* Bỏ shadow nếu muốn phẳng hoàn toàn */
+  border: 1px solid #f1f3f5;
   height: fit-content;
+  flex-shrink: 0;
+}
+
+.filter-card {
+  margin-bottom: 10px;
+}
+
+.divider {
+  border-top: 1px solid #f1f3f5;
+  margin: 20px 0;
+}
+
+/* Header & Link Styles */
+h6 {
+  font-size: 15px;
+  letter-spacing: -0.3px;
+}
+
+.btn-create-link {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.btn-create-link:hover {
+  background-color: #eef6ff;
+  text-decoration: none;
 }
 
 .filter-section {
@@ -1173,6 +1209,121 @@ export default {
   visibility: visible !important;
 }
 
+/* --- MODERN TREE STYLES --- */
+.category-tree-wrapper {
+  /* Tạo thanh cuộn đẹp mắt nếu danh sách dài */
+  max-height: 400px;
+  overflow-y: auto;
+  margin-right: -10px;
+  padding-right: 10px;
+}
+
+/* Scrollbar mỏng */
+.category-tree-wrapper::-webkit-scrollbar {
+  width: 4px;
+}
+.category-tree-wrapper::-webkit-scrollbar-thumb {
+  background-color: #e9ecef;
+  border-radius: 4px;
+}
+
+/* Reset PrimeVue Tree Default Styles */
+:deep(.modern-tree) {
+  border: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+:deep(.modern-tree .p-tree-container) {
+  padding: 0;
+}
+
+/* Style cho từng dòng (Node) */
+:deep(.modern-tree .p-treenode-content) {
+  padding: 8px 10px !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
+  border: 1px solid transparent;
+}
+
+/* Hover Effect */
+:deep(.modern-tree .p-treenode-content:hover) {
+  background-color: #f8f9fa !important;
+  color: #000;
+}
+
+/* Selected/Active State */
+:deep(.modern-tree .p-treenode-content.p-highlight) {
+  background-color: #eef6ff !important; /* Xanh rất nhạt */
+  color: #007bff !important;
+  font-weight: 600;
+}
+
+:deep(.modern-tree .p-treenode-content.p-highlight .p-tree-toggler-icon) {
+   color: #007bff;
+}
+
+/* Toggler Icon (Mũi tên) */
+:deep(.modern-tree .p-tree-toggler) {
+  width: 24px;
+  height: 24px;
+  margin-right: 4px;
+  color: #adb5bd;
+}
+:deep(.modern-tree .p-tree-toggler:hover) {
+  background: transparent;
+  color: #495057;
+}
+
+/* Custom Node Content */
+.custom-tree-node {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 14px;
+}
+
+.node-label {
+  flex: 1;
+  /* Cắt chữ nếu quá dài */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Action Buttons (Edit) - Chỉ hiện khi hover */
+.node-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0; /* Ẩn mặc định */
+  transition: opacity 0.2s;
+}
+
+:deep(.modern-tree .p-treenode-content:hover) .node-actions {
+  opacity: 1; /* Hiện khi hover vào dòng */
+}
+
+.btn-icon-action {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: #fff;
+  border-radius: 4px;
+  color: #6c757d;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+.btn-icon-action:hover {
+  color: #007bff;
+  background: #fff;
+}
+.btn-icon-action.edit i { font-size: 11px; }
+
 .category-tree {
   border: none !important;
   background: transparent !important;
@@ -1189,7 +1340,6 @@ export default {
   margin: 2px 0;
   transition: all 0.2s ease;
 }
-
 
 :deep(.p-tree .p-treenode-content.p-highlight) {
   background-color: #e3f2fd;
@@ -1254,6 +1404,36 @@ export default {
 .btn-reset-category:hover {
   background: #e9ecef;
   color: #dc3545;
+}
+
+/* Chip hiển thị filter đang chọn */
+.selected-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  background-color: #eef6ff;
+  color: #007bff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid #cce5ff;
+}
+
+.selected-filter-chip .remove-icon {
+  margin-left: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.selected-filter-chip .remove-icon:hover {
+  opacity: 1;
+}
+
+/* DatePicker customization */
+:deep(.custom-datepicker .p-inputtext) {
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 6px;
 }
 
 /* Form Selects */

@@ -15,7 +15,7 @@
       <!-- Quick Status Update Section -->
       <div class="status-quick-update mb-4">
         <div class="status-header">
-          <h6 class="fw-bold mb-2">
+          <h6 class="fw-bold mb-2"> 
             <i class="pi pi-info-circle me-2"></i>
             Cập nhật trạng thái nhanh
           </h6>

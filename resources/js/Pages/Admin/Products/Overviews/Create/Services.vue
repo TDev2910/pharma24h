@@ -1,30 +1,17 @@
 <template>
-  <Dialog 
-    :visible="visible" 
-    @update:visible="$emit('close')"
-    header="Tạo dịch vụ" 
-    :style="{ width: '900px' }"
-    modal
-    :closable="true"
-  >
+  <Dialog :visible="visible" @update:visible="$emit('close')" header="Tạo dịch vụ" :style="{ width: '900px' }" modal
+    :closable="true">
     <div class="flex gap-6">
       <!-- Left Section: Form Fields -->
       <div class="form-grid" style="flex: 1;">
         <!-- Tabs -->
         <div class="tabs-container">
           <div class="tabs-header">
-            <button 
-              class="tab-button" 
-              :class="{ active: activeTab === 'info' }"
-              @click="activeTab = 'info'"
-            >
+            <button class="tab-button" :class="{ active: activeTab === 'info' }" @click="activeTab = 'info'">
               Thông tin
             </button>
-            <button 
-              class="tab-button" 
-              :class="{ active: activeTab === 'description' }"
-              @click="activeTab = 'description'"
-            >
+            <button class="tab-button" :class="{ active: activeTab === 'description' }"
+              @click="activeTab = 'description'">
               Mô tả
             </button>
           </div>
@@ -42,59 +29,36 @@
                   <div class="form-field">
                     <label class="field-label">Mã dịch vụ</label>
                     <div class="input-group">
-                      <InputText
-                        v-model="formData.ma_dich_vu"
-                        placeholder="Tự động"
-                        readonly
-                        class="field-input readonly-input"
-                      />
-                      <Button 
-                        label="Tạo mã"
-                        icon="pi pi-refresh"
-                        @click="generateServiceCode"
-                        severity="secondary"
-                        size="small"
-                      />
+                      <InputText v-model="formData.ma_dich_vu" placeholder="Tự động" readonly
+                        class="field-input readonly-input" />
+                      <Button label="Tạo mã" icon="pi pi-refresh" @click="generateServiceCode" severity="secondary"
+                        size="small" />
                     </div>
                   </div>
-                  
+
                   <div class="form-field">
                     <label class="field-label">Nhóm hàng <span class="text-danger">*</span></label>
                     <div class="custom-category-selector" :class="{ 'p-invalid': errors.nhom_hang_id }">
                       <div class="category-input-container" @click="toggleCategoryDropdown">
                         <div class="category-input">
                           <i class="pi pi-search search-icon"></i>
-                          <input 
-                            type="text" 
-                            v-model="categorySearchText"
-                            :placeholder="selectedCategoryName || 'Chọn nhóm hàng (Bắt buộc)'"
-                            readonly
-                            class="category-search-input"
-                          />
+                          <input type="text" v-model="categorySearchText"
+                            :placeholder="selectedCategoryName || 'Chọn nhóm hàng (Bắt buộc)'" readonly
+                            class="category-search-input" />
                           <i class="pi pi-chevron-up dropdown-icon" :class="{ 'rotated': showCategoryDropdown }"></i>
                         </div>
                       </div>
-                      
+
                       <div v-if="showCategoryDropdown" class="category-dropdown">
                         <div class="category-dropdown-content">
-                          <div 
-                            v-for="node in filteredCategoryNodes" 
-                            :key="node.key"
-                            class="category-option"
-                            :class="{ 
-                              'selected': selectedCategoryKeys[node.key],
-                              'has-children': node.children && node.children.length > 0
-                            }"
-                            :style="{ paddingLeft: (getNodeLevel(node) * 20 + 12) + 'px' }"
-                            @click="selectCategory(node)"
-                          >
-                            <i 
-                              v-if="node.children && node.children.length > 0" 
-                              class="pi pi-chevron-right expand-icon"
-                              :class="{ 'expanded': expandedNodes[node.key] }"
-                              @click.stop="toggleNode(node)"
-                              style="cursor: pointer;"
-                            ></i>
+                          <div v-for="node in filteredCategoryNodes" :key="node.key" class="category-option" :class="{
+                            'selected': selectedCategoryKeys[node.key],
+                            'has-children': node.children && node.children.length > 0
+                          }" :style="{ paddingLeft: (getNodeLevel(node) * 20 + 12) + 'px' }"
+                            @click="selectCategory(node)">
+                            <i v-if="node.children && node.children.length > 0" class="pi pi-chevron-right expand-icon"
+                              :class="{ 'expanded': expandedNodes[node.key] }" @click.stop="toggleNode(node)"
+                              style="cursor: pointer;"></i>
                             <span class="category-label">{{ node.label }}</span>
                           </div>
                         </div>
@@ -106,32 +70,21 @@
 
                 <div class="form-field full-width">
                   <label class="field-label">Tên dịch vụ <span class="text-danger">*</span></label>
-                  <InputText
-                    v-model="formData.ten_dich_vu"
-                    placeholder="Nhập tên dịch vụ"
-                    class="field-input"
-                    :class="{ 'p-invalid': errors.ten_dich_vu }"
-                  />
+                  <InputText v-model="formData.ten_dich_vu" placeholder="Nhập tên dịch vụ" class="field-input"
+                    :class="{ 'p-invalid': errors.ten_dich_vu }" />
                   <small v-if="errors.ten_dich_vu" class="p-error">{{ errors.ten_dich_vu[0] }}</small>
                 </div>
 
                 <div class="form-field full-width">
                   <label class="field-label">Bác sĩ đảm nhận dịch vụ <span class="text-danger">*</span></label>
-                  <Dropdown
-                    v-model="formData.doctor_id"
-                    :options="doctorOptions"
-                    optionLabel="name"
-                    optionValue="id"
-                    placeholder="-- Chọn bác sĩ --"
-                    class="field-input"
-                    :class="{ 'p-invalid': errors.doctor_id }"
-                    showClear
-                    filter
-                  >
+                  <Dropdown v-model="formData.doctor_id" :options="doctorOptions" optionLabel="name" optionValue="id"
+                    placeholder="-- Chọn bác sĩ --" class="field-input" :class="{ 'p-invalid': errors.doctor_id }"
+                    showClear filter>
                     <template #option="slotProps">
                       <div>
                         <div>{{ slotProps.option.name }}</div>
-                        <small class="text-muted">{{ slotProps.option.doctor_code }} - {{ slotProps.option.specialty }}</small>
+                        <small class="text-muted">{{ slotProps.option.doctor_code }} - {{ slotProps.option.specialty
+                          }}</small>
                       </div>
                     </template>
                   </Dropdown>
@@ -142,26 +95,16 @@
                 <div class="form-row">
                   <div class="form-field">
                     <label class="field-label">Hình thức dịch vụ <span class="text-danger">*</span></label>
-                    <Dropdown
-                      v-model="formData.hinh_thuc"
-                      :options="serviceTypes"
-                      optionLabel="label"
-                      optionValue="value"
-                      placeholder="Chọn hình thức"
-                      class="field-input"
-                      :class="{ 'p-invalid': errors.hinh_thuc }"
-                    />
+                    <Dropdown v-model="formData.hinh_thuc" :options="serviceTypes" optionLabel="label"
+                      optionValue="value" placeholder="Chọn hình thức" class="field-input"
+                      :class="{ 'p-invalid': errors.hinh_thuc }" />
                     <small v-if="errors.hinh_thuc" class="p-error">{{ errors.hinh_thuc[0] }}</small>
                   </div>
-                  
+
                   <div class="form-field">
                     <label class="field-label">Thời gian thực hiện (phút)</label>
-                    <InputNumber
-                      v-model="formData.thoi_gian_thuc_hien"
-                      placeholder="VD: 30"
-                      :min="1"
-                      class="field-input"
-                    />
+                    <InputNumber v-model="formData.thoi_gian_thuc_hien" placeholder="VD: 30" :min="1"
+                      class="field-input" />
                   </div>
                 </div>
 
@@ -169,44 +112,26 @@
                   <div class="form-field">
                     <label class="field-label">Chi phí thực hiện <span class="text-danger">*</span></label>
                     <div class="form-field">
-                    <InputNumber
-                      v-model="formData.gia_dich_vu"
-                      mode="currency"
-                      currency="VND"
-                      locale="vi-VN"
-                      class="price-input"
-                      :class="{ 'p-invalid': errors.gia_dich_vu }"
-                    />
-                  </div>
+                      <InputNumber v-model="formData.gia_dich_vu" mode="currency" currency="VND" locale="vi-VN"
+                        class="price-input" :class="{ 'p-invalid': errors.gia_dich_vu }" />
+                    </div>
                     <small v-if="errors.gia_dich_vu" class="p-error">{{ errors.gia_dich_vu[0] }}</small>
                   </div>
-                  
+
                   <div class="form-field">
                     <label class="field-label">Trạng thái <span class="text-danger">*</span></label>
-                    <Dropdown
-                      v-model="formData.trang_thai"
-                      :options="statusOptions"
-                      optionLabel="label"
-                      optionValue="value"
-                      placeholder="Chọn trạng thái"
-                      class="field-input"
-                      :class="{ 'p-invalid': errors.trang_thai }"
-                    />
+                    <Dropdown v-model="formData.trang_thai" :options="statusOptions" optionLabel="label"
+                      optionValue="value" placeholder="Chọn trạng thái" class="field-input"
+                      :class="{ 'p-invalid': errors.trang_thai }" />
                     <small v-if="errors.trang_thai" class="p-error">{{ errors.trang_thai[0] }}</small>
                   </div>
                 </div>
               </div>
-              
+
               <!-- Right Section: Image Upload -->
               <div class="image-section">
                 <div class="image-upload-container" @click="triggerFileInput">
-                  <input 
-                    type="file" 
-                    ref="fileInput"
-                    accept="image/*" 
-                    @change="handleImageChange"
-                    style="display: none"
-                  >
+                  <input type="file" ref="fileInput" accept="image/*" @change="handleImageChange" style="display: none">
                   <div v-if="!imagePreview" class="image-placeholder">
                     <i class="pi pi-image"></i>
                     <div class="upload-text">Thêm ảnh dịch vụ</div>
@@ -221,19 +146,14 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Tab Mô tả -->
         <div v-if="activeTab === 'description'" class="tab-content">
           <div class="form-section">
             <div class="form-field full-width">
               <label class="field-label">Mô tả dịch vụ</label>
-              <Editor
-                v-model="formData.mo_ta"
-                editorStyle="height: 320px"
-                placeholder="Nhập mô tả sản phẩm"
-                class="field-editor"
-                :class="{ 'p-invalid': errors.mo_ta }"
-              />
+              <Editor v-model="formData.mo_ta" editorStyle="height: 320px" placeholder="Nhập mô tả sản phẩm"
+                class="field-editor" :class="{ 'p-invalid': errors.mo_ta }" />
               <small v-if="errors.mo_ta" class="p-error">{{ errors.mo_ta[0] }}</small>
             </div>
           </div>
@@ -243,28 +163,16 @@
 
     <template #footer>
       <div class="flex justify-content-end gap-2">
-        <Button 
-          type="button"
-          label="Hủy" 
-          icon="pi pi-times" 
-          @click="$emit('close')" 
-          severity="secondary" 
-        />
-        <Button 
-          type="button"
-          label="Lưu dịch vụ" 
-          icon="pi pi-check" 
-          @click="submitForm" 
-          :loading="loading"
-          :disabled="loading"
-        />
-    </div>
+        <Button type="button" label="Hủy" icon="pi pi-times" @click="$emit('close')" severity="secondary" />
+        <Button type="button" label="Lưu dịch vụ" icon="pi pi-check" @click="submitForm" :loading="loading"
+          :disabled="loading" />
+      </div>
     </template>
   </Dialog>
-<Toast />
+  <Toast />
 </template>
-  
-  <script>
+
+<script>
 import axios from 'axios'
 import Editor from 'primevue/editor'
 import Dialog from 'primevue/dialog'
@@ -276,7 +184,7 @@ import Toast from 'primevue/toast'
 import TreeSelect from 'primevue/treeselect'
 import Textarea from 'primevue/textarea'
 
-  export default {
+export default {
   name: 'CreateService',
   components: {
     Dialog,
@@ -337,7 +245,7 @@ import Textarea from 'primevue/textarea'
     await this.loadDoctors()
     document.addEventListener('click', this.handleClickOutside)
   },
-  
+
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside)
   },
@@ -350,7 +258,7 @@ import Textarea from 'primevue/textarea'
     triggerFileInput() {
       this.$refs.fileInput.click()
     },
-    
+
     handleImageChange(event) {
       const file = event.target.files[0]
       if (file) {
@@ -359,9 +267,9 @@ import Textarea from 'primevue/textarea'
           alert('Kích thước file không được vượt quá 2MB')
           return
         }
-        
+
         this.formData.image = file
-        
+
         // Create preview
         const reader = new FileReader()
         reader.onload = (e) => {
@@ -384,7 +292,7 @@ import Textarea from 'primevue/textarea'
       this.selectedCategoryKeys = { [node.key]: true }
       this.showCategoryDropdown = false
       this.categorySearchText = ''
-      
+
       // Clear any existing errors
       if (this.errors.nhom_hang_id) {
         delete this.errors.nhom_hang_id
@@ -394,16 +302,16 @@ import Textarea from 'primevue/textarea'
     toggleNode(node) {
       // Toggle expanded state in reactive object (Vue 3 way)
       this.expandedNodes[node.key] = !this.expandedNodes[node.key]
-      
+
       // Update filtered nodes
       this.updateFilteredNodes()
     },
-    
-    
+
+
     updateFilteredNodes() {
       this.filteredCategoryNodes = this.flattenTreeNodes(this.categoryTreeNodes)
     },
-    
+
     getNodeLevel(node) {
       return node.level || 0
     },
@@ -419,14 +327,14 @@ import Textarea from 'primevue/textarea'
       })
       return result
     },
-    
-     handleClickOutside(event) {
-       // Sử dụng document.querySelector thay vì this.$el.querySelector
-       const categorySelector = document.querySelector('.custom-category-selector')
-       if (categorySelector && !categorySelector.contains(event.target)) {
-         this.showCategoryDropdown = false
-       }
-     },
+
+    handleClickOutside(event) {
+      // Sử dụng document.querySelector thay vì this.$el.querySelector
+      const categorySelector = document.querySelector('.custom-category-selector')
+      if (categorySelector && !categorySelector.contains(event.target)) {
+        this.showCategoryDropdown = false
+      }
+    },
     //tạo mã dịch vụ random 6 số
     generateServiceCode() {
       // Generate service code logic
@@ -434,7 +342,7 @@ import Textarea from 'primevue/textarea'
       this.formData.ma_dich_vu = `DV${timestamp}`
     },
 
-    
+
     async submitForm(event) {
       // Chặn submit mặc định
       if (event) {
@@ -443,10 +351,10 @@ import Textarea from 'primevue/textarea'
       }
       this.loading = true
       this.errors = {}
-      
+
       try {
         const formData = new FormData()
-        
+
         // Add form data
         Object.keys(this.formData).forEach(key => {
           if (key === 'image' && this.formData[key]) {
@@ -455,30 +363,30 @@ import Textarea from 'primevue/textarea'
             formData.append(key, this.formData[key])
           }
         })
-               
+
         const response = await axios.post('/admin/services', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             'X-Requested-With': 'XMLHttpRequest'
           }
         })
-        
-        
+
+
         if (response.data.success) {
           // Thêm toast notification
           this.$toast.add({
             severity: 'success',
-            summary: 'Thành công', 
+            summary: 'Thành công',
             detail: response.data.message,
             life: 3000
           })
-          
+
           this.$emit('created', response.data.data)
           this.closeModal() // ← Gọi method closeModal() thay vì gọi trực tiếp
-        }       
+        }
       } catch (error) {
         console.error('Error creating service:', error)
-        
+
         if (error.response?.data?.errors) {
           this.errors = error.response.data.errors
         } else if (error.response?.data?.message) {
@@ -490,7 +398,7 @@ import Textarea from 'primevue/textarea'
         this.loading = false
       }
     },
-    
+
     resetForm() {
       this.formData = {
         ma_dich_vu: '',
@@ -514,7 +422,7 @@ import Textarea from 'primevue/textarea'
       this.showCategoryDropdown = false
       this.categorySearchText = ''
     },
-    
+
     async loadCategories() {
       try {
         const response = await axios.get('/admin/categories/modal/data')
@@ -555,7 +463,7 @@ import Textarea from 'primevue/textarea'
       }))
     }
   },
-  
+
   watch: {
     visible(newVal) {
       if (newVal) {
@@ -566,7 +474,7 @@ import Textarea from 'primevue/textarea'
   }
 }
 </script>
-  
+
 <style scoped>
 /* Form Layout */
 .form-grid {
@@ -676,8 +584,15 @@ import Textarea from 'primevue/textarea'
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Image Upload */
@@ -773,26 +688,26 @@ import Textarea from 'primevue/textarea'
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .image-section {
     align-items: center;
     padding-top: 0;
   }
-  
+
   .image-upload-container {
     width: 150px;
     height: 150px;
   }
-  
+
   .tabs-header {
     flex-direction: column;
   }
-  
+
   .tab-button {
     text-align: left;
     border-bottom: 1px solid #e9ecef;
   }
-  
+
   .tab-button.active {
     border-bottom-color: #007bff;
   }

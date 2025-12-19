@@ -1,30 +1,17 @@
 <template>
-   <Dialog 
-     :visible="visible" 
-     @update:visible="$emit('close')"
-     header="Tạo thuốc" 
-     :style="{ width: '900px' }"
-     modal
-     :closable="true"
-   >
+  <Dialog :visible="visible" @update:visible="$emit('close')" header="Tạo thuốc" :style="{ width: '900px' }" modal
+    :closable="true">
     <div class="flex gap-6">
       <!-- Left Section: Form Fields -->
       <div class="form-grid" style="flex: 1;">
         <!-- Tabs -->
         <div class="tabs-container">
           <div class="tabs-header">
-            <button 
-              class="tab-button" 
-              :class="{ active: activeTab === 'info' }"
-              @click="activeTab = 'info'"
-            >
+            <button class="tab-button" :class="{ active: activeTab === 'info' }" @click="activeTab = 'info'">
               Thông tin
             </button>
-            <button 
-              class="tab-button" 
-              :class="{ active: activeTab === 'description' }"
-              @click="activeTab = 'description'"
-            >
+            <button class="tab-button" :class="{ active: activeTab === 'description' }"
+              @click="activeTab = 'description'">
               Mô tả
             </button>
           </div>
@@ -42,104 +29,45 @@
                   <div class="form-field">
                     <label class="field-label">Mã hàng</label>
                     <div class="input-group">
-                      <InputText
-                        v-model="formData.ma_hang"
-                        placeholder="Tự động"
-                        readonly
-                        class="field-input readonly-input"
-                      />
-                      <Button 
-                        label="Tạo mã"
-                        icon="pi pi-refresh"
-                        @click="generateMedicineCode"
-                        severity="secondary"
-                        size="small"
-                      />
+                      <InputText v-model="formData.ma_hang" placeholder="Tự động" readonly
+                        class="field-input readonly-input" />
+                      <Button label="Tạo mã" icon="pi pi-refresh" @click="generateMedicineCode" severity="secondary"
+                        size="small" />
                     </div>
                   </div>
-                  
+
                   <div class="form-field">
                     <label class="field-label">Mã vạch</label>
                     <div class="input-group">
-                      <InputText
-                        v-model="formData.ma_vach"
-                        placeholder="Tự động"
-                        readonly
-                        class="field-input readonly-input"
-                      />
-                      <Button 
-                        label="Tạo mã"
-                        icon="pi pi-refresh"
-                        @click="generateMedicineBarcode"
-                        severity="secondary"
-                        size="small"
-                      />
+                      <InputText v-model="formData.ma_vach" placeholder="Tự động" readonly
+                        class="field-input readonly-input" />
+                      <Button label="Tạo mã" icon="pi pi-refresh" @click="generateMedicineBarcode" severity="secondary"
+                        size="small" />
                     </div>
                   </div>
                 </div>
 
                 <div class="form-field full-width">
                   <label class="field-label">Tên thuốc <span class="text-danger">*</span></label>
-                  <InputText
-                    v-model="formData.ten_thuoc"
-                    placeholder="Nhập tên thuốc"
-                    class="field-input"
-                    :class="{ 'p-invalid': errors.ten_thuoc }"
-                  />
+                  <InputText v-model="formData.ten_thuoc" placeholder="Nhập tên thuốc" class="field-input"
+                    :class="{ 'p-invalid': errors.ten_thuoc }" />
                   <small v-if="errors.ten_thuoc" class="p-error">{{ errors.ten_thuoc[0] }}</small>
                 </div>
 
                 <div class="form-row">
                   <div class="form-field">
                     <label class="field-label">Tên viết tắt</label>
-                    <InputText
-                      v-model="formData.ten_viet_tat"
-                      placeholder="Nhập tên viết tắt"
-                      class="field-input" style="width: 240px;"
-                    />
+                    <InputText v-model="formData.ten_viet_tat" placeholder="Nhập tên viết tắt" class="field-input"
+                      style="width: 240px;" />
                   </div>
-                  
+
                   <div class="form-field">
                     <label class="field-label">Nhóm hàng <span class="text-danger">*</span></label>
-                    <div class="custom-category-selector" :class="{ 'p-invalid': errors.nhom_hang_id }">
-                      <div class="category-input-container" @click="toggleCategoryDropdown">
-                        <div class="category-input">
-                          <i class="pi pi-search search-icon"></i>
-                          <input 
-                            type="text" 
-                            v-model="categorySearchText"
-                            :placeholder="selectedCategoryName || 'Chọn nhóm hàng (Bắt buộc)'"
-                            readonly
-                            class="category-input-field" style="width: 260px;"
-                          />
-                          <i class="pi pi-chevron-up dropdown-icon" :class="{ 'rotated': showCategoryDropdown }"></i>
-                        </div>
-                      </div>
-                      
-                      <div v-if="showCategoryDropdown" class="category-dropdown">
-                        <div class="category-dropdown-content">
-                          <div 
-                            v-for="node in filteredCategoryNodes" 
-                            :key="node.key"
-                            class="category-option"
-                            :class="{ 
-                              'selected': selectedCategoryKeys[node.key],
-                              'has-children': node.children && node.children.length > 0
-                            }"
-                            :style="{ paddingLeft: (getNodeLevel(node) * 20 + 12) + 'px' }"
-                            @click="selectCategory(node)"
-                          >
-                            <i 
-                              v-if="node.children && node.children.length > 0" 
-                              class="pi pi-chevron-right expand-icon"
-                              :class="{ 'expanded': node.expanded }"
-                              @click.stop="toggleNode(node)"
-                            ></i>
-                            <span class="category-label">{{ node.label }}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    
+                    <TreeSelect v-model="selectedCategoryKey" :options="categoryTreeNodes" placeholder="Chọn nhóm hàng"
+                      class="modern-treeselect w-full" :class="{ 'p-invalid': errors.nhom_hang_id }"
+                      selectionMode="single" @change="onCategoryChange" />
+                    
                     <small v-if="errors.nhom_hang_id" class="p-error">{{ errors.nhom_hang_id[0] }}</small>
                   </div>
                 </div>
@@ -156,17 +84,11 @@
                       <span class="badge">Tối đa 2MB</span>
                     </div>
                   </div>
-                  
+
                   <div v-if="imagePreview" class="image-preview-content">
                     <img :src="imagePreview" alt="Preview" class="preview-image" />
                     <div class="image-overlay">
-                      <Button 
-                        label="Xóa" 
-                        @click.stop="removeImage" 
-                        size="small" 
-                        severity="danger"
-                        class="remove-btn"
-                      />
+                      <Button label="Xóa" @click.stop="removeImage" size="small" severity="danger" class="remove-btn" />
                     </div>
                   </div>
                 </div>
@@ -180,68 +102,44 @@
             <div class="form-row">
               <div class="form-field">
                 <label class="field-label">Giá vốn <span class="text-danger">*</span></label>
-                <InputNumber
-                  v-model="formData.gia_von"
-                  mode="currency"
-                  currency="VND"
-                  locale="vi-VN"
-                  class="price-input"
-                  :class="{ 'p-invalid': errors.gia_von }"
-                />
+                <InputNumber v-model="formData.gia_von" mode="currency" currency="VND" locale="vi-VN"
+                  class="price-input" :class="{ 'p-invalid': errors.gia_von }" />
               </div>
-              
+
               <div class="form-field">
                 <label class="field-label">Giá bán <span class="text-danger">*</span></label>
                 <div class="input-group">
-                  <InputNumber
-                    v-model="formData.gia_ban"
-                    mode="currency"
-                    currency="VND"
-                    locale="vi-VN"
-                    class="price-input"
-                    :class="{ 'p-invalid': errors.gia_ban }"
-                  />
+                  <InputNumber v-model="formData.gia_ban" mode="currency" currency="VND" locale="vi-VN"
+                    class="price-input" :class="{ 'p-invalid': errors.gia_ban }" />
                 </div>
               </div>
             </div>
           </fieldset>
 
           <!-- Thông tin thuốc -->
-          <div class="form-section" style="margin-top: 20px;" >
+          <div class="form-section" style="margin-top: 20px;">
             <div class="section-header">
               <span class="section-title">Thông tin thuốc</span>
             </div>
             <div class="form-row three-columns">
               <div class="form-field">
                 <label class="field-label">Số đăng ký <span class="text-danger">*</span></label>
-                <InputText
-                  v-model="formData.so_dang_ky"
-                  placeholder="Bắt buộc"
-                  class="field-input"
-                  :class="{ 'p-invalid': errors.so_dang_ky }"
-                />
+                <InputText v-model="formData.so_dang_ky" placeholder="Bắt buộc" class="field-input"
+                  :class="{ 'p-invalid': errors.so_dang_ky }" />
                 <small v-if="errors.so_dang_ky" class="p-error">{{ errors.so_dang_ky[0] }}</small>
               </div>
-              
+
               <div class="form-field">
-                <label class="field-label">Hoạt chất <span class="text-danger">*</span></label> 
-                <InputText
-                  v-model="formData.hoat_chat"
-                  placeholder="Bắt buộc"
-                  class="field-input"
-                  :class="{ 'p-invalid': errors.hoat_chat }"
-                />
+                <label class="field-label">Hoạt chất <span class="text-danger">*</span></label>
+                <InputText v-model="formData.hoat_chat" placeholder="Bắt buộc" class="field-input"
+                  :class="{ 'p-invalid': errors.hoat_chat }" />
                 <small v-if="errors.hoat_chat" class="p-error">{{ errors.hoat_chat[0] }}</small>
               </div>
-                          
+
               <div class="form-field">
                 <label class="field-label">Hàm lượng <span class="text-danger">*</span></label>
-                <InputText
-                  v-model="formData.ham_luong"
-                  placeholder="Bắt buộc"
-                  class="field-input"
-                  :class="{ 'p-invalid': errors.ham_luong }"
-                />
+                <InputText v-model="formData.ham_luong" placeholder="Bắt buộc" class="field-input"
+                  :class="{ 'p-invalid': errors.ham_luong }" />
                 <small v-if="errors.ham_luong" class="p-error">{{ errors.ham_luong[0] }}</small>
               </div>
             </div>
@@ -250,46 +148,24 @@
               <div class="form-field">
                 <label class="field-label">Đường dùng <span class="text-danger">*</span></label>
                 <div class="input-group">
-                  <Dropdown
-                    v-model="formData.drugusage_id"
-                    :options="drugRouteOptions"
-                    optionLabel="name"
-                    optionValue="id"
-                    placeholder="Bắt buộc"
-                    class="field-input"
-                    :class="{ 'p-invalid': errors.drugusage_id }"
-                  />
-                  <Button 
-                    icon="pi pi-cog"
-                    @click="openDrugRouteModal"
-                    severity="secondary"
-                    size="small"
-                    title="Quản lý"
-                  />
+                  <Dropdown v-model="formData.drugusage_id" :options="drugRouteOptions" optionLabel="name"
+                    optionValue="id" placeholder="Bắt buộc" class="field-input"
+                    :class="{ 'p-invalid': errors.drugusage_id }" />
+                  <Button icon="pi pi-cog" @click="openDrugRouteModal" severity="secondary" size="small"
+                    title="Quản lý" />
                 </div>
                 <small class="text-muted">Thêm/Sửa/Xóa thực hiện trong cửa sổ quản lý.</small>
                 <small v-if="errors.drugusage_id" class="p-error">{{ errors.drugusage_id[0] }}</small>
               </div>
-              
+
               <div class="form-field">
                 <label class="field-label">Hãng sản xuất <span class="text-danger">*</span></label>
                 <div class="input-group">
-                  <Dropdown
-                    v-model="formData.manufacturer_id"
-                    :options="manufacturerOptions"
-                    optionLabel="name"
-                    optionValue="id"
-                    placeholder="Tìm hãng sản xuất"
-                    class="field-input"
-                    :class="{ 'p-invalid': errors.manufacturer_id }"
-                  />
-                  <Button 
-                    icon="pi pi-cog"
-                    @click="openManufacturerModal"
-                    severity="secondary"
-                    size="small"
-                    title="Quản lý"
-                  />
+                  <Dropdown v-model="formData.manufacturer_id" :options="manufacturerOptions" optionLabel="name"
+                    optionValue="id" placeholder="Tìm hãng sản xuất" class="field-input"
+                    :class="{ 'p-invalid': errors.manufacturer_id }" />
+                  <Button icon="pi pi-cog" @click="openManufacturerModal" severity="secondary" size="small"
+                    title="Quản lý" />
                 </div>
                 <small class="text-muted">Thêm/Sửa/Xóa thực hiện trong cửa sổ quản lý.</small>
                 <small v-if="errors.manufacturer_id" class="p-error">{{ errors.manufacturer_id[0] }}</small>
@@ -299,22 +175,14 @@
             <div class="form-row">
               <div class="form-field">
                 <label class="field-label">Quy cách đóng gói <span class="text-danger">*</span></label>
-                <InputText
-                  v-model="formData.quy_cach_dong_goi"
-                  placeholder="Bắt buộc"
-                  class="field-input"
-                  :class="{ 'p-invalid': errors.quy_cach_dong_goi }"
-                />
+                <InputText v-model="formData.quy_cach_dong_goi" placeholder="Bắt buộc" class="field-input"
+                  :class="{ 'p-invalid': errors.quy_cach_dong_goi }" />
                 <small v-if="errors.quy_cach_dong_goi" class="p-error">{{ errors.quy_cach_dong_goi[0] }}</small>
               </div>
-              
+
               <div class="form-field">
                 <label class="field-label">Nước sản xuất</label>
-                <InputText
-                  v-model="formData.nuoc_san_xuat"
-                  placeholder="Tìm nước sản xuất"
-                  class="field-input"
-                />
+                <InputText v-model="formData.nuoc_san_xuat" placeholder="Tìm nước sản xuất" class="field-input" />
               </div>
             </div>
           </div>
@@ -325,32 +193,19 @@
             <div class="form-row three-columns">
               <div class="form-field">
                 <label class="field-label">Tồn kho</label>
-                <InputText
-                  v-model="formData.ton_kho"
-                  placeholder="0"
-                  readonly
-                  class="field-input readonly-input"
-                />
+                <InputText v-model="formData.ton_kho" placeholder="0" readonly class="field-input readonly-input" />
                 <small class="text-muted">Số lượng hiện có trong kho</small>
               </div>
-              
+
               <div class="form-field">
                 <label class="field-label">Định mức tồn thấp nhất</label>
-                <InputText
-                  v-model="formData.ton_thap_nhat"
-                  placeholder="Nhập số lượng"
-                  class="field-input"
-                />
+                <InputText v-model="formData.ton_thap_nhat" placeholder="Nhập số lượng" class="field-input" />
                 <small class="text-muted">Cảnh báo khi ≤ số này</small>
               </div>
-              
+
               <div class="form-field">
                 <label class="field-label">Định mức tồn cao nhất</label>
-                <InputText
-                  v-model="formData.ton_cao_nhat"
-                  placeholder="Nhập số lượng"
-                  class="field-input"
-                />
+                <InputText v-model="formData.ton_cao_nhat" placeholder="Nhập số lượng" class="field-input" />
                 <small class="text-muted">Cảnh báo khi ≥ số này</small>
               </div>
             </div>
@@ -365,40 +220,23 @@
               <div class="form-field">
                 <label class="field-label">Vị trí <span class="text-danger">*</span></label>
                 <div class="input-group">
-                  <Dropdown
-                    v-model="formData.position_id"
-                    :options="positionOptions"
-                    optionLabel="name"
-                    optionValue="id"
-                    placeholder="Chọn vị trí"
-                    class="field-input"
-                    :class="{ 'p-invalid': errors.position_id }"
-                  />
-                  <Button 
-                    icon="pi pi-cog"
-                    @click="openPositionModal"
-                    severity="secondary"
-                    size="small"
-                    title="Quản lý"
-                  />
+                  <Dropdown v-model="formData.position_id" :options="positionOptions" optionLabel="name"
+                    optionValue="id" placeholder="Chọn vị trí" class="field-input"
+                    :class="{ 'p-invalid': errors.position_id }" />
+                  <Button icon="pi pi-cog" @click="openPositionModal" severity="secondary" size="small"
+                    title="Quản lý" />
                 </div>
                 <small class="text-muted">Thêm/Sửa/Xóa thực hiện trong cửa sổ quản lý.</small>
                 <small v-if="errors.position_id" class="p-error">{{ errors.position_id[0] }}</small>
               </div>
-              
+
               <div class="form-field">
                 <label class="field-label">Trọng lượng</label>
                 <div style="display: flex; align-items: center; max-width: 350px;">
-                  <InputText
-                    v-model="formData.trong_luong"
-                    :min="0"
-                    class="field-input"
-                    style="flex: 1 1 0; border-top-right-radius: 0; border-bottom-right-radius: 0;"
-                  />
-                  <span
-                    class="input-group-text"
-                    style="background: #f6f7f9; border: 1px solid #ced4da; border-left: none; border-radius: 0 6px 6px 0; padding: 0 14px; font-size: 14px; height: 38px; display: flex; align-items: center;"
-                  >g</span>
+                  <InputText v-model="formData.trong_luong" :min="0" class="field-input"
+                    style="flex: 1 1 0; border-top-right-radius: 0; border-bottom-right-radius: 0;" />
+                  <span class="input-group-text"
+                    style="background: #f6f7f9; border: 1px solid #ced4da; border-left: none; border-radius: 0 6px 6px 0; padding: 0 14px; font-size: 14px; height: 38px; display: flex; align-items: center;">g</span>
                 </div>
               </div>
             </div>
@@ -411,20 +249,11 @@
             </div>
             <div class="form-row">
               <div class="form-field">
-                <InputText
-                  v-model="formData.don_vi_tinh"
-                  placeholder="Nhập đơn vị tính"
-                  readonly
-                  class="field-input readonly-input"
-                />
+                <InputText v-model="formData.don_vi_tinh" placeholder="Nhập đơn vị tính" readonly
+                  class="field-input readonly-input" />
               </div>
               <div class="form-field">
-                <Button 
-                  label="Thiết lập"
-                  @click="openUnitModal"
-                  severity="secondary"
-                  class="w-full"
-                />
+                <Button label="Thiết lập" @click="openUnitModal" severity="secondary" class="w-full" />
               </div>
             </div>
           </div>
@@ -432,11 +261,7 @@
           <!-- Bán trực tiếp -->
           <div class="form-section">
             <div class="checkbox-field">
-              <Checkbox
-                v-model="formData.ban_truc_tiep"
-                :binary="true"
-                inputId="ban_truc_tiep"
-              />
+              <Checkbox v-model="formData.ban_truc_tiep" :binary="true" inputId="ban_truc_tiep" />
               <label for="ban_truc_tiep" class="checkbox-label">Bán trực tiếp</label>
             </div>
           </div>
@@ -447,13 +272,8 @@
           <div class="form-section">
             <div class="form-field full-width">
               <label class="field-label">Mô tả sản phẩm</label>
-              <Editor
-                v-model="formData.mo_ta"
-                editorStyle="height: 320px"
-                placeholder="Nhập mô tả sản phẩm"
-                class="field-editor"
-                :class="{ 'p-invalid': errors.mo_ta }"
-              />
+              <Editor v-model="formData.mo_ta" editorStyle="height: 320px" placeholder="Nhập mô tả sản phẩm"
+                class="field-editor" :class="{ 'p-invalid': errors.mo_ta }" />
               <small v-if="errors.mo_ta" class="p-error">{{ errors.mo_ta[0] }}</small>
             </div>
           </div>
@@ -462,35 +282,19 @@
     </div>
 
     <!-- Unit of Calculation Modal -->
-    <UnitOfCalculation 
-      :visible="showUnitModal"
-      @close="showUnitModal = false"
-      @saved="onUnitSaved"
-    />
+    <UnitOfCalculation :visible="showUnitModal" @close="showUnitModal = false" @saved="onUnitSaved" />
 
     <!-- Drug Route Modal -->
-    <ModalUsageRoute 
-      :visible="showDrugRouteModal"
-      @close="showDrugRouteModal = false"
-      @drug-route-added="onDrugRouteUpdated" 
-      @drug-route-updated="onDrugRouteUpdated"
-    />
+    <ModalUsageRoute :visible="showDrugRouteModal" @close="showDrugRouteModal = false"
+      @drug-route-added="onDrugRouteUpdated" @drug-route-updated="onDrugRouteUpdated" />
 
     <!-- Manufacturer Modal -->
-    <ModalManufacturer 
-      :visible="showManufacturerModal"
-      @close="showManufacturerModal = false"
-      @manufacturer-added="onManufacturerUpdated"
-      @manufacturer-updated="onManufacturerUpdated"
-    />
+    <ModalManufacturer :visible="showManufacturerModal" @close="showManufacturerModal = false"
+      @manufacturer-added="onManufacturerUpdated" @manufacturer-updated="onManufacturerUpdated" />
 
     <!-- Position Modal -->
-    <ModalPosition 
-      :visible="showPositionModal"
-      @close="showPositionModal = false"
-      @position-added="onPositionUpdated"
-      @position-updated="onPositionUpdated"
-    />
+    <ModalPosition :visible="showPositionModal" @close="showPositionModal = false" @position-added="onPositionUpdated"
+      @position-updated="onPositionUpdated" />
 
     <!-- Thông báo lỗi -->
     <div v-if="Object.keys(errors).length > 0" class="error-messages">
@@ -504,24 +308,14 @@
 
     <template #footer>
       <div class="flex justify-end gap-2">
-        <Button 
-          type="button" 
-          label="Hủy" 
-          severity="secondary" 
-          @click="closeModal"
-        />
-        <Button 
-          type="button" 
-          label="Lưu thuốc" 
-          @click="saveMedicine"
-          :loading="loading"
-        />
+        <Button type="button" label="Hủy" severity="secondary" @click="closeModal" />
+        <Button type="button" label="Lưu thuốc" @click="saveMedicine" :loading="loading" />
       </div>
     </template>
   </Dialog>
   <Toast />
 </template>
-  
+
 <script>
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
@@ -537,9 +331,10 @@ import UnitOfCalculation from '../Modals/UnitofCalculation.vue'
 import ModalUsageRoute from '../Modals/Catalogs/ModalCatalogUsageRoute.vue'
 import ModalManufacturer from '../Modals/Catalogs/ModalCatalogManufacturer.vue'
 import ModalPosition from '../Modals/Catalogs/ModalCatalogPosition.vue'
+import TreeSelect from 'primevue/treeselect'
 import axios from 'axios'
 
-  export default {
+export default {
   name: 'CreateMedicineModal',
   components: {
     Dialog,
@@ -551,6 +346,7 @@ import axios from 'axios'
     Checkbox,
     Editor,
     Tree,
+    TreeSelect,
     Toast,
     UnitOfCalculation,
     ModalUsageRoute,
@@ -597,6 +393,7 @@ import axios from 'axios'
       imagePreview: null,
       categoryOptions: [],
       categoryTreeNodes: [],
+      selectedCategoryKey: null,
       selectedCategoryKeys: {},
       selectedCategoryName: '',
       showCategoryDropdown: false,
@@ -616,48 +413,64 @@ import axios from 'axios'
       if (newVal) {
         this.loadInitialData()
       }
+    },
+    selectedCategoryKey: {
+      handler(newVal) {
+        // PrimeVue TreeSelect trả về object dạng { 'ID': true }
+        if (newVal && Object.keys(newVal).length > 0) {
+          // Lấy key đầu tiên (chính là ID nhóm hàng)
+          const id = Object.keys(newVal)[0];
+          this.formData.nhom_hang_id = id;
+
+          // Tự động xóa lỗi đỏ nếu người dùng đã chọn đúng
+          if (this.errors.nhom_hang_id) {
+            delete this.errors.nhom_hang_id;
+          }
+
+          // Debug để kiểm tra (bật F12 lên xem tab Console)
+          console.log('Đã chọn nhóm hàng ID:', id);
+        } else {
+          // Trường hợp bỏ chọn
+          this.formData.nhom_hang_id = null;
+          console.log('Đã bỏ chọn nhóm hàng');
+        }
+      },
+      deep: true // Theo dõi sâu vào trong object (đề phòng)
     }
   },
-  
-  mounted() {
-    document.addEventListener('click', this.handleClickOutside)
-  },
-  
-  beforeUnmount() {
-    document.removeEventListener('click', this.handleClickOutside)
-  },
+
   methods: {
     closeModal() {
       this.resetForm()
       this.$emit('close')
     },
-    
-     async saveMedicine(event) {
-       // Chặn submit mặc định
-       if (event) {
-         event.preventDefault()
-         event.stopPropagation()
-       }
-       
-       this.loading = true
-       this.errors = {}
-       
-       try {
-         const formData = new FormData()
-         
-         // Append all form data
-         Object.keys(this.formData).forEach(key => {
-           if (this.formData[key] !== null && this.formData[key] !== '') {
-             formData.append(key, this.formData[key])
-           }
-         })
-         
-         const response = await axios.post('/admin/medicines', formData, {
-           headers: {
-             'Content-Type': 'multipart/form-data'
-           }
-         })
-         
+
+    async saveMedicine(event) {
+      // Chặn submit mặc định
+      if (event) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+
+      this.loading = true
+      this.errors = {}
+
+      try {
+        const formData = new FormData()
+
+        // Append all form data
+        Object.keys(this.formData).forEach(key => {
+          if (this.formData[key] !== null && this.formData[key] !== '') {
+            formData.append(key, this.formData[key])
+          }
+        })
+
+        const response = await axios.post('/admin/medicines', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+
         if (response.data.success) {
           // Hiển thị thông báo thành công
           this.$toast.add({
@@ -666,13 +479,13 @@ import axios from 'axios'
             detail: response.data.message,
             life: 3000
           })
-          
+
           this.$emit('created', response.data.data)
           this.closeModal()
         }
-       } catch (error) {
-         console.error('Error creating medicine:', error)
-         
+      } catch (error) {
+        console.error('Error creating medicine:', error)
+
         if (error.response && error.response.status === 422) {
           // Validation errors
           this.errors = error.response.data.errors
@@ -691,38 +504,38 @@ import axios from 'axios'
             life: 5000
           })
         }
-       } finally {
-         this.loading = false
-       }
-     },
-    
+      } finally {
+        this.loading = false
+      }
+    },
+
     async loadInitialData() {
       try {
         // Load categories
         const categoriesResponse = await axios.get('/admin/categories/modal/data')
         if (categoriesResponse.data.success) {
           this.categoryOptions = this.convertToDropdownOptions(categoriesResponse.data.data)
-          this.categoryTreeNodes = this.convertToTreeNodes(categoriesResponse.data.data)
-          this.filteredCategoryNodes = this.flattenTreeNodes(this.categoryTreeNodes)
+          this.categoryTreeNodes = this.convertToTreeSelectNodes(categoriesResponse.data.data)
+          this.filteredCategoryNodes = this.flattenTreeNodes(this.convertToTreeNodes(categoriesResponse.data.data))
         }
-        
+
         // Load drug routes
         const drugRoutesResponse = await axios.get('/admin/products/drugroute')
         this.drugRouteOptions = drugRoutesResponse.data.data || []
-        
+
         // Load manufacturers
         const manufacturersResponse = await axios.get('/admin/products/manufacturer')
         this.manufacturerOptions = manufacturersResponse.data.data || []
-        
+
         // Load positions
         const positionsResponse = await axios.get('/admin/products/position')
         this.positionOptions = positionsResponse.data.data || []
-        
+
       } catch (error) {
         console.error('Error loading initial data:', error)
       }
     },
-    
+
     convertToDropdownOptions(categories) {
       const options = []
       const addToOptions = (nodes, level = 0) => {
@@ -740,7 +553,7 @@ import axios from 'axios'
       addToOptions(categories)
       return options
     },
-    
+
     convertToTreeNodes(categories) {
       return categories.map(category => ({
         key: category.id.toString(),
@@ -749,7 +562,18 @@ import axios from 'axios'
         children: category.children ? this.convertToTreeNodes(category.children) : undefined
       }))
     },
-    
+
+    // Hàm chuyển đổi dữ liệu API sang định dạng TreeSelect của PrimeVue
+    convertToTreeSelectNodes(categories) {
+      return categories.map(category => ({
+        key: category.id.toString(), // Key bắt buộc phải là String
+        label: category.name,
+        data: category.id, // Lưu ID thực tế vào data
+        children: category.children ? this.convertToTreeSelectNodes(category.children) : undefined,
+        selectable: true // Cho phép chọn node này
+      }));
+    },
+
     onCategorySelect(node) {
       this.formData.nhom_hang_id = node.data.id
       this.selectedCategoryName = node.data.name
@@ -758,7 +582,43 @@ import axios from 'axios'
         delete this.errors.nhom_hang_id
       }
     },
-    
+
+    // Xử lý khi người dùng chọn 1 nhóm từ TreeSelect
+    onCategoryChange(event) {
+      // TreeSelect trả về object dạng { "15": true }
+      // Chúng ta cần lấy key đầu tiên
+      const selectedKey = event.value ? Object.keys(event.value)[0] : null;
+      
+      if (selectedKey) {
+        // Tìm node tương ứng để lấy ID thực tế
+        const findNodeById = (nodes, key) => {
+          for (const node of nodes) {
+            if (node.key === key) {
+              return node;
+            }
+            if (node.children) {
+              const found = findNodeById(node.children, key);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        
+        const selectedNode = findNodeById(this.categoryTreeNodes, selectedKey);
+        if (selectedNode) {
+          this.formData.nhom_hang_id = selectedNode.data;
+          this.selectedCategoryName = selectedNode.label;
+        }
+        // Xóa lỗi nếu có
+        if (this.errors.nhom_hang_id) {
+          delete this.errors.nhom_hang_id;
+        }
+      } else {
+        this.formData.nhom_hang_id = null;
+        this.selectedCategoryName = '';
+      }
+    },
+
     flattenTreeNodes(nodes, level = 0) {
       let result = []
       nodes.forEach(node => {
@@ -774,49 +634,41 @@ import axios from 'axios'
       })
       return result
     },
-    
+
     toggleCategoryDropdown() {
       this.showCategoryDropdown = !this.showCategoryDropdown
       if (this.showCategoryDropdown) {
         this.filteredCategoryNodes = this.flattenTreeNodes(this.categoryTreeNodes)
       }
     },
-    
+
     selectCategory(node) {
       this.formData.nhom_hang_id = node.data.id
       this.selectedCategoryName = node.data.name
       this.selectedCategoryKeys = { [node.key]: true }
       this.showCategoryDropdown = false
       this.categorySearchText = ''
-      
+
       // Clear any existing errors
       if (this.errors.nhom_hang_id) {
         delete this.errors.nhom_hang_id
       }
     },
-    
+
     toggleNode(node) {
       node.expanded = !node.expanded
       this.updateFilteredNodes()
     },
-    
+
     updateFilteredNodes() {
       this.filteredCategoryNodes = this.flattenTreeNodes(this.categoryTreeNodes)
     },
-    
+
     getNodeLevel(node) {
       return node.level || 0
     },
-    
-     handleClickOutside(event) {
-       // Sử dụng document.querySelector thay vì this.$el.querySelector
-       const categorySelector = document.querySelector('.custom-category-selector')
-       if (categorySelector && !categorySelector.contains(event.target)) {
-         this.showCategoryDropdown = false
-       }
-     },
-     
-    
+
+
     async generateMedicineCode() {
       try {
         const response = await axios.get('/admin/medicines/generate-codes')
@@ -827,7 +679,7 @@ import axios from 'axios'
         console.error('Error generating medicine code:', error)
       }
     },
-    
+
     async generateMedicineBarcode() {
       try {
         const response = await axios.get('/admin/medicines/generate-codes')
@@ -838,29 +690,29 @@ import axios from 'axios'
         console.error('Error generating medicine barcode:', error)
       }
     },
-    
+
     handleImageUpload() {
       const input = document.createElement('input')
       input.type = 'file'
       input.accept = 'image/*'
-      
+
       input.onchange = (event) => {
         const file = event.target.files[0]
         if (!file) return
-        
+
         // Validate file
         if (!file.type.startsWith('image/')) {
           alert('Chỉ chấp nhận file ảnh!')
           return
         }
-        
+
         if (file.size > 2 * 1024 * 1024) { // 2MB
           alert('File quá lớn! Tối đa 2MB')
           return
         }
-        
+
         this.formData.image = file
-        
+
         // Create preview
         const reader = new FileReader()
         reader.onload = (e) => {
@@ -868,23 +720,23 @@ import axios from 'axios'
         }
         reader.readAsDataURL(file)
       }
-      
+
       input.click()
     },
-    
+
     removeImage() {
       this.formData.image = null
       this.imagePreview = null
     },
-    
+
     openDrugRouteModal() {
       this.showDrugRouteModal = true
     },
-    
+
     async onDrugRouteUpdated(newData) {
       try {
         const drugRoutesResponse = await axios.get('/admin/products/drugroute')
-        this.drugRouteOptions = drugRoutesResponse.data.data || []  
+        this.drugRouteOptions = drugRoutesResponse.data.data || []
         // nhận dữ liệu đầu vào sau khi submit modal và cập nhật dữ liệu mới vào form
         if (newData && newData.id) {
           this.form.drug_route_id = newData.id
@@ -893,17 +745,17 @@ import axios from 'axios'
         console.error('Error reloading drug routes:', error)
       }
     },
-    
+
     openManufacturerModal() {
       this.showManufacturerModal = true
     },
-    
+
     async onManufacturerUpdated(newData) {
       // Reload manufacturers when updated
       try {
         const manufacturersResponse = await axios.get('/admin/products/manufacturer')
         this.manufacturerOptions = manufacturersResponse.data.data || []
-        
+
         // nhận dữ liệu đầu vào sau khi submit modal và cập nhật dữ liệu mới vào form
         if (newData && newData.id) {
           this.form.manufacturer_id = newData.id
@@ -912,17 +764,17 @@ import axios from 'axios'
         console.error('Error reloading manufacturers:', error)
       }
     },
-    
+
     openPositionModal() {
       this.showPositionModal = true
     },
-    
+
     async onPositionUpdated(newData) {
       // Reload positions when updated
       try {
         const positionsResponse = await axios.get('/admin/products/position')
         this.positionOptions = positionsResponse.data.data || []
-        
+
         // nhận dữ liệu đầu vào sau khi submit modal và cập nhật dữ liệu mới vào form
         if (newData && newData.id) {
           this.form.position_id = newData.id
@@ -931,16 +783,16 @@ import axios from 'axios'
         console.error('Error reloading positions:', error)
       }
     },
-    
+
     openUnitModal() {
       this.showUnitModal = true
     },
-    
+
     onUnitSaved(unitData) {
       this.formData.don_vi_tinh = unitData.unitName
       console.log('Unit saved:', unitData)
     },
-    
+
     resetForm() {
       this.formData = {
         ma_hang: '',
@@ -970,6 +822,7 @@ import axios from 'axios'
       this.errors = {}
       this.imagePreview = null
       this.activeTab = 'info'
+      this.selectedCategoryKey = null
       this.selectedCategoryKeys = {}
       this.selectedCategoryName = ''
       this.showCategoryDropdown = false
@@ -981,9 +834,9 @@ import axios from 'axios'
     }
   }
 }
-  </script>
-  
-  <style scoped>
+</script>
+
+<style scoped>
 /* Form Grid Layout */
 .form-grid {
   display: flex;
@@ -1305,135 +1158,85 @@ import axios from 'axios'
   font-size: 18px;
 }
 
-/* Custom Category Selector */
-.custom-category-selector {
-  position: relative;
+/* Custom TreeSelect Style */
+:deep(.modern-treeselect) {
   width: 100%;
-}
-
-.category-input-container {
-  position: relative;
-  width: 100%;
-}
-
-.category-input {
-  position: relative;
+  height: 38px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  padding: 0;
   display: flex;
   align-items: center;
-  border: 1px solid #ced4da;
-  border-radius: 6px;
-  background: #fff;
-  transition: border-color 0.2s ease;
 }
 
-.category-input:hover {
+:deep(.modern-treeselect:hover) {
   border-color: #007bff;
 }
 
-.category-input.p-invalid {
+:deep(.modern-treeselect.p-focus) {
+  box-shadow: 0 0 0 1px #007bff;
+  border-color: #007bff;
+}
+
+:deep(.modern-treeselect.p-invalid) {
   border-color: #e24c4c;
 }
 
-.search-icon {
-  position: absolute;
-  left: 12px;
-  color: #6c757d;
-  font-size: 14px;
-  z-index: 1;
-}
-
-.category-input-field {
-  width: 100%;
-  height: 38px;
-  padding: 8px 40px 8px 40px;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 14px;
-  color: #333;
-  cursor: pointer;
-}
-
-.category-input-field::placeholder {
-  color: #6c757d;
-}
-
-.dropdown-icon {
-  position: absolute;
-  right: 12px;
-  color: #6c757d;
-  font-size: 12px;
-  transition: transform 0.2s ease;
-  z-index: 1;
-}
-
-.dropdown-icon.rotated {
-  transform: rotate(180deg);
-}
-
-.category-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: #fff;
-  border: 1px solid #ced4da;
-  border-top: none;
-  border-radius: 0 0 6px 6px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.category-dropdown-content {
-  padding: 8px 0;
-}
-
-.category-option {
-  display: flex;
-  align-items: center;
+:deep(.modern-treeselect .p-treeselect-label-container) {
   padding: 8px 12px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  position: relative;
 }
 
-.category-option:hover {
-  background-color: #f8f9fa;
-}
-
-.category-option.selected {
-  background-color: #e3f2fd;
-  color: #1976d2;
-}
-
-.expand-icon {
-  margin-right: 8px;
-  font-size: 12px;
-  color: #6c757d;
-  transition: transform 0.2s ease;
-  width: 16px;
-  text-align: center;
-}
-
-.expand-icon.expanded {
-  transform: rotate(90deg);
-}
-
-.category-label {
+:deep(.modern-treeselect .p-treeselect-label) {
+  padding: 0;
   font-size: 14px;
   color: #333;
-  flex: 1;
 }
 
-.category-option.selected .category-label {
-  color: #1976d2;
-  font-weight: 500;
+:deep(.modern-treeselect .p-treeselect-token) {
+  padding: 2px 8px;
+  margin-right: 0.5rem;
+  background: #e3f2fd;
+  color: #007bff;
+  border-radius: 4px;
 }
 
-.category-option.has-children .category-label {
-  margin-left: 0;
+/* Dropdown Panel Style */
+:deep(.p-treeselect-panel) {
+  border: 1px solid #ced4da;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border-radius: 6px;
+}
+
+:deep(.p-treeselect-panel .p-treeselect-items-wrapper) {
+  padding: 8px;
+  max-height: 250px;
+}
+
+/* Tree Node Style bên trong Dropdown */
+:deep(.p-treeselect-panel .p-treenode-content) {
+  padding: 8px 10px !important;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
+  border: 1px solid transparent;
+}
+
+:deep(.p-treeselect-panel .p-treenode-content:hover) {
+  background-color: #f8f9fa !important;
+  color: #000;
+}
+
+:deep(.p-treeselect-panel .p-treenode-content.p-highlight) {
+  background-color: #eef6ff !important;
+  color: #007bff !important;
+  font-weight: 600;
+}
+
+:deep(.p-treeselect-panel .p-tree-toggler) {
+  width: 24px;
+  height: 24px;
+  margin-right: 4px;
+  color: #adb5bd;
 }
 
 /* Editor styling */
@@ -1468,20 +1271,21 @@ import axios from 'axios'
   .form-row {
     grid-template-columns: 1fr;
   }
-  
+
   .form-row.three-columns {
     grid-template-columns: 1fr;
   }
-  
+
   .image-upload-section {
     padding-left: 0;
     margin-top: 20px;
   }
-  
+
   .category-dropdown {
     max-height: 150px;
   }
 }
+
 fieldset {
   border: none !important;
 }
