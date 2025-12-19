@@ -88,9 +88,6 @@
 
         <a href="/logout" class="nav-item">Đăng xuất</a>
       </div>
-      <!-- <button class="sell-btn">
-          <i class="fas fa-cart-shopping cart-icon"></i> Bán hàng
-        </button> -->
     </nav>
 
     <!-- Main Content -->

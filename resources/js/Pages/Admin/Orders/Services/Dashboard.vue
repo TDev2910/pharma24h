@@ -177,9 +177,6 @@
               <!-- Tab Hành động -->
               <div v-if="activeTab === 'actions'" class="tab-content">
                 <div class="action-buttons-container">
-                  <h6 class="text-primary mb-3">
-                    <i></i>Quản lý đặt lịch
-                  </h6>
 
                   <!-- Action buttons dựa trên trạng thái -->
                   <div class="action-buttons">

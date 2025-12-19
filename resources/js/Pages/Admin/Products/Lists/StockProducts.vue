@@ -26,6 +26,8 @@
           <!-- Xuất file -->
           <Button icon="pi pi-upload" label="Xuất file" @click="exportData" severity="secondary"
             style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
+          <Button icon="pi pi-filter" label="Lọc" @click="filterData" severity="secondary"
+            style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
           <!-- Utility Icons -->
           <div class="utility-icons">
             <button class="btn" title="Chế độ xem">

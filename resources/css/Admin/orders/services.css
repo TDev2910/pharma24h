@@ -277,7 +277,14 @@
 /* Action buttons in detail */
 .action-buttons-container {
   padding: 20px;
+  /* BỔ SUNG CÁC DÒNG SAU: */
+  display: flex;             /* 1. Biến thành hàng ngang */
+  align-items: center;       /* 2. Căn giữa theo chiều dọc (để chữ và nút thẳng hàng nhau) */
+  justify-content: flex-start; /* 3. Dồn tất cả về bên trái */
+  gap: 20px;                 /* 4. Tạo khoảng cách giữa chữ "Quản lý..." và các nút */
+  flex-wrap: wrap;           /* 5. Để tự xuống dòng trên màn hình điện thoại bé */
 }
+
 
 .action-buttons {
   display: flex;
@@ -287,6 +294,11 @@
 
 .action-buttons .p-button {
   margin-bottom: 8px;
+  /* BỔ SUNG CÁC DÒNG SAU: */
+  flex-shrink: 0 !important;      /* 1. Cấm nút bị co lại */
+  white-space: nowrap !important; /* 2. Cấm chữ bị xuống dòng */
+  width: auto !important;         /* 3. Để nút tự giãn theo nội dung */
+  min-width: fit-content;         /* 4. Đảm bảo nút luôn đủ rộng */
 }
 
 .action-buttons .p-button-sm {
@@ -343,7 +355,10 @@
   }
 
   .action-buttons {
-    flex-direction: column;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap; /* Đã có, nhưng cần đảm bảo nó hoạt động */
+    align-items: center; /* Canh giữa theo chiều dọc */
   }
 }
 
