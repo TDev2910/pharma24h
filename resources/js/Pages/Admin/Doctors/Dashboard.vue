@@ -117,7 +117,6 @@
             <!-- 2 danh mục thông tin và lịch làm việc-->
             <div class="detail-tabs">
               <button class="tab active" @click="switchTab('info')">Thông tin</button>
-              <button class="tab" @click="switchTab('schedule')">Lịch làm việc</button>
             </div>
 
             <!-- Danh mục thông tin và lịch làm việc-->
@@ -201,14 +200,6 @@
                         @click="deleteDoctor(slotProps.data)" />
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <!-- Tab Lịch làm việc -->
-              <div v-if="activeTab === 'schedule'" class="tab-content">
-                <div class="text-center text-muted py-4">
-                  <i class="pi pi-calendar" style="font-size: 2rem;"></i>
-                  <p class="mt-2">Chức năng lịch làm việc đang được phát triển</p>
                 </div>
               </div>
             </div>

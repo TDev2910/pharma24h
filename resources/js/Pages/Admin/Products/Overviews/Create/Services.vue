@@ -84,7 +84,7 @@
                       <div>
                         <div>{{ slotProps.option.name }}</div>
                         <small class="text-muted">{{ slotProps.option.doctor_code }} - {{ slotProps.option.specialty
-                          }}</small>
+                        }}</small>
                       </div>
                     </template>
                   </Dropdown>

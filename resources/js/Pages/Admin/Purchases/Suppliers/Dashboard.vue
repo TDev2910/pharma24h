@@ -54,26 +54,29 @@
       <!-- Left Sidebar -->
       <div class="left-sidebar">
         <div class="filter-section">
-          <h5>Nhóm nhà cung cấp</h5>
+          <div class="filter-header">
+            <h5>Nhóm nhà cung cấp</h5>
+            <Button icon="pi pi-plus" text rounded size="small" severity="primary" v-tooltip.top="'Tạo nhóm mới'"
+              @click="openCreateCategoryModal" class="create-btn" />
+          </div>
+
           <div class="filter-options">
             <div class="filter-item">
-              <label>
-                Nhóm
-                <a href="#" class="create-link" style="margin-left: 65px;" @click.prevent="openCreateCategoryModal">Tạo
-                  mới</a>
-              </label>
-              <select class="form-select form-select-sm" v-model="filters.supplierGroupId" @change="applyFilters"
-                style="margin-top: 8px;">
-                <option value="">Chọn nhóm</option>
-                <option v-for="group in supplierGroups" :key="group.id" :value="group.id">
-                  {{ group.name }}
-                </option>
-              </select>
+              <Select v-model="filters.supplierGroupId" :options="supplierGroups" optionLabel="name" optionValue="id"
+                placeholder="Tất cả nhóm" class="w-full custom-prime-select" filter showClear @change="applyFilters"
+                emptyMessage="Không có dữ liệu" emptyFilterMessage="Không tìm thấy nhóm">
+                <template #option="slotProps">
+                  <div class="flex align-items-center">
+                    <i style="font-size: 0.8rem"></i>
+                    <span>{{ slotProps.option.name }}</span>
+                  </div>
+                </template>
+              </Select>
             </div>
           </div>
         </div>
 
-        <div class="filter-section">
+        <div class="filter-section mt-4">
           <h5>Trạng thái</h5>
           <div class="filter-options">
             <div class="checkbox-item">
@@ -84,25 +87,8 @@
               <input type="checkbox" id="inactive" v-model="filters.inactive" />
               <label for="inactive">Tạm ngưng</label>
             </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="pending" v-model="filters.pending" />
-              <label for="pending">Chờ duyệt</label>
-            </div>
           </div>
         </div>
-
-        <div class="filter-section">
-          <h5>Tỉnh/Thành phố</h5>
-          <div class="filter-options">
-            <select class="form-select form-select-sm" v-model="filters.province" @change="applyFilters">
-              <option value="">Chọn tỉnh/thành</option>
-              <option v-for="province in provinces" :key="province.id" :value="province.id">
-                {{ province.name }}
-              </option>
-            </select>
-          </div>
-        </div>
-
       </div>
 
       <!-- Right Main Content -->
@@ -266,38 +252,31 @@
 
                   <!-- Tab Lịch sử nhập hàng -->
                   <div v-if="activeTab === 'imports'" class="tab-content">
-                    <DataTable 
-                      :value="products" 
-                      tableStyle="min-width: 50rem" 
-                      :loading="loadingImports"
-                      loadingIcon="pi pi-spinner" 
-                      emptyMessage="Chưa có lịch sử nhập hàng"
-                      stripedRows>
+                    <DataTable :value="products" tableStyle="min-width: 50rem" :loading="loadingImports"
+                      loadingIcon="pi pi-spinner" emptyMessage="Chưa có lịch sử nhập hàng" stripedRows>
                       <Column field="Code" header="Mã phiếu" style="min-width: 120px;">
                         <template #body="slotProps">
                           <span class="fw-bold">{{ slotProps.data.Code }}</span>
                         </template>
                       </Column>
-                      
+
                       <Column field="DayImport" header="Ngày nhập" style="min-width: 120px;"></Column>
-                      
+
                       <Column field="User" header="Người nhập" style="min-width: 150px;">
                         <template #body="slotProps">
                           <span>{{ slotProps.data.User || 'N/A' }}</span>
                         </template>
                       </Column>
-                      
+
                       <Column field="TotalAmount" header="Tổng cộng" style="min-width: 150px;">
                         <template #body="slotProps">
                           <span class="fw-semibold text-end d-block">{{ slotProps.data.TotalAmount }}</span>
                         </template>
                       </Column>
-                      
+
                       <Column field="Status" header="Trạng thái" style="min-width: 120px;">
                         <template #body="slotProps">
-                          <span 
-                            :class="getStatusClass(slotProps.data.Status)"
-                            class="badge">
+                          <span :class="getStatusClass(slotProps.data.Status)" class="badge">
                             {{ getStatusText(slotProps.data.Status) }}
                           </span>
                         </template>
@@ -307,18 +286,13 @@
                           <Button icon="pi pi-eye" label="Xem" @click="viewImportDetails(slotProps.data)"
                             severity="info" size="small" class="me-2" />
                         </template>
-                      </Column>                    
+                      </Column>
                     </DataTable>
                   </div>
                   <!-- Tab Lịch sử trả hàng nhập -->
                   <div v-if="activeTab === 'returns'" class="tab-content">
-                    <DataTable 
-                      :value="returns" 
-                      tableStyle="min-width: 50rem" 
-                      :loading="loadingReturns"
-                      loadingIcon="pi pi-spinner" 
-                      emptyMessage="Chưa có lịch sử trả hàng"
-                      stripedRows>
+                    <DataTable :value="returns" tableStyle="min-width: 50rem" :loading="loadingReturns"
+                      loadingIcon="pi pi-spinner" emptyMessage="Chưa có lịch sử trả hàng" stripedRows>
                       <Column field="Code" header="Mã phiếu" style="min-width: 120px;">
                         <template #body="slotProps">
                           <span class="fw-bold">{{ slotProps.data.Code }}</span>
@@ -326,24 +300,22 @@
                       </Column>
 
                       <Column field="DayReturn" header="Ngày trả" style="min-width: 120px;"></Column>
-                      
+
                       <Column field="User" header="Người trả" style="min-width: 150px;">
                         <template #body="slotProps">
                           <span>{{ slotProps.data.UserReturn || 'N/A' }}</span>
                         </template>
                       </Column>
-                      
+
                       <Column field="TotalAmount" header="Tổng cộng" style="min-width: 150px;">
                         <template #body="slotProps">
                           <span class="fw-semibold text-end d-block">{{ slotProps.data.TotalAmountReturn }}</span>
                         </template>
                       </Column>
-                      
+
                       <Column field="Status" header="Trạng thái" style="min-width: 120px;">
                         <template #body="slotProps">
-                          <span 
-                            :class="getStatusClass(slotProps.data.StatusReturn)"
-                            class="badge">
+                          <span :class="getStatusClass(slotProps.data.StatusReturn)" class="badge">
                             {{ getStatusText(slotProps.data.StatusReturn) }}
                           </span>
                         </template>
@@ -376,10 +348,12 @@
       @category-created="handleCategoryCreated" />
 
     <!-- Import Details Modal -->
-    <ImportDetails :visible="showImportDetails" :importData="selectedImport" @update:visible="showImportDetails = $event" />
+    <ImportDetails :visible="showImportDetails" :importData="selectedImport"
+      @update:visible="showImportDetails = $event" />
 
     <!-- Return Details Modal -->
-    <ReturnDetails :visible="showReturnDetails" :returnData="selectedReturn" @update:visible="showReturnDetails = $event" />
+    <ReturnDetails :visible="showReturnDetails" :returnData="selectedReturn"
+      @update:visible="showReturnDetails = $event" />
 
   </div>
 </template>
@@ -390,6 +364,7 @@ import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import Select from 'primevue/select'
 import SupplierCreateModal from './partials/supplier-create-modal.vue'
 import SupplierCategoryCreateModal from './partials/modal-category.vue'
 import SupplierEditModal from './partials/supplier-edit-modal.vue'
@@ -404,6 +379,7 @@ export default {
     Button,
     DataTable,
     Column,
+    Select,
     SupplierCreateModal,
     SupplierEditModal,
     ImportDetails,
@@ -545,12 +521,10 @@ export default {
     },
 
     // Tab switching
-    switchTab(tab) 
-    {
+    switchTab(tab) {
       this.activeTab = tab
       // Nếu chuyển sang tab imports và có supplier đang xem, tải dữ liệu imports
-      if (tab === 'imports' && this.currentSupplierId) 
-      {
+      if (tab === 'imports' && this.currentSupplierId) {
         this.loadSupplierImports(this.currentSupplierId)
       }
       // Nếu chuyển sang tab returns và có supplier đang xem, tải dữ liệu returns
@@ -559,19 +533,16 @@ export default {
       }
     },
 
-    async loadSupplierImports(supplierId) 
-    {
+    async loadSupplierImports(supplierId) {
       if (!supplierId) return
       this.loadingImports = true
-      try 
-      {
+      try {
         const response = await axios.get(`/admin/suppliers/${supplierId}/imports`)
         if (response.data.success) {
           this.products = response.data.data
         }
-      } 
-      catch (error) 
-      {
+      }
+      catch (error) {
         console.error('Error loading imports:', error)
         this.products = []
         this.toast.add({
@@ -580,9 +551,8 @@ export default {
           detail: 'Không thể tải lịch sử nhập hàng',
           life: 3000
         })
-      } 
-      finally 
-      {
+      }
+      finally {
         this.loadingImports = false
       }
     },
@@ -616,9 +586,8 @@ export default {
     },
 
     // Helper methods cho Status
-    getStatusText(status) 
-    {
-      const statusMap = 
+    getStatusText(status) {
+      const statusMap =
       {
         'pending': 'Đang chờ',
         'completed': 'Hoàn thành',
@@ -640,7 +609,7 @@ export default {
       }
       return classMap[status?.toLowerCase()] || 'bg-secondary'
     },
-    
+
 
     // Show create modal
     openCreateModal() {
@@ -846,7 +815,7 @@ export default {
         else {
           this.currentSupplierId = null
           this.products = []
-          this.returns = [] 
+          this.returns = []
         }
       },
       deep: true
@@ -994,6 +963,20 @@ export default {
 
 .filter-section {
   margin-bottom: 25px;
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.filter-header h5 {
+  color: #2c3e50;
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
 }
 
 .filter-section h5 {
