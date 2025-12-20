@@ -91,34 +91,6 @@
             </div>
           </div>
           <hr class="light-divider" style="width: 215px; background-color: grey;">
-          <!-- Thương hiệu -->
-          <div class="mb-4">
-            <h6 class="mb-3 fw-bold">Thương hiệu</h6>
-            <div class="mb-3">
-              <input type="text" class="form-control mb-2" style="max-width:215px;" placeholder="Nhập tên thương hiệu">
-            </div>
-            <div class="form-check mb-2">
-              <input class="form-check-input" type="checkbox" id="brand1">s
-              <label class="form-check-label" for="brand1">STELLA</label>
-            </div>
-            <div class="form-check mb-2">
-              <input class="form-check-input" type="checkbox" id="brand2">
-              <label class="form-check-label" for="brand2">DHG Pharma</label>
-            </div>
-            <div class="form-check mb-2">
-              <input class="form-check-input" type="checkbox" id="brand3">
-              <label class="form-check-label" for="brand3">Davipharm</label>
-            </div>
-            <div class="form-check mb-2">
-              <input class="form-check-input" type="checkbox" id="brand4">
-              <label class="form-check-label" for="brand4">Hasan- Demarpharm</label>
-            </div>
-            <div class="form-check mb-2">
-              <input class="form-check-input" type="checkbox" id="brand5">
-              <label class="form-check-label" for="brand5">Domesco</label>
-            </div>
-            <button class="text-primary reset-link" @click="resetPriceFilter">Xem thêm</button>
-          </div>
         </div>
 
         <!-- Sản phẩm bên phải -->

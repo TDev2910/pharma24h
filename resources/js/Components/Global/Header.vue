@@ -233,3 +233,46 @@ onUnmounted(() => {
   window.removeEventListener('cart-updated', handleCartUpdate)
 })
 </script>
+<style scoped>
+/* Loại bỏ hover effect cho buttons trong cart-actions */
+.cart-actions .btn-primary:hover,
+.cart-actions .btn-primary:focus,
+.cart-actions .btn-primary:active,
+.cart-actions .btn-outline-primary:hover,
+.cart-actions .btn-outline-primary:focus,
+.cart-actions .btn-outline-primary:active {
+  background-color: #1a56db !important;
+  border-color: #1a56db !important;
+  color: #fff !important;
+}
+
+/* Giữ màu mặc định cho btn-outline-primary */
+.cart-actions .btn-outline-primary {
+  border-color: #1a56db !important;
+  color: #1a56db !important;
+  background-color: transparent !important;
+}
+
+.cart-actions .btn-outline-primary:hover,
+.cart-actions .btn-outline-primary:focus,
+.cart-actions .btn-outline-primary:active {
+  border-color: #1a56db !important;
+  color: #1a56db !important;
+  background-color: transparent !important;
+}
+
+/* Giữ màu mặc định cho btn-primary */
+.cart-actions .btn-primary {
+  background-color: #1a56db !important;
+  border-color: #1a56db !important;
+  color: #fff !important;
+}
+
+.cart-actions .btn-primary:hover,
+.cart-actions .btn-primary:focus,
+.cart-actions .btn-primary:active {
+  background-color: #1a56db !important;
+  border-color: #1a56db !important;
+  color: #fff !important;
+}
+</style>

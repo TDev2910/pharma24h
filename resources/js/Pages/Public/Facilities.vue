@@ -325,7 +325,47 @@ const doctors = ref([
   border: 5px solid #f8f9fa;
 }
 
+/* Loại bỏ hover effect cho buttons */
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-outline-dark:hover,
+.btn-outline-dark:focus,
+.btn-outline-dark:active {
+  background-color: #1a56db !important;
+  border-color: #1a56db !important;
+  color: #fff !important;
+}
 
+/* Giữ màu mặc định cho btn-primary */
+.btn-primary {
+  background-color: #1a56db !important;
+  border-color: #1a56db !important;
+  color: #fff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: #1a56db !important;
+  border-color: #1a56db !important;
+  color: #fff !important;
+}
+
+/* Giữ màu mặc định cho btn-outline-dark */
+.btn-outline-dark {
+  border-color: #212529 !important;
+  color: #212529 !important;
+  background-color: transparent !important;
+}
+
+.btn-outline-dark:hover,
+.btn-outline-dark:focus,
+.btn-outline-dark:active {
+  border-color: #212529 !important;
+  color: #212529 !important;
+  background-color: transparent !important;
+}
 
 /* --- RESPONSIVE --- */
 @media (max-width: 991px) {

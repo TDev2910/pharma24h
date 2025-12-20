@@ -168,9 +168,18 @@ async function handleAddToCart() {
   transition: background 0.2s;
 }
 
-.product-btn:hover {
-  background: #1650cf;
+/* Override Bootstrap hover effect - giữ nguyên màu khi hover */
+.product-btn:hover,
+.btn-primary.product-btn:hover,
+.product-btn:focus,
+.btn-primary.product-btn:focus,
+.product-btn:active,
+.btn-primary.product-btn:active {
+  background: #1a56db !important;
+  border-color: transparent !important;
+  color: #fff !important;
 }
+
 
 @media (max-width: 991px) {
   .product-card-modern {
