@@ -15,8 +15,7 @@
               <span class="input-group-text">
                 <i class="pi pi-search"></i>
               </span>
-              <input type="text" class="form-control" style="border-radius:8px;" 
-                placeholder="Theo mã, tên hàng"
+              <input type="text" class="form-control" style="border-radius:8px;" placeholder="Theo mã, tên hàng"
                 v-model="searchQuery" @input="debounceSearch">
             </div>
           </div>
@@ -101,10 +100,30 @@
       </DataTable>
     </div>
 
+    <!-- Filter Modal -->
+    <Dialog v-model:visible="showFilterDialog" header="Lọc theo trạng thái" :style="{ width: '500px' }" modal closable>
+      <div class="filter-content">
+        <div class="mb-3">
+          <label class="form-label">Trạng thái tồn kho:</label>
+          <select v-model="tempStatusFilter" class="form-select">
+            <option value="">Tất cả</option>
+            <option value="low">Sắp hết hàng</option>
+            <option value="high">Tồn vượt mức</option>
+            <option value="in_stock">Còn hàng</option>
+            <option value="out_of_stock">Hết hàng</option>
+          </select>
+        </div>
+      </div>
+
+      <template #footer>
+        <Button label="Hủy" icon="pi pi-times" @click="showFilterDialog = false" severity="secondary" />
+        <Button label="Áp dụng" icon="pi pi-check" @click="applyFilter" />
+      </template>
+    </Dialog>
     <!-- Custom Paginator -->
-    <Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[10, 20, 30]" 
-      @page="onPageChange" style="margin-top: 50px;"></Paginator>
-    
+    <Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[10, 20, 30]" @page="onPageChange"
+      style="margin-top: 50px;"></Paginator>
+
     <!-- Toast for notifications -->
     <Toast />
   </div>
@@ -117,14 +136,18 @@ import Column from 'primevue/column'
 import Button from 'primevue/button'
 import Paginator from 'primevue/paginator'
 import Toast from 'primevue/toast'
+import Dialog from 'primevue/dialog'
 import { useToast } from 'primevue/usetoast'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import axios from 'axios'
 
-// Sử dụng Vue layout
-defineOptions({ layout: AdminLayout })
+// 1. Khai báo tên Component và Layout bằng defineOptions
+defineOptions({
+  name: 'StockProducts',
+  layout: AdminLayout
+})
 
-// Props từ Inertia
+// 2. Props từ Inertia
 const props = defineProps({
   products: {
     type: Array,
@@ -132,7 +155,10 @@ const props = defineProps({
   }
 })
 
-// Reactive data
+// 3. Khai báo biến (Thay thế cho data())
+const showFilterDialog = ref(false)
+const statusFilter = ref('')
+const tempStatusFilter = ref('')
 const searchQuery = ref('')
 const loading = ref(false)
 const toast = useToast()
@@ -140,27 +166,18 @@ const first = ref(0)
 const rows = ref(10)
 const products = ref([])
 
-// Computed properties
-const filteredProducts = computed(() => {
-  if (!searchQuery.value) return products.value
+// 4. Các hàm xử lý (Thay thế cho methods)
+const filterData = () => {
+  tempStatusFilter.value = statusFilter.value
+  showFilterDialog.value = true
+}
 
-  const query = searchQuery.value.toLowerCase()
-  return products.value.filter(product =>
-    product.ma_hang?.toLowerCase().includes(query) ||
-    product.ten_san_pham?.toLowerCase().includes(query) ||
-    product.category?.toLowerCase().includes(query)
-  )
-})
+const applyFilter = () => {
+  statusFilter.value = tempStatusFilter.value
+  showFilterDialog.value = false
+}
 
-const paginatedProducts = computed(() => {
-  const start = first.value
-  const end = start + rows.value
-  return filteredProducts.value.slice(start, end)
-})
 
-const totalRecords = computed(() => filteredProducts.value.length)
-
-// Methods
 const exportData = () => {
   toast.add({
     severity: 'info',
@@ -176,35 +193,67 @@ const onPageChange = (event) => {
 }
 
 const debounceSearch = () => {
-  first.value = 0 // Reset về trang đầu khi search
+  first.value = 0 // Reset về trang 1 khi tìm kiếm
 }
 
-// Xác định trạng thái tồn kho (giống Dashboard.vue)
-const getInventoryStatus = (row) => {
+const getStatusCode = (row) => {
   const qty = Number(row?.ton_kho ?? 0)
   const min = Number(row?.ton_thap_nhat ?? 0)
   const max = Number(row?.ton_cao_nhat ?? 0)
 
-  if (qty === 0) {
-    return { label: 'Hết hàng', class: 'bg-secondary' }
-  }
+  if (qty === 0) return 'out_of_stock'
 
-  // Nếu đã cấu hình ngưỡng
   if (min > 0 && max > 0 && max >= min) {
-    if (qty <= min) {
-      return { label: 'Sắp hết hàng', class: 'bg-warning text-dark' }
-    }
-    if (qty > max) {
-      return { label: 'Tồn vượt mức', class: 'bg-danger' }
-    }
-    return { label: 'Còn hàng', class: 'bg-success' }
+    if (qty <= min) return 'low'
+    if (qty > max) return 'high'
+    return 'in_stock'
   }
 
-  // Fallback khi chưa có ngưỡng: >0 coi là còn hàng
-  return { label: 'Còn hàng', class: 'bg-success' }
+  // Mặc định nếu chưa cấu hình ngưỡng mà có hàng
+  return qty > 0 ? 'in_stock' : 'out_of_stock'
 }
 
-// Loại sản phẩm
+const filteredProducts = computed(() => {
+  let result = products.value
+
+  // Lọc theo search query
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    result = result.filter(product =>
+      product.ma_hang?.toLowerCase().includes(query) ||
+      product.ten_san_pham?.toLowerCase().includes(query) ||
+      product.category?.toLowerCase().includes(query)
+    )
+  }
+
+  if (statusFilter.value) {
+    result = result.filter(product => getStatusCode(product) === statusFilter.value)
+  }
+
+  return result
+})
+
+const paginatedProducts = computed(() => {
+  const start = first.value
+  const end = start + rows.value
+  return filteredProducts.value.slice(start, end)
+})
+
+const totalRecords = computed(() => filteredProducts.value.length)
+
+const getInventoryStatus = (row) => {
+  const code = getStatusCode(row)
+
+  const map = {
+    'out_of_stock': { label: 'Hết hàng', class: 'bg-secondary' },
+    'low': { label: 'Sắp hết hàng', class: 'bg-warning text-dark' },
+    'high': { label: 'Tồn vượt mức', class: 'bg-danger' },
+    'in_stock': { label: 'Còn hàng', class: 'bg-success' }
+  }
+
+  return map[code] || { label: 'Không xác định', class: 'bg-light text-dark' }
+}
+
 const getProductTypeText = (type) => {
   return type === 'medicine' ? 'Thuốc' : 'Hàng hóa'
 }
@@ -213,21 +262,11 @@ const getProductTypeBadgeClass = (type) => {
   return type === 'medicine' ? 'bg-info' : 'bg-primary'
 }
 
-// Format currency
-const formatCurrency = (amount) => {
-  if (!amount) return '0 ₫'
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND'
-  }).format(amount)
-}
-
-// Format number
 const formatNumber = (num) => {
   return new Intl.NumberFormat('vi-VN').format(num)
 }
 
-// Load data
+// 7. Load Data
 const loadProducts = async () => {
   loading.value = true
   try {
@@ -243,7 +282,8 @@ const loadProducts = async () => {
       detail: 'Không thể tải dữ liệu tồn kho',
       life: 3000
     })
-  } finally {
+  }
+  finally {
     loading.value = false
   }
 }

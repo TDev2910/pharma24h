@@ -4,12 +4,17 @@
 
     <div class="filter-group">
       <label>Trạng thái giao hàng</label>
-      <select v-model="localFilters.status" @change="emitChange" class="input-control">
-        <option value="">Chọn trạng thái</option>
-        <option value="delivering">Đang giao</option>
-        <option value="completed">Đã giao</option>
-        <option value="cancelled">Đã hủy</option>
-      </select>
+        <MultiSelect 
+        v-model="localFilters.status" 
+        :options="statusOptions" 
+        optionLabel="label" 
+        optionValue="value" 
+        placeholder="Chọn trạng thái" 
+        display="chip" 
+        :maxSelectedLabels="1"
+        class="w-full custom-multiselect"
+        @change="emitChange"
+      />
     </div>
 
     <div class="filter-group">
@@ -17,29 +22,53 @@
       <select v-model="localFilters.partner" @change="emitChange" class="input-control">
         <option value="">Chọn đối tác</option>
         <option value="ghn">Giao Hàng Nhanh (GHN)</option>
+        <option value="ghtk">Giao Hàng Tiết Kiệm (GHTK)</option>
+        <option value="viettel">Viettel Post</option>
       </select>
     </div>
   </aside>
 </template>
 
 <script>
+import MultiSelect from 'primevue/multiselect';
 export default {
   name: 'TransportSidebar',
+  components : {
+    MultiSelect
+  },
   props: {
     filters: {
       type: Object,
-      default: () => ({ status: '', partner: '' })
+      default: () => ({ status: [], partner: '' }) 
     }
   },
   data() {
     return {
-      // Copy props ra data local để tránh sửa trực tiếp props
-      localFilters: { ...this.filters }
+      localFilters: { ...this.filters },
+      // 2. Khai báo danh sách tùy chọn cho trạng thái
+      statusOptions: [
+        { label: 'Đang giao (Gồm chờ lấy, luân chuyển...)', value: 'delivering' },
+        { label: 'Đã giao thành công', value: 'completed' },
+        { label: 'Đã hủy / Trả hàng', value: 'cancelled' },
+      ]
     };
+  },
+  watch: {
+    // 3. Theo dõi props để cập nhật localFilters và đảm bảo status là mảng
+    filters: {
+      handler(newVal) {
+        this.localFilters = { ...newVal };
+        // MultiSelect bắt buộc value phải là Array. Nếu null/undefined/string thì convert sang []
+        if (!Array.isArray(this.localFilters.status)) {
+          this.localFilters.status = [];
+        }
+      },
+      deep: true,
+      immediate: true
+    }
   },
   methods: {
     emitChange() {
-      // Gửi sự kiện lên cha
       this.$emit('update:filters', this.localFilters);
     },
   }

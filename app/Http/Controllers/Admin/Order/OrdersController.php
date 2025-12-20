@@ -361,10 +361,36 @@ class OrdersController extends Controller
         return back()->with('success', 'Đã từ chối yêu cầu hủy đơn hàng.');
     }
 
-    public function transport(Request $request) 
+    /**
+     * Quản lý vận đơn (Transport)
+     * Hỗ trợ lọc nhiều trạng thái (MultiSelect) và gom nhóm trạng thái GHN
+     */
+    public function transport(Request $request)
     {
-        // 1. Định nghĩa Status Map ra ngoài để không phải khai báo lại trong mỗi vòng lặp
-        $statusMap = [
+        // GROUP MAP: Dùng để LỌC dữ liệu (Filter)
+        // Khi người dùng chọn "delivering", hệ thống sẽ tìm tất cả các trạng thái con bên phải
+        $filterGroups = [
+            'delivering'     => [
+                'ready_to_pick',
+                'picking',
+                'storing',
+                'transporting',
+                'delivering'
+            ],
+            'completed'      => ['delivered'],
+            'cancelled'      => [
+                'cancel',
+                'return',
+                'returned',
+                'damage',
+                'lost'
+            ], 
+            'pending_pickup' => ['ready_to_pick'],
+        ];
+
+        // DISPLAY MAP: Dùng để HIỂN THỊ ra giao diện (Display)
+        // Khi DB trả về 'picking', giao diện sẽ hiển thị là 'delivering' 
+        $displayMap = [
             'ready_to_pick' => 'delivering',
             'picking'       => 'delivering',
             'storing'       => 'delivering',
@@ -372,27 +398,55 @@ class OrdersController extends Controller
             'delivering'    => 'delivering',
             'delivered'     => 'completed',
             'return'        => 'cancelled',
+            'returned'      => 'cancelled',
             'cancel'        => 'cancelled',
+            'damage'        => 'cancelled',
+            'lost'          => 'cancelled',
         ];
 
-        // 2. Khởi tạo Query
+        // 2. Truy vấn dữ liệu 
         $query = Order::query()
-            ->where('delivery_method', 'shipping')
-            ->whereNotNull('ghn_order_code');
+            ->where('delivery_method', 'shipping') // Chỉ lấy đơn giao hàng
+            ->whereNotNull('ghn_order_code');      // Chỉ lấy đơn đã đẩy qua GHN
 
-        $query->when($request->filled('status'), function ($q) use ($request) {
-            $q->where('ghn_status', $request->status);
+        // --- xử lý lọc trạng thái ---
+        $query->when($request->filled('status'), function ($q) use ($request, $filterGroups) {
+            //Chuẩn hóa input thành mảng (dù chọn 1 hay nhiều) ở frontend
+            $inputStatuses = is_array($request->status) ? $request->status : [$request->status];
+
+            // "Bung" các nhóm trạng thái ra thành danh sách phẳng
+            $dbStatuses = [];
+            foreach ($inputStatuses as $status) {
+                if (isset($filterGroups[$status])) {
+                    // Nếu chọn nhóm (vd: delivering), merge tất cả status con vào (chuyển từ array thành string)
+                    $dbStatuses = array_merge($dbStatuses, $filterGroups[$status]);
+                } else {
+                    // Nếu status không thuộc nhóm nào, thêm trực tiếp
+                    $dbStatuses[] = $status;
+                }
+            }
+
+            // Query bằng whereIn
+            // SQL tương đương: WHERE ghn_status IN ('picking', 'storing', 'delivering', ...)
+            $q->whereIn('ghn_status', array_unique($dbStatuses));
         });
 
-        $query->when($request->partner === 'ghn', function ($q) {
+        // --- lọc theo đối tác ---
+        $query->when($request->filled('partner'), function ($q) use ($request) {
+            // Hiện tại chỉ có GHN, sau này có thể thêm GHTK
+            if ($request->partner === 'ghn') {
+                $q->whereNotNull('ghn_order_code');
+            }
         });
 
+        // --- lọc theo cod (tiền thu hộ) ---
         $query->when(
             $request->filled('cod') && $request->cod !== 'all',
             function ($q) use ($request) {
                 if ($request->cod === 'yes') {
-                    $q->where('ghn_cod_amount', '>', 0);
+                    $q->where('ghn_cod_amount', '>', 0); // Có thu tiền
                 } else {
+                    // Không thu tiền (NULL hoặc = 0)
                     $q->where(function ($subQ) {
                         $subQ->whereNull('ghn_cod_amount')
                             ->orWhere('ghn_cod_amount', 0);
@@ -401,35 +455,47 @@ class OrdersController extends Controller
             }
         );
 
+        // --- tìm kiếm ---
         $query->when($request->filled('search'), function ($q) use ($request) {
-            $q->where('ghn_order_code', 'like', '%' . $request->search . '%');
+            $searchTerm = $request->search;
+            $q->where(function ($subQ) use ($searchTerm) {
+                $subQ->where('ghn_order_code', 'like', "%{$searchTerm}%") // Tìm mã vận đơn
+                    ->orWhere('order_code', 'like', "%{$searchTerm}%")     // Tìm mã đơn hàng
+                    ->orWhere('customer_name', 'like', "%{$searchTerm}%")  // Tìm tên khách
+                    ->orWhere('customer_phone', 'like', "%{$searchTerm}%"); // Tìm sđt
+            });
         });
 
-        // 4. Quan trọng: Sử dụng PAGINATE thay vì GET để tránh crash server khi dữ liệu lớn
-        // latest() mặc định dùng cột created_at, nếu muốn ghn_created_at phải chỉ định rõ
+        // --- lấy dữ liệu và format ---
+        // sắp xếp theo thời gian tạo bên GHN mới nhất
         $orders = $query->latest('ghn_created_at')
-            ->paginate(20) // Lấy 20 bản ghi mỗi trang
-            ->withQueryString(); // Giữ lại các params trên URL khi chuyển trang
+            ->paginate(20)
+            ->withQueryString(); // giữ lại params trên URL khi chuyển trang
 
-        // 5. Transform dữ liệu bằng 'through' (dành cho Paginator)
-        $orders->through(function ($order) use ($statusMap) {
-            $displayStatus = $statusMap[$order->ghn_status] ?? 'delivering';
-            // Check date an toàn để tránh lỗi call format on null
-            $createdDate = $order->ghn_created_at ?? $order->created_at; 
+        // format dữ liệu trước khi trả về Frontend
+        $orders->through(function ($order) use ($displayMap) {
+            // lấy trạng thái hiển thị (gom nhóm)
+            $displayStatus = $displayMap[$order->ghn_status] ?? 'delivering';
+
+            // xử lý ngày tháng 
+            $createdDate = $order->ghn_created_at ?? $order->created_at;
             $deliveryDate = $order->ghn_expected_delivery_time;
 
             return [
                 'id'                   => $order->id,
-                'code'                 => $order->ghn_order_code,
-                'order_code'           => $order->order_code,
-                'created_at'           => $createdDate?->format('Y-m-d H:i:s'),
+                'code'                 => $order->ghn_order_code,       // Mã vận đơn
+                'order_code'           => $order->order_code,           // Mã đơn hàng hệ thống
                 'created_at_formatted' => $createdDate?->format('d/m/Y H:i'),
-                'date'                 => $createdDate?->format('Y-m-d'),
                 'customer_name'        => $order->customer_name,
+                'customer_phone'       => $order->customer_phone,
                 'partner'              => 'ghn',
+
+                // frontend sẽ dùng field này để hiện màu tag (success/warning/danger)
                 'status'               => $displayStatus,
-                'ghn_status'           => $order->ghn_status,
-                'cod'                  => ($order->ghn_cod_amount ?? 0) > 0,
+
+                // Status gốc để debug nếu cần
+                'original_status'      => $order->ghn_status,
+
                 'cod_amount'           => $order->ghn_cod_amount ?? 0,
                 'delivery_time'        => $deliveryDate?->format('d/m/Y H:i'),
                 'shipper_name'         => $order->ghn_shipper_name,
@@ -439,8 +505,14 @@ class OrdersController extends Controller
         });
 
         return Inertia::render('Admin/Orders/Products/Transport/TransportDashboard', [
-            'orders' => $orders, 
-            'filters' => $request->only(['status', 'partner', 'cod', 'search']),
+            'orders'  => $orders,
+            'filters' => [
+                // Trả về đúng định dạng để Frontend repopulate lại form
+                'status'  => $request->input('status', []),
+                'partner' => $request->input('partner', ''),
+                'cod'     => $request->input('cod', 'all'),
+                'search'  => $request->input('search', ''),
+            ],
         ]);
     }
 }
