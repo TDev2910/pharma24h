@@ -1,47 +1,49 @@
 <template>
   <div class="dashboard-container">
-
+    <!-- Stats Row -->
     <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-value">{{ processingOrderCount }}</div>
-          <div class="stat-label">Đơn hàng đang xử lý</div>
-          <div class="stat-trend positive">+1 hôm nay</div>
-        </div>
-        <div class="stat-icon-box blue"><i class="fas fa-shopping-cart"></i></div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-value">1,250</div>
-          <div class="stat-label">Điểm thưởng tích lũy</div>
-          <div class="stat-trend positive">+50 điểm</div>
-        </div>
-        <div class="stat-icon-box purple"><i class="fas fa-star"></i></div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-value">15.4tr</div>
-          <div class="stat-label">Công nợ hiện tại</div>
-          <div class="stat-trend neutral">Đến hạn: 30/12</div>
-        </div>
-        <div class="stat-icon-box orange"><i class="fas fa-wallet"></i></div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-value">{{ newNotificationsCount }}</div>
-          <div class="stat-label">Thông báo mới</div>
-          <Link href="/user/notifications" class="stat-link">Xem tất cả</Link>
-        </div>
-        <div class="stat-icon-box red"><i class="fas fa-envelope"></i></div>
-      </div>
+      <StatsCard 
+        :value="processingOrderCount"
+        label="Đơn hàng đang xử lý"
+        trend="+1 hôm nay"
+        trend-type="positive"
+        icon="fas fa-shopping-cart"
+        icon-color="blue"
+      />
+      
+      <StatsCard 
+        value="1,250"
+        label="Điểm thưởng tích lũy"
+        trend="+50 điểm"
+        trend-type="positive"
+        icon="fas fa-star"
+        icon-color="purple"
+      />
+      
+      <StatsCard 
+        value="15.4tr"
+        label="Công nợ hiện tại"
+        trend="Đến hạn: 30/12"
+        trend-type="neutral"
+        icon="fas fa-wallet"
+        icon-color="orange"
+      />
+      
+      <StatsCard 
+        :value="newNotificationsCount"
+        label="Thông báo mới"
+        trend="Xem tất cả"
+        link-to="/user/notifications"
+        icon="fas fa-envelope"
+        icon-color="red"
+      />
     </div>
 
+    <!-- Dashboard Grid -->
     <div class="dashboard-grid">
-
+      <!-- Left Column -->
       <div class="left-col">
+        <!-- Promo Banner -->
         <div class="promo-banner">
           <div class="banner-content">
             <span class="banner-tag">MỚI</span>
@@ -51,41 +53,13 @@
           </div>
         </div>
 
-        <!-- Đơn hàng gần đây -->
-        <div class="section-card">
-          <div class="card-header">
-            <h3><i class="fas fa-history"></i> Đơn hàng gần đây</h3>
-            <Link href="/user/orders" class="link-text">Xem tất cả</Link>
-          </div>
-
-          <div class="table-responsive">
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>Mã đơn</th>
-                  <th>Sản phẩm</th>
-                  <th>Tổng tiền</th>
-                  <th>Trạng thái</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="order in recentOrders" :key="order.id">
-                  <td class="code">{{ order.code }} <br></td>
-                  <td>{{ order.product }}</td>
-                  <td class="price">{{ order.total }}</td>
-                  <td>
-                    <span :class="['status-badge', order.statusClass]">{{ order.status }}</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <!-- Recent Orders -->
+        <RecentOrders :orders="recentOrders" />
       </div>
 
+      <!-- Right Column -->
       <div class="right-col">
-
+        <!-- Quick Access -->
         <div class="section-card">
           <div class="card-header">
             <h3><i class="fas fa-th"></i> Truy cập nhanh</h3>
@@ -110,6 +84,7 @@
           </div>
         </div>
 
+        <!-- Notifications -->
         <div class="section-card">
           <div class="card-header">
             <h3><i class="fas fa-bell"></i> Mới cập nhật</h3>
@@ -131,17 +106,16 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3'
-import { ref, computed } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
+import { computed } from 'vue'
+import StatsCard from '@/Components/User/Dashboard/StatsCard.vue'
+import RecentOrders from '@/Components/User/Dashboard/RecentOrders.vue'
 
 const props = defineProps({
   auth: Object,
@@ -156,36 +130,36 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
-  processingOrderCount: Number,
-  newNotificationsCount: Number,
+  processingOrderCount: {
+    type: Number,
+    default: 0
+  },
+  newNotificationsCount: {
+    type: Number,
+    default: 0
+  }
 })
 
-// Map dữ liệu notifications từ backend
-const recentNotifications = computed(() => props.recentNotifications)
-const recentOrders = computed(() => props.recentOrders)
-const processingOrderCount = computed(() => props.processingOrderCount)
-const newNotificationsCount = computed(() => props.newNotificationsCount)
 const markAllAsRead = () => {
   router.post('/user/notifications/mark-all-read', {}, {
     preserveScroll: true,
     onSuccess: () => {
-      // Refresh page để cập nhật trạng thái
       router.reload({ only: ['recentNotifications', 'unreadNotificationsCount'] })
     }
   })
-}
-
-const goToOrderDetails = (orderId) => {
-  router.visit(`/user/orders/${orderId}`)
 }
 </script>
 
 <style scoped>
 /* --- GRID LAYOUT --- */
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  /* 2 phần trái, 1 phần phải */
   gap: 24px;
 }
 
@@ -197,124 +171,50 @@ const goToOrderDetails = (orderId) => {
   margin-bottom: 24px;
 }
 
-.stat-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-  border: 1px solid #F1F5F9;
-}
-
-.stat-value {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1E293B;
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 13px;
-  color: #64748B;
-  margin-bottom: 8px;
-}
-
-.stat-trend {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 4px;
-  display: inline-block;
-}
-
-.stat-trend.positive {
-  background: #DCFCE7;
-  color: #16A34A;
-}
-
-.stat-trend.neutral {
-  background: #F1F5F9;
-  color: #64748B;
-}
-
-.stat-link {
-  font-size: 12px;
-  color: #3B82F6;
-  text-decoration: none;
-}
-
-.stat-icon-box {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-
-.stat-icon-box.blue {
-  background: #EFF6FF;
-  color: #3B82F6;
-}
-
-.stat-icon-box.purple {
-  background: #F3E8FF;
-  color: #9333EA;
-}
-
-.stat-icon-box.orange {
-  background: #FFEDD5;
-  color: #F97316;
-}
-
-.stat-icon-box.red {
-  background: #FEE2E2;
-  color: #EF4444;
-}
-
 /* --- PROMO BANNER --- */
 .promo-banner {
-  background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+  background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
   border-radius: 16px;
-  padding: 30px;
+  padding: 32px;
   color: white;
   margin-bottom: 24px;
   position: relative;
   overflow: hidden;
 }
 
+.banner-content {
+  position: relative;
+  z-index: 2;
+}
+
 .banner-tag {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 4px 8px;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 4px 12px;
+  border-radius: 16px;
   font-size: 11px;
-  font-weight: bold;
-  margin-bottom: 12px;
-  display: inline-block;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .promo-banner h3 {
   font-size: 22px;
   font-weight: 700;
-  margin: 0 0 10px 0;
-  max-width: 80%;
+  margin: 16px 0 12px;
 }
 
 .promo-banner p {
-  opacity: 0.9;
+  opacity: 0.95;
   margin-bottom: 20px;
   font-size: 14px;
-  max-width: 70%;
+  line-height: 1.6;
 }
 
 .btn-white {
   background: white;
-  color: #1E40AF;
+  color: #667EEA;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 24px;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
@@ -326,13 +226,12 @@ const goToOrderDetails = (orderId) => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* --- SECTION CARDS --- */
+/* --- RIGHT COLUMN SECTIONS --- */
 .section-card {
   background: white;
-  border-radius: 16px;
-  padding: 24px;
-  border: 1px solid #E2E8F0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   margin-bottom: 24px;
 }
 
@@ -340,135 +239,61 @@ const goToOrderDetails = (orderId) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .card-header h3 {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   color: #1E293B;
-  margin: 0;
   display: flex;
   align-items: center;
   gap: 8px;
+  margin: 0;
 }
 
 .card-header h3 i {
   color: #3B82F6;
+  font-size: 14px;
 }
 
 .link-text {
   color: #3B82F6;
-  text-decoration: none;
   font-size: 13px;
   font-weight: 500;
-}
-
-.link-text.sm {
-  font-size: 12px;
-  color: #94A3B8;
   cursor: pointer;
+  text-decoration: none;
 }
 
-/* --- TABLE --- */
-.custom-table {
-  width: 100%;
-  border-collapse: collapse;
+.link-text:hover {
+  text-decoration: underline;
 }
 
-.custom-table th {
-  text-align: left;
-  color: #000;
-  font-size: 14px;
-  font-weight: 600; 
-  padding-bottom: 12px;
-  border-bottom: 1px solid #F1F5F9;
-}
-
-.custom-table td {
-  padding: 16px 0;
-  border-bottom: 1px solid #F1F5F9;
-  color: #334155;
-  font-size: 14px;
-  vertical-align: middle;
-}
-
-.custom-table tr:last-child td {
-  border-bottom: none;
-}
-
-.custom-table .code {
-  font-weight: 600;
-  color: #1E293B;
-}
-
-.custom-table .code small {
-  color: #94A3B8;
-  font-weight: 400;
-}
-
-.custom-table .price {
-  font-weight: 700;
-  color: #1E293B;
-}
-
-.status-badge {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.status-badge.processing {
-  background: #EFF6FF;
-  color: #3B82F6;
-}
-
-.status-badge.shipping {
-  background: #FFEDD5;
-  color: #F97316;
-}
-
-.status-badge.completed {
-  background: #DCFCE7;
-  color: #16A34A;
-}
-
-.btn-icon-sm {
-  background: none;
-  border: none;
-  color: #94A3B8;
-  cursor: pointer;
-}
-
-.btn-icon-sm:hover {
-  color: #3B82F6;
-}
-
-/* --- QUICK ACCESS GRID --- */
+/* Quick Access Grid */
 .quick-access-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 
 .quick-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+  padding: 16px;
   background: #F8FAFC;
-  padding: 20px;
   border-radius: 12px;
   text-decoration: none;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 500;
   transition: 0.2s;
-  border: 1px solid transparent;
 }
 
 .quick-btn:hover {
-  background: white;
-  border-color: #E2E8F0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .q-icon {
@@ -479,74 +304,21 @@ const goToOrderDetails = (orderId) => {
   align-items: center;
   justify-content: center;
   font-size: 20px;
-  margin-bottom: 12px;
 }
 
-.quick-btn span {
-  font-size: 13px;
-  font-weight: 600;
-  color: #475569;
-  text-align: center;
-}
+.bg-blue-100 { background: #DBEAFE; }
+.text-blue { color: #2563EB; }
+.bg-purple-100 { background: #EDE9FE; }
+.text-purple { color: #7C3AED; }
+.bg-green-100 { background: #D1FAE5; }
+.text-green { color: #059669; }
+.bg-orange-100 { background: #FED7AA; }
+.text-orange { color: #EA580C; }
 
-/* Colors for icons */
-.bg-blue-100 {
-  background: #DBEAFE;
-}
-
-.text-blue {
-  color: #2563EB;
-}
-
-.bg-purple-100 {
-  background: #F3E8FF;
-}
-
-.text-purple {
-  color: #9333EA;
-}
-
-.bg-green-100 {
-  background: #DCFCE7;
-}
-
-.text-green {
-  color: #16A34A;
-}
-
-.bg-orange-100 {
-  background: #FFEDD5;
-}
-
-.text-orange {
-  color: #EA580C;
-}
-
-/* --- NOTIFICATIONS --- */
+/* Notifications */
 .notification-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.notif-item {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #F1F5F9;
-}
-
-.notif-item:last-child {
-  border: none;
-  padding: 0;
-}
-
-.notif-item.unread {
-  background: #F0F9FF;
-  padding: 12px;
-  border-radius: 8px;
-  border-left: 3px solid #3B82F6;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .no-notifications {
@@ -559,50 +331,57 @@ const goToOrderDetails = (orderId) => {
   font-size: 14px;
 }
 
+.notif-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: background 0.2s;
+}
+
+.notif-item:hover {
+  background: #F8FAFC;
+}
+
+.notif-item.unread {
+  background: #EFF6FF;
+}
+
 .notif-icon {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 14px;
+  color: white;
 }
 
-.notif-icon.blue {
-  background: #EFF6FF;
-  color: #3B82F6;
-}
-
-.notif-icon.yellow {
-  background: #FEF9C3;
-  color: #CA8A04;
-}
-
-.notif-icon.green {
-  background: #DCFCE7;
-  color: #16A34A;
-}
+.notif-icon.blue { background: #3B82F6; }
+.notif-icon.green { background: #10B981; }
+.notif-icon.orange { background: #F59E0B; }
+.notif-icon.red { background: #EF4444; }
 
 .notif-text p {
-  margin: 0 0 4px 0;
   font-size: 13px;
   color: #334155;
-  line-height: 1.4;
+  margin: 0 0 4px;
+  line-height: 1.5;
 }
 
 .notif-text small {
-  color: #94A3B8;
   font-size: 11px;
+  color: #94A3B8;
 }
 
-/* --- RESPONSIVE --- */
+/* Responsive */
 @media (max-width: 1024px) {
   .stats-row {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
-
+  
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
