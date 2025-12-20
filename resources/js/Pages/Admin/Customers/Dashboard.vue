@@ -126,13 +126,14 @@
             </Column>
 
             <!-- Actions Column -->
-            <Column header="Thao tác" style="width: 10%;font-size: 13.4px;">
+            <Column header="Thao tác" style="width: 15%; text-align: center;">
               <template #body="slotProps">
-                <div class="action-group">
-                  <Button icon="pi pi-pencil" class="p-button-sm btn-edit" @click="editCustomer(slotProps.data)"
-                    v-tooltip.top="'Sửa'" />
-                  <Button icon="pi pi-trash" class="p-button-sm btn-delete" @click="deleteCustomer(slotProps.data)"
-                    v-tooltip.top="'Xóa'" />
+                <div class="flex justify-content-center gap-2">
+                  <Button icon="pi pi-pencil" text rounded severity="warning" size="small"
+                    @click="editCustomer(slotProps.data)" v-tooltip.top="'Chỉnh sửa'" />
+
+                  <Button icon="pi pi-trash" text rounded severity="danger" size="small"
+                    @click="deleteCustomer(slotProps.data)" v-tooltip.top="'Xóa'" />
                 </div>
               </template>
             </Column>

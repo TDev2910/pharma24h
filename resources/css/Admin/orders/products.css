@@ -98,11 +98,6 @@
   justify-content: center;
 }
 
-.btn:hover {
-  background: #e9ecef;
-  color: #495057;
-}
-
 .btn i {
   font-size: 14px;
 }
@@ -287,8 +282,8 @@
 /* Action buttons */
 .action-group {
   display: flex;
-  gap: 4px;
   justify-content: center;
+  gap: 0.5rem; /* Khoảng cách giữa các nút */
 }
 
 :deep(.p-button.p-button-sm) {

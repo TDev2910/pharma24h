@@ -49,8 +49,8 @@
       <div class="stats-row">
         <div class="stats-card">
           <div class="stats-card-inner">
-            <div class="stats-icon" style="background: #4F46E5;">
-              <i class="fas fa-shopping-cart"></i>
+            <div class="stats-icon" style="background: #94B4C1;">
+              <i class="pi pi-shopping-cart"></i>
             </div>
             <div>
               <div class="stats-label">Tổng đơn hàng</div>
@@ -60,8 +60,8 @@
         </div>
         <div class="stats-card">
           <div class="stats-card-inner">
-            <div class="stats-icon" style="background: #F59E0B;">
-              <i class="fas fa-clock"></i>
+            <div class="stats-icon" style="background: #E97F4A;">
+              <i class="pi pi-clock"></i>
             </div>
             <div>
               <div class="stats-label">Đơn chờ xử lý</div>
@@ -72,7 +72,7 @@
         <div class="stats-card">
           <div class="stats-card-inner">
             <div class="stats-icon" style="background: #10B981;">
-              <i class="fas fa-check-circle"></i>
+              <i class="pi pi-check-circle"></i>
             </div>
             <div>
               <div class="stats-label">Đơn hoàn thành</div>
@@ -199,15 +199,17 @@
             </Column>
 
             <!-- Actions Column -->
-            <Column header="Thao tác" style="width: 15%">
+            <Column header="Thao tác" style="width: 15%; text-align: center;">
               <template #body="slotProps">
-                <div class="action-group">
-                  <Button icon="pi pi-eye" class="p-button-sm btn-detail" @click="viewOrderDetail(slotProps.data)"
-                    v-tooltip.top="'Xem chi tiết'" />
-                  <Button icon="pi pi-pencil" class="p-button-sm btn-edit" @click="editOrder(slotProps.data)"
-                    v-tooltip.top="'Chỉnh sửa'" />
-                  <Button icon="pi pi-trash" class="p-button-sm btn-delete" @click="deleteOrder(slotProps.data)"
-                    v-tooltip.top="'Xóa'" />
+                <div class="flex justify-content-center gap-2">
+                  <Button icon="pi pi-eye" text rounded severity="info" size="small"
+                    @click="viewOrderDetail(slotProps.data)" v-tooltip.top="'Xem chi tiết'" />
+
+                  <Button icon="pi pi-pencil" text rounded severity="warning" size="small"
+                    @click="editOrder(slotProps.data)" v-tooltip.top="'Chỉnh sửa'" />
+
+                  <Button icon="pi pi-trash" text rounded severity="danger" size="small"
+                    @click="deleteOrder(slotProps.data)" v-tooltip.top="'Xóa'" />
                 </div>
               </template>
             </Column>

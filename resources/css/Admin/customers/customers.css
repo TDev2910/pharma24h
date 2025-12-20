@@ -251,8 +251,8 @@
 /* Action buttons */
 .action-group {
   display: flex;
-  gap: 4px;
   justify-content: center;
+  gap: 0.5rem; /* Khoảng cách giữa các nút */
 }
 
 :deep(.p-button.p-button-sm) {
