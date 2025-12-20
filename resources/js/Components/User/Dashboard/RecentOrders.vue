@@ -13,14 +13,15 @@
             <th>Sản phẩm</th>
             <th>Tổng tiền</th>
             <th>Trạng thái</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           <tr v-if="orders.length === 0">
-            <td colspan="4" class="text-center text-muted">Chưa có đơn hàng nào</td>
+            <td colspan="5" class="text-center text-muted">Chưa có đơn hàng nào</td>
           </tr>
-          <tr v-for="order in orders" :key="order.id" @click="viewOrderDetail(order.id)" class="clickable-row">
-            <td class="code">{{ order.code }}</td>
+          <tr v-for="order in orders" :key="order.id">
+            <td class="code">{{ order.code }} <br></td>
             <td>{{ order.product }}</td>
             <td class="price">{{ order.total }}</td>
             <td>
@@ -34,7 +35,7 @@
 </template>
 
 <script setup>
-import { Link, router } from '@inertiajs/vue3'
+import { Link } from '@inertiajs/vue3'
 
 const props = defineProps({
   orders: {
@@ -42,18 +43,16 @@ const props = defineProps({
     default: () => []
   }
 })
-
-const viewOrderDetail = (orderId) => {
-  router.visit(`/user/orders/${orderId}`)
-}
 </script>
 
 <style scoped>
 .section-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  margin-bottom: 24px;
 }
 
 .card-header {
@@ -61,18 +60,16 @@ const viewOrderDetail = (orderId) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #E2E8F0;
 }
 
 .card-header h3 {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   color: #1E293B;
+  margin: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0;
 }
 
 .card-header h3 i {
@@ -82,67 +79,76 @@ const viewOrderDetail = (orderId) => {
 .link-text {
   color: #3B82F6;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-}
-
-.link-text:hover {
-  text-decoration: underline;
 }
 
 .table-responsive {
   overflow-x: auto;
 }
 
+/* --- TABLE --- */
 .custom-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.custom-table thead th {
+.custom-table th {
   text-align: left;
-  padding: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #64748B;
-  border-bottom: 1px solid #E2E8F0;
-}
-
-.custom-table tbody tr {
-  border-bottom: 1px solid #F1F5F9;
-  transition: background 0.2s;
-}
-
-.custom-table tbody tr.clickable-row {
-  cursor: pointer;
-}
-
-.custom-table tbody tr.clickable-row:hover {
-  background: #F8FAFC;
-}
-
-.custom-table tbody td {
-  padding: 16px 12px;
+  color: #000;
   font-size: 14px;
-  color: #334155;
-}
-
-.custom-table tbody td.code {
   font-weight: 600;
-  color: #3B82F6;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F1F5F9;
 }
 
-.custom-table tbody td.price {
+.custom-table td {
+  padding: 16px 0;
+  border-bottom: 1px solid #F1F5F9;
+  color: #334155;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.custom-table tr:last-child td {
+  border-bottom: none;
+}
+
+.custom-table .code {
   font-weight: 600;
   color: #1E293B;
 }
 
+.custom-table .code small {
+  color: #94A3B8;
+  font-weight: 400;
+}
+
+.custom-table .price {
+  font-weight: 700;
+  color: #1E293B;
+}
+
 .status-badge {
-  padding: 4px 12px;
-  border-radius: 12px;
+  padding: 6px 12px;
+  border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
-  display: inline-block;
+}
+
+.status-badge.processing {
+  background: #EFF6FF;
+  color: #3B82F6;
+}
+
+.status-badge.shipping {
+  background: #FFEDD5;
+  color: #F97316;
+}
+
+.status-badge.completed {
+  background: #DCFCE7;
+  color: #16A34A;
 }
 
 .status-badge.success {
@@ -174,4 +180,3 @@ const viewOrderDetail = (orderId) => {
   font-style: italic;
 }
 </style>
-

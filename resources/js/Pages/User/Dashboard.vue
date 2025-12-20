@@ -173,9 +173,9 @@ const markAllAsRead = () => {
 
 /* --- PROMO BANNER --- */
 .promo-banner {
-  background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+  background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
   border-radius: 16px;
-  padding: 32px;
+  padding: 30px;
   color: white;
   margin-bottom: 24px;
   position: relative;
@@ -188,33 +188,34 @@ const markAllAsRead = () => {
 }
 
 .banner-tag {
-  background: rgba(255, 255, 255, 0.25);
-  padding: 4px 12px;
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
   font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  display: inline-block;
 }
 
 .promo-banner h3 {
   font-size: 22px;
   font-weight: 700;
-  margin: 16px 0 12px;
+  margin: 0 0 10px 0;
+  max-width: 80%;
 }
 
 .promo-banner p {
-  opacity: 0.95;
+  opacity: 0.9;
   margin-bottom: 20px;
   font-size: 14px;
-  line-height: 1.6;
+  max-width: 70%;
 }
 
 .btn-white {
   background: white;
-  color: #667EEA;
+  color: #1E40AF;
   border: none;
-  padding: 10px 24px;
+  padding: 10px 20px;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
@@ -226,12 +227,13 @@ const markAllAsRead = () => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* --- RIGHT COLUMN SECTIONS --- */
+/* --- SECTION CARDS --- */
 .section-card {
   background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
   margin-bottom: 24px;
 }
 
@@ -244,29 +246,29 @@ const markAllAsRead = () => {
 
 .card-header h3 {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   color: #1E293B;
+  margin: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0;
 }
 
 .card-header h3 i {
   color: #3B82F6;
-  font-size: 14px;
 }
 
 .link-text {
   color: #3B82F6;
+  text-decoration: none;
   font-size: 13px;
   font-weight: 500;
-  cursor: pointer;
-  text-decoration: none;
 }
 
-.link-text:hover {
-  text-decoration: underline;
+.link-text.sm {
+  font-size: 12px;
+  color: #94A3B8;
+  cursor: pointer;
 }
 
 /* Quick Access Grid */
