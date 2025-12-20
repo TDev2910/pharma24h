@@ -135,8 +135,8 @@
 
 <script setup>
 import { computed } from 'vue'
-import VchatWidget from '@/Components/VchatWidget.vue'
-import ChatbotFloatingButton from '@/Components/ChatbotFloatingButton.vue'
+import VchatWidget from '@/Components/Global/Chat/VchatWidget.vue'
+import ChatbotFloatingButton from '@/Components/Global/Chat/ChatbotFloatingButton.vue'
 
 const props = defineProps({
   auth: {

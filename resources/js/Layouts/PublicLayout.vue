@@ -20,8 +20,8 @@
 </template>
 
 <script setup>
-import Header from '@/Pages/Public/components/Header.vue'
-import Footer from '@/Pages/Public/components/Footer.vue'
+import Header from '@/Components/Global/Header.vue'
+import Footer from '@/Components/Global/Footer.vue'
 import { onMounted, onUnmounted } from 'vue'
 
 // Props từ Inertia
