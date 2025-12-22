@@ -14,16 +14,16 @@
           <!-- Item 1 -->
           <div class="col-12 col-md-6 col-lg-3 mb-4">
             <div class="service-item">
-              <img src="https://phongkhamviethuong.vn/wp-content/uploads/2024/11/20190926_BHYT.jpg"
+              <img src="https://online.vinmec.com/sites/default/files/inline-images/2%20%281%29.png" style="height: 205px;"
                 alt="Khám bệnh BHYT" class="img-fluid mb-3">
-              <h6 class="fw-semibold text-dark">KHÁM BỆNH BHYT - DỊCH VỤ</h6>
+              <h6 class="fw-semibold text-dark">GÓI KHÁM CHO TRẺ EM</h6>
             </div>
           </div>
 
           <!-- Item 2 -->
           <div class="col-12 col-md-6 col-lg-3 mb-4">
             <div class="service-item">
-              <img src="https://phongkhamviethuong.vn/wp-content/uploads/2024/11/freepik-5839697.jpg"
+              <img src="https://medlatec.vn/media/23623/file/_kham-suc-khoe-tai-nha-1+(1).jpg"
                 alt="Khám bệnh tại nhà" class="img-fluid mb-3">
               <h6 class="fw-semibold text-dark">KHÁM BỆNH TẠI NHÀ</h6>
             </div>
@@ -32,7 +32,7 @@
           <!-- Item 3 -->
           <div class="col-12 col-md-6 col-lg-3 mb-4">
             <div class="service-item">
-              <img src="https://phongkhamviethuong.vn/wp-content/uploads/2024/11/ksk_10240607.jpg" alt="Nội soi"
+              <img src="https://login.medlatec.vn//ImagePath/images/20200304/20200304_kham-suc-khoe-di-hoc.jpg" alt="Nội soi"
                 class="img-fluid mb-3">
               <h6 class="fw-semibold text-dark">KHÁM SỨC KHỎE ĐI HỌC</h6>
             </div>
@@ -42,9 +42,9 @@
           <div class="col-12 col-md-6 col-lg-3 mb-4">
             <div class="service-item">
               <img
-                src="https://phongkhamviethuong.vn/wp-content/uploads/2024/11/doctor-with-digital-tablet-2048x1367.jpg"
+                src="https://bvdkkvnhkt.org.vn/upload/64346/fck/files/wps5.jpg" style="padding-top:25px"
                 alt="Đặt lịch hẹn" class="img-fluid mb-3">
-              <h6 class="fw-semibold text-dark">ĐẶT LỊCH HẸN KHÁM BỆNH</h6>
+              <h6 class="fw-semibold text-dark">ĐẶT LỊCH HẸN ONLINE</h6>
             </div>
           </div>
         </div>

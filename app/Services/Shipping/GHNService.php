@@ -31,6 +31,7 @@ class GHNService
     public function getProvinces(): array
     {
         try {
+            //gọi API tỉnh/thành phố
             $url = $this->baseUrl . '/master-data/province';
             
             $response = Http::withHeaders([
@@ -147,7 +148,7 @@ class GHNService
     public function calculateShippingFee(Order $order): array
     {
         try {
-            // Lấy thông tin địa chỉ từ order
+            // Lấy thông tin địa chỉ từ đơn hàng
             $toDistrictId = $this->getDistrictIdFromOrder($order);
             $toWardCode = $this->getWardCodeFromOrder($order);
 
@@ -166,14 +167,15 @@ class GHNService
                 'Token' => $this->token,
                 'ShopId' => $this->shopId,
                 'Content-Type' => 'application/json'
-            ])->post($this->baseUrl . '/v2/shipping-order/fee', [
-                'from_district_id' => $this->fromDistrictId,
-                'from_ward_code' => $this->fromWardCode,
-                'to_district_id' => $toDistrictId,
-                'to_ward_code' => $toWardCode,
+            ])->post($this->baseUrl . '/v2/shipping-order/fee', 
+            [
+                'from_district_id' => $this->fromDistrictId, //id của quận/huyện lấy từ config/services.php
+                'from_ward_code' => $this->fromWardCode, //code của phường/xã lấy từ config/services.php
+                'to_district_id' => $toDistrictId, //id của quận/huyện từ đơn hàng
+                'to_ward_code' => $toWardCode, //code của phường/xã từ đơn hàng
                 'service_type_id' => $this->defaultServiceType,
-                'weight' => $weight,
-                'cod_amount' => $codAmount,
+                'weight' => $weight, //mặc định 100g mỗi sản phẩm
+                'cod_amount' => $codAmount,     
             ]);
 
             $data = $response->json();
@@ -239,7 +241,7 @@ class GHNService
                 ];
             }
 
-            $url = $this->baseUrl . '/v2/shipping-order/create';
+            $url = $this->baseUrl . '/v2/shipping-order/create'; // gọi API tạo đơn hàng GHN
             $payload = [
                 'payment_type_id' => $order->payment_method === 'cod' ? 2 : 1,
                 'note' => $order->note ?? '',
@@ -424,6 +426,7 @@ class GHNService
     protected function getCodAmount(Order $order): int
     {
         if ($order->payment_method !== 'cod') {
+            //nếu phương thức thanh toán không phải COD thì trả về 0
             return 0;
         }
 

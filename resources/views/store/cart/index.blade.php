@@ -444,25 +444,7 @@
     </style>
 </head>
 <body>
-    <div class="cart-container">
-        <!-- Progress Steps -->
-        <div class="progress-steps">
-            <div class="step active">
-                <div class="step-circle">1</div>
-                <div class="step-name">Giỏ hàng</div>
-                <div class="step-line"></div>
-            </div>
-            <div class="step">
-                <div class="step-circle">2</div>
-                <div class="step-name">Địa chỉ</div>
-                <div class="step-line"></div>
-            </div>
-            <div class="step">
-                <div class="step-circle">3</div>
-                <div class="step-name">Thanh toán</div>
-            </div>
-        </div>
-
+    <div class="cart-container" style="margin-top: 100px;">
         <div class="row">
             <div class="col-lg-8">
                 <!-- Cart Items -->
