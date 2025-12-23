@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Services\Firebase\FirebaseService;
 
 class AuthController extends Controller
 {
@@ -146,7 +147,11 @@ class AuthController extends Controller
         $photoURL = $request->photoURL;
 
         try {
-            // Tìm user theo firebase_uid hoặc email
+            //Tìm user theo firebase_uid hoặc email 
+            //Để thực hiện tính năng Merge Account (Gộp tài khoản). 
+            //Nếu người dùng từng đăng ký thủ công bằng abc@gmail.com,
+            //hôm nay họ chọn "Login with Google" (cũng là abc@gmail.com), 
+            //hệ thống sẽ hiểu là cùng 1 người.
             $user = User::where('firebase_uid', $uid)
                 ->orWhere('email', $email)
                 ->first();
@@ -174,7 +179,7 @@ class AuthController extends Controller
                     'firebase_uid' => $uid,
                     'provider' => 'google',
                     'role' => 'user',
-                    'email_verified_at' => now(),
+                    'email_verified_at' => now(), //xác thực email trực tiếp
                 ]);
             }
 

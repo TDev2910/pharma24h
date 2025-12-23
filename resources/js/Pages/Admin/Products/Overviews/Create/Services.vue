@@ -1,160 +1,122 @@
 <template>
-  <Dialog :visible="visible" @update:visible="$emit('close')" header="Tạo dịch vụ" :style="{ width: '900px' }" modal
-    :closable="true">
-    <div class="flex gap-6">
-      <!-- Left Section: Form Fields -->
-      <div class="form-grid" style="flex: 1;">
-        <!-- Tabs -->
-        <div class="tabs-container">
-          <div class="tabs-header">
-            <button class="tab-button" :class="{ active: activeTab === 'info' }" @click="activeTab = 'info'">
-              Thông tin
-            </button>
-            <button class="tab-button" :class="{ active: activeTab === 'description' }"
-              @click="activeTab = 'description'">
-              Mô tả
-            </button>
-          </div>
-          <div class="tabs-divider"></div>
+  <Dialog :visible="visible" @update:visible="$emit('close')" header="Tạo Dịch Vụ Mới" :style="{ width: '950px' }" modal
+    :closable="true" class="custom-service-modal" :draggable="false">
+
+    <div class="modal-body-layout">
+      <div class="left-panel">
+        <div class="custom-tabs">
+          <button class="tab-item" :class="{ active: activeTab === 'info' }" @click="activeTab = 'info'">
+            <i class="pi pi-info-circle mr-2"></i> Thông tin chung
+          </button>
+          <button class="tab-item" :class="{ active: activeTab === 'description' }" @click="activeTab = 'description'">
+            <i class="pi pi-align-left mr-2"></i> Chi tiết & Mô tả
+          </button>
         </div>
 
-        <!-- Tab Content -->
-        <div v-if="activeTab === 'info'" class="tab-content">
-          <!-- THÔNG TIN CƠ BẢN -->
-          <div class="form-section">
-            <div class="form-row">
-              <!-- Left inputs -->
-              <div class="form-column">
-                <div class="form-row">
-                  <div class="form-field">
-                    <label class="field-label">Mã dịch vụ</label>
-                    <div class="input-group">
-                      <InputText v-model="formData.ma_dich_vu" placeholder="Tự động" readonly
-                        class="field-input readonly-input" />
-                      <Button label="Tạo mã" icon="pi pi-refresh" @click="generateServiceCode" severity="secondary"
-                        size="small" />
-                    </div>
-                  </div>
+        <div class="tab-panels">
+          <div v-show="activeTab === 'info'" class="panel-content fade-in">
 
-                  <div class="form-field">
-                    <label class="field-label">Nhóm hàng <span class="text-danger">*</span></label>
-                    <div class="custom-category-selector" :class="{ 'p-invalid': errors.nhom_hang_id }">
-                      <div class="category-input-container" @click="toggleCategoryDropdown">
-                        <div class="category-input">
-                          <i class="pi pi-search search-icon"></i>
-                          <input type="text" v-model="categorySearchText"
-                            :placeholder="selectedCategoryName || 'Chọn nhóm hàng (Bắt buộc)'" readonly
-                            class="category-search-input" />
-                          <i class="pi pi-chevron-up dropdown-icon" :class="{ 'rotated': showCategoryDropdown }"></i>
-                        </div>
-                      </div>
+            <div class="input-grid">
 
-                      <div v-if="showCategoryDropdown" class="category-dropdown">
-                        <div class="category-dropdown-content">
-                          <div v-for="node in filteredCategoryNodes" :key="node.key" class="category-option" :class="{
-                            'selected': selectedCategoryKeys[node.key],
-                            'has-children': node.children && node.children.length > 0
-                          }" :style="{ paddingLeft: (getNodeLevel(node) * 20 + 12) + 'px' }"
-                            @click="selectCategory(node)">
-                            <i v-if="node.children && node.children.length > 0" class="pi pi-chevron-right expand-icon"
-                              :class="{ 'expanded': expandedNodes[node.key] }" @click.stop="toggleNode(node)"
-                              style="cursor: pointer;"></i>
-                            <span class="category-label">{{ node.label }}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <small v-if="errors.nhom_hang_id" class="p-error">{{ errors.nhom_hang_id[0] }}</small>
-                  </div>
-                </div>
-
-                <div class="form-field full-width">
-                  <label class="field-label">Tên dịch vụ <span class="text-danger">*</span></label>
-                  <InputText v-model="formData.ten_dich_vu" placeholder="Nhập tên dịch vụ" class="field-input"
-                    :class="{ 'p-invalid': errors.ten_dich_vu }" />
-                  <small v-if="errors.ten_dich_vu" class="p-error">{{ errors.ten_dich_vu[0] }}</small>
-                </div>
-
-                <div class="form-field full-width">
-                  <label class="field-label">Bác sĩ đảm nhận dịch vụ <span class="text-danger">*</span></label>
-                  <Dropdown v-model="formData.doctor_id" :options="doctorOptions" optionLabel="name" optionValue="id"
-                    placeholder="-- Chọn bác sĩ --" class="field-input" :class="{ 'p-invalid': errors.doctor_id }"
-                    showClear filter>
-                    <template #option="slotProps">
-                      <div>
-                        <div>{{ slotProps.option.name }}</div>
-                        <small class="text-muted">{{ slotProps.option.doctor_code }} - {{ slotProps.option.specialty
-                        }}</small>
-                      </div>
-                    </template>
-                  </Dropdown>
-                  <small v-if="errors.doctor_id" class="p-error">{{ errors.doctor_id[0] }}</small>
-                </div>
-
-
-                <div class="form-row">
-                  <div class="form-field">
-                    <label class="field-label">Hình thức dịch vụ <span class="text-danger">*</span></label>
-                    <Dropdown v-model="formData.hinh_thuc" :options="serviceTypes" optionLabel="label"
-                      optionValue="value" placeholder="Chọn hình thức" class="field-input"
-                      :class="{ 'p-invalid': errors.hinh_thuc }" />
-                    <small v-if="errors.hinh_thuc" class="p-error">{{ errors.hinh_thuc[0] }}</small>
-                  </div>
-
-                  <div class="form-field">
-                    <label class="field-label">Thời gian thực hiện (phút)</label>
-                    <InputNumber v-model="formData.thoi_gian_thuc_hien" placeholder="VD: 30" :min="1"
-                      class="field-input" />
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <div class="form-field">
-                    <label class="field-label">Chi phí thực hiện <span class="text-danger">*</span></label>
-                    <div class="form-field">
-                      <InputNumber v-model="formData.gia_dich_vu" mode="currency" currency="VND" locale="vi-VN"
-                        class="price-input" :class="{ 'p-invalid': errors.gia_dich_vu }" />
-                    </div>
-                    <small v-if="errors.gia_dich_vu" class="p-error">{{ errors.gia_dich_vu[0] }}</small>
-                  </div>
-
-                  <div class="form-field">
-                    <label class="field-label">Trạng thái <span class="text-danger">*</span></label>
-                    <Dropdown v-model="formData.trang_thai" :options="statusOptions" optionLabel="label"
-                      optionValue="value" placeholder="Chọn trạng thái" class="field-input"
-                      :class="{ 'p-invalid': errors.trang_thai }" />
-                    <small v-if="errors.trang_thai" class="p-error">{{ errors.trang_thai[0] }}</small>
-                  </div>
+              <div class="form-group">
+                <label class="label">Mã dịch vụ</label>
+                <div class="p-inputgroup">
+                  <InputText v-model="formData.ma_dich_vu" placeholder="Tự động tạo..." readonly class="bg-gray-50" />
+                  <Button icon="pi pi-sync" class="p-button-secondary" v-tooltip="'Tạo mã tự động'"
+                    @click="generateServiceCode" />
                 </div>
               </div>
 
-              <!-- Right Section: Image Upload -->
-              <div class="image-section">
-                <div class="image-upload-container" @click="triggerFileInput">
-                  <input type="file" ref="fileInput" accept="image/*" @change="handleImageChange" style="display: none">
-                  <div v-if="!imagePreview" class="image-placeholder">
-                    <i class="pi pi-image"></i>
-                    <div class="upload-text">Thêm ảnh dịch vụ</div>
-                    <small class="upload-hint">Click để chọn ảnh</small>
-                    <div class="upload-badge">
-                      <span class="badge">Tối đa 2MB</span>
+              <div class="form-group">
+                <label class="label" style="margin-left: -50px;">Nhóm hàng <span class="required">*</span></label>
+                <div class="custom-category-selector" :class="{ 'p-invalid': errors.nhom_hang_id }">
+                  <div class="category-input-wrapper" @click="toggleCategoryDropdown" style="margin-left: -50px; ">
+                    <i class="pi pi-th-large input-icon"></i>
+                    <input type="text" v-model="categorySearchText"
+                      :placeholder="selectedCategoryName || 'Chọn nhóm hàng'" readonly class="category-display-input" />
+                    <i class="pi pi-chevron-down dropdown-arrow" :class="{ 'rotated': showCategoryDropdown }"></i>
+                  </div>
+
+                  <div v-if="showCategoryDropdown" class="category-dropdown-panel shadow-4">
+                    <div class="dropdown-scroll">
+                      <div v-for="node in filteredCategoryNodes" :key="node.key" class="tree-node-item"
+                        :class="{ 'selected': selectedCategoryKeys[node.key] }"
+                        :style="{ paddingLeft: (getNodeLevel(node) * 20 + 12) + 'px' }" @click="selectCategory(node)">
+                        <i v-if="node.children && node.children.length > 0" class="pi pi-chevron-right expander"
+                          :class="{ 'expanded': expandedNodes[node.key] }" @click.stop="toggleNode(node)"></i>
+                        <span class="node-label">{{ node.label }}</span>
+                      </div>
                     </div>
                   </div>
-                  <img v-else :src="imagePreview" alt="Preview" class="image-preview">
                 </div>
+                <small v-if="errors.nhom_hang_id" class="error-msg">{{ errors.nhom_hang_id[0] }}</small>
               </div>
+
+              <div class="form-group full-span">
+                <label class="label">Tên dịch vụ <span class="required">*</span></label>
+                <InputText v-model="formData.ten_dich_vu" placeholder="Nhập tên dịch vụ đầy đủ"
+                  :class="{ 'p-invalid': errors.ten_dich_vu }" style="width: 635px; " />
+                <small v-if="errors.ten_dich_vu" class="error-msg">{{ errors.ten_dich_vu[0] }}</small>
+              </div>
+
+              <div class="form-group full-span">
+                <label class="label">Bác sĩ phụ trách <span class="required">*</span></label>
+                <Dropdown v-model="formData.doctor_id" :options="doctorOptions" optionLabel="name" optionValue="id"
+                  placeholder="Chọn bác sĩ..." showClear filter class="w-full" style="width: 635px; "
+                  :class="{ 'p-invalid': errors.doctor_id }">
+                  <template #option="slotProps">
+                    <div class="doctor-item">
+                      <div class="font-bold">{{ slotProps.option.name }}</div>
+                      <div class="text-xs text-gray-500">{{ slotProps.option.doctor_code }} - {{
+                        slotProps.option.specialty }}</div>
+                    </div>
+                  </template>
+                </Dropdown>
+                <small v-if="errors.doctor_id" class="error-msg">{{ errors.doctor_id[0] }}</small>
+              </div>
+
+              <div class="form-group">
+                <label class="label">Hình thức</label>
+                <Dropdown v-model="formData.hinh_thuc" :options="serviceTypes" optionLabel="label" optionValue="value"
+                  placeholder="Chọn hình thức" class="w-full" :class="{ 'p-invalid': errors.hinh_thuc }"
+                  style="width: 300px; " />
+                <small v-if="errors.hinh_thuc" class="error-msg">{{ errors.hinh_thuc[0] }}</small>
+              </div>
+
+              <div class="form-group">
+                <label class="label">Thời gian (phút)</label>
+                <InputNumber v-model="formData.thoi_gian_thuc_hien" placeholder="Ví dụ: 30" :min="1" suffix=" phút"
+                  showButtons style="width: 320px; " />
+              </div>
+
+              <div class="form-group">
+                <label class="label">Chi phí dịch vụ <span class="required">*</span></label>
+                <InputNumber v-model="formData.gia_dich_vu" mode="currency" currency="VND" locale="vi-VN"
+                  class="w-full font-bold" :class="{ 'p-invalid': errors.gia_dich_vu }" style="width: 300px; " />
+                <small v-if="errors.gia_dich_vu" class="error-msg">{{ errors.gia_dich_vu[0] }}</small>
+              </div>
+
+              <div class="form-group">
+                <label class="label">Trạng thái</label>
+                <Dropdown v-model="formData.trang_thai" :options="statusOptions" optionLabel="label" optionValue="value"
+                  class="w-full" :class="{ 'p-invalid': errors.trang_thai }" style="width: 320px; ">
+                  <template #value="slotProps">
+                    <span :class="['status-badge', slotProps.value === 'kich_hoat' ? 'active' : 'inactive']">
+                      {{ slotProps.value === 'kich_hoat' ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
+                    </span>
+                  </template>
+                </Dropdown>
+              </div>
+
             </div>
           </div>
-        </div>
 
-        <!-- Tab Mô tả -->
-        <div v-if="activeTab === 'description'" class="tab-content">
-          <div class="form-section">
-            <div class="form-field full-width">
-              <label class="field-label">Mô tả dịch vụ</label>
-              <Editor v-model="formData.mo_ta" editorStyle="height: 320px" placeholder="Nhập mô tả sản phẩm"
-                class="field-editor" :class="{ 'p-invalid': errors.mo_ta }" />
-              <small v-if="errors.mo_ta" class="p-error">{{ errors.mo_ta[0] }}</small>
+          <div v-show="activeTab === 'description'" class="panel-content fade-in">
+            <div class="form-group">
+              <label class="label">Mô tả chi tiết</label>
+              <Editor v-model="formData.mo_ta" editorStyle="height: 380px"
+                placeholder="Nhập mô tả chi tiết về dịch vụ..." />
+              <small v-if="errors.mo_ta" class="error-msg">{{ errors.mo_ta[0] }}</small>
             </div>
           </div>
         </div>
@@ -162,10 +124,10 @@
     </div>
 
     <template #footer>
-      <div class="flex justify-content-end gap-2">
-        <Button type="button" label="Hủy" icon="pi pi-times" @click="$emit('close')" severity="secondary" />
-        <Button type="button" label="Lưu dịch vụ" icon="pi pi-check" @click="submitForm" :loading="loading"
-          :disabled="loading" />
+      <div class="dialog-footer">
+        <Button label="Hủy bỏ" icon="pi pi-times" class="p-button-text p-button-secondary" @click="$emit('close')" />
+        <Button label="Lưu dịch vụ" icon="pi pi-check" class="p-button-primary" @click="submitForm"
+          :loading="loading" />
       </div>
     </template>
   </Dialog>
@@ -173,6 +135,7 @@
 </template>
 
 <script>
+// --- GIỮ NGUYÊN LOGIC CŨ 100% ---
 import axios from 'axios'
 import Editor from 'primevue/editor'
 import Dialog from 'primevue/dialog'
@@ -221,6 +184,7 @@ export default {
       expandedNodes: {},
       serviceTypes: [
         { label: 'Tại nhà thuốc', value: 'tai_nha_thuoc' },
+        { label: 'Tại nhà khách', value: 'tai_nha_khach' },
       ],
       statusOptions: [
         { label: 'Kích hoạt', value: 'kich_hoat' },
@@ -476,117 +440,76 @@ export default {
 </script>
 
 <style scoped>
-/* Form Layout */
-.form-grid {
+/* ================= GLOBAL LAYOUT ================= */
+.modal-body-layout {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+  min-height: 450px;
 }
 
-.form-section {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid #e9ecef;
-}
-
-.form-row {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-}
-
-.form-column {
+.left-panel {
   flex: 1;
+  /* Chiếm phần lớn */
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.right-panel {
+  width: 250px;
+  /* Fixed width cho sidebar ảnh */
+  flex-shrink: 0;
+  border-left: 1px solid #f0f0f0;
+  padding-left: 24px;
 }
 
-.form-field.full-width {
-  width: 100%;
-}
-
-.field-label {
-  font-weight: 600;
-  color: #495057;
-  font-size: 14px;
-  margin-bottom: 4px;
-}
-
-.field-input {
-  width: 100%;
-}
-
-.readonly-input {
-  background-color: #f8f9fa !important;
-  color: #6c757d !important;
-}
-
-.input-group {
+/* ================= TABS DESIGN ================= */
+.custom-tabs {
   display: flex;
   gap: 8px;
-  align-items: center;
-}
-
-.input-group .field-input {
-  flex: 1;
-}
-
-/* Tabs */
-.tabs-container {
   margin-bottom: 20px;
+  border-bottom: 1px solid #eef2f6;
+  padding-bottom: 8px;
 }
 
-.tabs-header {
-  display: flex;
-  gap: 0;
-  border-bottom: 2px solid #e9ecef;
-}
-
-.tab-button {
-  background: none;
+.tab-item {
+  background: transparent;
   border: none;
-  padding: 12px 24px;
-  font-weight: 600;
-  color: #6c757d;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: #64748b;
+  font-weight: 500;
   cursor: pointer;
-  border-bottom: 3px solid transparent;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
   font-size: 14px;
 }
 
-.tab-button:hover {
-  color: #495057;
-  background: #f8f9fa;
+.tab-item:hover {
+  background: #f1f5f9;
+  color: #334155;
 }
 
-.tab-button.active {
-  color: #007bff;
-  border-bottom-color: #007bff;
-  background: white;
+.tab-item.active {
+  background: #e0f2fe;
+  /* Xanh nhạt */
+  color: #0284c7;
+  /* Xanh đậm */
+  font-weight: 600;
 }
 
-.tabs-divider {
-  height: 2px;
-  background: #e9ecef;
-  margin-top: -2px;
+.panel-content {
+  flex: 1;
 }
 
-.tab-content {
-  animation: fadeIn 0.3s ease-in-out;
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(5px);
   }
 
   to {
@@ -595,331 +518,254 @@ export default {
   }
 }
 
-/* Image Upload */
-.image-section {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 20px;
+/* ================= FORM STYLING ================= */
+.input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* 2 cột */
+  gap: 16px;
 }
 
-.image-upload-container {
-  border: 2px dashed #007bff;
-  border-radius: 12px;
-  width: 200px;
-  height: 200px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.image-upload-container:hover {
-  border-color: #0056b3;
-  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
-}
-
-.image-placeholder {
-  text-align: center;
-  color: #007bff;
-}
-
-.image-placeholder i {
-  font-size: 3rem;
-  margin-bottom: 12px;
-  display: block;
-}
-
-.upload-text {
-  font-weight: 600;
-  font-size: 14px;
+.form-group {
   margin-bottom: 4px;
 }
 
-.upload-hint {
-  color: #6c757d;
-  font-size: 12px;
+.form-group.full-span {
+  grid-column: span 2;
+  /* Chiếm hết 2 cột */
 }
 
-.upload-badge {
-  margin-top: 12px;
+.label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
 }
 
-.badge {
-  background: #e9ecef;
-  color: #495057;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 500;
+.required {
+  color: #ef4444;
 }
 
-.image-preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-/* Error States */
-.text-danger {
-  color: #dc3545 !important;
-}
-
-.p-error {
-  color: #dc3545;
+.error-msg {
+  color: #ef4444;
   font-size: 12px;
   margin-top: 4px;
+  display: block;
 }
 
-.p-invalid {
-  border-color: #dc3545 !important;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .form-row {
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .image-section {
-    align-items: center;
-    padding-top: 0;
-  }
-
-  .image-upload-container {
-    width: 150px;
-    height: 150px;
-  }
-
-  .tabs-header {
-    flex-direction: column;
-  }
-
-  .tab-button {
-    text-align: left;
-    border-bottom: 1px solid #e9ecef;
-  }
-
-  .tab-button.active {
-    border-bottom-color: #007bff;
-  }
-}
-
-/* PrimeVue Component Overrides */
-:deep(.p-dialog) {
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-:deep(.p-dialog-header) {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-  color: white;
-  border-radius: 16px 16px 0 0;
-  padding: 20px 24px;
-}
-
-:deep(.p-dialog-title) {
-  font-weight: 600;
-  font-size: 18px;
-}
-
-:deep(.p-dialog-content) {
-  padding: 24px;
-}
-
-:deep(.p-dialog-footer) {
-  padding: 20px 24px;
-  border-top: 1px solid #e9ecef;
-  background: #f8f9fa;
-  border-radius: 0 0 16px 16px;
-}
-
-:deep(.p-inputtext),
-:deep(.p-dropdown),
-:deep(.p-inputnumber),
-:deep(.p-inputtextarea) {
-  border-radius: 8px;
-  border: 1px solid #dee2e6;
-  transition: all 0.2s ease;
-}
-
-:deep(.p-inputtext:focus),
-:deep(.p-dropdown:focus),
-:deep(.p-inputnumber:focus),
-:deep(.p-inputtextarea:focus) {
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-}
-
-:deep(.p-button) {
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-:deep(.p-button.p-button-success) {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-  border: none;
-}
-
-:deep(.p-button.p-button-success:hover:not(:disabled)) {
-  background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-}
-
-:deep(.p-button.p-button-secondary) {
-  background: #6c757d;
-  border: none;
-}
-
-:deep(.p-button.p-button-secondary:hover) {
-  background: #5a6268;
-  transform: translateY(-1px);
-}
-
-:deep(.p-button:disabled) {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-/* Custom Category Selector */
+/* Custom cho Tree Select Dropdown */
 .custom-category-selector {
   position: relative;
   width: 100%;
 }
 
-.category-input-container {
-  position: relative;
-  width: 100%;
-}
-
-.category-input {
+.category-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
   border: 1px solid #ced4da;
   border-radius: 6px;
-  background: #fff;
-  transition: border-color 0.2s ease;
+  background: white;
+  height: 42px;
+  /* Khớp với height mặc định của PrimeVue input */
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-.category-input:hover {
-  border-color: #007bff;
+.category-input-wrapper:hover {
+  border-color: #3b82f6;
 }
 
-.category-input.p-invalid {
-  border-color: #e24c4c;
-}
-
-.search-icon {
+.input-icon {
   position: absolute;
   left: 12px;
-  color: #6c757d;
-  font-size: 14px;
-  z-index: 1;
+  color: #9ca3af;
 }
 
-.category-search-input {
+.category-display-input {
   width: 100%;
-  height: 38px;
-  padding: 8px 40px 8px 40px;
   border: none;
   outline: none;
-  background: transparent;
+  padding: 0 35px;
+  /* Để chừa chỗ cho 2 icon */
   font-size: 14px;
-  color: #333;
+  color: #374151;
   cursor: pointer;
 }
 
-.category-search-input::placeholder {
-  color: #6c757d;
-}
-
-.dropdown-icon {
+.dropdown-arrow {
   position: absolute;
   right: 12px;
-  color: #6c757d;
   font-size: 12px;
-  transition: transform 0.2s ease;
+  color: #9ca3af;
+  transition: transform 0.2s;
 }
 
-.dropdown-icon.rotated {
+.dropdown-arrow.rotated {
   transform: rotate(180deg);
 }
 
-.category-dropdown {
+/* Dropdown Content */
+.category-dropdown-panel {
   position: absolute;
-  top: 100%;
+  top: 105%;
   left: 0;
-  right: 0;
-  background: #fff;
-  border: 1px solid #ced4da;
-  border-top: none;
-  border-radius: 0 0 6px 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   z-index: 1000;
-  max-height: 300px;
-  overflow-y: auto;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.category-dropdown-content {
+.dropdown-scroll {
+  max-height: 250px;
+  overflow-y: auto;
   padding: 8px 0;
 }
 
-.category-option {
+.tree-node-item {
   display: flex;
   align-items: center;
   padding: 8px 12px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  position: relative;
-}
-
-.category-option:hover {
-  background-color: #f8f9fa;
-}
-
-.category-option.selected {
-  background-color: #e3f2fd;
-  color: #1976d2;
-}
-
-.expand-icon {
-  margin-right: 8px;
-  font-size: 12px;
-  color: #6c757d;
-  transition: transform 0.2s ease;
-  width: 16px;
-  text-align: center;
-}
-
-.expand-icon.expanded {
-  transform: rotate(90deg);
-}
-
-.category-label {
+  transition: background 0.2s;
   font-size: 14px;
-  color: #333;
-  flex: 1;
 }
 
-.category-option.selected .category-label {
-  color: #1976d2;
+.tree-node-item:hover {
+  background: #f8fafc;
+}
+
+.tree-node-item.selected {
+  background: #eff6ff;
+  color: #2563eb;
   font-weight: 500;
 }
 
-.category-option.has-children .category-label {
-  margin-left: 0;
+.expander {
+  margin-right: 8px;
+  font-size: 10px;
+  width: 16px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.expander.expanded {
+  transform: rotate(90deg);
+}
+
+/* ================= IMAGE UPLOAD ================= */
+.image-upload-wrapper {
+  width: 100%;
+}
+
+.upload-box {
+  width: 100%;
+  aspect-ratio: 1;
+  /* Hình vuông */
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.upload-box:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.upload-box.has-image {
+  border-style: solid;
+  border-color: #e2e8f0;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.icon-circle {
+  width: 48px;
+  height: 48px;
+  background: #e0f2fe;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0284c7;
+  font-size: 20px;
+}
+
+.preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.upload-box:hover .upload-overlay {
+  opacity: 1;
+}
+
+/* ================= INFO BOX ================= */
+.info-box {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: flex-start;
+  line-height: 1.4;
+}
+
+/* ================= OVERRIDES ================= */
+/* Status Badge Custom */
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.inactive {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
+/* Dialog Footer */
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
 }
 </style>

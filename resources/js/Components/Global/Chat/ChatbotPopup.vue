@@ -6,7 +6,7 @@
           <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Bot" />
         </div>
         <h3>Xin chào! Tôi có thể giúp gì cho bạn?</h3>
-        <p>Bạn cần tìm khách sạn, địa điểm vui chơi hay ẩm thực tại Vũng Tàu?</p>
+        <p>Bạn cần tìm sản phẩm, dịch vụ nào không?</p>
       </div>
 
       <div v-for="(message, index) in messages" :key="index" class="message-row" :class="message.type">

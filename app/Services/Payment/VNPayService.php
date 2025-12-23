@@ -9,10 +9,10 @@ class VNPayService
 {
     public function generatePaymentUrl(Order $order): string
     {
-        $vnpUrl = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html';
-        $returnUrl = route('payment.vnpay.return');
-        $tmnCode = config('services.vnpay.tmn_code');
-        $hashSecret = config('services.vnpay.hash_secret');
+        $vnpUrl = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'; //Đường dẫn đến cổng thanh toán Sandbox (Test)
+        $returnUrl = route('payment.vnpay.return'); //URL callback khi thanh toán thành công
+        $tmnCode = config('services.vnpay.tmn_code'); //Mã Merchant ID
+        $hashSecret = config('services.vnpay.hash_secret'); //Mã bí mật để tạo chữ ký hash
 
         $txnRef = $order->id . '_' . time();
         $params = [

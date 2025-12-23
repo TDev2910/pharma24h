@@ -104,7 +104,9 @@ class FirebaseService
         try {
             $auth = $this->getAuth();
             return $auth->verifyIdToken($idToken);
-        } catch (\Exception $e) {
+        } 
+        catch (\Exception $e) 
+        {
             return null;
         }
     }

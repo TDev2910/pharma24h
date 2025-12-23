@@ -22,7 +22,7 @@ class PaymentController extends Controller
     // Khởi tạo thanh toán VNPAY cho đơn hàng cụ thể và lấy orderid
     public function vnpayCheckout(int $order_id)
     {
-        $order = Order::findOrFail($order_id);
+        $order = Order::findOrFail($order_id); //Lấy đơn hàng theo order_id
         $url = $this->vnpayService->generatePaymentUrl($order);
         return redirect()->away($url);
     }

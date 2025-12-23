@@ -13,10 +13,10 @@ use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\Api\GHNWebhookController;
 use Inertia\Inertia;
  
-// 🌐 PUBLIC ROUTES
+//public routes
 Route::get('/',[HomeController::class,'homeInertia'])->name('home');
 Route::post('/auth/google', [AuthController::class, 'googleLogin'])->name('auth.google');
-// CSRF Token refresh route
+//csrf token refresh route
 Route::get('/sanctum/csrf-cookie', function () {
     return response()->json(['message' => 'CSRF cookie set']);
 })->name('csrf-cookie');
@@ -51,7 +51,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/logout', [AuthController::class, 'logout']); 
 
-// Forgot Password Routes (Email + Phone)
+//forgot password routes (email + phone)
 Route::prefix('password')->name('password.')->group(function () {
     Route::get('/reset', [ForgotPasswordController::class, 'showEmailForm'])->name('request');
     Route::post('/email', [ForgotPasswordController::class, 'sendOtp'])->name('email');
@@ -60,7 +60,7 @@ Route::prefix('password')->name('password.')->group(function () {
     Route::get('/reset-password', [ForgotPasswordController::class, 'showResetForm'])->name('reset');
     Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('reset.post');
     
-    // Phone verification routes
+    //phone verification routes
     Route::get('/verify-phone', [ForgotPasswordController::class, 'showPhoneVerifyForm'])->name('verify.phone');
     Route::post('/verify-phone', [ForgotPasswordController::class, 'verifyPhoneOtp'])->name('verify.phone.post');
     Route::post('/auth/phone-verify', [ForgotPasswordController::class, 'handlePhoneVerification'])->name('phone.verify');
@@ -68,18 +68,18 @@ Route::prefix('password')->name('password.')->group(function () {
     Route::post('/reset-phone-otp-attempts', [ForgotPasswordController::class, 'resetPhoneOtpAttempts'])->name('phone.otp.reset.attempts');
 });
 
-// Include user routes
+//user routes
 require __DIR__.'/user.php';
 
-// Include store routes
+//store routes
 require __DIR__.'/store.php';
 
-// Admin routes
+//admin routes
 Route::middleware(['auth', 'admin'])->group(function () {   
     Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');    
 });
 
-// Staff routes
+//staff routes
 Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/staff/dashboard', [StaffController::class, 'dashboard'])->name('staff.dashboard');
 });
