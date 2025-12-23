@@ -1,7 +1,7 @@
 <template>
   <Dialog :visible="visible" @update:visible="$emit('close')" header="Tạo Dịch Vụ Mới" :style="{ width: '950px' }" modal
     :closable="true" class="custom-service-modal" :draggable="false">
-
+    
     <div class="modal-body-layout">
       <div class="left-panel">
         <div class="custom-tabs">
@@ -15,15 +15,14 @@
 
         <div class="tab-panels">
           <div v-show="activeTab === 'info'" class="panel-content fade-in">
-
+            
             <div class="input-grid">
-
+              
               <div class="form-group">
                 <label class="label">Mã dịch vụ</label>
                 <div class="p-inputgroup">
                   <InputText v-model="formData.ma_dich_vu" placeholder="Tự động tạo..." readonly class="bg-gray-50" />
-                  <Button icon="pi pi-sync" class="p-button-secondary" v-tooltip="'Tạo mã tự động'"
-                    @click="generateServiceCode" />
+                  <Button icon="pi pi-sync" class="p-button-secondary" v-tooltip="'Tạo mã tự động'" @click="generateServiceCode" />
                 </div>
               </div>
 
@@ -32,18 +31,23 @@
                 <div class="custom-category-selector" :class="{ 'p-invalid': errors.nhom_hang_id }">
                   <div class="category-input-wrapper" @click="toggleCategoryDropdown" style="margin-left: -50px; ">
                     <i class="pi pi-th-large input-icon"></i>
-                    <input type="text" v-model="categorySearchText"
-                      :placeholder="selectedCategoryName || 'Chọn nhóm hàng'" readonly class="category-display-input" />
-                    <i class="pi pi-chevron-down dropdown-arrow" :class="{ 'rotated': showCategoryDropdown }"></i>
+                    <input type="text" v-model="categorySearchText"  
+                      :placeholder="selectedCategoryName || 'Chọn nhóm hàng'" readonly
+                      class="category-display-input" />
+                    <i class="pi pi-chevron-down dropdown-arrow" :class="{ 'rotated': showCategoryDropdown }"></i> 
                   </div>
 
                   <div v-if="showCategoryDropdown" class="category-dropdown-panel shadow-4">
                     <div class="dropdown-scroll">
-                      <div v-for="node in filteredCategoryNodes" :key="node.key" class="tree-node-item"
-                        :class="{ 'selected': selectedCategoryKeys[node.key] }"
-                        :style="{ paddingLeft: (getNodeLevel(node) * 20 + 12) + 'px' }" @click="selectCategory(node)">
-                        <i v-if="node.children && node.children.length > 0" class="pi pi-chevron-right expander"
-                          :class="{ 'expanded': expandedNodes[node.key] }" @click.stop="toggleNode(node)"></i>
+                      <div v-for="node in filteredCategoryNodes" :key="node.key" 
+                           class="tree-node-item"
+                           :class="{ 'selected': selectedCategoryKeys[node.key] }"
+                           :style="{ paddingLeft: (getNodeLevel(node) * 20 + 12) + 'px' }"
+                           @click="selectCategory(node)">
+                        <i v-if="node.children && node.children.length > 0" 
+                           class="pi pi-chevron-right expander"
+                           :class="{ 'expanded': expandedNodes[node.key] }" 
+                           @click.stop="toggleNode(node)"></i>
                         <span class="node-label">{{ node.label }}</span>
                       </div>
                     </div>
@@ -54,8 +58,8 @@
 
               <div class="form-group full-span">
                 <label class="label">Tên dịch vụ <span class="required">*</span></label>
-                <InputText v-model="formData.ten_dich_vu" placeholder="Nhập tên dịch vụ đầy đủ"
-                  :class="{ 'p-invalid': errors.ten_dich_vu }" style="width: 635px; " />
+                <InputText v-model="formData.ten_dich_vu" placeholder="Nhập tên dịch vụ đầy đủ" 
+                  :class="{ 'p-invalid': errors.ten_dich_vu }" style="width: 635px; "/>
                 <small v-if="errors.ten_dich_vu" class="error-msg">{{ errors.ten_dich_vu[0] }}</small>
               </div>
 
@@ -67,8 +71,7 @@
                   <template #option="slotProps">
                     <div class="doctor-item">
                       <div class="font-bold">{{ slotProps.option.name }}</div>
-                      <div class="text-xs text-gray-500">{{ slotProps.option.doctor_code }} - {{
-                        slotProps.option.specialty }}</div>
+                      <div class="text-xs text-gray-500">{{ slotProps.option.doctor_code }} - {{ slotProps.option.specialty }}</div>
                     </div>
                   </template>
                 </Dropdown>
@@ -77,34 +80,34 @@
 
               <div class="form-group">
                 <label class="label">Hình thức</label>
-                <Dropdown v-model="formData.hinh_thuc" :options="serviceTypes" optionLabel="label" optionValue="value"
-                  placeholder="Chọn hình thức" class="w-full" :class="{ 'p-invalid': errors.hinh_thuc }"
-                  style="width: 300px; " />
-                <small v-if="errors.hinh_thuc" class="error-msg">{{ errors.hinh_thuc[0] }}</small>
+                <Dropdown v-model="formData.hinh_thuc" :options="serviceTypes" optionLabel="label"
+                  optionValue="value" placeholder="Chọn hình thức" class="w-full"
+                  :class="{ 'p-invalid': errors.hinh_thuc }" style="width: 300px; "/>
+                  <small v-if="errors.hinh_thuc" class="error-msg">{{ errors.hinh_thuc[0] }}</small>
               </div>
 
               <div class="form-group">
                 <label class="label">Thời gian (phút)</label>
-                <InputNumber v-model="formData.thoi_gian_thuc_hien" placeholder="Ví dụ: 30" :min="1" suffix=" phút"
-                  showButtons style="width: 320px; " />
+                <InputNumber v-model="formData.thoi_gian_thuc_hien" placeholder="Ví dụ: 30" :min="1" suffix=" phút" showButtons style="width: 320px; "/>
               </div>
 
               <div class="form-group">
                 <label class="label">Chi phí dịch vụ <span class="required">*</span></label>
                 <InputNumber v-model="formData.gia_dich_vu" mode="currency" currency="VND" locale="vi-VN"
-                  class="w-full font-bold" :class="{ 'p-invalid': errors.gia_dich_vu }" style="width: 300px; " />
+                  class="w-full font-bold" :class="{ 'p-invalid': errors.gia_dich_vu }" style="width: 300px; "/>
                 <small v-if="errors.gia_dich_vu" class="error-msg">{{ errors.gia_dich_vu[0] }}</small>
               </div>
 
               <div class="form-group">
                 <label class="label">Trạng thái</label>
-                <Dropdown v-model="formData.trang_thai" :options="statusOptions" optionLabel="label" optionValue="value"
-                  class="w-full" :class="{ 'p-invalid': errors.trang_thai }" style="width: 320px; ">
-                  <template #value="slotProps">
-                    <span :class="['status-badge', slotProps.value === 'kich_hoat' ? 'active' : 'inactive']">
-                      {{ slotProps.value === 'kich_hoat' ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
-                    </span>
-                  </template>
+                <Dropdown v-model="formData.trang_thai" :options="statusOptions" optionLabel="label"
+                  optionValue="value" class="w-full"
+                  :class="{ 'p-invalid': errors.trang_thai }" style="width: 320px; ">
+                    <template #value="slotProps">
+                        <span :class="['status-badge', slotProps.value === 'kich_hoat' ? 'active' : 'inactive']">
+                            {{ slotProps.value === 'kich_hoat' ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
+                        </span>
+                    </template>
                 </Dropdown>
               </div>
 
@@ -114,10 +117,33 @@
           <div v-show="activeTab === 'description'" class="panel-content fade-in">
             <div class="form-group">
               <label class="label">Mô tả chi tiết</label>
-              <Editor v-model="formData.mo_ta" editorStyle="height: 380px"
-                placeholder="Nhập mô tả chi tiết về dịch vụ..." />
+              <Editor v-model="formData.mo_ta" editorStyle="height: 380px" placeholder="Nhập mô tả chi tiết về dịch vụ..." />
               <small v-if="errors.mo_ta" class="error-msg">{{ errors.mo_ta[0] }}</small>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <div class="image-upload-wrapper">
+          <div class="image-upload-container" @click="handleImageUpload">
+            
+            <div v-if="!imagePreview" class="upload-content">
+              <i class="pi pi-image upload-icon"></i>
+              <div class="upload-text">Thêm ảnh dịch vụ</div>
+              <small class="upload-hint">Click để chọn ảnh</small>
+              <div class="upload-badge">
+                <span class="badge">Tối đa 2MB</span>
+              </div>
+            </div>
+
+            <div v-if="imagePreview" class="image-preview-content">
+              <img :src="imagePreview" alt="Preview" class="preview-image" />
+              <div class="image-overlay">
+                <Button label="Xóa" @click.stop="removeImage" size="small" severity="danger" class="remove-btn" />
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -126,8 +152,7 @@
     <template #footer>
       <div class="dialog-footer">
         <Button label="Hủy bỏ" icon="pi pi-times" class="p-button-text p-button-secondary" @click="$emit('close')" />
-        <Button label="Lưu dịch vụ" icon="pi pi-check" class="p-button-primary" @click="submitForm"
-          :loading="loading" />
+        <Button label="Lưu dịch vụ" icon="pi pi-check" class="p-button-primary" @click="submitForm" :loading="loading" />
       </div>
     </template>
   </Dialog>
@@ -183,7 +208,7 @@ export default {
       filteredCategoryNodes: [],
       expandedNodes: {},
       serviceTypes: [
-        { label: 'Tại nhà thuốc', value: 'tai_nha_thuoc' },
+        { label: 'Tại phòng khám', value: 'tai_phong_kham' },
         { label: 'Tại nhà khách', value: 'tai_nha_khach' },
       ],
       statusOptions: [
@@ -219,16 +244,23 @@ export default {
       this.$emit('close')
     },
 
-    triggerFileInput() {
-      this.$refs.fileInput.click()
-    },
+    handleImageUpload() {
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = 'image/*'
 
-    handleImageChange(event) {
-      const file = event.target.files[0]
-      if (file) {
-        // Validate file size (2MB max)
-        if (file.size > 2 * 1024 * 1024) {
-          alert('Kích thước file không được vượt quá 2MB')
+      input.onchange = (event) => {
+        const file = event.target.files[0]
+        if (!file) return
+
+        // Validate file
+        if (!file.type.startsWith('image/')) {
+          alert('Chỉ chấp nhận file ảnh!')
+          return
+        }
+
+        if (file.size > 2 * 1024 * 1024) { // 2MB
+          alert('File quá lớn! Tối đa 2MB')
           return
         }
 
@@ -241,8 +273,14 @@ export default {
         }
         reader.readAsDataURL(file)
       }
+
+      input.click()
     },
 
+    removeImage() {
+      this.formData.image = null
+      this.imagePreview = null
+    },
     toggleCategoryDropdown() {
       this.showCategoryDropdown = !this.showCategoryDropdown
       if (this.showCategoryDropdown) {
@@ -448,15 +486,13 @@ export default {
 }
 
 .left-panel {
-  flex: 1;
-  /* Chiếm phần lớn */
+  flex: 1; /* Chiếm phần lớn */
   display: flex;
   flex-direction: column;
 }
 
 .right-panel {
-  width: 250px;
-  /* Fixed width cho sidebar ảnh */
+  width: 250px; /* Fixed width cho sidebar ảnh */
   flex-shrink: 0;
   border-left: 1px solid #f0f0f0;
   padding-left: 24px;
@@ -491,10 +527,8 @@ export default {
 }
 
 .tab-item.active {
-  background: #e0f2fe;
-  /* Xanh nhạt */
-  color: #0284c7;
-  /* Xanh đậm */
+  background: #e0f2fe; /* Xanh nhạt */
+  color: #0284c7; /* Xanh đậm */
   font-weight: 600;
 }
 
@@ -507,22 +541,14 @@ export default {
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ================= FORM STYLING ================= */
 .input-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  /* 2 cột */
+  grid-template-columns: 1fr 1fr; /* 2 cột */
   gap: 16px;
 }
 
@@ -531,8 +557,7 @@ export default {
 }
 
 .form-group.full-span {
-  grid-column: span 2;
-  /* Chiếm hết 2 cột */
+  grid-column: span 2; /* Chiếm hết 2 cột */
 }
 
 .label {
@@ -567,8 +592,7 @@ export default {
   border: 1px solid #ced4da;
   border-radius: 6px;
   background: white;
-  height: 42px;
-  /* Khớp với height mặc định của PrimeVue input */
+  height: 42px; /* Khớp với height mặc định của PrimeVue input */
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -587,8 +611,7 @@ export default {
   width: 100%;
   border: none;
   outline: none;
-  padding: 0 35px;
-  /* Để chừa chỗ cho 2 icon */
+  padding: 0 35px; /* Để chừa chỗ cho 2 icon */
   font-size: 14px;
   color: #374151;
   cursor: pointer;
@@ -658,13 +681,102 @@ export default {
 
 /* ================= IMAGE UPLOAD ================= */
 .image-upload-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 60px; /* Giữ margin top như cũ của bạn */
+}
+
+.image-upload-container {
+  width: 220px;  /* Tăng nhẹ kích thước cho cân đối */
+  height: 220px;
+  border: 2px dashed #dee2e6;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.image-upload-container:hover {
+  border-color: #007bff;
+  background: linear-gradient(135deg, #f0f8ff 0%, #e3f2fd 100%);
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.1);
+}
+
+/* Preview Image & Overlay */
+.image-preview-content {
   width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* QUAN TRỌNG: Giữ ảnh không bị cắt */
+  background-color: #f8f9fa;
+  padding: 4px;
+}
+
+.image-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.image-upload-container:hover .image-overlay {
+  opacity: 1;
+}
+
+.remove-btn {
+  font-size: 12px !important;
+  padding: 6px 12px !important;
+  background-color: #ef4444 !important;
+  border: none !important;
+}
+
+.upload-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  color: #007bff;
+}
+
+.upload-text {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #495057;
+  font-size: 14px;
+}
+
+.upload-hint {
+  color: #6c757d;
+  display: block;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+.upload-badge .badge {
+  background: #fff;
+  color: #495057;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  font-weight: 600;
 }
 
 .upload-box {
   width: 100%;
-  aspect-ratio: 1;
-  /* Hình vuông */
+  aspect-ratio: 1; /* Hình vuông */
   border: 2px dashed #cbd5e1;
   border-radius: 12px;
   background: #f8fafc;
@@ -710,13 +822,15 @@ export default {
 .preview-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain; /* <-- ĐỔI TỪ 'cover' SANG 'contain' */
+  border-radius: 8px;
+  background-color: #f8f9fa; /* Thêm màu nền nhạt để phần thừa không bị trống trải */
 }
 
 .upload-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -730,7 +844,6 @@ export default {
   opacity: 1;
 }
 
-/* ================= INFO BOX ================= */
 .info-box {
   background: #f0f9ff;
   border: 1px solid #bae6fd;
@@ -741,24 +854,15 @@ export default {
   line-height: 1.4;
 }
 
-/* ================= OVERRIDES ================= */
 /* Status Badge Custom */
 .status-badge {
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
 }
-
-.status-badge.active {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.status-badge.inactive {
-  background: #fce7f3;
-  color: #9d174d;
-}
+.status-badge.active { background: #dcfce7; color: #166534; }
+.status-badge.inactive { background: #fce7f3; color: #9d174d; }
 
 /* Dialog Footer */
 .dialog-footer {

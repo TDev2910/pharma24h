@@ -37,7 +37,7 @@ class ServiceController extends Controller
             'doctor_id' => 'nullable|exists:doctors,id',
             'gia_dich_vu' => 'required|numeric|min:0',
             'mo_ta' => 'nullable|string',
-            'hinh_thuc' => 'required|in:tai_nha_thuoc,tai_nha_khach',
+            'hinh_thuc' => 'required|in:tai_phong_kham,tai_nha_khach',
             'thoi_gian_thuc_hien' => 'nullable|integer|min:1',
             'trang_thai' => 'required|in:kich_hoat,tam_ngung,luu_tam',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
