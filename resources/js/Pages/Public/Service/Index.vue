@@ -129,6 +129,7 @@
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </section>
@@ -786,7 +787,7 @@ const scrollToBooking = () => {
 /* Booking Section */
 .booking-section {
   padding: 80px 0;
-  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  background: #F0F8FF;
 }
 
 .booking-section .section-header {
@@ -808,7 +809,7 @@ const scrollToBooking = () => {
 }
 
 .booking-card-primary {
-  background: #1565C0;
+  background: #1976D2;
 }
 
 .booking-icon {

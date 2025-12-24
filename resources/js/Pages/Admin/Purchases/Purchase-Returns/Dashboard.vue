@@ -152,7 +152,6 @@
                 <!-- 2 danh mục thông tin và sản phẩm-->
                 <div class="detail-tabs">
                   <button class="tab active" @click="switchTab('info')">Thông tin</button>
-                  <button class="tab" @click="switchTab('products')">Lịch sử nhập hàng</button>
                 </div>
 
                 <!-- Danh mục thông tin và sản phẩm-->

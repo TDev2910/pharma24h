@@ -2,71 +2,56 @@
   <div class="purchase-orders-page">
     <!-- Header Control Bar -->
     <div class="header-control-bar">
-        <div class="controls-section" style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
-            <!-- Title Section -->
-            <div class="title-section">
-                <h3>Đặt hàng</h3>
+      <div class="controls-section"
+        style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
+        <!-- Title Section -->
+        <div class="title-section">
+          <h3>Đặt hàng</h3>
+        </div>
+        <!-- Search Section -->
+        <div style="flex:1; display:flex; justify-content:center;">
+          <div class="search-wrapper" style="width: 100%; max-width: 500px;">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="pi pi-search"></i>
+              </span>
+              <input type="text" class="form-control" style="border-radius:8px;"
+                placeholder="Tìm kiếm theo mã đặt hàng, tên nhà cung cấp" v-model="searchQuery" @input="debounceSearch">
             </div>
-            <!-- Search Section -->
-            <div style="flex:1; display:flex; justify-content:center;">
-                <div class="search-wrapper" style="width: 100%; max-width: 500px;">
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="pi pi-search"></i>
-                        </span>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            style="border-radius:8px;" 
-                            placeholder="Tìm kiếm theo mã đặt hàng, tên nhà cung cấp" 
-                            v-model="searchQuery" 
-                            @input="debounceSearch"
-                        >
-                    </div>
-                </div>
-                
-                <!-- Thông báo số kết quả -->
-                <div v-if="isSearching" class="search-results-info mt-2 text-center">
-                  <small class="text-muted">
-                    Hiển thị {{ searchResultsCount }} / {{ orders.length }} kết quả
-                    <span v-if="!hasSearchResults" class="text-warning"> - Không tìm thấy kết quả nào</span>
-                  </small>
-                </div>
-            </div>
-    <!-- Utility Options -->
-    <div class="ultility-options">
-      <!-- Thêm đặt hàng -->
-        <Button 
-          icon="pi pi-plus"
-          label="Đặt hàng"
-          @click="showCreate"
-          severity="secondary"
-          style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
-        />
-        
-        <!-- Xuất file Excel -->
-        <Button 
-          icon="pi pi-file-excel"
-          :label="isExporting ? 'Đang xuất...' : 'Xuất file'"
-          :disabled="isExporting"
-          @click="exportToExcel"
-          severity="secondary"
-          style="background:#3A6F43; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
-        />
-        
-                <!-- Utility Icons -->
-                <div class="utility-icons">
-                    <button class="btn" title="Chế độ xem">
-                        <i class="pi pi-list"></i>
-                    </button>
-                    <button class="btn" title="Cài đặt">
-                        <i class="pi pi-cog"></i>
-                    </button>
-                    <button class="btn" title="Trợ giúp">
-                        <i class="pi pi-question-circle"></i>
-                    </button>
-                </div>
-            </div>
+          </div>
+
+          <!-- Thông báo số kết quả -->
+          <div v-if="isSearching" class="search-results-info mt-2 text-center">
+            <small class="text-muted">
+              Hiển thị {{ searchResultsCount }} / {{ orders.length }} kết quả
+              <span v-if="!hasSearchResults" class="text-warning"> - Không tìm thấy kết quả nào</span>
+            </small>
+          </div>
+        </div>
+        <!-- Utility Options -->
+        <div class="ultility-options">
+          <!-- Thêm đặt hàng -->
+          <Button icon="pi pi-plus" label="Đặt hàng" @click="showCreate" severity="secondary"
+            style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
+
+          <!-- Xuất file Excel -->
+          <Button icon="pi pi-file-excel" :label="isExporting ? 'Đang xuất...' : 'Xuất file'" :disabled="isExporting"
+            @click="exportToExcel" severity="secondary"
+            style="background:#3A6F43; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
+
+          <!-- Utility Icons -->
+          <div class="utility-icons">
+            <button class="btn" title="Chế độ xem">
+              <i class="pi pi-list"></i>
+            </button>
+            <button class="btn" title="Cài đặt">
+              <i class="pi pi-cog"></i>
+            </button>
+            <button class="btn" title="Trợ giúp">
+              <i class="pi pi-question-circle"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -92,22 +77,11 @@
           <h5>Thời gian</h5>
           <div class="radio-options">
           </div>
-          <div v-if="filters.timeRange === 'thisMonth'" class="date-picker-container d-flex align-items-center" style="gap:8px;">
-            <DatePicker 
-              v-model="filters.fromDate" 
-              showIcon 
-              fluid 
-              iconDisplay="input" 
-              placeholder="Từ ngày" 
-            />
+          <div v-if="filters.timeRange === 'thisMonth'" class="date-picker-container d-flex align-items-center"
+            style="gap:8px;">
+            <DatePicker v-model="filters.fromDate" showIcon fluid iconDisplay="input" placeholder="Từ ngày" />
             <span class="text-muted">→</span>
-            <DatePicker 
-              v-model="filters.toDate" 
-              showIcon 
-              fluid 
-              iconDisplay="input" 
-              placeholder="Đến ngày" 
-            />
+            <DatePicker v-model="filters.toDate" showIcon fluid iconDisplay="input" placeholder="Đến ngày" />
           </div>
         </div>
       </div>
@@ -116,152 +90,140 @@
       <div class="right-content">
         <!-- DataTable -->
         <div class="table-container">
-            <DataTable 
-                :value="filteredOrders" 
-                v-model:expandedRows="expandedRows"
-                stripedRows
-                responsiveLayout="scroll"
-                tableStyle="min-width: 50rem"
-                :paginator="true"
-                :row="5"
-                :rows="pagination.per_page"
-                :totalRecords="pagination.total"
-                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                :rowsPerPageOptions="[5,10,25]"
-                currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} phiếu đặt hàng"
-                dataKey="id"
-                loadingIcon="pi pi-spinner"
-                emptyMessage="Không có dữ liệu phiếu đặt hàng">
-                <Column expander style="width: 3rem" />
-                <Column field="order_code" style="width:155px;" header="Mã đặt hàng"></Column>
-                <Column field="created_at" header="Thời gian">
-                    <template #body="slotProps">
-                        {{ formatDate(slotProps.data.created_at) }}
-                    </template>
-                </Column>
-                <Column field="supplier_name" header="Nhà cung cấp"></Column>
-                <Column field="ma_nha_cung_cap" style="width:120px;" header="Mã NCC"></Column>
-                <Column field="total_amount" style="width:120px;" header="Cần trả NCC">
-                    <template #body="slotProps">
-                        {{ formatCurrency(slotProps.data.total_amount) }}
-                    </template>
-                </Column>
-                <Column field="status" style="width:120px;" header="Trạng thái">
-                    <template #body="slotProps">
-                        {{ getStatusText(slotProps.data.status) }}
-                    </template>
-                </Column>
-                
-                <!-- Hiển thị chi tiết thông tin khi nhấn vào dropdown-->
-                <template #expansion="slotProps">
-                    <div class="purchase-order-detail-container">
-                      <!-- 2 danh mục thông tin và sản phẩm-->
-                        <div class="detail-tabs">  
-                            <button class="tab active" @click="switchTab('info')">Thông tin</button>
-                            <button class="tab" @click="switchTab('products')">Lịch sử đặt hàng</button>
+          <DataTable :value="filteredOrders" v-model:expandedRows="expandedRows" stripedRows responsiveLayout="scroll"
+            tableStyle="min-width: 50rem" :paginator="true" :row="5" :rows="pagination.per_page"
+            :totalRecords="pagination.total"
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            :rowsPerPageOptions="[5, 10, 25]"
+            currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} phiếu đặt hàng"
+            dataKey="id" loadingIcon="pi pi-spinner" emptyMessage="Không có dữ liệu phiếu đặt hàng">
+            <Column expander style="width: 3rem" />
+            <Column field="order_code" style="width:155px;" header="Mã đặt hàng"></Column>
+            <Column field="created_at" header="Thời gian">
+              <template #body="slotProps">
+                {{ formatDate(slotProps.data.created_at) }}
+              </template>
+            </Column>
+            <Column field="supplier_name" header="Nhà cung cấp"></Column>
+            <Column field="ma_nha_cung_cap" style="width:120px;" header="Mã NCC"></Column>
+            <Column field="total_amount" style="width:120px;" header="Cần trả NCC">
+              <template #body="slotProps">
+                {{ formatCurrency(slotProps.data.total_amount) }}
+              </template>
+            </Column>
+            <Column field="status" style="width:120px;" header="Trạng thái">
+              <template #body="slotProps">
+                {{ getStatusText(slotProps.data.status) }}
+              </template>
+            </Column>
+
+            <!-- Hiển thị chi tiết thông tin khi nhấn vào dropdown-->
+            <template #expansion="slotProps">
+              <div class="purchase-order-detail-container">
+                <!-- 2 danh mục thông tin và sản phẩm-->
+                <div class="detail-tabs">
+                  <button class="tab active" @click="switchTab('info')">Thông tin</button>
+                </div>
+
+                <!-- Danh mục thông tin và sản phẩm-->
+                <div class="detail-content">
+                  <!-- Tab Thông tin -->
+                  <div v-if="activeTab === 'info'" class="tab-content">
+                    <div class="row">
+                      <!-- Thông tin chung -->
+                      <div class="col-md-6">
+                        <h6 class="text-primary mb-3">
+                          <i></i>Thông tin chung
+                        </h6>
+                        <table class="table table-sm table-borderless">
+                          <tbody>
+                            <tr>
+                              <td class="fw-bold" style="width: 140px;">Mã đặt hàng:</td>
+                              <td>{{ slotProps.data.order_code }}</td>
+                            </tr>
+                            <tr>
+                              <td class="fw-bold">Nhà cung cấp:</td>
+                              <td>{{ slotProps.data.supplier_name }}</td>
+                            </tr>
+                            <tr>
+                              <td class="fw-bold">Mã NCC:</td>
+                              <td>{{ slotProps.data.ma_nha_cung_cap }}</td>
+                            </tr>
+                            <tr>
+                              <td class="fw-bold">Ghi chú:</td>
+                              <td>{{ slotProps.data.note }}</td>
+                            </tr>
+                            <tr>
+                              <td class="fw-bold">Tổng tiền hàng:</td>
+                              <td>
+                                <span class="badge bg-info">{{ formatCurrency(slotProps.data.total_amount) }}</span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="fw-bold">Giảm giá:</td>
+                              <td>
+                                <span class="badge bg-warning">{{ formatCurrency(slotProps.data.remaining_amount)
+                                  }}</span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <!-- Thông tin bổ sung -->
+                      <div class="col-md-6">
+                        <h6 class="text-primary mb-3">
+                          <i></i>Thông tin bổ sung
+                        </h6>
+                        <table class="table table-sm table-borderless">
+                          <tbody>
+                            <tr>
+                              <td class="fw-bold">Cần trả nhà cung cấp:</td>
+                              <td>
+                                <span class="badge bg-success">{{ formatCurrency(slotProps.data.total_amount) }}</span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="fw-bold">Trạng thái:</td>
+                              <td>
+                                <span class="badge bg-success">{{ getStatusText(slotProps.data.status) }}</span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="fw-bold">Ngày tạo:</td>
+                              <td>{{ formatDate(slotProps.data.created_at) }}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        <!-- Action buttons chỉnh sửa và xóa-->
+                       <div class="mt-3">
+                          <Button icon="pi pi-file-excel" :label="isExporting ? 'Đang xuất...' : 'Xuất file'"
+                            :disabled="isExporting" @click="exportSinglePurchaseOrder(slotProps.data)"
+                            severity="secondary"
+                            style="background:#3A6F43; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
+                          <Button icon="pi pi-trash" label="Hủy" @click="deletePurchaseOrder(slotProps.data)"
+                            severity="secondary"
+                            style="background:#DC143C; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
+                          <Button icon="pi pi-trash" label="Xóa" @click="deletePurchaseOrder(slotProps.data)"
+                            severity="secondary"
+                            style="background:#DC143C; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
                         </div>
-                        
-                        <!-- Danh mục thông tin và sản phẩm-->
-                        <div class="detail-content">
-                            <!-- Tab Thông tin -->
-                            <div v-if="activeTab === 'info'" class="tab-content">
-                                <div class="row">
-                                    <!-- Thông tin chung -->
-                                    <div class="col-md-6">
-                                        <h6 class="text-primary mb-3">
-                                            <i></i>Thông tin chung
-                                        </h6>
-                                        <table class="table table-sm table-borderless">
-                                            <tbody>
-                                                <tr>
-                                                    <td class="fw-bold" style="width: 140px;">Mã đặt hàng:</td>
-                                                    <td>{{ slotProps.data.order_code }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="fw-bold">Nhà cung cấp:</td>
-                                                    <td>{{ slotProps.data.supplier_name }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="fw-bold">Mã NCC:</td>
-                                                    <td>{{ slotProps.data.ma_nha_cung_cap }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="fw-bold">Ghi chú:</td>
-                                                    <td>{{ slotProps.data.note }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="fw-bold">Tổng tiền hàng:</td>
-                                                    <td>
-                                                        <span class="badge bg-info">{{ formatCurrency(slotProps.data.total_amount) }}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="fw-bold">Giảm giá:</td>
-                                                    <td>
-                                                        <span class="badge bg-warning">{{ formatCurrency(slotProps.data.remaining_amount) }}</span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    
-                                    <!-- Thông tin bổ sung -->
-                                    <div class="col-md-6">
-                                        <h6 class="text-primary mb-3">
-                                            <i></i>Thông tin bổ sung
-                                        </h6>
-                                        <table class="table table-sm table-borderless">
-                                            <tbody>
-                                                <tr>
-                                                    <td class="fw-bold">Cần trả nhà cung cấp:</td>
-                                                    <td>
-                                                        <span class="badge bg-success">{{ formatCurrency(slotProps.data.total_amount) }}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="fw-bold">Trạng thái:</td>
-                                                    <td>
-                                                        <span class="badge bg-success">{{ getStatusText(slotProps.data.status) }}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="fw-bold">Ngày tạo:</td>
-                                                    <td>{{ formatDate(slotProps.data.created_at) }}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        
-                                        <!-- Action buttons chỉnh sửa và xóa-->
-                                        <div class="mt-3">
-                                          <Button 
-                                              icon="pi pi-file-excel"
-                                              :label="isExporting ? 'Đang xuất...' : 'Xuất file'"
-                                              :disabled="isExporting"
-                                              @click="exportSinglePurchaseOrder(slotProps.data)"
-                                              severity="secondary"
-                                              style="background:#3A6F43; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"/>                                           
-                                            <Button 
-                                              icon="pi pi-trash" 
-                                              label="Xóa"
-                                              @click="deletePurchaseOrder(slotProps.data)"
-                                              severity="secondary"
-                                              style="background:#DC143C; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"/>                                                                                          
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Tab Sản phẩm -->
-                            <div v-if="activeTab === 'products'" class="tab-content">
-                                <div class="text-center text-muted py-4">
-                                    <i class="pi pi-box" style="font-size: 2rem;"></i>
-                                    <p class="mt-2">Danh sách sản phẩm đặt hàng</p>
-                                </div>
-                            </div>
-                        </div>
+                      </div>
                     </div>
-                </template>
-            </DataTable>
+                  </div>
+
+                  <!-- Tab Sản phẩm -->
+                  <div v-if="activeTab === 'products'" class="tab-content">
+                    <div class="text-center text-muted py-4">
+                      <i class="pi pi-box" style="font-size: 2rem;"></i>
+                      <p class="mt-2">Danh sách sản phẩm đặt hàng</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </DataTable>
         </div>
       </div>
     </div>
@@ -285,17 +247,17 @@ export default {
     Column,
     DatePicker
   },
-  
+
   setup() {
     const { props } = usePage()
     const toast = useToast()
-    
+
     return {
       orders: props.orders || [],
       toast
     }
   },
-  
+
   data() {
     return {
       filteredOrders: [],
@@ -309,7 +271,7 @@ export default {
         timeRange: 'thisMonth',
         fromDate: null,
         toDate: null
-      },      
+      },
       pagination: {
         current_page: 1,
         last_page: 1,
@@ -327,11 +289,11 @@ export default {
     searchResultsCount() {
       return this.filteredOrders.length
     },
-    
+
     hasSearchResults() {
       return this.searchQuery && this.filteredOrders.length > 0
     },
-    
+
     isSearching() {
       return this.searchQuery && this.searchQuery.trim().length > 0
     }
@@ -347,13 +309,13 @@ export default {
       const day = String(date.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     },
-    
+
     //Lọc kết quả 
     debounceSearch() {
       clearTimeout(this.debounceTimer)
       this.debounceTimer = setTimeout(() => {
         this.searchOrders()
-      }, 200) 
+      }, 200)
     },
 
     matches(item, term) {
@@ -366,7 +328,7 @@ export default {
     // Function tìm kiếm 
     searchOrders() {
       const term = this.searchQuery.toLowerCase().trim()
-      
+
       if (!term) {
         // Nếu không có từ khóa, hiển thị tất cả
         this.filteredOrders = [...this.orders]
@@ -433,15 +395,15 @@ export default {
     async exportToExcel() {
       try {
         this.isExporting = true;
-        
+
         // Tạo URL với filter
         const params = new URLSearchParams();
-        
+
         // Filter theo search
         if (this.searchQuery?.trim()) {
           params.append('search', this.searchQuery.trim());
         }
-        
+
         // Filter theo status - map đúng với database
         const statusFilters = [];
         if (this.filters.temp) statusFilters.push('temp');
@@ -454,23 +416,21 @@ export default {
         if (statusFilters.length) {
           params.append('status', statusFilters.join(','));
         }
-        
+
         // Filter theo thời gian
-        if(this.filters.fromDate)
-        {
+        if (this.filters.fromDate) {
           const fromDate = this.formatDateToLocal(this.filters.fromDate);
           if (fromDate) params.append('from_date', fromDate);
         }
-        if(this.filters.toDate)
-        {
+        if (this.filters.toDate) {
           const toDate = this.formatDateToLocal(this.filters.toDate);
           if (toDate) params.append('to_date', toDate);
         }
-        
+
         this.toast.add({ severity: 'info', summary: 'Đang xuất file...', detail: 'Vui lòng chờ', life: 2000 });
-        
+
         const url = `/admin/purchase-orders/export${params.toString() ? '?' + params.toString() : ''}`;
-        const res = await axios.get(url, { 
+        const res = await axios.get(url, {
           responseType: 'blob',
           headers: {
             'X-Requested-With': 'XMLHttpRequest',
@@ -478,7 +438,7 @@ export default {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
           }
         });
-        
+
         // Tạo và download file
         const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const a = document.createElement('a');
@@ -488,7 +448,7 @@ export default {
         a.click();
         URL.revokeObjectURL(a.href);
         a.remove();
-        
+
         this.toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã tải Excel', life: 3000 });
       } catch (error) {
         this.toast.add({ severity: 'error', summary: 'Lỗi', detail: error.message || 'Xuất file thất bại', life: 5000 });
@@ -501,16 +461,16 @@ export default {
     async exportSinglePurchaseOrder(purchaseOrder) {
       try {
         this.isExporting = true;
-        
-        this.toast.add({ 
-          severity: 'info', 
-          summary: 'Đang xuất file...', 
-          detail: 'Vui lòng chờ', 
-          life: 2000 
+
+        this.toast.add({
+          severity: 'info',
+          summary: 'Đang xuất file...',
+          detail: 'Vui lòng chờ',
+          life: 2000
         });
-        
+
         const url = `/admin/purchase-orders/${purchaseOrder.id}/export`;
-        const res = await axios.get(url, { 
+        const res = await axios.get(url, {
           responseType: 'blob',
           headers: {
             'X-Requested-With': 'XMLHttpRequest',
@@ -518,10 +478,10 @@ export default {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
           }
         });
-        
+
         // Tạo và download file
-        const blob = new Blob([res.data], { 
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+        const blob = new Blob([res.data], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -530,31 +490,31 @@ export default {
         a.click();
         URL.revokeObjectURL(a.href);
         a.remove();
-        
-        this.toast.add({ 
-          severity: 'success', 
-          summary: 'Thành công', 
-          detail: 'Đã tải Excel', 
-          life: 3000 
+
+        this.toast.add({
+          severity: 'success',
+          summary: 'Thành công',
+          detail: 'Đã tải Excel',
+          life: 3000
         });
       } catch (error) {
-        this.toast.add({ 
-          severity: 'error', 
-          summary: 'Lỗi', 
-          detail: error.message || 'Xuất file thất bại', 
-          life: 5000 
+        this.toast.add({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: error.message || 'Xuất file thất bại',
+          life: 5000
         });
       } finally {
         this.isExporting = false;
       }
     },
-    
-      async loadOrders() {
+
+    async loadOrders() {
       try {
         // Format dates theo local timezone
         const fromDate = this.formatDateToLocal(this.filters.fromDate);
         const toDate = this.formatDateToLocal(this.filters.toDate);
-        
+
         const response = await axios.get('/admin/purchase-orders/api', {
           params: {
             from_date: fromDate,
@@ -569,16 +529,16 @@ export default {
           // Cập nhật danh sách orders từ API
           this.orders = response.data.data;
           this.filteredOrders = response.data.data;
-          
+
           // Cập nhật pagination
           this.pagination = response.data.pagination;
         }
       } catch (error) {
-        this.toast.add({ 
-          severity: 'error', 
-          summary: 'Lỗi', 
-          detail: 'Không thể tải dữ liệu nhập hàng', 
-          life: 3000 
+        this.toast.add({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: 'Không thể tải dữ liệu nhập hàng',
+          life: 3000
         });
       }
     }
@@ -743,7 +703,8 @@ export default {
   gap: 10px;
 }
 
-.checkbox-item, .radio-item {
+.checkbox-item,
+.radio-item {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -824,11 +785,11 @@ export default {
   .main-content {
     flex-direction: column;
   }
-  
+
   .left-sidebar {
     width: 100%;
   }
-  
+
   .right-content {
     padding: 20px;
   }
@@ -955,8 +916,15 @@ export default {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .detail-content .table {

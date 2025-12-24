@@ -1,22 +1,16 @@
 <template>
   <div style="margin-top: -20px;">
-    <!-- Header Component -->
     <Header :auth="auth" />
 
-    <!--Banner-->
-    <div class="container my-4" style="padding-top: 100px;">
+    <div class="container my-4 responsive-top-spacing" style="padding-top: 100px;">
       <div class="banner-wrapper">
         <img src="https://nhathuocminhchau.com/storage/uploads/logo/slider-2-5886-hinh.webp" alt="Banner"
           class="banner-image" />
       </div>
     </div>
-    <!-- End Banner -->
-
     <div class="container my-4 py-4">
-      <!-- Tabs bộ lọc và sắp xếp -->
       <div class="products-toolbar d-flex align-items-center justify-content-between mb-3">
-        <!-- Trái -->
-        <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3 toolbar-left">
           <span class="fw-bold">Bộ lọc</span>
           <button type="button" class="btn btn-outline-secondary btn-sm reset-btn" style="margin-left: 70px;"
             @click="resetPriceFilter">
@@ -24,11 +18,11 @@
           </button>
         </div>
 
-        <!-- Phải -->
-        <div class="d-flex align-items-center gap-2" style="margin-left: auto;">
+        <div class="d-flex align-items-center gap-2 toolbar-right" style="margin-left: auto;">
           <span class="title-filter">Sắp xếp theo:</span>
 
-          <button type="button" class="btn-sort" :class="{ 'active': currentSort === 'desc' }"
+          <div class="sort-buttons">
+             <button type="button" class="btn-sort" :class="{ 'active': currentSort === 'desc' }"
             @click="sortProducts('desc')">
             Giá giảm dần
           </button>
@@ -37,36 +31,35 @@
             @click="sortProducts('asc')">
             Giá tăng dần
           </button>
+          </div>
 
-          <input type="text" class="form-control" placeholder="Tìm kiếm" style="width: 300px;margin-left: 10px;"
+          <input type="text" class="form-control search-input" placeholder="Tìm kiếm" style="width: 300px;margin-left: 10px;"
             v-model="searchQuery" @input="handleSearch">
         </div>
       </div>
-      <hr class="light-divider" style="width: 215px; background-color: grey;">
+      <hr class="light-divider sidebar-divider" style="width: 215px; background-color: grey;">
       <div class="row">
-        <!-- Bộ lọc bên trái -->
-        <div class="col-lg-3 col-md-4">
-          <!-- Khoảng giá -->
+        <div class="col-lg-3 col-md-4 mb-4 mb-md-0">
           <div class="mb-4">
             <h6 class="mb-3 fw-bold">Khoảng giá</h6>
             <div class="mb-2">
-              <div class="input-group mb-2">
-                <input type="number" id="minPrice" class="form-control w-50" placeholder="Tối thiểu"
-                  style="max-width:180px;">
-                <span class="input-group-text border-start-0">đ</span>
+              <div class="d-flex flex-column gap-2 mb-2">
+                <div class="input-group">
+                  <input type="number" id="minPrice" class="form-control" placeholder="Min">
+                  <span class="input-group-text border-start-0">đ</span>
+                </div>
+                <div class="input-group">
+                  <input type="number" id="maxPrice" class="form-control" placeholder="Max">
+                  <span class="input-group-text border-start-0">đ</span>
+                </div>
               </div>
-              <div class="input-group mb-2">
-                <input type="number" id="maxPrice" class="form-control w-50" placeholder="Tối đa"
-                  style="max-width:180px;">
-                <span class="input-group-text border-start-0">đ</span>
-              </div>
-              <button id="applyFilterBtn" class="btn btn-primary fw-bold"
+
+              <button id="applyFilterBtn" class="btn btn-primary fw-bold sidebar-btn"
                 style="background-color:#005EB8; border:none; width: 215px;">
                 Áp dụng
               </button>
             </div>
 
-            <!-- Radio giá -->
             <div class="filter-group">
               <div class="form-check mb-2">
                 <input class="form-check-input" type="radio" name="price" id="price1"
@@ -90,47 +83,48 @@
               </div>
             </div>
           </div>
-          <hr class="light-divider" style="width: 215px; background-color: grey;">
         </div>
 
-        <!-- Sản phẩm bên phải -->
         <div class="col-lg-9 col-md-8">
-          <div class="row g-4 product-grid" id="productGrid">
+          <div class="row g-3 g-md-4 product-grid" id="productGrid">
             <div v-for="product in displayedProducts" :key="product.id + '-' + product.type"
-              class="col-lg-3 col-md-4 col-sm-6">
-              <div class="product-card-modern">
+              class="col-6 col-md-6 col-lg-3"> <div class="product-card-modern">
+                <div class="product-label" v-if="isPromotionActive(product)">-{{ Math.round((1 - product.gia_khuyen_mai/product.gia_ban) * 100) }}%</div>
                 <div class="product-img-wrapper" @click="goToProductDetail(product)">
                   <img :src="product.image || 'https://via.placeholder.com/150'" class="product-img"
                     :alt="product.name" />
                 </div>
                 <div class="product-body">
-                  <div class="product-title-modern">{{ product.name }}</div>
+                  <div class="product-title-modern" :title="product.name">{{ product.name }}</div>
                   <div class="product-price-modern">
                     <template v-if="isPromotionActive(product)">
-                      <span class="text-danger">{{ formatPrice(product.gia_khuyen_mai) }}</span>
-                      <span class="badge bg-warning text-dark ms-2" style="font-size: 0.7rem;">KM</span>
-                      <span class="text-muted ms-2" style="text-decoration: line-through; font-size: 0.9rem;">
-                        {{ formatPrice(product.gia_ban) }}
-                      </span>
+                      <div class="d-flex flex-column flex-wrap">
+                        <span class="text-danger price-main">{{ formatPrice(product.gia_khuyen_mai) }}</span>
+                        <div class="price-old-group">
+                           <span class="text-muted text-decoration-line-through price-old">
+                            {{ formatPrice(product.gia_ban) }}
+                          </span>
+                        </div>
+                      </div>
                     </template>
                     <template v-else>
-                      {{ formatPrice(product.gia_ban) }}
+                      <span class="price-main">{{ formatPrice(product.gia_ban) }}</span>
                     </template>
                   </div>
                   <button class="btn product-btn" :class="{
-                    'btn-secondary': isOutOfStock(product),
-                    'btn-success': isPromotionActive(product) && !isOutOfStock(product),
-                    'btn-primary': !isPromotionActive(product) && !isOutOfStock(product)
-                  }" @click.stop="addToCartHandler(product)" :disabled="isButtonDisabled(product)">
-                    <i class="fas fa-cart-plus me-2"></i>
-                    {{ getButtonLabel(product) }}
-                  </button>
+                        'btn-status-disabled': isOutOfStock(product),
+                        'btn-status-promo': isPromotionActive(product) && !isOutOfStock(product),
+                        'btn-status-default': !isPromotionActive(product) && !isOutOfStock(product)
+                    }" @click.stop="addToCartHandler(product)" :disabled="isButtonDisabled(product)">
+
+                    <i class="fas fa-cart-plus me-1"></i>
+                    <span class="btn-text">{{ getButtonLabel(product) }}</span>
+                    </button>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Hiển thị thông báo khi không có sản phẩm -->
           <div v-if="displayedProducts.length === 0" class="text-center py-5">
             <p class="text-muted">Không tìm thấy sản phẩm nào trong khoảng giá đã chọn.</p>
             <button class="btn btn-outline-primary" @click="resetPriceFilter">
@@ -267,7 +261,7 @@ function isPromotionActive(product) {
 function isOutOfStock(product) {
   // Kiểm tra null, undefined, 0, string "0", và số âm
   const tonKho = Number(product.ton_kho) || 0;
-  return tonKho <= 0;  // ✅ Dùng <= 0 thay vì == 0 để bao gồm cả số âm
+  return tonKho <= 0;
 }
 
 function isButtonDisabled(product) {
@@ -284,7 +278,7 @@ function isButtonDisabled(product) {
 
 function getButtonLabel(product) {
   if (isOutOfStock(product)) return 'Hết hàng';
-  if (isPromotionActive(product)) return 'Mua với giá KM';
+  if (isPromotionActive(product)) return 'Khuyến Mãi';
   return 'Thêm vào giỏ';
 }
 
@@ -356,6 +350,7 @@ onMounted(() => {
   font-size: 15px;
   color: #333;
   margin-right: 7px;
+  white-space: nowrap;
 }
 
 
@@ -385,12 +380,18 @@ onMounted(() => {
   font-weight: 500;
   font-size: 0.875rem;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .reset-btn:hover {
   background-color: #f8f9fa;
   border-color: #6b7280;
   color: #374151;
+}
+
+.sort-buttons {
+  display: flex;
+  gap: 8px;
 }
 
 .btn-sort {
@@ -401,6 +402,8 @@ onMounted(() => {
   border-radius: 12px;
   font-weight: 500;
   line-height: 1.2;
+  white-space: nowrap;
+  font-size: 0.9rem;
 }
 
 .btn-sort:hover {
@@ -498,7 +501,8 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 340px;
+  height: 100%; /* Sửa min-height thành height 100% để đều nhau */
+  min-height: 360px;
   position: relative;
   transition: box-shadow 0.2s;
 }
@@ -510,16 +514,17 @@ onMounted(() => {
 
 .product-label {
   position: absolute;
-  top: 12px;
-  left: 12px;
-  background: #ff9800;
+  top: 10px;
+  left: 10px;
+  background: #dc3545; /* Đổi màu đỏ cho nổi */
   color: #fff;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: 6px;
-  padding: 2px 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 2px 6px;
   z-index: 2;
   display: inline-block;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .product-img-wrapper {
@@ -536,7 +541,7 @@ onMounted(() => {
   max-height: 140px;
   object-fit: contain;
   border-radius: 8px;
-  background: #f8f9fb;
+  background: #fff; /* Đổi nền trắng cho ảnh */
 }
 
 .product-body {
@@ -551,7 +556,7 @@ onMounted(() => {
   font-size: 1rem;
   font-weight: 500;
   color: #222;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   min-height: 2.4em;
   max-height: 2.4em;
   display: -webkit-box;
@@ -559,67 +564,82 @@ onMounted(() => {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.2;
-  line-clamp: 2;
-  /* For Firefox and future browsers */
+  line-height: 1.25;
 }
 
 .product-price-modern {
   color: #1a56db;
   font-size: 1.15rem;
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: auto; /* Đẩy button xuống đáy */
+  padding-bottom: 12px;
+  width: 100%;
+}
+
+.price-old-group {
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.price-old {
+  font-size: 0.85rem;
+  font-weight: 400;
 }
 
 .product-btn {
   width: 100%;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 1rem;
-  background: #1a56db;
-  border: none;
-  color: #fff;
+  font-size: 0.95rem;
   padding: 8px 0;
-  transition: background 0.2s;
+  border: none !important;
+  color: #fff !important;
+  /* Tắt hiệu ứng chuyển màu mượt để cảm giác bấm chắc chắn hơn */
+  transition: none !important;
+  margin-top: auto;
+  box-shadow: none !important;
+}
+
+/* 1. TRẠNG THÁI KHUYẾN MÃI (Màu Xanh Lá) */
+.btn-status-promo,
+.btn-status-promo:hover,
+.btn-status-promo:focus,
+.btn-status-promo:active {
+  background-color: #28a745 !important; /* Xanh lá cây */
+  opacity: 1 !important;
+}
+
+/* 2. TRẠNG THÁI MẶC ĐỊNH (Màu Xanh Dương hiện tại) */
+.btn-status-default,
+.btn-status-default:hover,
+.btn-status-default:focus,
+.btn-status-default:active {
+  background-color: #1a56db !important; /* Xanh dương chuẩn của bạn */
+  opacity: 1 !important;
+}
+
+/* 3. TRẠNG THÁI HẾT HÀNG (Màu Xám) */
+.btn-status-disabled,
+.btn-status-disabled:hover,
+.btn-status-disabled:focus,
+.btn-status-disabled:active {
+  background-color: #6c757d !important; /* Màu xám */
+  cursor: not-allowed;
+  opacity: 0.8 !important;
 }
 
 .product-btn:hover {
   background: #1650cf;
 }
 
-@media (max-width: 991px) {
-  .product-card-modern {
-    min-height: 320px;
-    padding: 12px 8px 10px 8px;
-  }
-
-  .product-img-wrapper {
-    height: 120px;
-  }
-}
-
-@media (max-width: 767px) {
-  .product-card-modern {
-    min-height: 280px;
-  }
-
-  .product-img-wrapper {
-    height: 90px;
-  }
-
-  .product-title-modern {
-    font-size: 0.95rem;
-    min-height: 36px;
-  }
-
-  .product-price-modern {
-    font-size: 1rem;
-  }
-}
-
 .banner-wrapper {
   width: 100%;
   margin-bottom: 24px;
+}
+
+.input-group
+{
+    width: 219px;
 }
 
 .banner-image {
@@ -628,5 +648,136 @@ onMounted(() => {
   object-fit: cover;
   border-radius: 12px;
   display: block;
+  min-height: 120px; /* Đảm bảo banner không bị quá bé */
+}
+
+/* =========================================
+   MEDIA QUERIES FOR RESPONSIVE (ADDITIONS)
+   ========================================= */
+
+/* Tablet & Mobile (Dưới 992px) */
+@media (max-width: 991px) {
+  .products-toolbar {
+    flex-wrap: wrap; /* Cho phép xuống dòng */
+    height: auto;
+    padding: 10px 0;
+  }
+
+  .products-toolbar .toolbar-left,
+  .products-toolbar .toolbar-right {
+    width: 100%; /* Chiếm hết chiều ngang */
+    justify-content: space-between;
+  }
+
+  .products-toolbar .toolbar-right {
+    margin-left: 0 !important; /* Ghi đè margin inline cũ */
+    flex-wrap: wrap;
+  }
+
+  /* Ghi đè inline style của input search */
+  .search-input {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-top: 8px;
+  }
+
+  /* Ghi đè inline style của nút reset */
+  .reset-btn {
+    margin-left: auto !important; /* Đẩy sang phải thay vì margin cứng 70px */
+  }
+
+  /* Ẩn bớt bộ lọc trên mobile nếu cần hoặc style lại */
+  .sidebar-btn, .sidebar-divider {
+    width: 100% !important; /* Ghi đè width 215px inline */
+  }
+
+  .product-card-modern {
+    min-height: 340px;
+    padding: 12px;
+  }
+}
+
+/* Mobile (Dưới 768px) */
+@media (max-width: 767px) {
+  /* Xử lý khoảng cách top cho banner */
+  .responsive-top-spacing {
+    padding-top: 80px !important; /* Ghi đè 100px inline */
+  }
+
+  /* Toolbar sắp xếp lại */
+  .products-toolbar {
+    gap: 8px;
+  }
+
+  .sort-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .btn-sort {
+    flex: 1;
+    text-align: center;
+    font-size: 0.8rem;
+    padding: 6px 4px;
+  }
+
+  .title-filter {
+    display: none; /* Ẩn chữ 'Sắp xếp theo' trên mobile cho gọn */
+  }
+
+  /* Product Card Mobile */
+  .product-card-modern {
+    min-height: 290px;
+    padding: 10px 8px;
+    border-radius: 10px;
+  }
+
+  .product-img-wrapper {
+    height: 110px;
+  }
+
+  .product-img {
+    max-height: 100px;
+  }
+
+  .product-title-modern {
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+    min-height: 2.5em; /* Giảm chiều cao tiêu đề */
+  }
+
+  .product-price-modern {
+    font-size: 0.95rem;
+    padding-bottom: 8px;
+  }
+
+  .price-old {
+    font-size: 0.75rem;
+  }
+
+  .product-btn {
+    font-size: 0.8rem;
+    padding: 6px 0;
+  }
+
+  .btn-text {
+    /* Có thể ẩn chữ 'Thêm vào giỏ' chỉ hiện icon nếu muốn, ở đây giữ lại nhưng font bé */
+  }
+
+  /* Input giá bộ lọc nằm ngang */
+  .col-lg-3 .d-flex.gap-2 {
+    /* Giữ input min/max nằm ngang */
+  }
+}
+
+/* Extra small devices (Dưới 400px) */
+@media (max-width: 400px) {
+  .product-card-modern {
+    min-height: 270px;
+  }
+  .product-img-wrapper {
+    height: 90px;
+  }
 }
 </style>

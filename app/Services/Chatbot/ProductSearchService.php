@@ -118,7 +118,19 @@ class ProductSearchService
     {
         $query = Service::where('trang_thai', 'kich_hoat');
 
-        foreach ($keywords as $keyword) {
+        // Lọc bỏ từ khóa "dịch vụ" để tránh tìm kiếm cứng nhắc
+        $filteredKeywords = array_filter($keywords, function($k) {
+            return !in_array(mb_strtolower($k), ['dịch', 'vụ', 'các', 'những']);
+        });
+
+        // Nếu sau khi lọc mà KHÔNG còn từ khóa nào (VD khách hỏi: "Có dịch vụ gì?", "Các dịch vụ")
+        // -> Trả về tất cả dịch vụ nổi bật (thay vì trả về rỗng)
+        if (empty($filteredKeywords)) {
+             return $query->with(['category', 'doctor'])->limit(5)->get();
+        }
+
+        // Nếu có từ khóa cụ thể (VD: "Khám tại nhà") thì mới search theo từ khóa
+        foreach ($filteredKeywords as $keyword) {
             $query->where(function ($q) use ($keyword) {
                 $q->where('ten_dich_vu', 'like', '%' . $keyword . '%')
                     ->orWhere('mo_ta', 'like', '%' . $keyword . '%');

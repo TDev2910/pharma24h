@@ -62,12 +62,6 @@
               <div class="meta-item" v-if="type === 'medicine' && product.drugRoute">
                 <strong>Đường dùng:</strong> {{ product.drugRoute.name }}
               </div>
-              <div class="meta-item">
-                <strong>Tồn kho:</strong> 
-                <span :class="product.ton_kho > 0 ? 'text-success' : 'text-danger'">
-                  {{ product.ton_kho || 0 }} {{ product.don_vi_tinh }}
-                </span>
-              </div>
             </div>
             
             <!-- Add to Cart -->

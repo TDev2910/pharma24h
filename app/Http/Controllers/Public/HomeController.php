@@ -203,7 +203,7 @@ class HomeController extends Controller
      */
     public function serviceDetail($id)
     {
-        $service = Service::with(['category'])
+        $service = Service::with(['category','doctor'])
             ->where('trang_thai', 'kich_hoat')
             ->findOrFail($id);
 
@@ -226,21 +226,5 @@ class HomeController extends Controller
     {
         return Inertia::render('public/contact');
     }
-
-    // /**
-    //  * Hiển thị trang giới thiệu
-    //  */
-    // public function about()
-    // {
-    //     return view('public.about');
-    // }
-
-    // /**
-    //  * Hiển thị trang liên hệ
-    //  */
-    // public function contact()
-    // {
-    //     return view('public.contact');
-    // }
 }
 
