@@ -69,7 +69,7 @@ class SupportTicketController extends Controller
 
         SupportTicket::create([
             'ticket_id' => 'SUP-' . strtoupper(Str::random(6)),
-            'full_name' => $validated['fullName'], // Chú ý key mapping
+            'full_name' => $validated['fullName'],
             'email'     => $validated['email'],
             'subject'   => $validated['subject'],
             'message'   => $validated['message'],
@@ -77,7 +77,7 @@ class SupportTicketController extends Controller
             'user_id'   => Auth::id() ?? null, // Cho phép khách vãng lai (null)
         ]);
 
-        // Trả về JSON nếu gọi từ API/Vue form submit, hoặc redirect
+        // Trả về JSON
         return redirect()->back()->with('success', 'Gửi yêu cầu thành công!');
     }
 

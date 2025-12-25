@@ -41,8 +41,8 @@
 
                 <Column header="Thao tác" style="text-align: center">
                     <template #body="slotProps">
-                        <Button icon="pi pi-eye" style="margin-left:-65px" rounded severity="info" text @click="openDetailModal(slotProps.data)"
-                            v-tooltip.top="'Xem chi tiết & Phản hồi'" />
+                        <Button icon="pi pi-eye" style="margin-left:-65px" rounded severity="info" text
+                            @click="openDetailModal(slotProps.data)" v-tooltip.top="'Xem chi tiết & Phản hồi'" />
                     </template>
                 </Column>
 
