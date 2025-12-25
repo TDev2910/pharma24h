@@ -11,8 +11,9 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\Api\GHNWebhookController;
+use App\Http\Controllers\SupportTicketController;
 use Inertia\Inertia;
- 
+
 //public routes
 Route::get('/',[HomeController::class,'homeInertia'])->name('home');
 Route::post('/auth/google', [AuthController::class, 'googleLogin'])->name('auth.google');
@@ -37,7 +38,7 @@ Route::get('/products/{type}/{id}', [HomeController::class, 'productDetail'])->n
 Route::get('/services', [HomeController::class, 'services'])->name('services');
 Route::get('/services/{id}', [HomeController::class, 'serviceDetail'])->name('services.detail');
 Route::get('/contact', fn () => Inertia::render('Public/Contact'))->name('contact');
-
+Route::post('/contact', [SupportTicketController::class, 'store'])->name('contact.store');
 // Review routes
 Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
 Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy')->middleware('auth');
@@ -49,7 +50,7 @@ Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/logout', [AuthController::class, 'logout']); 
+Route::get('/logout', [AuthController::class, 'logout']);
 
 //forgot password routes (email + phone)
 Route::prefix('password')->name('password.')->group(function () {
@@ -59,7 +60,7 @@ Route::prefix('password')->name('password.')->group(function () {
     Route::post('/verify', [ForgotPasswordController::class, 'verifyOtp'])->name('verify.post');
     Route::get('/reset-password', [ForgotPasswordController::class, 'showResetForm'])->name('reset');
     Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('reset.post');
-    
+
     //phone verification routes
     Route::get('/verify-phone', [ForgotPasswordController::class, 'showPhoneVerifyForm'])->name('verify.phone');
     Route::post('/verify-phone', [ForgotPasswordController::class, 'verifyPhoneOtp'])->name('verify.phone.post');
@@ -68,6 +69,7 @@ Route::prefix('password')->name('password.')->group(function () {
     Route::post('/reset-phone-otp-attempts', [ForgotPasswordController::class, 'resetPhoneOtpAttempts'])->name('phone.otp.reset.attempts');
 });
 
+
 //user routes
 require __DIR__.'/user.php';
 
@@ -75,16 +77,14 @@ require __DIR__.'/user.php';
 require __DIR__.'/store.php';
 
 //admin routes
-Route::middleware(['auth', 'admin'])->group(function () {   
-    Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');    
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 });
 
 //staff routes
 Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/staff/dashboard', [StaffController::class, 'dashboard'])->name('staff.dashboard');
 });
-
-
 
 Route::post('/bookings', [ServiceBookingController::class, 'store'])->name('bookings.store');
 

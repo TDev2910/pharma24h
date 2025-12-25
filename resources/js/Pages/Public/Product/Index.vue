@@ -501,7 +501,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100%; /* Sửa min-height thành height 100% để đều nhau */
+  height: 100%;
   min-height: 360px;
   position: relative;
   transition: box-shadow 0.2s;
@@ -516,7 +516,7 @@ onMounted(() => {
   position: absolute;
   top: 10px;
   left: 10px;
-  background: #dc3545; /* Đổi màu đỏ cho nổi */
+  background: #dc3545; 
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;

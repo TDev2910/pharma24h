@@ -12,7 +12,7 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
     Route::get('/my-schedule', [StaffController::class, 'mySchedule'])->name('my-schedule');
     Route::get('/my-schedule/api/weekly', [StaffController::class, 'getMyWeeklySchedule'])->name('my-schedule.api');
-    
+
     // Stock/Inventory routes
     Route::prefix('products/stock')->name('products.stock.')->group(function () {
         Route::get('/', [StaffStockController::class, 'index'])->name('index');
@@ -51,8 +51,8 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
         Route::post('/{id}/cancel', [StaffOrderController::class, 'cancel'])->name('cancel');
         Route::post('/{id}/update-status', [StaffOrderController::class, 'updateStatus'])->name('update-status');
         Route::patch('/{id}', [StaffOrderController::class, 'update'])->name('update');
-    }); 
-    
+    });
+
     // GHN routes - Thêm nhóm routes này
     Route::prefix('ghn')->name('ghn.')->group(function () {
         Route::post('orders/{order}/create', [StafGHNController::class, 'createShippingOrder'])->name('orders.create');

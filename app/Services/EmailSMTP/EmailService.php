@@ -3,14 +3,17 @@
 namespace App\Services\EmailSMTP;
 
 use App\Models\Order;
+use App\Models\SupportTicket;
 use App\Services\EmailSMTP\OrderConfirmationMail;
+use App\Services\EmailSMTP\TicketReplyMail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class EmailService
 {
     /**
      * Gửi email xác nhận đơn hàng cho khách hàng
-     * 
+     *
      * @param Order $order
      * @return bool
      */
@@ -27,6 +30,27 @@ class EmailService
 
             return true;
         } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    // Gửi email phản hồi yêu cầu hỗ trợ cho khách hàng
+    public function sendTicketReply(SupportTicket $ticket, string $replyContent): bool
+    {
+        // Kiểm tra email khách hàng
+        if (empty($ticket->email)) {
+            return false;
+        }
+
+        try {
+            // Sử dụng queue để gửi ngầm (tối ưu tốc độ phản hồi Modal)
+            // Nếu chưa cấu hình queue, bạn đổi ->queue() thành ->send()
+            Mail::to($ticket->email)
+                ->send(new TicketReplyMail($ticket, $replyContent));
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Lỗi gửi mail ticket #{$ticket->ticket_id}: " . $e->getMessage());
             return false;
         }
     }

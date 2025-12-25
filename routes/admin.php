@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\Product\StockController;
 use App\Http\Controllers\Admin\Product\UnifiedListController;
 use App\Http\Controllers\Admin\Order\GHNController;
 use App\Http\Controllers\Admin\Report\ReportController;
+use App\Http\Controllers\SupportTicketController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -131,8 +132,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('orders.cancellations.approve');
     Route::post('orders/{order}/cancellations/reject', [OrdersController::class, 'rejectCancellation'])
         ->name('orders.cancellations.reject');
-    
-    //Giao hàng nhanh 
+
+    //Giao hàng nhanh
     Route::prefix('ghn')->name('ghn.')->group(function () {
         Route::post('orders/{order}/create', [GHNController::class, 'createShippingOrder'])->name('orders.create');
         Route::post('shipping-fee', [GHNController::class, 'getShippingFee'])->name('shipping-fee');
@@ -151,7 +152,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/{id}/mark-paid', [ServiceBookingController::class, 'markAsPaid'])->name('mark-paid');
         Route::post('/{id}/complete', [ServiceBookingController::class, 'complete'])->name('complete');
     });
-    // CUSTOMER & USER MANAGEMENT ROUTES
 
     // Customers
     Route::resource('customers', CustomerController::class)->names('customers');
@@ -206,7 +206,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/doctors/{doctor}', [DoctorController::class, 'destroy'])->name('doctors.destroy');
     Route::get('/doctors/generate-code', [DoctorController::class, 'generateDoctorCode'])->name('doctors.generate-code');
     Route::post('/doctors/upload-avatar', [DoctorController::class, 'uploadAvatar'])->name('doctors.upload-avatar');
-    // SUPPLIER & PURCHASE MANAGEMENT ROUTES
 
     // Suppliers
     Route::resource('suppliers', SupplierController::class)->names('suppliers');
@@ -277,5 +276,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/top-stock-returns', [ReportController::class, 'topStockReturns'])->name('top-stock-returns');
         Route::get('/top-customers', [ReportController::class, 'topCustomers'])->name('top-customers');
         Route::get('/top-suppliers', [ReportController::class, 'topSuppliers'])->name('top-suppliers');
+    });
+
+    // Quản lý Yêu cầu hỗ trợ (Ticket)
+    Route::prefix('tickets')->name('tickets.')->middleware(['auth', 'admin'])->group(function () {
+        // 1. Route to show the View (Interface)
+        Route::get('/', [SupportTicketController::class, 'index'])->name('index');
+
+        // 2. Route to get Data (API) <--- YOU ARE LIKELY MISSING THIS LINE
+        Route::get('/api', [SupportTicketController::class, 'getTickets'])->name('api');
+
+        // 3. Other routes
+        Route::get('/{id}', [SupportTicketController::class, 'show'])->name('show');
+        Route::post('/{id}/reply', [SupportTicketController::class, 'reply'])->name('reply');
     });
 });
