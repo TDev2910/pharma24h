@@ -41,7 +41,7 @@
 
                 <Column header="Thao tác" style="text-align: center">
                     <template #body="slotProps">
-                        <Button icon="pi pi-eye" rounded severity="info" text @click="openDetailModal(slotProps.data)"
+                        <Button icon="pi pi-eye" style="margin-left:-65px" rounded severity="info" text @click="openDetailModal(slotProps.data)"
                             v-tooltip.top="'Xem chi tiết & Phản hồi'" />
                     </template>
                 </Column>
@@ -139,12 +139,14 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: block; /* Quan trọng để truncate hoạt động */
+    display: block;
+    /* Quan trọng để truncate hoạt động */
 }
 
 /* Tùy chọn: Tăng độ rộng tooltip để dễ đọc hơn */
 :global(.custom-tooltip .p-tooltip-text) {
     max-width: 400px;
-    white-space: pre-line; /* Giữ xuống dòng nếu có */
+    white-space: pre-line;
+    /* Giữ xuống dòng nếu có */
 }
 </style>
