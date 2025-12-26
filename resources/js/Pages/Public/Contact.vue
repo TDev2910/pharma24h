@@ -100,7 +100,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -112,7 +111,7 @@ import { ref, reactive } from 'vue';
 // Import Components
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
-import Dropdown from 'primevue/dropdown'; // Import thêm Dropdown
+import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 
 const props = defineProps({
@@ -185,6 +184,7 @@ const subjects = [
     /* Màu xanh đậm của tiêu đề */
 }
 
+
 /* 2. Form Style */
 .form-group label {
     color: #000;
@@ -208,16 +208,13 @@ const subjects = [
 }
 
 .btn-submit {
-    background-color: #356685;
+    background-color: #356685 !important;
     /* Màu xanh giống nút trong ảnh */
     border: none;
     padding: 10px 30px;
     font-weight: bold;
 }
 
-.btn-submit:hover {
-    background-color: #274d65;
-}
 
 /* 3. Info Sidebar Style */
 .contact-list li {

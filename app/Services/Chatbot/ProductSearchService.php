@@ -10,8 +10,11 @@ use Illuminate\Support\Str;
 
 class ProductSearchService
 {
+    protected $isAskingPrice = false;
+
     public function search(string $message): array
     {
+        $this->detectPriceIntent($message);
         // 1. Trích xuất từ khóa và giá
         $keywords   = $this->extractKeywords($message);
         $priceRange = $this->extractPriceRange($message);
@@ -20,7 +23,6 @@ class ProductSearchService
         // 2. Lọc bỏ các từ khóa quá chung chung (thuốc, sản phẩm...)
         $keywords = $this->filterGenericKeywords($keywords);
 
-        // 3. Logic "Thoát sớm" (Early Exit)
         // Nếu sau khi lọc không còn từ khóa và không có khoảng giá -> trả về kết quả rỗng, không truy vấn DB
         if (empty($keywords) && empty($priceRange)) {
             return [
@@ -36,131 +38,103 @@ class ProductSearchService
             'services'  => collect([]),
         ];
 
-        // 4. Truy vấn Database khi có từ khóa hoặc khoảng giá
-        if ($searchType === 'product' || $searchType === 'all') 
-        {
-            if ($priceRange && empty($keywords)) 
-            {
-                $result['medicines'] = $this->searchMedicinesByPrice($priceRange);
-                $result['goods'] = $this->searchGoodsByPrice($priceRange);
-            } 
-            elseif (!empty($keywords)) 
-            {
-                $result['medicines'] = $this->searchMedicines($keywords, $priceRange);
-                $result['goods'] = $this->searchGoods($keywords, $priceRange);
-            } 
-            elseif ($priceRange) 
-            {
-                $result['medicines'] = $this->searchMedicinesByPrice($priceRange);
-                $result['goods'] = $this->searchGoodsByPrice($priceRange);
-            }
+        // Truy vấn Database khi có từ khóa hoặc khoảng giá
+        if ($searchType === 'product' || $searchType === 'all') {
+            // Tìm thuốc
+            $result['medicines'] = $this->smartSearch($keywords, $priceRange, Medicine::class, 'ten_thuoc');
+            // Tìm hàng hóa
+            $result['goods'] = $this->smartSearch($keywords, $priceRange, Goods::class, 'ten_hang_hoa');
         }
 
         if ($searchType === 'service' || $searchType === 'all') {
-            if ($priceRange && empty($keywords)) {
-                $result['services'] = $this->searchServicesByPrice($priceRange);
-            } elseif (!empty($keywords)) {
-                $result['services'] = $this->searchServices($keywords, $priceRange);
-            } elseif ($priceRange) {
-                $result['services'] = $this->searchServicesByPrice($priceRange);
-            }
+            // Tìm dịch vụ
+            $result['services'] = $this->smartSearch($keywords, $priceRange, Service::class, 'ten_dich_vu');
         }
 
         return $result;
     }
-
-    //tìm kiếm thuốc
-    private function searchMedicines(array $keywords, ?array $priceRange = null): Collection
-    {
-        $query = Medicine::where('ban_truc_tiep', true);
-
-        // Sử dụng logic and: duyệt qua từng từ khóa
-        // Sản phẩm phải thỏa mãn từ khóa 1 và từ khóa 2 và ...
-        foreach ($keywords as $keyword) {
-            $query->where(function ($q) use ($keyword) {
-                $q->where('ten_thuoc', 'like', '%' . $keyword . '%')
-                    ->orWhere('ten_viet_tat', 'like', '%' . $keyword . '%')
-                    ->orWhere('ma_hang', 'like', '%' . $keyword . '%')
-                    ->orWhere('ma_vach', 'like', '%' . $keyword . '%')
-                    ->orWhere('hoat_chat', 'like', '%' . $keyword . '%'); 
-            });
-        }
-
-        if ($priceRange) {
-            $query->whereBetween('gia_ban', [$priceRange['min'], $priceRange['max']]);
-        }
-
-        // Giới hạn 5 kết quả để phản hồi nhanh và chính xác hơn bàng limit 5
-        return $query->with(['category', 'manufacturer'])->limit(5)->get();
-    }
-
-    //tìm kiếm vật tư ý té
-    private function searchGoods(array $keywords, ?array $priceRange = null): Collection
-    {
-        $query = Goods::where('ban_truc_tiep', true);
-
-        foreach ($keywords as $keyword) {
-            $query->where(function ($q) use ($keyword) {
-                $q->where('ten_hang_hoa', 'like', '%' . $keyword . '%')
-                    ->orWhere('mo_ta', 'like', '%' . $keyword . '%');
-            });
-        }
-
-        if ($priceRange) {
-            $query->whereBetween('gia_ban', [$priceRange['min'], $priceRange['max']]);
-        }
-
-        return $query->with(['category', 'manufacturer'])->limit(5)->get();
-    }
-
-    //tìm kiếm dịch vụ
-    private function searchServices(array $keywords, ?array $priceRange = null): Collection
-    {
-        $query = Service::where('trang_thai', 'kich_hoat');
-
-        // Lọc bỏ từ khóa "dịch vụ" để tránh tìm kiếm cứng nhắc
-        $filteredKeywords = array_filter($keywords, function($k) {
-            return !in_array(mb_strtolower($k), ['dịch', 'vụ', 'các', 'những']);
-        });
-
-        // Nếu sau khi lọc mà KHÔNG còn từ khóa nào (VD khách hỏi: "Có dịch vụ gì?", "Các dịch vụ")
-        // -> Trả về tất cả dịch vụ nổi bật (thay vì trả về rỗng)
-        if (empty($filteredKeywords)) {
-             return $query->with(['category', 'doctor'])->limit(5)->get();
-        }
-
-        // Nếu có từ khóa cụ thể (VD: "Khám tại nhà") thì mới search theo từ khóa
-        foreach ($filteredKeywords as $keyword) {
-            $query->where(function ($q) use ($keyword) {
-                $q->where('ten_dich_vu', 'like', '%' . $keyword . '%')
-                    ->orWhere('mo_ta', 'like', '%' . $keyword . '%');
-            });
-        }
-
-        if ($priceRange) {
-            $query->whereBetween('gia_dich_vu', [$priceRange['min'], $priceRange['max']]);
-        }
-
-        return $query->with(['category', 'doctor'])->limit(5)->get();
-    }
-
 
     // xử lý từ khóa từ user nhập vào
     private function extractKeywords(string $message): array
     {
         $message = mb_strtolower($message, 'UTF-8');
 
-        // Danh sách từ dừng (Stopwords) bao gồm cả từ chào hỏi
+        // Danh sách từ dừng (Stopwords)
         $stopwords = [
-            'bao', 'nhiêu', 'tiền', 'có', 'không', 'là', 'của', 'và',
-            'cho', 'tôi', 'mua', 'được', 'thì', 'như', 'nào', 'gì',
-            'về', 'này', 'đó', 'vậy', 'à', 'ạ', 'nhé', 'nha', 'từ', 'đến', 'tới',
-            'tìm', 'sản', 'phẩm', 'muốn', 'cần',
-            // Từ khóa chào hỏi xã giao (để tránh query DB)
-            'hi', 'hello', 'xin', 'chào', 'shop', 'ad', 'admin', 'ơi', 'alo', 'hế', 'lô', 'giúp'
+            // Nhóm câu hỏi & đại từ
+            'bao',
+            'nhiêu',
+            'tiền',
+            'có',
+            'không',
+            'là',
+            'của',
+            'và',
+            'cho',
+            'tôi',
+            'mua',
+            'được',
+            'thì',
+            'như',
+            'nào',
+            'gì',
+            'về',
+            'này',
+            'đó',
+            'vậy',
+            'à',
+            'ạ',
+            'nhé',
+            'nha',
+            'từ',
+            'đến',
+            'tới',
+            'tìm',
+            'sản',
+            'phẩm',
+            'muốn',
+            'cần',
+            'biết',
+            'hỏi',
+            'xem',
+            'mình',
+            'bạn',
+            'em',
+            'anh',
+            'chị',
+            'cô',
+            'chú',
+            'bác',
+
+            //Nhóm từ "thông tin" gây lỗi tìm kiếm
+            'thông',
+            'tin',
+            'chi',
+            'tiết',
+            'cụ',
+            'thể',
+            'tư',
+            'vấn',
+            'hỗ',
+            'trợ',
+
+            // Từ khóa chào hỏi
+            'hi',
+            'hello',
+            'xin',
+            'chào',
+            'shop',
+            'ad',
+            'admin',
+            'ơi',
+            'alo',
+            'hế',
+            'lô',
+            'giúp'
         ];
 
-        $message = str_replace([',', '.', '?', '!', ';'], ' ', $message);
+        // Loại bỏ ký tự đặc biệt
+        $message = str_replace([',', '.', '?', '!', ';', ':', '-', '(', ')', '"', "'"], ' ', $message);
 
         $words = preg_split('/\s+/', $message);
 
@@ -170,6 +144,118 @@ class ProductSearchService
         });
 
         return array_values($keywords);
+    }
+
+
+    // trích xuất khoảng giá từ tin nhắn
+    private function extractPriceRange(string $message): ?array
+    {
+        $message  = mb_strtolower($message, 'UTF-8');
+        $patterns = [
+            '/từ\s*(\d+(?:[.,]\d+)?)\s*(?:ngàn|k|000)?\s*(?:vnđ|đ|vnd)?\s*(?:đến|tới|-)\s*(\d+(?:[.,]\d+)?)\s*(?:ngàn|k|000)?\s*(?:vnđ|đ|vnd)?/i',
+            '/(\d+(?:[.,]\d+)?)\s*(?:ngàn|k|000)?\s*(?:vnđ|đ|vnd)?\s*(?:đến|tới|-)\s*(\d+(?:[.,]\d+)?)\s*(?:ngàn|k|000)?\s*(?:vnđ|đ|vnd)?/i',
+            '/khoảng\s*(\d+(?:[.,]\d+)?)\s*(?:ngàn|k|000)?\s*(?:vnđ|đ|vnd)?\s*(?:đến|tới|-)\s*(\d+(?:[.,]\d+)?)\s*(?:ngàn|k|000)?\s*(?:vnđ|đ|vnd)?/i',
+        ];
+
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $message, $matches)) {
+                $min = $this->normalizePrice($matches[1]);
+                $max = $this->normalizePrice($matches[2]);
+                if ($min && $max && $min <= $max) {
+                    return ['min' => $min, 'max' => $max];
+                }
+            }
+        }
+        return null;
+    }
+
+    // phát hiện ý định hỏi về giá
+    private function detectPriceIntent(string $message): void
+    {
+        $priceKeywords = ['giá', 'tiền', 'bao nhiêu', 'nhiêu', 'cost', 'price', 'chi phí'];
+        $message = mb_strtolower($message);
+        foreach ($priceKeywords as $word) {
+            if (str_contains($message, $word)) {
+                $this->isAskingPrice = true;
+                return;
+            }
+        }
+        $this->isAskingPrice = false;
+    }
+
+    // tìm kiếm thông minh với 2 chiến lược
+    private function smartSearch(array $keywords, ?array $priceRange, string $modelClass, string $nameColumn): Collection
+    {
+        $query = $modelClass::query();
+
+        // chiến lược 1 - Lọc các sản phẩm hợp lệ
+        if ($modelClass === Medicine::class || $modelClass === Goods::class) {
+            $query->where('ban_truc_tiep', true);
+        } elseif ($modelClass === Service::class) {
+            $query->where('trang_thai', 'kich_hoat');
+        }
+
+        // Sản phẩm phải chứa TẤT CẢ từ khóa
+        $exactQuery = clone $query;
+        foreach ($keywords as $keyword) {
+            $exactQuery->where(function ($q) use ($keyword, $nameColumn, $modelClass) {
+                $q->where($nameColumn, 'like', '%' . $keyword . '%');
+                // Thêm trường phụ nếu là thuốc
+                if ($modelClass === Medicine::class) {
+                    $q->orWhere('hoat_chat', 'like', '%' . $keyword . '%');
+                }
+            });
+        }
+
+        if ($priceRange) {
+            $colPrice = ($modelClass === Service::class) ? 'gia_dich_vu' : 'gia_ban';
+            $exactQuery->whereBetween($colPrice, [$priceRange['min'], $priceRange['max']]);
+        }
+
+        $results = $exactQuery->limit(5)->get();
+
+        // chiến lược 2 - Nếu không tìm thấy kết quả, tìm sản phẩm chứa "bất kỳ" từ khóa nào
+        // Nếu tìm chính xác không ra VÀ có nhiều từ khóa -> Chuyển sang tìm sản phẩm chứa "bất kỳ" từ nào
+        if ($results->isEmpty() && count($keywords) > 1) {
+            $fuzzyQuery = clone $query;
+            $fuzzyQuery->where(function ($q) use ($keywords, $nameColumn, $modelClass) {
+                foreach ($keywords as $keyword) {
+                    $q->orWhere($nameColumn, 'like', '%' . $keyword . '%');
+                    if ($modelClass === Medicine::class) {
+                        $q->orWhere('hoat_chat', 'like', '%' . $keyword . '%');
+                    }
+                }
+            });
+
+            if ($priceRange) {
+                $colPrice = ($modelClass === Service::class) ? 'gia_dich_vu' : 'gia_ban';
+                $fuzzyQuery->whereBetween($colPrice, [$priceRange['min'], $priceRange['max']]);
+            }
+
+            $results = $fuzzyQuery->limit(5)->get();
+        }
+
+        // Load quan hệ nếu có kết quả
+        if ($results->isNotEmpty()) {
+            if ($modelClass === Medicine::class || $modelClass === Goods::class) {
+                $results->load(['category', 'manufacturer']);
+            } elseif ($modelClass === Service::class) {
+                $results->load(['category', 'doctor']);
+            }
+        }
+
+        return $results;
+    }
+
+    // chuẩn hóa giá tiền
+    private function normalizePrice(string $price): ?int
+    {
+        $price = preg_replace('/[^\d.,]/', '', $price);
+        $price = str_replace([',', '.'], '', $price);
+        if (preg_match('/(\d+)\s*(?:k|ngàn)/i', $price, $m)) {
+            return (int) $m[1] * 1000;
+        }
+        return $price ? (int) $price : null;
     }
 
     // trích xuất ảnh sản phẩm
@@ -205,50 +291,28 @@ class ProductSearchService
         return $images;
     }
 
-    // trích xuất khoảng giá từ tin nhắn
-    private function extractPriceRange(string $message): ?array
-    {
-        $message  = mb_strtolower($message, 'UTF-8');
-        $patterns = [
-            '/từ\s*(\d+(?:[.,]\d+)?)\s*(?:ngàn|k|000)?\s*(?:vnđ|đ|vnd)?\s*(?:đến|tới|-)\s*(\d+(?:[.,]\d+)?)\s*(?:ngàn|k|000)?\s*(?:vnđ|đ|vnd)?/i',
-            '/(\d+(?:[.,]\d+)?)\s*(?:ngàn|k|000)?\s*(?:vnđ|đ|vnd)?\s*(?:đến|tới|-)\s*(\d+(?:[.,]\d+)?)\s*(?:ngàn|k|000)?\s*(?:vnđ|đ|vnd)?/i',
-            '/khoảng\s*(\d+(?:[.,]\d+)?)\s*(?:ngàn|k|000)?\s*(?:vnđ|đ|vnd)?\s*(?:đến|tới|-)\s*(\d+(?:[.,]\d+)?)\s*(?:ngàn|k|000)?\s*(?:vnđ|đ|vnd)?/i',
-        ];
-
-        foreach ($patterns as $pattern) {
-            if (preg_match($pattern, $message, $matches)) {
-                $min = $this->normalizePrice($matches[1]);
-                $max = $this->normalizePrice($matches[2]);
-                if ($min && $max && $min <= $max) {
-                    return ['min' => $min, 'max' => $max];
-                }
-            }
-        }
-        return null;
-    }
-
-    // chuẩn hóa giá tiền
-    private function normalizePrice(string $price): ?int
-    {
-        $price = preg_replace('/[^\d.,]/', '', $price);
-        $price = str_replace([',', '.'], '', $price);
-        if (preg_match('/(\d+)\s*(?:k|ngàn)/i', $price, $m)) {
-            return (int) $m[1] * 1000;
-        }
-        return $price ? (int) $price : null;
-    }
-
     // Phát hiện loại tìm kiếm mà khách hàng muốn: "thuốc/sản phẩm", "dịch vụ" hay "cả hai"
     private function detectSearchType(string $message): string
     {
         $message = mb_strtolower($message, 'UTF-8');
 
         $productKeywords = [
-            'sản phẩm', 'thuốc', 'hàng hóa',
-            'kem', 'viên', 'siro', 'chai', 'hộp', 'hũ'
+            'sản phẩm',
+            'thuốc',
+            'hàng hóa',
+            'kem',
+            'viên',
+            'siro',
+            'chai',
+            'hộp',
+            'hũ'
         ];
         $serviceKeywords = [
-            'dịch vụ', 'khám', 'tư vấn', 'bác sĩ', 'doctor'
+            'dịch vụ',
+            'khám',
+            'tư vấn',
+            'bác sĩ',
+            'doctor'
         ];
 
         $hasProduct = false;
@@ -283,8 +347,19 @@ class ProductSearchService
     private function filterGenericKeywords(array $keywords): array
     {
         $genericWords = [
-            'thuốc', 'sản', 'phẩm', 'hàng', 'hóa',
-            'tìm', 'cần', 'muốn', 'giá', 'chi', 'tiết', 'bán', 'mua'
+            'thuốc',
+            'sản',
+            'phẩm',
+            'hàng',
+            'hóa',
+            'tìm',
+            'cần',
+            'muốn',
+            'giá',
+            'chi',
+            'tiết',
+            'bán',
+            'mua'
         ];
 
         return array_filter($keywords, function ($keyword) use ($genericWords) {
@@ -292,40 +367,15 @@ class ProductSearchService
         });
     }
 
-    //tìm kiếm thuốc theo giá
-    private function searchMedicinesByPrice(array $priceRange): Collection
-    {
-        return Medicine::where('ban_truc_tiep', true)
-            ->whereBetween('gia_ban', [$priceRange['min'], $priceRange['max']])
-            ->with(['category', 'manufacturer'])
-            ->limit(5)
-            ->get();
-    }
 
-    //tìm kiếm vật tư ý té theo giá
-    private function searchGoodsByPrice(array $priceRange): Collection
-    {
-        return Goods::where('ban_truc_tiep', true)
-            ->whereBetween('gia_ban', [$priceRange['min'], $priceRange['max']])
-            ->with(['category', 'manufacturer'])
-            ->limit(5)
-            ->get();
-    }
-
-    //tìm kiếm dịch vụ theo giá
-    private function searchServicesByPrice(array $priceRange): Collection
-    {
-        return Service::where('trang_thai', 'kich_hoat')
-            ->whereBetween('gia_dich_vu', [$priceRange['min'], $priceRange['max']])
-            ->with(['category', 'doctor'])
-            ->limit(5)
-            ->get();
-    }
 
     public function formatForGemini(array $searchResults): string
     {
         $formatted = "THÔNG TIN SẢN PHẨM/DỊCH VỤ LIÊN QUAN:\n\n";
 
+        if ($this->isAskingPrice) {
+            $formatted .= "!!! LƯU Ý QUAN TRỌNG: KHÁCH HÀNG ĐANG HỎI VỀ GIÁ TIỀN. Hãy trả lời ngắn gọn, đưa GIÁ TIỀN lên đầu câu trả lời.\n\n";
+        }
         // Kiểm tra nếu tất cả đều rỗng -> Trả về thông báo không tìm thấy
         if (
             $searchResults['medicines']->isEmpty() &&
