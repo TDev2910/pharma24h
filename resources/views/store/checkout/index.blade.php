@@ -32,7 +32,7 @@
                                             {{ old('delivery_method', 'shipping') === 'shipping' ? 'checked' : '' }}>
                                         <div class="content">
                                             <i class="pi pi-home fs-4 mb-2"></i>
-                                            <span>Giao tận nơi</span>
+                                            <span style="color:#000">Giao tận nơi</span>
                                         </div>
                                     </label>
                                 </div>
@@ -161,33 +161,39 @@
                         </div>
                         <div class="card-body px-4 pb-4">
                             <div class="payment-methods d-flex flex-column gap-3">
-                                <label class="payment-option {{ old('payment_method', 'cod') === 'cod' ? 'selected' : '' }}">
+                                <label class="payment-option-card {{ old('payment_method', 'cod') === 'cod' ? 'active' : '' }}">
                                     <input type="radio" name="payment_method" id="payment_cod" value="cod"
                                         {{ old('payment_method', 'cod') === 'cod' ? 'checked' : '' }}>
-                                    <div class="d-flex align-items-center w-100">
-                                        <div class="icon-wrap bg-light rounded-circle p-2 me-3">
-                                            <i class="pi pi-money-bill text-success fs-5"></i>
+                                    <div class="content d-flex align-items-center p-3">
+                                        <div class="icon-wrap me-3 bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/2331/2331941.png" alt="COD" style="width: 28px; height: 28px; object-fit: contain;">
                                         </div>
-                                        <div>
-                                            <div class="fw-bold">Thanh toán khi nhận hàng (COD)</div>
-                                            <div class="small text-muted">Thanh toán tiền mặt cho shipper khi nhận hàng</div>
+
+                                        <div class="flex-fill">
+                                            <div class="fw-bold text-dark">Thanh toán khi nhận hàng (COD)</div>
+                                            <div class="small text-muted">Thanh toán tiền mặt cho shipper</div>
                                         </div>
-                                        <i class="pi pi-check-circle ms-auto fs-4 check-icon"></i>
+                                        <div class="check-mark">
+                                            <i class="pi pi-check-circle fs-4"></i>
+                                        </div>
                                     </div>
                                 </label>
 
-                                <label class="payment-option {{ old('payment_method') === 'vnpay' ? 'selected' : '' }}">
+                                <label class="payment-option-card {{ old('payment_method') === 'vnpay' ? 'active' : '' }}">
                                     <input type="radio" name="payment_method" id="payment_vnpay" value="vnpay"
                                         {{ old('payment_method') === 'vnpay' ? 'checked' : '' }}>
-                                    <div class="d-flex align-items-center w-100">
-                                        <div class="icon-wrap bg-light rounded-circle p-2 me-3">
-                                            <i class="pi pi-credit-card text-primary fs-5"></i>
+                                    <div class="content d-flex align-items-center p-3">
+                                        <div class="icon-wrap me-3 bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                            <img src="https://vnpay.vn/assets/images/logo-icon/logo-primary.svg" alt="VNPAY" style="width: 32px; height: 32px; object-fit: contain;">
                                         </div>
-                                        <div>
-                                            <div class="fw-bold">Thanh toán VNPAY</div>
-                                            <div class="small text-muted">Thanh toán qua ngân hàng, ví điện tử VNPAY</div>
+
+                                        <div class="flex-fill">
+                                            <div class="fw-bold text-dark">Thanh toán VNPAY</div>
+                                            <div class="small text-muted">Quét mã QR / Thẻ ATM / Ví điện tử</div>
                                         </div>
-                                        <i class="pi pi-check-circle ms-auto fs-4 check-icon"></i>
+                                        <div class="check-mark">
+                                            <i class="pi pi-check-circle fs-4"></i>
+                                        </div>
                                     </div>
                                 </label>
                             </div>
@@ -202,7 +208,7 @@
 
                             <div class="order-scrollable mb-3" style="max-height: 300px; overflow-y: auto;">
                                 @foreach($cartItems as $item)
-                                    <div class="d-flex align-items-center mb-3">
+                                    <div class="d-flex align-items-center mb-3" style="margin-top: 15px">
                                         <div class="position-relative me-3">
                                             @if($item->image)
                                                 <img src="{{ asset('storage/' . $item->image) }}" alt="sp" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">
@@ -219,9 +225,9 @@
                                             <div class="text-truncate fw-medium small">{{ $item->product_name ?? $item->name }}</div>
                                             <div class="text-muted small">{{ number_format($item->price ?? 0) }}đ</div>
                                         </div>
-                                        <div class="fw-bold small">
+                                        {{-- <div class="fw-bold small" style="margin-top: 50px">
                                             {{ number_format(($item->price ?? 0) * ($item->quantity ?? 1)) }}đ
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 @endforeach
                             </div>
@@ -237,9 +243,9 @@
                                 <span class="fw-bold text-success" id="shipping-fee-display">0đ</span>
                             </div>
 
-                            <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-4">
+                           <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-4">
                                 <span class="fw-bold fs-5">Tổng cộng</span>
-                                <span class="fw-bold fs-4 text-primary" id="total-order-display">{{ number_format($cartTotal) }}đ</span>
+                                <span class="fw-bold fs-4 text-danger" id="total-order-display">{{ number_format($cartTotal) }}đ</span>
                             </div>
 
                             <div class="form-check mb-3 small">
@@ -307,33 +313,38 @@
     }
 
     /* Payment Method Cards */
-    .payment-option {
+    .payment-option-card {
         cursor: pointer;
         display: block;
     }
-    .payment-option input {
+    .payment-option-card input {
         display: none;
     }
-    .payment-option > div {
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 15px;
-        transition: all 0.2s;
+    .payment-option-card .content {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
         background: #fff;
+        transition: all 0.3s ease;
+        position: relative;
     }
-    .payment-option .check-icon {
-        opacity: 0;
-        transition: all 0.2s;
-        color: var(--primary-color);
-        transform: scale(0.5);
+    .payment-option-card .content:hover {
+        border-color: #0d6efd;
+        box-shadow: 0 2px 8px rgba(13, 110, 253, 0.1);
     }
-    .payment-option input:checked + div {
-        border-color: var(--primary-color);
-        background-color: #f0f7ff;
+    .payment-option-card .icon-wrap {
+        flex-shrink: 0;
     }
-    .payment-option input:checked + div .check-icon {
-        opacity: 1;
-        transform: scale(1);
+    .payment-option-card .check-mark {
+        color: #e0e0e0;
+        transition: all 0.3s ease;
+    }
+    .payment-option-card input:checked + .content {
+        border-color: #0d6efd;
+        background-color: #e7f3ff;
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+    }
+    .payment-option-card input:checked + .content .check-mark {
+        color: #0d6efd;
     }
 
     /* Input Fields */
