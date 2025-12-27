@@ -100,11 +100,13 @@
     </div>
 
     <!-- Add/Edit Schedule Modal -->
-    <Dialog v-model:visible="showScheduleModal" :header="scheduleModalTitle" :modal="true" :style="{ width: '500px' }"
-      @hide="closeScheduleModal">
-      <CreateScheduleModal v-if="showScheduleModal" :employee="selectedEmployee" :schedule-date="selectedDate"
-        :schedule="editingSchedule" @saved="handleScheduleSaved" @cancel="closeScheduleModal" />
-    </Dialog>
+        <Dialog v-model:visible="showScheduleModal" :header="scheduleModalTitle" :modal="true"
+            :style="{ width: '500px' }" @hide="closeScheduleModal">
+
+            <CreateScheduleModal v-if="showScheduleModal" :employee="selectedEmployee" :schedule-date="selectedDate"
+                :schedule="editingSchedule" @saved="handleScheduleSaved" @cancel="closeScheduleModal"
+                @deleted="handleScheduleDeleted" />
+        </Dialog>
   </div>
 </template>
 
@@ -243,13 +245,7 @@ export default {
 
         this.scheduleData = response.data.employees || []
 
-        // Debug: Kiểm tra dữ liệu
-        console.log('Schedule data:', this.scheduleData)
-        if (this.scheduleData.length > 0) {
-          console.log('First employee schedules:', this.scheduleData[0].schedules)
-        }
       } catch (error) {
-        console.error('Error loading schedules:', error)
         this.$toast.add({
           severity: 'error',
           summary: 'Lỗi',
@@ -265,7 +261,6 @@ export default {
         const response = await axios.get('/admin/employees/api')
         this.allEmployees = response.data || []
       } catch (error) {
-        console.error('Error loading employees:', error)
       }
     },
     // Search với debounce
@@ -287,6 +282,7 @@ export default {
       this.weekStart = date.toISOString().split('T')[0]
       this.loadSchedules()
     },
+    //quay về tuần hiện tại
     goToCurrentWeek() {
       this.initializeWeek()
       this.loadSchedules()
@@ -303,6 +299,7 @@ export default {
       // Nếu là array thì return luôn, nếu không thì return []
       return Array.isArray(daySchedules) ? daySchedules : []
     },
+    //màu lịch làm việc theo ca
     getShiftColorClass(shift) {
       if (!shift) return 'shift-default'
 
@@ -317,28 +314,37 @@ export default {
 
       return 'shift-default'
     },
+    //thêm lịch
     openAddScheduleModal(employee, date) {
       this.selectedEmployee = employee
       this.selectedDate = date
       this.editingSchedule = null
       this.showScheduleModal = true
     },
+    //sửa lịch
     editSchedule(schedule, employee, date) {
       this.selectedEmployee = employee
       this.selectedDate = date
       this.editingSchedule = schedule
       this.showScheduleModal = true
     },
+    //đóng modal
     closeScheduleModal() {
       this.showScheduleModal = false
       this.selectedEmployee = null
       this.selectedDate = null
       this.editingSchedule = null
     },
+    //lưu lịch
     handleScheduleSaved() {
       this.closeScheduleModal()
       // Reload lại dữ liệu
       this.loadSchedules()
+    },
+    //xóa lịch
+    handleScheduleDeleted() {
+        this.closeScheduleModal()
+        this.loadSchedules()
     },
     formatCurrency(amount) {
       if (!amount) return '0 ₫'

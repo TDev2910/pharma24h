@@ -225,9 +225,16 @@ class ScheduleController extends Controller
             $schedule = EmployeeSchedule::findOrFail($id);
             $schedule->delete();
 
-            return redirect()->back()->with('success', 'Xóa lịch làm việc thành công!');
+            // [QUAN TRỌNG] Trả về JSON cho VueJS xử lý
+            return response()->json([
+                'success' => true,
+                'message' => 'Xóa lịch làm việc thành công!'
+            ], 200);
         } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
         }
     }
 }
