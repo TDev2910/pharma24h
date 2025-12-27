@@ -39,7 +39,8 @@ class ProductSearchService
         ];
 
         // Truy vấn Database khi có từ khóa hoặc khoảng giá
-        if ($searchType === 'product' || $searchType === 'all') {
+        if ($searchType === 'product' || $searchType === 'all')
+        {
             // Tìm thuốc
             $result['medicines'] = $this->smartSearch($keywords, $priceRange, Medicine::class, 'ten_thuoc');
             // Tìm hàng hóa
@@ -62,75 +63,17 @@ class ProductSearchService
         // Danh sách từ dừng (Stopwords)
         $stopwords = [
             // Nhóm câu hỏi & đại từ
-            'bao',
-            'nhiêu',
-            'tiền',
-            'có',
-            'không',
-            'là',
-            'của',
-            'và',
-            'cho',
-            'tôi',
-            'mua',
-            'được',
-            'thì',
-            'như',
-            'nào',
-            'gì',
-            'về',
-            'này',
-            'đó',
-            'vậy',
-            'à',
-            'ạ',
-            'nhé',
-            'nha',
-            'từ',
-            'đến',
-            'tới',
-            'tìm',
-            'sản',
-            'phẩm',
-            'muốn',
-            'cần',
-            'biết',
-            'hỏi',
-            'xem',
-            'mình',
-            'bạn',
-            'em',
-            'anh',
-            'chị',
-            'cô',
-            'chú',
-            'bác',
+            'bao', 'nhiêu', 'tiền', 'có', 'không', 'là', 'của', 'và',
+            'cho', 'tôi', 'mua', 'được', 'thì', 'như', 'nào', 'gì',
+            'về', 'này', 'đó', 'vậy', 'à', 'ạ', 'nhé', 'nha', 'từ', 'đến', 'tới',
+            'tìm', 'sản', 'phẩm', 'muốn', 'cần', 'biết', 'hỏi', 'xem',
+            'mình', 'bạn', 'em', 'anh', 'chị', 'cô', 'chú', 'bác',
 
             //Nhóm từ "thông tin" gây lỗi tìm kiếm
-            'thông',
-            'tin',
-            'chi',
-            'tiết',
-            'cụ',
-            'thể',
-            'tư',
-            'vấn',
-            'hỗ',
-            'trợ',
+            'thông', 'tin', 'chi', 'tiết', 'cụ', 'thể', 'tư', 'vấn', 'hỗ', 'trợ',
 
             // Từ khóa chào hỏi
-            'hi',
-            'hello',
-            'xin',
-            'chào',
-            'shop',
-            'ad',
-            'admin',
-            'ơi',
-            'alo',
-            'hế',
-            'lô',
-            'giúp'
+            'hi', 'hello', 'xin', 'chào', 'shop', 'ad', 'admin', 'ơi', 'alo', 'hế', 'lô', 'giúp'
         ];
 
         // Loại bỏ ký tự đặc biệt
@@ -202,14 +145,14 @@ class ProductSearchService
                 $q->where($nameColumn, 'like', '%' . $keyword . '%');
                 // Thêm trường phụ nếu là thuốc
                 if ($modelClass === Medicine::class) {
-                    $q->orWhere('hoat_chat', 'like', '%' . $keyword . '%');
+                   $q->orWhere('hoat_chat', 'like', '%' . $keyword . '%');
                 }
             });
         }
 
         if ($priceRange) {
-            $colPrice = ($modelClass === Service::class) ? 'gia_dich_vu' : 'gia_ban';
-            $exactQuery->whereBetween($colPrice, [$priceRange['min'], $priceRange['max']]);
+             $colPrice = ($modelClass === Service::class) ? 'gia_dich_vu' : 'gia_ban';
+             $exactQuery->whereBetween($colPrice, [$priceRange['min'], $priceRange['max']]);
         }
 
         $results = $exactQuery->limit(5)->get();
@@ -297,22 +240,11 @@ class ProductSearchService
         $message = mb_strtolower($message, 'UTF-8');
 
         $productKeywords = [
-            'sản phẩm',
-            'thuốc',
-            'hàng hóa',
-            'kem',
-            'viên',
-            'siro',
-            'chai',
-            'hộp',
-            'hũ'
+            'sản phẩm', 'thuốc', 'hàng hóa',
+            'kem', 'viên', 'siro', 'chai', 'hộp', 'hũ'
         ];
         $serviceKeywords = [
-            'dịch vụ',
-            'khám',
-            'tư vấn',
-            'bác sĩ',
-            'doctor'
+            'dịch vụ', 'khám', 'tư vấn', 'bác sĩ', 'doctor'
         ];
 
         $hasProduct = false;
@@ -347,19 +279,8 @@ class ProductSearchService
     private function filterGenericKeywords(array $keywords): array
     {
         $genericWords = [
-            'thuốc',
-            'sản',
-            'phẩm',
-            'hàng',
-            'hóa',
-            'tìm',
-            'cần',
-            'muốn',
-            'giá',
-            'chi',
-            'tiết',
-            'bán',
-            'mua'
+            'thuốc', 'sản', 'phẩm', 'hàng', 'hóa',
+            'tìm', 'cần', 'muốn', 'giá', 'chi', 'tiết', 'bán', 'mua'
         ];
 
         return array_filter($keywords, function ($keyword) use ($genericWords) {

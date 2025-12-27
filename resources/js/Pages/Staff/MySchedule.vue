@@ -51,9 +51,9 @@
                         <div class="day-content">
                             <!-- Shift Blocks -->
                             <div class="shift-blocks">
-                                <div 
-                                    v-for="schedule in getSchedulesForDay(day.date)" 
-                                    :key="schedule.id" 
+                                <div
+                                    v-for="schedule in getSchedulesForDay(day.date)"
+                                    :key="schedule.id"
                                     class="shift-block"
                                     :class="getShiftColorClass(schedule.shift)"
                                 >
@@ -66,7 +66,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Empty State -->
                             <div v-if="getSchedulesForDay(day.date).length === 0" class="no-shift">
                                 <span>Không có ca</span>
@@ -126,7 +126,7 @@ export default {
             loading: false,
             weekStart: null,
             scheduleData: {
-                schedules: {},  // Object, không phải array
+                schedules: {},
                 shift_count: 0,
                 estimated_salary: 0
             }
@@ -275,7 +275,7 @@ export default {
         },
         formatTime(time) {
             if (!time) return ''
-            return time.substring(0, 5) // HH:mm
+            return time.substring(0, 5) 
         },
         formatCurrency(amount) {
             if (!amount) return '0 ₫'
