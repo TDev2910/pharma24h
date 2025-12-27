@@ -62,6 +62,7 @@ class Order extends Model
         'ghn_order_code',
         'ghn_status',
         'ghn_fee',
+        'shipping_fee',
         'ghn_expected_delivery_time',
         'ghn_tracking_url',
         'ghn_cod_amount',
@@ -69,7 +70,7 @@ class Order extends Model
         'ghn_shipper_phone',
         'ghn_created_at',
     ];
-    
+
     protected $casts = [
         'cancellation_requested_at' => 'datetime',
         'cancellation_processed_at' => 'datetime',
@@ -78,18 +79,18 @@ class Order extends Model
         'ghn_expected_delivery_time' => 'datetime',
         'ghn_created_at' => 'datetime',
     ];
-    
+
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($order) {
             if (!$order->order_code) {
                 do {
                     $randomCode = sprintf('%04d', rand(1000, 9999));
                     $exists = static::where('order_code', $randomCode)->exists();
                 } while ($exists);
-                
+
                 $order->order_code = $randomCode;
             }
         });
@@ -125,7 +126,7 @@ class Order extends Model
         return $this->delivery_method === 'shipping';
     }
 
-    
+
     public function scopeFilterByDate($query,$from,$to)
     {
         if($from && $to)

@@ -24,6 +24,8 @@ class CheckoutRequest extends FormRequest
             'payment_method' => 'required|in:cod,vnpay',
             'note' => 'nullable|string',
             'customer_email' => 'nullable|email|max:255',
+            'shipping_fee' => 'nullable|integer|min:0', // Phí hiển thị cho khách
+            'ghn_fee'      => 'nullable|integer|min:0', // Phí gốc GHN (để đối soát)
         ];
 
         // Thêm rules tùy thuộc vào phương thức giao hàng
@@ -37,8 +39,8 @@ class CheckoutRequest extends FormRequest
             // Thêm district_id và ward_code (nullable vì có thể map sau)
             $rules['district_id'] = 'nullable|integer';
             $rules['ward_code'] = 'nullable|string|max:50';
-        } 
-        else 
+        }
+        else
         {
             $rules['customer_name'] = 'required|string|max:255';
             $rules['customer_phone'] = 'required|string|max:20';

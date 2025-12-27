@@ -11,7 +11,7 @@ use App\Services\EmailSMTP\EmailService;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\JsonResponse;
 
 class CheckoutController extends Controller
 {
@@ -56,7 +56,7 @@ class CheckoutController extends Controller
         try {
             // Lấy tất cả validated data và thêm district_id, ward_code nếu có
             $orderData = $request->validated();
-            
+
             // Thêm district_id và ward_code nếu có (có thể không có trong validated nếu validation fail)
             if ($request->has('district_id')) {
                 $orderData['district_id'] = $request->input('district_id');
@@ -64,24 +64,22 @@ class CheckoutController extends Controller
             if ($request->has('ward_code')) {
                 $orderData['ward_code'] = $request->input('ward_code');
             }
-            
-            // Log để debug
+
+            // Lấy phí ship từ input hidden gửi lên
+            $orderData['shipping_fee'] = $request->input('shipping_fee', 0);
+            $orderData['ghn_fee']      = $request->input('ghn_fee', 0);
             $order = $this->checkoutService->createOrder($orderData);
 
             if ($request->payment_method === 'vnpay') {
                 return redirect()->route('payment.vnpay.checkout', ['order_id' => $order->id]);
             }
-        
+
             // Gửi email cho đơn COD (cod)
             if ($request->payment_method === 'cod') {
                 try {
                     $this->emailService->sendOrderConfirmation($order);
                 } catch (\Exception $e) {
-                    \Log::error('Failed to send order confirmation email for COD order', [
-                        'order_id' => $order->id,
-                        'order_code' => $order->order_code,
-                        'error' => $e->getMessage()
-                    ]);
+                    // Failed to send order confirmation email for COD order
                 }
             }
 
@@ -104,5 +102,60 @@ class CheckoutController extends Controller
     public function failed()
     {
         return view('store.checkout.failed');
+    }
+
+    public function getShippingFee(Request $request): JsonResponse
+    {
+        // 1. Validate dữ liệu từ Frontend gửi lên
+        $request->validate([
+            'district_id' => 'required|integer',
+            'ward_code'   => 'required|string',
+        ]);
+
+        try {
+            // 2. Lấy thông tin giỏ hàng hiện tại
+            $cartSummary = $this->cartService->getCartSummary();
+            $cartTotal = $cartSummary['total'];
+            $cartItems = $cartSummary['items'];
+
+            // === LOGIC MIỄN PHÍ VẬN CHUYỂN ===
+            // Nếu tổng đơn hàng >= 500,000 VNĐ thì phí ship = 0
+            if ($cartTotal >= 500000) {
+                return response()->json([
+                    'success' => true,
+                    'fee' => 0,
+                    'message' => 'Miễn phí vận chuyển (Đơn hàng trên 500k)'
+                ]);
+            }
+
+            // 3. Tính toán khối lượng (Logic giả định 100g/sp như code cũ của bạn)
+            $weight = $cartItems->sum('quantity') * 100;
+
+            // 4. Gọi Service GHN để tính phí thực tế
+            $ghnService = new \App\Services\Shipping\GHNService(); // Hoặc inject qua constructor
+
+            $result = $ghnService->calculateFee(
+                (int)$request->district_id,
+                $request->ward_code,
+                $weight,
+                (int)$cartTotal // Giá trị bảo hiểm
+            );
+
+            if ($result['success']) {
+                return response()->json([
+                    'success' => true,
+                    'fee' => $result['total'],
+                    'message' => 'Tính phí thành công'
+                ]);
+            }
+
+            return response()->json($result); // Trả về lỗi từ GHN nếu có
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi server: ' . $e->getMessage()
+            ]);
+        }
     }
 }

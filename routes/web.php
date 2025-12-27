@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\Api\GHNWebhookController;
+use App\Http\Controllers\Store\CheckoutController;
 use App\Http\Controllers\SupportTicketController;
 use Inertia\Inertia;
 
@@ -74,6 +75,8 @@ Route::prefix('password')->name('password.')->group(function () {
 require __DIR__.'/user.php';
 
 //store routes
+Route::post('/checkout/shipping-fee', [CheckoutController::class, 'getShippingFee'])
+    ->name('checkout.get_shipping_fee');
 require __DIR__.'/store.php';
 
 //admin routes

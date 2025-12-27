@@ -148,7 +148,9 @@ class ScheduleController extends Controller
             }
 
             return redirect()->back()->with('success', 'Thêm lịch làm việc thành công!');
-        } catch (Exception $e) {
+        }
+        catch (Exception $e)
+        {
             if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
                 $message = 'Nhân viên đã có lịch làm việc cho ca này trong ngày đã chọn!';
 

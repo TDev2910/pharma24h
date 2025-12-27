@@ -29,16 +29,20 @@ class CheckoutService
             // Xác định user_id và session_id
             $userId = Auth::id();
             $sessionId = $userId ? null : session('cart_session_id');
-            
+
             // Lấy thông tin giỏ hàng
             $cartSummary = $this->cartService->getCartSummary();
             $cartItems = $cartSummary['items'];
-            $total = $cartSummary['total'];
-            
+            $subtotal = $cartSummary['total'];
             if ($cartItems->isEmpty()) {
                 throw new \Exception('Giỏ hàng trống');
             }
-            
+
+            $shippingFee = isset($orderData['shipping_fee']) ? (int) $orderData['shipping_fee'] : 0;
+            if ($subtotal >= 500000) {
+                $shippingFee = 0;
+            }
+            $finalTotal = $subtotal + $shippingFee;
             // Tạo đơn hàng
             $order = Order::create([
                 'user_id' => $userId,
@@ -54,7 +58,13 @@ class CheckoutService
                 'ward' => $orderData['delivery_method'] === 'shipping' ? $orderData['ward'] : null,
                 'ward_code' => $orderData['delivery_method'] === 'shipping' ? ($orderData['ward_code'] ?? null) : null,
                 'pickup_location' => $orderData['delivery_method'] === 'pickup' ? $orderData['pickup_location'] : null,
-                'total_amount' => $total,
+
+                // [CẬP NHẬT] Lưu tổng tiền đã bao gồm phí ship
+                'total_amount' => $finalTotal,
+
+                // [OPTION] Nên lưu thêm cột shipping_fee vào bảng orders để thống kê sau này (nếu database có cột này)
+                'shipping_fee' => $shippingFee,
+
                 'payment_method' => $orderData['payment_method'],
                 'payment_status' => 'pending',
                 'order_status' => 'new',
@@ -79,20 +89,20 @@ class CheckoutService
                 // Trừ tồn khuyến mãi ngay khi checkout (nếu là sản phẩm khuyến mãi)
                 if (!empty($item->is_promotion)) {
                     $qty = (int) $item->quantity;
-                    
-                    if ($item->item_type === 'medicine') 
+
+                    if ($item->item_type === 'medicine')
                     {
                         $product = Medicine::where('id', $item->item_id)->lockForUpdate()->firstOrFail();
-                        if (($product->ton_khuyen_mai ?? 0) < $qty) 
+                        if (($product->ton_khuyen_mai ?? 0) < $qty)
                         {
                             throw new \Exception('Không đủ tồn khuyến mãi để đặt hàng: '.$product->ten_thuoc);
                         }
                         $product->decrement('ton_khuyen_mai', $qty);
-                    } 
-                    elseif ($item->item_type === 'goods') 
+                    }
+                    elseif ($item->item_type === 'goods')
                     {
                         $product = Goods::where('id', $item->item_id)->lockForUpdate()->firstOrFail();
-                        if (($product->ton_khuyen_mai ?? 0) < $qty) 
+                        if (($product->ton_khuyen_mai ?? 0) < $qty)
                         {
                             throw new \Exception('Không đủ tồn khuyến mãi để đặt hàng: '.$product->ten_hang_hoa);
                         }
@@ -102,18 +112,18 @@ class CheckoutService
             }
 
             // Xóa giỏ hàng
-            Cart::where(function($query) use ($userId, $sessionId) 
+            Cart::where(function($query) use ($userId, $sessionId)
             {
-                if ($userId) 
+                if ($userId)
                 {
                     $query->where('user_id', $userId);
-                } 
-                else 
+                }
+                else
                 {
                     $query->where('session_id', $sessionId);
                 }
             })->delete();
-            
+
             // Nếu là session_id, xóa session để tránh đặt hàng lại
             if ($sessionId) {
                 session()->forget('cart_session_id');
@@ -128,15 +138,15 @@ class CheckoutService
     {
         return DB::transaction(function () use ($orderId) {
             $order = Order::with('items')->lockForUpdate()->findOrFail($orderId);
-    
+
             if ($order->order_status === 'completed') {
                 return $order;
             }
-            
+
             //áp dụng chỉ trừ tồn kho chính
             foreach ($order->items as $it) {
                 $qty = (int) $it->quantity;
-    
+
                 if ($it->item_type === 'medicine') {
                     $p = Medicine::where('id', $it->item_id)->lockForUpdate()->firstOrFail();
                     if (($p->ton_kho ?? 0) < $qty) {
@@ -152,12 +162,12 @@ class CheckoutService
                     $p->decrement('ton_kho', $qty);
                 }
             }
-    
+
             $order->order_status = 'completed';
             $order->payment_status = 'paid';
             $order->completed_at = now();
             $order->save();
-    
+
             return $order;
         });
     }
@@ -167,12 +177,12 @@ class CheckoutService
     {
         return DB::transaction(function () use ($orderId) {
             $order = Order::with('items')->lockForUpdate()->findOrFail($orderId);
-    
+
             // Chỉ restore tồn kho chính nếu đơn đã completed
             if ($order->order_status === 'completed') {
                 foreach ($order->items as $it) {
                     $qty = (int) $it->quantity;
-        
+
                     if ($it->item_type === 'medicine') {
                         $p = Medicine::where('id', $it->item_id)->lockForUpdate()->firstOrFail();
                         $p->increment('ton_kho', $qty); // Restore tồn kho chính
@@ -184,12 +194,12 @@ class CheckoutService
                     }
                 }
             }
-    
+
             // Cập nhật trạng thái đơn hàng
             $order->order_status = 'cancelled';
             $order->payment_status = 'cancelled';
             $order->save();
-    
+
             return $order;
         });
     }
@@ -251,20 +261,20 @@ class CheckoutService
 
         return $vnp_Url;
     }
-    
+
     public function processVnpayReturn(array $vnpayData): array
     {
         Log::info('VNPAY return', $vnpayData);
         $vnp_HashSecret = config('services.vnpay.hash_secret');
         $vnp_SecureHash = $vnpayData['vnp_SecureHash'] ?? '';
-        
+
         // Xóa các tham số không cần thiết
         unset($vnpayData['vnp_SecureHash']);
         unset($vnpayData['vnp_SecureHashType']);
-        
+
         // Sắp xếp dữ liệu theo key
         ksort($vnpayData);
-        
+
         // Loại bỏ tham số rỗng và sắp xếp lại
         $filtered = [];
         foreach ($vnpayData as $k => $v) {
@@ -280,7 +290,7 @@ class CheckoutService
         }
         $rawToSign = implode('&', $pairs);
         $secureHash = hash_hmac('sha512', $rawToSign, $vnp_HashSecret);
-        
+
         // Kiểm tra hash
         if ($secureHash !== $vnp_SecureHash) {
             return [
@@ -288,26 +298,26 @@ class CheckoutService
                 'message' => 'Chữ ký không hợp lệ!'
             ];
         }
-        
+
         // Lấy order_id từ vnp_TxnRef
         $orderId = explode('_', $vnpayData['vnp_TxnRef'])[0] ?? null;
-        
+
         if (!$orderId) {
             return [
                 'success' => false,
                 'message' => 'Không tìm thấy đơn hàng!'
             ];
         }
-        
+
         $order = Order::find($orderId);
-        
+
         if (!$order) {
             return [
                 'success' => false,
                 'message' => 'Không tìm thấy đơn hàng!'
             ];
         }
-        
+
         // Kiểm tra kết quả giao dịch
         $responseCode = $vnpayData['vnp_ResponseCode'] ?? null;
         if (!$responseCode) {
@@ -321,7 +331,7 @@ class CheckoutService
         if ($responseCode === '00') {
             $order->payment_status = 'paid';
             $order->save();
-            
+
             return [
                 'success' => true,
                 'message' => 'Thanh toán thành công!',

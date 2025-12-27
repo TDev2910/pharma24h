@@ -33,7 +33,7 @@ class GHNService
         try {
             //gọi API tỉnh/thành phố
             $url = $this->baseUrl . '/master-data/province';
-            
+
             $response = Http::withHeaders([
                 'Token' => $this->token
             ])->get($url);
@@ -46,14 +46,14 @@ class GHNService
             }
 
             $data = $response->json();
-            
+
             if (!isset($data['code'])) {
                 return [
                     'success' => false,
                     'message' => 'Định dạng response không hợp lệ từ GHN API'
                 ];
             }
-            
+
             if ($data['code'] == 200 && isset($data['data'])) {
                 return [
                     'success' => true,
@@ -62,7 +62,7 @@ class GHNService
             }
 
             $errorMessage = $data['message'] ?? ($data['code_message'] ?? 'Lỗi không xác định');
-            
+
             return [
                 'success' => false,
                 'message' => $errorMessage
@@ -89,7 +89,7 @@ class GHNService
             ]);
 
             $data = $response->json();
-            
+
             if ($data['code'] == 200) {
                 return [
                     'success' => true,
@@ -122,7 +122,7 @@ class GHNService
             ]);
 
             $data = $response->json();
-            
+
             if ($data['code'] == 200) {
                 return [
                     'success' => true,
@@ -167,7 +167,7 @@ class GHNService
                 'Token' => $this->token,
                 'ShopId' => $this->shopId,
                 'Content-Type' => 'application/json'
-            ])->post($this->baseUrl . '/v2/shipping-order/fee', 
+            ])->post($this->baseUrl . '/v2/shipping-order/fee',
             [
                 'from_district_id' => $this->fromDistrictId, //id của quận/huyện lấy từ config/services.php
                 'from_ward_code' => $this->fromWardCode, //code của phường/xã lấy từ config/services.php
@@ -175,11 +175,11 @@ class GHNService
                 'to_ward_code' => $toWardCode, //code của phường/xã từ đơn hàng
                 'service_type_id' => $this->defaultServiceType,
                 'weight' => $weight, //mặc định 100g mỗi sản phẩm
-                'cod_amount' => $codAmount,     
+                'cod_amount' => $codAmount,
             ]);
 
             $data = $response->json();
-            
+
             if ($data['code'] == 200) {
                 return [
                     'success' => true,
@@ -243,7 +243,7 @@ class GHNService
 
             $url = $this->baseUrl . '/v2/shipping-order/create'; // gọi API tạo đơn hàng GHN
             $payload = [
-                'payment_type_id' => $order->payment_method === 'cod' ? 2 : 1,
+                'payment_type_id' => 1,
                 'note' => $order->note ?? '',
                 'required_note' => 'CHOTHUHANG',
                 'from_name' => config('app.name', 'Nhà thuốc Sức Khỏe 24h'),
@@ -279,14 +279,14 @@ class GHNService
             }
 
             $data = $response->json();
-            
+
             if (!isset($data['code'])) {
                 return [
                     'success' => false,
                     'message' => 'Định dạng response không hợp lệ từ GHN API'
                 ];
             }
-            
+
             if ($data['code'] == 200 && isset($data['data'])) {
                 return [
                     'success' => true,
@@ -327,7 +327,7 @@ class GHNService
             ]);
 
             $data = $response->json();
-            
+
             if ($data['code'] == 200) {
                 return [
                     'success' => true,
@@ -363,7 +363,7 @@ class GHNService
             ]);
 
             $data = $response->json();
-            
+
             if ($data['code'] == 200) {
                 return [
                     'success' => true,
@@ -391,10 +391,57 @@ class GHNService
         // Mặc định 100g mỗi sản phẩm
         $weightPerItem = 100;
         $totalItems = $order->items->sum('quantity');
-        
+
         return $totalItems * $weightPerItem;
     }
 
+    public function calculateFee(int $toDistrictId, string $toWardCode, int $weight , int $insuranceValue): array
+    {
+        try {
+            // Validate dữ liệu đầu vào cơ bản
+            if (!$toDistrictId || !$toWardCode) {
+                return [
+                    'success' => false,
+                    'message' => 'Thiếu thông tin quận/huyện hoặc phường/xã'
+                ];
+            }
+
+            $response = Http::withHeaders([
+                'Token' => $this->token,
+                'ShopId' => $this->shopId,
+                'Content-Type' => 'application/json'
+            ])->post($this->baseUrl . '/v2/shipping-order/fee',
+            [
+                'from_district_id' => $this->fromDistrictId,
+                'from_ward_code' => $this->fromWardCode,
+                'to_district_id' => $toDistrictId,
+                'to_ward_code' => $toWardCode,
+                'service_type_id' => $this->defaultServiceType,
+                'weight' => $weight > 0 ? $weight : 100, // Ít nhất 100g
+                'insurance_value' => $insuranceValue, // Giá trị đơn hàng để tính bảo hiểm
+                'coupon' => null
+            ]);
+
+            $data = $response->json();
+
+            if ($data['code'] == 200) {
+                return [
+                    'success' => true,
+                    'total' => $data['data']['total'], // Tổng phí ship (đã bao gồm các loại phí)
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => $data['message'] ?? 'Lỗi tính phí từ GHN'
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Lỗi kết nối GHN: ' . $e->getMessage()
+            ];
+        }
+    }
     /**
      * Lấy District ID từ Order
      */
@@ -416,7 +463,7 @@ class GHNService
         if (isset($order->ward_code) && $order->ward_code) {
             return $order->ward_code;
         }
-        
+
         return null;
     }
 
@@ -425,17 +472,18 @@ class GHNService
      */
     protected function getCodAmount(Order $order): int
     {
-        if ($order->payment_method !== 'cod') {
-            //nếu phương thức thanh toán không phải COD thì trả về 0
+        // Nếu thanh toán qua VNPAY (hoặc bất kỳ hình thức online nào đã 'paid')
+        // Thì COD = 0 (Shipper chỉ giao hàng, không thu tiền)
+        if ($order->payment_method === 'vnpay') {
             return 0;
         }
 
-        $amount = $order->total_amount ?? 0;
-
-        if (!is_numeric($amount)) {
-            return 0;
+        // Nếu là COD, thu toàn bộ tổng tiền đơn hàng (bao gồm cả phí ship hiển thị cho khách)
+        if ($order->payment_method === 'cod') {
+            $amount = $order->total_amount ?? 0;
+            return (int) round((float) $amount);
         }
 
-        return (int) round((float) $amount);
+        return 0; // Mặc định 0 cho an toàn
     }
 }
