@@ -224,7 +224,7 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import CreateDoctorModal from './Modals/Create.vue'
 import EditDoctorModal from './Modals/Edit.vue'
-import '@Admin/doctors/doctors.css';  
+import '@Admin/doctors/doctors.css';
 import axios from 'axios'
 
 export default {
@@ -342,8 +342,6 @@ export default {
     // Edit doctor
     editDoctor(doctor) {
       this.selectedDoctorId = doctor.id
-
-      // Đảm bảo selectedDoctorId được set trước khi mở modal
       this.$nextTick(() => {
         this.showEditModal = true
       })

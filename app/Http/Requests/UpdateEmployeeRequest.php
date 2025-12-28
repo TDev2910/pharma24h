@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\Employee;
 
 class UpdateEmployeeRequest extends FormRequest
 {
@@ -22,14 +23,26 @@ class UpdateEmployeeRequest extends FormRequest
      */
     public function rules(): array
     {
+        //Lấy ID nhân viên từ URL
         $employeeId = $this->route('employee');
+        //
+        $userIdToIgnore = null;
+        // Kiểm tra xem $employeeId có giá trị không, nếu có thì tìm trong csdl
+        if ($employeeId) {
+            $employeeModel = Employee::find($employeeId);
+            // Nếu tìm thấy nhân viên, lấy user_id của nv đó
+            if ($employeeModel) {
+                $userIdToIgnore = $employeeModel->user_id;
+            }
+        }
         return [
             // Thông tin cơ bản
-            'full_name' => 'required|string|max:255',
+            'full_name' => 'sometimes|required|string|max:255',
             'email' => [
+                'sometimes',
                 'required',
                 'email',
-                Rule::unique('users', 'email')->ignore($this->employee?->user_id)
+                Rule::unique('users', 'email')->ignore($userIdToIgnore)
             ],
             'phone_number' => [
                 'nullable',
@@ -51,8 +64,8 @@ class UpdateEmployeeRequest extends FormRequest
             'start_date' => 'nullable|date',
 
             // Thông tin lương
-            'salary_type' => 'required|in:fixed,per_hour',
-            'salary_level' => 'required|numeric|min:0',
+            'salary_type' => 'sometimes|required|in:fixed,per_hour',
+            'salary_level' => 'sometimes|required|numeric|min:0',
 
             // Thông tin cá nhân
             'dob' => 'nullable|date|before:today',
@@ -79,7 +92,7 @@ class UpdateEmployeeRequest extends FormRequest
         ];
     }
 
-    //Thông báo lỗi 
+    //Thông báo lỗi
     public function messages(): array
     {
         return [

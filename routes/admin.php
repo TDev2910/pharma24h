@@ -165,13 +165,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::prefix('employees')->name('employees.')->group(function () {
         Route::get('/', [EmployeeController::class, 'index'])->name('index');
         Route::get('/api', [EmployeeController::class, 'apiIndex'])->name('api');
+        Route::get('/resources/data', [EmployeeController::class, 'getResources'])->name('resources');
+        Route::get('/generate/code', [EmployeeController::class, 'generateCode'])->name('generate-code');
         Route::post('/', [EmployeeController::class, 'store'])->name('store');
         Route::get('/{employee}', [EmployeeController::class, 'show'])->name('show');
         Route::get('/{employee}/edit', [EmployeeController::class, 'edit'])->name('edit');
         Route::put('/{employee}', [EmployeeController::class, 'update'])->name('update');
         Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->name('destroy');
-        Route::get('/resources/data', [EmployeeController::class, 'getResources'])->name('resources');
-        Route::get('/generate/code', [EmployeeController::class, 'generateCode'])->name('generate-code');
     });
 
     // Employee Schedules
@@ -222,7 +222,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     // Purchase Orders
-    // Đặt route export và các route cụ thể TRƯỚC route resource để tránh xung đột
     Route::get('purchase-orders/api', [PruchaseImportController::class, 'apiIndex'])->name('purchase-orders.api')->middleware('auth');
     Route::get('purchase-orders/export', [PruchaseImportController::class, 'export'])->name('purchase-orders.export')->middleware('auth');
     Route::get('purchase-orders/{id}/export', [PruchaseImportController::class, 'exportSingle'])
@@ -235,7 +234,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('purchase-orders.payment')
         ->middleware('auth');
     // Purchase Returns
-    // Đặt route export và các route cụ thể trước route resource để tránh xung đột
     Route::get('purchase-returns/export', [PurchaseReturnsController::class, 'export'])->name('purchase-returns.export')->middleware('auth');
     Route::get('purchase-returns/{id}/export', [PurchaseReturnsController::class, 'exportSingle'])
         ->name('purchase-returns.export-single')
@@ -280,13 +278,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Quản lý Yêu cầu hỗ trợ (Ticket)
     Route::prefix('tickets')->name('tickets.')->middleware(['auth', 'admin'])->group(function () {
-        // 1. Route to show the View (Interface)
         Route::get('/', [SupportTicketController::class, 'index'])->name('index');
-
-        // 2. Route to get Data (API) <--- YOU ARE LIKELY MISSING THIS LINE
         Route::get('/api', [SupportTicketController::class, 'getTickets'])->name('api');
-
-        // 3. Other routes
         Route::get('/{id}', [SupportTicketController::class, 'show'])->name('show');
         Route::post('/{id}/reply', [SupportTicketController::class, 'reply'])->name('reply');
     });

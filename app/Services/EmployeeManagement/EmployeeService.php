@@ -16,7 +16,7 @@ class EmployeeService
     public function createEmployee(array $data): Employee
     {
         DB::beginTransaction();
-        
+
         try {
             //Tạo User (Tài khoản đăng nhập)
             $user = User::create([
@@ -67,9 +67,9 @@ class EmployeeService
             DB::commit();
 
             $employee->load([
-                'user', 
-                'department', 
-                'jobTitle', 
+                'user',
+                'department',
+                'jobTitle',
                 'branch',
                 'allowances',
                 'targets',
@@ -90,7 +90,7 @@ class EmployeeService
     public function updateEmployee(Employee $employee, array $data): Employee
     {
         DB::beginTransaction();
-        
+
         try {
             // Cập nhật User
             $employee->user->update([
@@ -141,9 +141,9 @@ class EmployeeService
 
             $employee->refresh();
             $employee->load([
-                'user', 
-                'department', 
-                'jobTitle', 
+                'user',
+                'department',
+                'jobTitle',
                 'branch',
                 'allowances',
                 'targets',
@@ -164,7 +164,7 @@ class EmployeeService
     public function deleteEmployee(Employee $employee): bool
     {
         DB::beginTransaction();
-        
+
         try {
             $employee->user->delete();
             DB::commit();

@@ -80,7 +80,7 @@
                     </div>
                 </div>
                 <div class="nav-item dropdown">
-                    <span class="nav-item">Báo cáo</span>
+                    <span class="nav-item">Báo cáo thống kê</span>
                     <div class="nav-dropdown">
                         <div class="dropdown-col">
                             <a href="/admin/reports/top-stock-imports" class="dropdown-link">Đặt hàng</a>

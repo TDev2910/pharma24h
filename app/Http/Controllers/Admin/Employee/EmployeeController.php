@@ -119,14 +119,25 @@ class EmployeeController extends Controller
      */
     public function edit($id)
     {
-        $employee = $this->employeeService->getEmployeeDetail($id);
+        try {
+            $employee = Employee::with(['user', 'allowances', 'targets', 'deductions', 'department', 'jobTitle', 'branch'])
+                ->findOrFail($id);
 
-        return Inertia::render('Admin/Employees/Edit', [
-            'employee' => $employee,
-            'jobTitles' => JobTitle::all(),
-            'departments' => Department::all(),
-            'branches' => Branch::all(),
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => $employee
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy nhân viên'
+            ], 404);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -138,11 +149,24 @@ class EmployeeController extends Controller
             $employee = Employee::findOrFail($id);
             $this->employeeService->updateEmployee($employee, $request->validated());
 
-            return redirect()->back()->with('success', 'Cập nhật nhân viên thành công!');
+            // Load lại relationships
+            $employee->load(['allowances', 'targets', 'deductions', 'department', 'jobTitle', 'branch']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật nhân viên thành công!',
+                'employee' => $employee
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy nhân viên'
+            ], 404);
         } catch (Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
-                ->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
         }
     }
 
