@@ -13,7 +13,7 @@
         <!-- Title -->
         <h2 class="verify-title">Nhập mã OTP</h2>
         <p class="verify-subtitle">
-            Chúng tôi đã gửi mã OTP đến:<br>
+            Firebase App đã gửi mã OTP đến:<br>
             <strong class="phone-highlight">{{ $phone }}</strong><br>
                 <small class="text-muted">Mã OTP có hiệu lực trong <span id="otp-timer">2:00</span> phút</small>
         </p>
@@ -58,7 +58,7 @@
         <!-- Resend Section -->
         <div class="text-center">
             <p class="footer-text">
-                Chưa nhận được mã OTP? 
+                Chưa nhận được mã OTP?
                 <button type="button" class="resend-link" id="resendBtn" disabled>
                     <span id="resendText">Gửi lại mã OTP</span>
                     <span id="countdownText" class="d-none">Gửi lại sau <span id="countdown">60</span>s</span>
@@ -264,18 +264,18 @@
         width: 100%;
         margin: 20px;
     }
-    
+
     .verify-title {
         font-size: 24px;
         margin-bottom: 24px;
     }
-    
+
     .otp-input {
         width: 45px;
         height: 50px;
         font-size: 20px;
     }
-    
+
     .otp-inputs-container {
         gap: 6px;
     }
@@ -292,30 +292,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const resendText = document.getElementById('resendText');
     const countdownText = document.getElementById('countdownText');
     const countdown = document.getElementById('countdown');
-    
+
     let countdownTimer = null;
     let countdownValue = 60;
     let otpTimer = null;
     let otpTimeLeft = 2 * 60; // 2 phút (Firebase thực tế chỉ cho phép 1-2 phút)
-    
+
     // Focus first input
     otpInputs[0].focus();
-    
+
     // Start countdown
     startCountdown();
     startOTPTimer();
-    
+
     // Handle input events
     otpInputs.forEach((input, index) => {
         input.addEventListener('input', function(e) {
             const value = e.target.value;
-            
+
             // Only allow numbers
             if (!/^\d*$/.test(value)) {
                 e.target.value = '';
                 return;
             }
-            
+
             // Add filled class
             if (value) {
                 e.target.classList.add('filled');
@@ -323,16 +323,16 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 e.target.classList.remove('filled');
             }
-            
+
             // Move to next input
             if (value && index < otpInputs.length - 1) {
                 otpInputs[index + 1].focus();
             }
-            
+
             // Update hidden input and check completion
             updateOtpValue();
         });
-        
+
         // Handle backspace
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Backspace') {
@@ -345,13 +345,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateOtpValue();
             }
         });
-        
+
         // Handle paste
         input.addEventListener('paste', function(e) {
             e.preventDefault();
             const paste = e.clipboardData.getData('text');
             const numbers = paste.replace(/\D/g, '').slice(0, 6);
-            
+
             // Fill inputs with pasted numbers
             numbers.split('').forEach((num, i) => {
                 if (i < otpInputs.length) {
@@ -359,20 +359,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     otpInputs[i].classList.add('filled');
                 }
             });
-            
+
             // Focus appropriate input
             const nextIndex = Math.min(numbers.length, otpInputs.length - 1);
             otpInputs[nextIndex].focus();
-            
+
             updateOtpValue();
         });
     });
-    
+
     // Update hidden OTP value
     function updateOtpValue() {
         const otp = Array.from(otpInputs).map(input => input.value).join('');
         hiddenOtp.value = otp;
-        
+
         // Auto submit when 6 digits entered
         if (otp.length === 6) {
             setTimeout(() => {
@@ -386,35 +386,35 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 500);
         }
     }
-    
+
     // Form submission
     form.addEventListener('submit', async function(e) {
         const otp = hiddenOtp.value;
-        
+
         if (otp.length !== 6) {
             e.preventDefault();
-            
+
             // Show error on empty inputs
             otpInputs.forEach(input => {
                 if (!input.value) {
                     input.classList.add('error');
                 }
             });
-            
+
             // Focus first empty input
             const firstEmpty = Array.from(otpInputs).find(input => !input.value);
             if (firstEmpty) {
                 firstEmpty.focus();
             }
-            
+
             return;
         }
-        
+
         e.preventDefault(); // Prevent default form submission
-        
+
         verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xác thực...';
         verifyBtn.disabled = true;
-        
+
         try {
             let firebasePhoneAuth;
             try {
@@ -424,32 +424,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Failed to import Firebase service:', importError);
                 throw new Error('Không thể tải Firebase service: ' + importError.message);
             }
-            
+
             if (!firebasePhoneAuth || typeof firebasePhoneAuth.verifyOTP !== 'function') {
                 throw new Error('Firebase service không hợp lệ: verifyOTP method không tồn tại');
             }
-            
+
             const verifyResult = await firebasePhoneAuth.verifyOTP(otp);
-            
+
             if (!verifyResult.success) {
                 // OTP sai - hiển thị lỗi từ Firebase
                 verifyBtn.innerHTML = 'Xác thực mã OTP';
                 verifyBtn.disabled = false;
-                
+
                 // Show error animation
                 otpInputs.forEach(input => {
                     input.classList.add('error');
                 });
-                
+
                 // Refresh CSRF token và gửi thông báo lỗi lên backend để đếm attempts
                 await refreshCSRFToken();
-                
+
                 // Gửi request lên backend để đếm số lần thử sai
                 const formData = new FormData();
                 formData.append('phone', document.querySelector('input[name="phone"]').value);
                 formData.append('otp', otp);
                 formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
-                
+
                 const errorResponse = await fetch(form.action, {
                     method: 'POST',
                     body: formData,
@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Accept': 'application/json'
                     }
                 });
-                
+
                 // Parse error response để lấy thông báo về số lần thử còn lại
                 try {
                     if (errorResponse.headers.get('content-type')?.includes('application/json')) {
@@ -474,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(errorText, 'text/html');
                         const errorElement = doc.querySelector('.alert-danger, .error');
-                        
+
                         if (errorElement) {
                             showMessage(errorElement.textContent.trim(), 'error');
                         } else {
@@ -485,10 +485,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Error parsing response:', parseError);
                     showMessage(verifyResult.message || 'Mã OTP không đúng. Vui lòng thử lại!', 'error');
                 }
-                
+
                 return;
             }
-            
+
             // ✅ BƯỚC 2: OTP đúng - Lấy uid và idToken từ Firebase
             const user = verifyResult.user;
 
@@ -503,20 +503,20 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 // Lấy idToken
                 const idToken = await user.getIdToken();
-                
+
                 if (!idToken) {
                     throw new Error('Không thể lấy idToken từ Firebase');
                 }
-                
+
                 // ✅ BƯỚC 3: Gửi uid và idToken lên backend
                 await refreshCSRFToken();
-                
+
                 const formData = new FormData();
                 formData.append('phone', document.querySelector('input[name="phone"]').value);
                 formData.append('uid', user.uid);
                 formData.append('idToken', idToken);
                 formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
-                
+
                 const response = await fetch(form.action, {
                     method: 'POST',
                     body: formData,
@@ -526,28 +526,28 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Accept': 'application/json'
                     }
                 });
-                
+
                 if (response.ok) {
                     const contentType = response.headers.get('content-type') || '';
-                    
+
                     if (contentType.includes('application/json')) {
                         const data = await response.json();
-                        
+
                         if (data.redirect_url) {
                             window.location.href = data.redirect_url;
                             return;
                         }
                     }
-                    
+
                     // Fallback: redirect đến trang reset password
                     window.location.href = '/password/reset-password';
-                    
+
                 } else {
                     // Handle error
                     const contentType = response.headers.get('content-type') || '';
-                    
+
                     let errorMessage = 'Có lỗi xảy ra, vui lòng thử lại';
-                    
+
                     try {
                         if (contentType.includes('application/json')) {
                             const errorData = await response.json();
@@ -557,7 +557,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             const parser = new DOMParser();
                             const doc = parser.parseFromString(responseText, 'text/html');
                             const errorElement = doc.querySelector('.alert-danger, .error');
-                            
+
                             if (errorElement) {
                                 errorMessage = errorElement.textContent.trim();
                             }
@@ -565,12 +565,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     } catch (parseError) {
                         console.error('Error parsing error response:', parseError);
                     }
-                    
+
                     showMessage(errorMessage, 'error');
                     verifyBtn.innerHTML = 'Xác thực mã OTP';
                     verifyBtn.disabled = false;
                 }
-                
+
             } catch (tokenError) {
                 console.error('Error getting idToken:', tokenError);
                 showMessage('Lỗi xác thực: ' + (tokenError.message || 'Không thể lấy token'), 'error');
@@ -579,37 +579,37 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Verification error:', error);
-            
+
             // Hiển thị lỗi chi tiết hơn
             let errorMessage = 'Có lỗi xảy ra, vui lòng thử lại';
             if (error.message) {
                 errorMessage = error.message;
             }
-            
+
             showMessage(errorMessage, 'error');
             verifyBtn.innerHTML = 'Xác thực mã OTP';
             verifyBtn.disabled = false;
-            
+
             // Clear OTP inputs on error để user có thể nhập lại
             otpInputs.forEach(input => {
                 input.classList.add('error');
             });
         }
     });
-    
+
     // Gửi lại mã OTP
     resendBtn.addEventListener('click', async function() {
         if (!this.disabled) {
             try {
                 // Import Firebase service
                 const { default: firebasePhoneAuth } = await import('{{ Vite::asset("resources/js/library/firebasePhoneAuth.js") }}');
-                
+
                 // Initialize reCAPTCHA
                 firebasePhoneAuth.initRecaptcha('recaptcha-container');
-                
+
                 // Get phone from hidden input
                 const phone = document.querySelector('input[name="phone"]').value;
-                
+
                 // ✅ Reset attempts counter trước khi gửi lại OTP
                 try {
                     await fetch('/password/reset-phone-otp-attempts', {
@@ -625,10 +625,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Failed to reset attempts:', error);
                     // Continue anyway
                 }
-                
+
                 // Send OTP again
                 const result = await firebasePhoneAuth.sendOTP(phone);
-                
+
                 if (result.success) {
                     // Clear OTP inputs
                     otpInputs.forEach(input => {
@@ -636,7 +636,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         input.classList.remove('filled', 'error');
                     });
                     hiddenOtp.value = '';
-                    
+
                     // Reset OTP timer
                     otpTimeLeft = 2 * 60;
                     const otpTimerElement = document.getElementById('otp-timer');
@@ -644,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         otpTimerElement.textContent = '2:00';
                         otpTimerElement.style.color = '';
                     }
-                    
+
                     // Show success message
                     showMessage('Mã OTP đã được gửi lại. Bạn có 3 lần thử mới.', 'success');
                     startCountdown();
@@ -657,17 +657,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
+
     // Đếm ngược thời gian 1 phút
     function startCountdown() {
         resendBtn.disabled = true;
         resendText.classList.add('d-none');
         countdownText.classList.remove('d-none');
-        
+
         countdownTimer = setInterval(() => {
             countdownValue--;
             countdown.textContent = countdownValue;
-            
+
             if (countdownValue <= 0) {
                 clearInterval(countdownTimer);
                 resendBtn.disabled = false;
@@ -677,18 +677,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 1000);
     }
-    
+
     // Đếm ngược thời gian OTP 2 phút
     function startOTPTimer() {
         const otpTimerElement = document.getElementById('otp-timer');
         if (!otpTimerElement) return;
-        
+
         otpTimer = setInterval(() => {
             otpTimeLeft--;
             const minutes = Math.floor(otpTimeLeft / 60);
             const seconds = otpTimeLeft % 60;
             otpTimerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            
+
             if (otpTimeLeft <= 0) {
                 clearInterval(otpTimer);
                 otpTimerElement.textContent = '0:00';
@@ -697,14 +697,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 1000);
     }
-    
+
     // Xóa lỗi khi focus vào input
     otpInputs.forEach(input => {
         input.addEventListener('focus', function() {
             this.classList.remove('error');
         });
     });
-    
+
     // Helper function to refresh CSRF token
     async function refreshCSRFToken() {
         try {
@@ -712,7 +712,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'GET',
                 credentials: 'same-origin'
             });
-            
+
             if (response.ok) {
                 // Get new CSRF token from meta tag
                 const newToken = document.querySelector('meta[name="csrf-token"]').content;
@@ -723,21 +723,21 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Failed to refresh CSRF token:', error);
         }
     }
-    
+
     // Helper function to show messages
     function showMessage(message, type) {
         // Remove existing alerts
         const existingAlerts = document.querySelectorAll('.alert');
         existingAlerts.forEach(alert => alert.remove());
-        
+
         // Create new alert
         const alert = document.createElement('div');
         alert.className = `alert alert-${type === 'error' ? 'danger' : 'success'} mb-3`;
         alert.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'} me-2"></i>${message}`;
-        
+
         // Insert before form
         form.parentNode.insertBefore(alert, form);
-        
+
         // Auto remove after 5 seconds
         setTimeout(() => {
             if (alert.parentNode) {

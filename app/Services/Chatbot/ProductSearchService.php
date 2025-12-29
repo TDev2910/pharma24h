@@ -127,25 +127,28 @@ class ProductSearchService
     }
 
     // tìm kiếm thông minh với 2 chiến lược
+    // Hàm tìm kiếm thông minh với cơ chế Chấm điểm (Ranking)
     private function smartSearch(array $keywords, ?array $priceRange, string $modelClass, string $nameColumn): Collection
     {
         $query = $modelClass::query();
 
-        // chiến lược 1 - Lọc các sản phẩm hợp lệ
+        // Điều kiện hiển thị
         if ($modelClass === Medicine::class || $modelClass === Goods::class) {
             $query->where('ban_truc_tiep', true);
         } elseif ($modelClass === Service::class) {
             $query->where('trang_thai', 'kich_hoat');
         }
 
-        // Sản phẩm phải chứa TẤT CẢ từ khóa
+        // --- CHIẾN LƯỢC 1: Tìm kiếm CHÍNH XÁC (Logic AND) ---
         $exactQuery = clone $query;
         foreach ($keywords as $keyword) {
             $exactQuery->where(function ($q) use ($keyword, $nameColumn, $modelClass) {
                 $q->where($nameColumn, 'like', '%' . $keyword . '%');
-                // Thêm trường phụ nếu là thuốc
                 if ($modelClass === Medicine::class) {
-                   $q->orWhere('hoat_chat', 'like', '%' . $keyword . '%');
+                    $q->orWhere('hoat_chat', 'like', '%' . $keyword . '%')
+                        ->orWhere('cong_dung', 'like', '%' . $keyword . '%')
+                        ->orWhere('mo_ta', 'like', '%' . $keyword . '%')
+                        ->orWhere('ham_luong', 'like', '%' . $keyword . '%');
                 }
             });
         }
@@ -157,15 +160,18 @@ class ProductSearchService
 
         $results = $exactQuery->limit(5)->get();
 
-        // chiến lược 2 - Nếu không tìm thấy kết quả, tìm sản phẩm chứa "bất kỳ" từ khóa nào
-        // Nếu tìm chính xác không ra VÀ có nhiều từ khóa -> Chuyển sang tìm sản phẩm chứa "bất kỳ" từ nào
+        // --- CHIẾN LƯỢC 2: Tìm kiếm MỞ RỘNG & CHẤM ĐIỂM (Logic OR + Ranking) ---
+        // Chỉ chạy khi tìm chính xác không ra kết quả
         if ($results->isEmpty() && count($keywords) > 1) {
             $fuzzyQuery = clone $query;
             $fuzzyQuery->where(function ($q) use ($keywords, $nameColumn, $modelClass) {
                 foreach ($keywords as $keyword) {
                     $q->orWhere($nameColumn, 'like', '%' . $keyword . '%');
                     if ($modelClass === Medicine::class) {
-                        $q->orWhere('hoat_chat', 'like', '%' . $keyword . '%');
+                        $q->orWhere('hoat_chat', 'like', '%' . $keyword . '%')
+                            ->orWhere('cong_dung', 'like', '%' . $keyword . '%')
+                            ->orWhere('mo_ta', 'like', '%' . $keyword . '%')
+                            ->orWhere('ham_luong', 'like', '%' . $keyword . '%');
                     }
                 }
             });
@@ -175,11 +181,46 @@ class ProductSearchService
                 $fuzzyQuery->whereBetween($colPrice, [$priceRange['min'], $priceRange['max']]);
             }
 
-            $results = $fuzzyQuery->limit(5)->get();
+            // Lấy nhiều kết quả hơn để lọc (ví dụ 20)
+            $candidates = $fuzzyQuery->limit(20)->get();
+
+            // Tính điểm cho từng sản phẩm dựa trên số lượng từ khóa xuất hiện trong tên
+            $scoredResults = $candidates->map(function ($item) use ($keywords, $nameColumn) {
+                $score = 0;
+                $itemName = mb_strtolower($item->{$nameColumn}, 'UTF-8');
+
+                foreach ($keywords as $keyword) {
+                    // Nếu từ khóa xuất hiện trong tên sản phẩm -> Cộng 1 điểm
+                    if (mb_strpos($itemName, $keyword) !== false) {
+                        $score++;
+                    }
+                }
+
+                // Gán điểm tạm thời vào object
+                $item->relevance_score = $score;
+                return $item;
+            });
+
+            // Sắp xếp giảm dần theo điểm và lấy Top 5
+            // Filter: Chỉ lấy những sản phẩm có điểm số >= 50% số lượng từ khóa (để loại bỏ kết quả dư thừa)
+            $minScore = ceil(count($keywords) * 0.5);
+
+            $results = $scoredResults
+                ->filter(function ($item) use ($minScore) {
+                    return $item->relevance_score >= $minScore;
+                })
+                ->sortByDesc('relevance_score')
+                ->values()
+                ->take(5);
         }
 
-        // Load quan hệ nếu có kết quả
+        // Load quan hệ
         if ($results->isNotEmpty()) {
+            // Cần lấy lại ID để query load relations vì collection đã bị biến đổi
+            $ids = $results->pluck('id')->toArray();
+
+            // Query lại một lần nữa để load relations chuẩn (hoặc load trực tiếp trên collection nếu model hỗ trợ)
+            // Cách nhanh nhất là load trực tiếp:
             if ($modelClass === Medicine::class || $modelClass === Goods::class) {
                 $results->load(['category', 'manufacturer']);
             } elseif ($modelClass === Service::class) {
