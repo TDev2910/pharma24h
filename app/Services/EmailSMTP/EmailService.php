@@ -4,9 +4,10 @@ namespace App\Services\EmailSMTP;
 
 use App\Models\Order;
 use App\Models\SupportTicket;
+use App\Models\ServiceBooking;
+use App\Services\EmailSMTP\ServiceBookingConfirmationMail;
 use App\Services\EmailSMTP\OrderConfirmationMail;
 use App\Services\EmailSMTP\TicketReplyMail;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class EmailService
@@ -50,7 +51,27 @@ class EmailService
 
             return true;
         } catch (\Exception $e) {
-            Log::error("Lỗi gửi mail ticket #{$ticket->ticket_id}: " . $e->getMessage());
+            return false;
+        }
+    }
+    /**
+     * Gửi email xác nhận đặt lịch dịch vụ cho khách hàng
+     *
+     * @param ServiceBooking $booking
+     * @return bool
+     */
+    public function sendServiceBookingConfirmation(ServiceBooking $booking): bool
+    {
+        if(empty($booking->customer_email)) {
+            return false;
+        }
+
+        try {
+            Mail::to($booking->customer_email)
+                ->send(new ServiceBookingConfirmationMail($booking));
+
+            return true;
+        } catch (\Exception $e) {
             return false;
         }
     }

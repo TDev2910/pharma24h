@@ -75,7 +75,6 @@
                             <div class="dropdown-title">Tổng quan</div>
                             <a href="/admin/employees" class="dropdown-link">Quản lý nhân viên</a>
                             <a href="/admin/employee-schedules" class="dropdown-link">Lịch làm việc</a>
-                            <a href="/admin/employee-salary" class="dropdown-link">Bảng lương</a>
                         </div>
                     </div>
                 </div>

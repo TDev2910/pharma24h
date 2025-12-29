@@ -6,10 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\ServiceBooking;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use App\Services\EmailSMTP\EmailService;
 use Illuminate\Support\Facades\Validator;
 
 class ServiceBookingController extends Controller
 {
+    protected $emailService;
+    public function __construct(EmailService $emailService)
+    {
+        $this->emailService = $emailService;
+    }
     /**
      * Tạo booking mới (khách hàng đặt lịch)
      */
@@ -50,6 +56,8 @@ class ServiceBookingController extends Controller
                 'status' => 'pending',
                 'notes' => $request->notes
             ]);
+
+            $this->emailService->sendServiceBookingConfirmation($booking);
 
             return response()->json([
                 'success' => true,
