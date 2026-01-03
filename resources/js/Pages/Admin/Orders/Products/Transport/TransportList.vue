@@ -24,13 +24,6 @@
           </template>
         </Column>
 
-        <!-- Thời gian tạo -->
-        <Column field="created_at_formatted" header="Thời gian tạo" sortable style="width: 15%">
-          <template #body="{ data }">
-            <span>{{ data.created_at_formatted || 'N/A' }}</span>
-          </template>
-        </Column>
-
         <!-- Mã hóa đơn -->
         <Column field="order_code" header="Mã hóa đơn" sortable style="width: 12%">
           <template #body="{ data }">
@@ -125,46 +118,103 @@ export default {
   },
   methods: {
     onPageChange(event) {
-      // Emit event để parent component xử lý pagination
       this.$emit('page-change', {
-        page: event.page + 1, // PrimeVue dùng index 0, Laravel dùng index 1
+        page: event.page + 1,
         per_page: event.rows
       })
     },
+
     getStatusText(status) {
       const statusMap = {
-        'delivering': 'Đang giao',
+        // Trạng thái khởi tạo
+        'ready_to_pick': 'Chờ lấy hàng',
+        'picking': 'Đang lấy hàng',
+        'cancel': 'Đã hủy',
+        'money_collect_picking': 'Đang thu tiền người gửi',
+        'picked': 'Đã lấy hàng',
+        'storing': 'Nhập kho',
+        'transporting': 'Đang luân chuyển',
+        'sorting': 'Đang phân loại',
+        'delivering': 'Đang giao hàng',
+        'money_collect_delivering': 'Đang thu tiền người nhận',
+        'delivered': 'Đã giao hàng',
+        'delivery_fail': 'Giao hàng thất bại',
+        'waiting_to_return': 'Chờ trả hàng',
+        'return': 'Trả hàng',
+        'return_transporting': 'Đang luân chuyển hàng trả',
+        'return_sorting': 'Đang phân loại hàng trả',
+        'returning': 'Đang trả hàng',
+        'return_fail': 'Trả hàng thất bại',
+        'returned': 'Đã trả hàng',
+        'exception': 'Đơn hàng ngoại lệ',
+        'damage': 'Hàng bị hư hỏng',
+        'lost': 'Hàng thất lạc',
+
+        // Trạng thái cũ (backwards compatibility)
+        'pending': 'Chờ lấy hàng',
         'completed': 'Đã giao',
         'cancelled': 'Đã hủy'
       }
-      return statusMap[status] || 'Không xác định'
+      return statusMap[status] || status || 'Không xác định'
     },
+
     getStatusSeverity(status) {
       const severityMap = {
+        // Chờ xử lý - Info (blue)
+        'ready_to_pick': 'info',
+        'picking': 'info',
+        'money_collect_picking': 'info',
+        'pending': 'info',
+
+        // Đang xử lý - Warning (orange/yellow)
+        'picked': 'warning',
+        'storing': 'warning',
+        'transporting': 'warning',
+        'sorting': 'warning',
         'delivering': 'warning',
+        'money_collect_delivering': 'warning',
+
+        // Thành công - Success (green)
+        'delivered': 'success',
         'completed': 'success',
-        'cancelled': 'danger'
+
+        // Thất bại/Hủy - Danger (red)
+        'cancel': 'danger',
+        'delivery_fail': 'danger',
+        'return_fail': 'danger',
+        'exception': 'danger',
+        'damage': 'danger',
+        'lost': 'danger',
+        'cancelled': 'danger',
+
+        // Đang trả hàng - Secondary (gray)
+        'waiting_to_return': 'secondary',
+        'return': 'secondary',
+        'return_transporting': 'secondary',
+        'return_sorting': 'secondary',
+        'returning': 'secondary',
+        'returned': 'secondary'
       }
       return severityMap[status] || 'secondary'
     },
+
     formatCurrency(amount) {
       return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND'
       }).format(amount)
     },
+
     viewDetail(order) {
       this.$emit('view-detail', order)
     },
+
     getTrackingUrl(order) {
-      // Kiểm tra nếu không có mã vận đơn
       if (!order?.code) return '#'
-      // Nếu có tracking_url từ database, dùng nó
-      // Nếu không, tạo URL tracking từ mã vận đơn GHN
       return order.tracking_url || `https://donhang.ghn.vn/?order_code=${order.code}`
     },
+
     openTracking(url) {
-      // Kiểm tra URL hợp lệ trước khi mở
       if (!url || url === '#') {
         console.warn('Tracking URL is not available')
         return

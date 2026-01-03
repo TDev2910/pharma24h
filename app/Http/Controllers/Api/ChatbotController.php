@@ -49,7 +49,7 @@ class ChatbotController extends Controller
                     }
                     // Kết thúc gửi ảnh về client
 
-                    // 2. Chuẩn bị dữ liệu cho Gemini 
+                    // 2. Chuẩn bị dữ liệu cho Gemini
                     $productInfo = $this->productSearch->formatForGemini($searchResults);
                     $apiKey = config('services.gemini.api_key');
 
@@ -59,7 +59,7 @@ class ChatbotController extends Controller
 
                     $prompt = $this->buildEnhancedPrompt($userMessage, $productInfo);
 
-                    // 3. Gọi Gemini API dùng gemini-2.5-flash 
+                    // 3. Gọi Gemini API dùng gemini-2.5-flash
                     // (sử dụng gemini-2.5-flash-lite-preview-02-05 để tăng tốc độ phản hồi)
                     $response = Http::timeout(30)->post(
                         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey,
@@ -124,7 +124,7 @@ class ChatbotController extends Controller
     {
         return <<<PROMPT
         Bạn là nhân viên bán hàng tại nhà thuốc Pharma PCT.
-        
+
         QUY TẮC TUYỆT ĐỐI:
         1. CHỈ trả lời dựa trên "DỮ LIỆU SẢN PHẨM HIỆN CÓ" bên dưới.
         2. Nếu trong dữ liệu KHÔNG có dịch vụ/sản phẩm khách hỏi, hãy nói: "Dạ hiện tại bên em chưa có dịch vụ/sản phẩm này ạ, anh/chị tham khảo các dịch vụ khác bên em nhé."
@@ -226,3 +226,4 @@ class ChatbotController extends Controller
         return "Xin chào! Tôi là trợ lý của nhà thuốc Pharma PCT. Tôi có thể hỗ trợ bạn về thuốc men, giờ làm việc, địa chỉ, hoặc dịch vụ khám bệnh. Để được tư vấn chi tiết hơn, bạn có thể gọi hotline 0901645269 hoặc đến trực tiếp nhà thuốc tại 12 Đô Lương, Phường 11, Vũng Tàu.";
     }
 }
+ 

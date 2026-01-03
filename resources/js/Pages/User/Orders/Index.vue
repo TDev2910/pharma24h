@@ -58,7 +58,7 @@
             </div>
             <span class="order-code">Mã đơn hàng: {{ order.order_code }}</span>
           </div>
-          
+
           <div class="total-amount">
             Thành tiền: <span class="total-value">{{ formatCurrency(order.total_amount) }} ₫</span>
           </div>
@@ -159,13 +159,29 @@ const formatCurrency = (value) => {
 
 // Get image URL
 const getImageUrl = (item) => {
-  if (item.product?.image_url) {
-    return item.product.image_url
+  // Kiểm tra các trường có thể chứa ảnh
+  let imageUrl = item.image || item.image_url || item.product?.image || item.product?.image_url
+  
+  if (!imageUrl) {
+    return '/images/placeholder.png'
   }
-  if (item.image_url) {
-    return item.image_url
+  
+  // Nếu đã là URL đầy đủ
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    return imageUrl
   }
-  return '/images/placeholder.png'
+  
+  // Nếu đường dẫn bắt đầu bằng 'storage/'
+  if (imageUrl.startsWith('storage/')) {
+    return `/${imageUrl}`
+  }
+  
+  // Nếu là đường dẫn tương đối, thêm /storage/
+  if (!imageUrl.startsWith('/')) {
+    return `/storage/${imageUrl}`
+  }
+  
+  return imageUrl
 }
 
 // Handle image error

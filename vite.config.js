@@ -16,6 +16,8 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
+                'resources/js/library/firebaseGoogleAuth.js',
+                'resources/js/library/firebasePhoneAuth.js'
             ],
             refresh: true,
         }),

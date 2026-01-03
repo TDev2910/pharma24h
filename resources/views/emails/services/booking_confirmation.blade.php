@@ -14,7 +14,7 @@
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <tr>
                 <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Dịch vụ:</strong></td>
-                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{ $booking->service->name ?? 'Dịch vụ đang cập nhật' }}</td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{ $booking->service->ten_dich_vu ?? 'Dịch vụ đang cập nhật' }}</td>
             </tr>
             <tr>
                 <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Ngày hẹn:</strong></td>
