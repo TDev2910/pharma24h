@@ -185,7 +185,7 @@ class OrdersController extends Controller
             $order->order_status = $request->status;
             if ($request->status === 'pending') {
                 $order->payment_status = 'unpaid';
-            }   
+            }
             $order->save();
         }
 
@@ -279,21 +279,21 @@ class OrdersController extends Controller
         if ($order->cancellation_status !== Order::CANCELLATION_STATUS['REQUESTED']) {
             return back()->withErrors(['error' => 'Đơn này không có yêu cầu hủy hoặc đã xử lý.']);
         }
- 
+
         try {
             DB::transaction(function () use ($order, $data, $checkout) {
                 $order = Order::whereKey($order->getKey())->lockForUpdate()->firstOrFail();
- 
+
                 if ($order->order_status === Order::STATUS['COMPLETED']) {
                     $checkout->cancelOrder($order->id); // trả hàng + cập nhật payment_status
                 }
-                else 
+                else
                 {
                     $order->order_status = Order::STATUS['CANCELLED'];
                     $order->payment_status = 'cancelled';
                     $order->save();
                 }
- 
+
                 $order->cancellation_status = Order::CANCELLATION_STATUS['APPROVED'];
                 $order->cancellation_admin_note = $data['admin_note'] ?? null;
                 $order->cancellation_processed_at = now();
@@ -304,7 +304,7 @@ class OrdersController extends Controller
         } catch (\Throwable $e) {
             return back()->withErrors(['error' => 'Không thể duyệt yêu cầu hủy: ' . $e->getMessage()]);
         }
- 
+
         $order->refresh();
 
         if ($order->user) {
@@ -319,7 +319,7 @@ class OrdersController extends Controller
 
         return back()->with('success', 'Đã xác nhận hủy đơn hàng.');
     }
-    
+
     public function rejectCancellation(Request $request, Order $order)
     {
         $data = $request->validate([
@@ -329,11 +329,11 @@ class OrdersController extends Controller
         if($order->cancellation_status !== Order::CANCELLATION_STATUS['REQUESTED']) {
             return back()->withErrors(['error' => 'Đơn này không có yêu cầu hủy hoặc đã xử lý.']);
         }
-     
+
         try {
             DB::transaction(function () use ($order, $data) {
                 $order = Order::whereKey($order->getKey())->lockForUpdate()->firstOrFail();
- 
+
                 // Khôi phục trạng thái đơn về pending (hoặc trạng thái cũ nếu bạn lưu lại đâu đó)
                 $order->order_status = $order->order_status_before_cancellation ?? Order::STATUS['PENDING'];
                 $order->cancellation_status = Order::CANCELLATION_STATUS['REJECTED'];
@@ -384,12 +384,12 @@ class OrdersController extends Controller
                 'returned',
                 'damage',
                 'lost'
-            ], 
+            ],
             'pending_pickup' => ['ready_to_pick'],
         ];
 
         // DISPLAY MAP: Dùng để HIỂN THỊ ra giao diện (Display)
-        // Khi DB trả về 'picking', giao diện sẽ hiển thị là 'delivering' 
+        // Khi DB trả về 'picking', giao diện sẽ hiển thị là 'delivering'
         $displayMap = [
             'ready_to_pick' => 'delivering',
             'picking'       => 'delivering',
@@ -404,7 +404,7 @@ class OrdersController extends Controller
             'lost'          => 'cancelled',
         ];
 
-        // 2. Truy vấn dữ liệu 
+        // 2. Truy vấn dữ liệu
         $query = Order::query()
             ->where('delivery_method', 'shipping') // Chỉ lấy đơn giao hàng
             ->whereNotNull('ghn_order_code');      // Chỉ lấy đơn đã đẩy qua GHN
@@ -477,7 +477,7 @@ class OrdersController extends Controller
             // lấy trạng thái hiển thị (gom nhóm)
             $displayStatus = $displayMap[$order->ghn_status] ?? 'delivering';
 
-            // xử lý ngày tháng 
+            // xử lý ngày tháng
             $createdDate = $order->ghn_created_at ?? $order->created_at;
             $deliveryDate = $order->ghn_expected_delivery_time;
 

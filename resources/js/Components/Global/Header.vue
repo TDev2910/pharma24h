@@ -255,7 +255,16 @@ onUnmounted(() => {
 })
 </script>
 <style scoped>
-/* Loại bỏ hover effect cho buttons trong cart-actions */
+/* --- STYLES CỐ ĐỊNH CHO DESKTOP & CHUNG --- */
+.mediaid-header {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.brand-text {
+  font-weight: 700; font-size: 1.5rem; color: #1a56db;
+}
+
+/* Các button trong Cart actions */
 .cart-actions .btn-primary:hover,
 .cart-actions .btn-primary:focus,
 .cart-actions .btn-primary:active,
@@ -267,33 +276,71 @@ onUnmounted(() => {
   color: #fff !important;
 }
 
-/* Giữ màu mặc định cho btn-outline-primary */
 .cart-actions .btn-outline-primary {
-  border-color: #1a56db !important;
-  color: #1a56db !important;
-  background-color: transparent !important;
+  border-color: #1a56db !important; color: #1a56db !important; background-color: transparent !important;
 }
 
-.cart-actions .btn-outline-primary:hover,
-.cart-actions .btn-outline-primary:focus,
-.cart-actions .btn-outline-primary:active {
-  border-color: #1a56db !important;
-  color: #1a56db !important;
-  background-color: transparent !important;
-}
-
-/* Giữ màu mặc định cho btn-primary */
 .cart-actions .btn-primary {
-  background-color: #1a56db !important;
-  border-color: #1a56db !important;
-  color: #fff !important;
+  background-color: #1a56db !important; border-color: #1a56db !important; color: #fff !important;
 }
 
-.cart-actions .btn-primary:hover,
-.cart-actions .btn-primary:focus,
-.cart-actions .btn-primary:active {
-  background-color: #1a56db !important;
-  border-color: #1a56db !important;
-  color: #fff !important;
+/* --- MOBILE RESPONSIVE STYLES (Dưới 992px) --- */
+@media (max-width: 991.98px) {
+    /* 1. Xử lý Dropdown Giỏ hàng trên Mobile */
+    .dropdown-menu.cart-dropdown-menu {
+        position: fixed !important; /* Đổi thành fixed để tránh overflow */
+        top: auto !important;
+        right: 10px !important; /* Cách lề phải 10px */
+        left: 10px !important; /* Cách lề trái 10px */
+        bottom: auto !important;
+        margin-top: 10px;
+
+        /* Kích thước */
+        width: auto !important; /* Tự động điều chỉnh */
+        max-width: calc(100vw - 20px) !important; /* Trừ padding 2 bên */
+
+        /* Visual */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+        border: none;
+        border-radius: 12px;
+        z-index: 1050;
+    }
+
+    /* Điều chỉnh position cho dropdown parent */
+    .d-lg-none .dropdown.cart-dropdown {
+        position: static !important;
+    }
+
+    /* 2. Xử lý User Dropdown trên Mobile */
+    .d-lg-none .dropdown-menu {
+        position: fixed !important;
+        right: 10px !important;
+        left: auto !important;
+        top: auto !important;
+        min-width: 250px;
+        max-width: calc(100vw - 20px);
+    }
+
+    /* 3. Tinh chỉnh Offcanvas menu */
+    .offcanvas-body .nav-link {
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 16px;
+    }
+}
+
+/* Mobile nhỏ (Dưới 576px) */
+@media (max-width: 575.98px) {
+    .dropdown-menu.cart-dropdown-menu {
+        right: 5px !important;
+        left: 5px !important;
+        max-width: calc(100vw - 10px) !important;
+    }
+
+    .d-lg-none .dropdown-menu {
+        right: 5px !important;
+        max-width: calc(100vw - 10px);
+        min-width: 240px;
+    }
 }
 </style>
