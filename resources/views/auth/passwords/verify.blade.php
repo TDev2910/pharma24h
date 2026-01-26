@@ -56,7 +56,7 @@
         <!-- Resend Section -->
         <div class="text-center">
             <p class="footer-text">
-                Chưa nhận được mã OTP? 
+                Chưa nhận được mã OTP?
                 <form method="POST" action="{{ route('password.email') }}" style="display: inline;">
                     @csrf
                     <input type="hidden" name="email" value="{{ $email }}">
@@ -257,18 +257,18 @@
         width: 100%;
         margin: 20px;
     }
-    
+
     .verify-title {
         font-size: 24px;
         margin-bottom: 24px;
     }
-    
+
     .otp-input {
         width: 50px;
         height: 50px;
         font-size: 20px;
     }
-    
+
     .otp-inputs-container {
         gap: 8px;
     }
@@ -281,21 +281,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('otpForm');
     const hiddenOtp = document.getElementById('hiddenOtp');
     const verifyBtn = document.getElementById('verifyBtn');
-    
+
     // Focus first input
     otpInputs[0].focus();
-    
+
     // Handle input events
     otpInputs.forEach((input, index) => {
         input.addEventListener('input', function(e) {
             const value = e.target.value;
-            
+
             // Only allow numbers
             if (!/^\d*$/.test(value)) {
                 e.target.value = '';
                 return;
             }
-            
+
             // Add filled class
             if (value) {
                 e.target.classList.add('filled');
@@ -303,16 +303,16 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 e.target.classList.remove('filled');
             }
-            
+
             // Move to next input
             if (value && index < otpInputs.length - 1) {
                 otpInputs[index + 1].focus();
             }
-            
+
             // Update hidden input and check completion
             updateOtpValue();
         });
-        
+
         // Handle backspace
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Backspace') {
@@ -325,13 +325,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateOtpValue();
             }
         });
-        
+
         // Handle paste
         input.addEventListener('paste', function(e) {
             e.preventDefault();
             const paste = e.clipboardData.getData('text');
             const numbers = paste.replace(/\D/g, '').slice(0, 5);
-            
+
             // Fill inputs with pasted numbers
             numbers.split('').forEach((num, i) => {
                 if (i < otpInputs.length) {
@@ -339,20 +339,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     otpInputs[i].classList.add('filled');
                 }
             });
-            
+
             // Focus appropriate input
             const nextIndex = Math.min(numbers.length, otpInputs.length - 1);
             otpInputs[nextIndex].focus();
-            
+
             updateOtpValue();
         });
     });
-    
+
     // Update hidden OTP value
     function updateOtpValue() {
         const otp = Array.from(otpInputs).map(input => input.value).join('');
         hiddenOtp.value = otp;
-        
+
         // Auto submit when 5 digits entered
         if (otp.length === 5) {
             setTimeout(() => {
@@ -364,34 +364,34 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 500);
         }
     }
-    
+
     // Form submission
     form.addEventListener('submit', function(e) {
         const otp = hiddenOtp.value;
-        
+
         if (otp.length !== 5) {
             e.preventDefault();
-            
+
             // Show error on empty inputs
             otpInputs.forEach(input => {
                 if (!input.value) {
                     input.classList.add('error');
                 }
             });
-            
+
             // Focus first empty input
             const firstEmpty = Array.from(otpInputs).find(input => !input.value);
             if (firstEmpty) {
                 firstEmpty.focus();
             }
-            
+
             return;
         }
-        
+
         verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verifying...';
         verifyBtn.disabled = true;
     });
-    
+
     // Clear errors on focus
     otpInputs.forEach(input => {
         input.addEventListener('focus', function() {

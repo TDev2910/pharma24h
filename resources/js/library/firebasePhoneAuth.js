@@ -295,7 +295,7 @@ class FirebasePhoneAuthService {
     }
 
     /**
-     * Format số điện thoại Việt Nam 
+     * Format số điện thoại Việt Nam
      * @param {string} phoneNumber - Số điện thoại
      * @returns {string} - Số điện thoại đã format
      */
@@ -324,7 +324,7 @@ class FirebasePhoneAuthService {
     }
 
     /**
-     * Lấy thông báo lỗi 
+     * Lấy thông báo lỗi
      * @param {string} errorCode - Mã lỗi Firebase
      * @returns {string} - Thông báo lỗi
      */

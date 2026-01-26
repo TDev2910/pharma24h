@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\Product\UnifiedListController;
 use App\Http\Controllers\Admin\Order\GHNController;
 use App\Http\Controllers\Admin\Report\ReportController;
 use App\Http\Controllers\SupportTicketController;
+use App\Http\Controllers\Admin\Order\OrdersTestController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -282,5 +283,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/api', [SupportTicketController::class, 'getTickets'])->name('api');
         Route::get('/{id}', [SupportTicketController::class, 'show'])->name('show');
         Route::post('/{id}/reply', [SupportTicketController::class, 'reply'])->name('reply');
+    });
+
+    Route::prefix('orders-test')->name('orders.test.')->group(function () {
+        // 1. Trang Dashboard chính
+        Route::get('/', [OrdersTestController::class, 'index'])->name('index');
+
+        // 2. API Cập nhật trạng thái (cho Modal Edit)
+        Route::post('/{order}/update-status', [OrdersTestController::class, 'updateStatus'])->name('update-status');
+
+        // 3. API In hóa đơn
+        Route::get('/{order}/invoice', [OrdersTestController::class, 'printInvoice'])->name('invoice');
+
+        // 4. API GHN (cho Modal Details)
+        Route::post('/{order}/ghn/create', [OrdersTestController::class, 'createGhnOrder'])->name('ghn.create');
+        Route::get('/{order}/ghn/print', [OrdersTestController::class, 'printGhnOrder'])->name('ghn.print');
+        Route::post('/{order}/ghn/sync', [OrdersTestController::class, 'syncGhnStatus'])->name('ghn.sync');
     });
 });

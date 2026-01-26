@@ -13,32 +13,44 @@
 
         <nav class="nav-menu">
           <Link href="/user/dashboard" :class="{ 'active': page.url.startsWith('/user/dashboard') }" class="nav-item">
-            <i class="fas fa-th-large"></i> <span>Tổng quan</span>
+            <i class="fas fa-th-large"></i>
+            <span class="nav-text">Tổng quan</span>
           </Link>
+
           <Link href="/user/orders" :class="{ 'active': page.url.startsWith('/user/orders') }" class="nav-item">
             <div class="nav-item-content">
-              <span><i class="fas fa-box"></i> Đơn hàng</span>
+              <i class="fas fa-box"></i>
+              <span class="nav-text">Đơn hàng</span>
             </div>
           </Link>
+
           <Link href="/user/services" :class="{ 'active': page.url.startsWith('/user/services') }" class="nav-item">
-            <i class="fas fa-file-medical"></i> <span>Dịch vụ</span>
+            <i class="fas fa-file-medical"></i>
+            <span class="nav-text">Dịch vụ</span>
           </Link>
+
           <Link href="/user/notifications" :class="{ 'active': page.url.startsWith('/user/notifications') }" class="nav-item">
             <div class="nav-item-content">
-              <span><i class="fas fa-bell"></i> Thông báo</span>
-              <span class="dot" v-if="unreadNotificationsCount > 0"></span>
+              <div class="icon-wrapper">
+                <i class="fas fa-bell"></i>
+                <span class="dot-floating" v-if="unreadNotificationsCount > 0"></span>
+              </div>
+              <span class="nav-text">Thông báo</span>
             </div>
           </Link>
+
           <Link href="/user/profile-settings" :class="{ 'active': page.url.startsWith('/user/profile-settings') }" class="nav-item">
-            <i class="fas fa-user-cog"></i> <span>Cài đặt hồ sơ</span>
+            <i class="fas fa-user-cog"></i>
+            <span class="nav-text">Cài đặt hồ sơ</span>
           </Link>
           <Link href="/" :class="{ 'active': page.url.startsWith('/') }" class="nav-item">
-            <i class="fas fa-home"></i> <span>Trang chủ</span>
+            <i class="fas fa-home"></i>
+            <span class="nav-text">Trang chủ</span>
           </Link>
         </nav>
       </div>
 
-      
+
       <div class="sidebar-footer">
         <Link href="/logout" method="post" as="button" class="nav-item logout">
           <i class="fas fa-sign-out-alt"></i> <span>Đăng xuất</span>
@@ -52,7 +64,7 @@
           <h2>{{ pageTitle || 'Dashboard' }}</h2>
           <span class="date">{{ currentDate }}</span>
         </div>
-        
+
         <div class="topbar-actions">
            <div class="search-box">
             <i class="fas fa-search"></i>
@@ -92,15 +104,15 @@ const pendingOrders = 3 // Mock data styling
 // HĂ m hiá»ƒn thá»‹ role báº±ng tiáº¿ng Viá»‡t
 const getUserRoleDisplay = () => {
   const role = auth?.user?.role
-  if (!role) return 'KhĂ¡ch hĂ ng'
-  
+  if (!role) return 'Khách hàng'
+
   const roleMap = {
-    'staff': 'NhĂ¢n viĂªn',
-    'admin': 'Quáº£n trá»‹ viĂªn',
-    'user': 'KhĂ¡ch hĂ ng'
+    'staff': 'Nhân viên',
+    'admin': 'Quản trị viên',
+    'user': 'Khách hàng'
   }
-  
-  return roleMap[role] || 'KhĂ¡ch hĂ ng'
+
+  return roleMap[role] || 'Khách hàng'
 }
 
 const currentDate = computed(() => {
@@ -174,16 +186,45 @@ const currentDate = computed(() => {
   background: none;
   width: 100%;
   font-size: 14px;
+  gap: 12px;
 }
 
-.nav-item i { width: 24px; font-size: 16px; }
+.nav-item i {
+  width: 24px;
+  text-align: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
 
 .nav-item:hover { background: #F8FAFC; color: #3B82F6; }
 .nav-item.active { background: #EFF6FF; color: #3B82F6; font-weight: 600; }
 
-.nav-item-content { display: flex; justify-content: space-between; width: 100%; align-items: center; }
+.nav-item-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dot-floating {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  background: #EF4444;
+  border-radius: 50%;
+  border: 1px solid white;
+}
+
 .badge { background: #EF4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
-.dot { width: 8px; height: 8px; background: #3B82F6; border-radius: 50%; }
 
 .sidebar-footer { padding: 16px; border-top: 1px solid #E2E8F0; }
 .logout { color: #EF4444; }
@@ -226,12 +267,38 @@ const currentDate = computed(() => {
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .sidebar { width: 80px; }
-  .logo span, .user-meta, .nav-item span:not(.badge), .sidebar-footer span { display: none; }
-  .user-card { justify-content: center; padding: 8px; }
-  .nav-item { justify-content: center; padding: 16px 0; }
-  .nav-item i { margin: 0; }
-  .main-wrapper { margin-left: 80px; }
-  .search-box { display: none; }
+  .sidebar {
+    width: 80px;
+    padding-top: 20px;
+  }
+
+  .nav-text,
+  .logo span,
+  .user-meta,
+  .sidebar-footer span {
+    display: none !important;
+  }
+
+  .nav-item {
+    justify-content: center;
+    padding: 16px 0;
+  }
+
+  .nav-item-content {
+    justify-content: center;
+    width: auto;
+  }
+
+  .nav-item i {
+    margin: 0;
+  }
+
+  .search-box {
+    display: none;
+  }
+
+  .main-wrapper {
+    margin-left: 80px;
+  }
 }
 </style>

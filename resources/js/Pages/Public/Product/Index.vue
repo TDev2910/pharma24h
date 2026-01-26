@@ -55,7 +55,7 @@
               </div>
 
               <button id="applyFilterBtn" class="btn btn-primary fw-bold sidebar-btn"
-                style="background-color:#005EB8; border:none; width: 215px;">
+                style="background-color:#005EB8; border:none; width: 215px;color: white;">
                 Áp dụng
               </button>
             </div>
@@ -459,10 +459,10 @@ onMounted(() => {
 }
 
 /* Nút "Chọn sản phẩm" */
-.btn-primary {
-  background-color: #1a56db;
-  border-color: #1a56db;
-  font-size: 0.9rem;
+.btn-primary.product-btn:active {
+  background: #1a56db !important;
+  border-color: transparent !important;
+  color: #fff !important;
 }
 
 .btn-primary:hover {
@@ -516,7 +516,7 @@ onMounted(() => {
   position: absolute;
   top: 10px;
   left: 10px;
-  background: #dc3545; 
+  background: #dc3545;
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;

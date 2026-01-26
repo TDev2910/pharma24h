@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <aside class="sidebar">
     <div class="sidebar-content">
       <div class="user-card">
@@ -62,13 +62,13 @@ const page = usePage()
 const getUserRoleDisplay = () => {
   const role = props.auth?.user?.role
   if (!role) return 'Khách hàng'
-  
+
   const roleMap = {
     'staff': 'Nhân viên',
     'admin': 'Quản trị viên',
     'user': 'Khách hàng'
   }
-  
+
   return roleMap[role] || 'Khách hàng'
 }
 
@@ -148,4 +148,4 @@ const isActive = (path) => {
   .nav-item i { margin: 0; }
 }
 </style>
-
+ -->

@@ -55,27 +55,27 @@ class GHNController extends Controller
                 $order->ghn_fee = $result['total_fee'];
                 $order->ghn_expected_delivery_time = $result['expected_delivery_time'] ?? null;
                 $order->ghn_created_at = now();
-                
+
                 // Lưu tracking URL nếu có
                 if (isset($result['data']['tracking_url'])) {
                     $order->ghn_tracking_url = $result['data']['tracking_url'];
                 }
-                
+
                 // ⭐ TỰ ĐỘNG ĐỒNG BỘ TRẠNG THÁI TỪ GHN SAU KHI TẠO ĐƠN
                 // Gọi API GHN để lấy trạng thái thực tế
                 $syncResult = $this->ghnService->getOrderInfo($order->ghn_order_code);
-                
+
                 if ($syncResult['success'] && isset($syncResult['data'])) {
                     $ghnData = $syncResult['data'];
-                    
+
                     // Cập nhật trạng thái GHN từ API
                     $order->ghn_status = $ghnData['status'] ?? 'ready_to_pick';
                     $order->ghn_expected_delivery_time = $ghnData['expected_delivery_time'] ?? $order->ghn_expected_delivery_time;
-                    
+
                     // Cập nhật thông tin shipper nếu có
                     $order->ghn_shipper_name = $ghnData['shipper_name'] ?? null;
                     $order->ghn_shipper_phone = $ghnData['shipper_phone'] ?? null;
-                    
+
                     // ⭐ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG DỰA TRÊN GHN STATUS
                     $statusMapping = [
                         'ready_to_pick' => Order::STATUS['PENDING'],
@@ -86,11 +86,11 @@ class GHNController extends Controller
                         'return' => Order::STATUS['CANCELLED'], // Sửa lại thành CANCELLED
                         'cancel' => Order::STATUS['CANCELLED'],
                     ];
-                    
+
                     $ghnStatus = $ghnData['status'] ?? null;
                     if ($ghnStatus && isset($statusMapping[$ghnStatus])) {
                         $order->order_status = $statusMapping[$ghnStatus];
-                        
+
                         // Xử lý thanh toán COD khi giao thành công
                         if ($ghnStatus === 'delivered' && $order->payment_method === 'cod') {
                             $order->payment_status = 'paid';
@@ -100,7 +100,7 @@ class GHNController extends Controller
                     // Nếu không lấy được thông tin, set trạng thái mặc định
                     $order->ghn_status = 'ready_to_pick';
                 }
-                
+
                 $order->save();
 
                 return response()->json([
@@ -166,7 +166,7 @@ class GHNController extends Controller
     public function getProvinces()
     {
         $result = $this->ghnService->getProvinces();
-        
+
         return response()->json($result);
     }
 
@@ -260,7 +260,7 @@ class GHNController extends Controller
         try {
             // Lấy danh sách provinces từ GHN
             $provincesResult = $this->ghnService->getProvinces();
-            
+
             if (!$provincesResult['success']) {
                 $errorMessage = $provincesResult['message'] ?? 'Không thể lấy danh sách tỉnh/thành từ GHN';
                 return response()->json([
@@ -272,18 +272,18 @@ class GHNController extends Controller
             // Tìm province ID - cải thiện matching
             $provinceId = null;
             $provinceName = $this->normalizeProvinceName($request->province);
-            
+
             foreach ($provincesResult['data'] as $province) {
                 $ghnProvinceName = $this->normalizeProvinceName($province['ProvinceName']);
-                
+
                 // Exact match
                 if (strcasecmp($ghnProvinceName, $provinceName) === 0) {
                     $provinceId = $province['ProvinceID'];
                     break;
                 }
-                
+
                 // Contains match
-                if (stripos($ghnProvinceName, $provinceName) !== false || 
+                if (stripos($ghnProvinceName, $provinceName) !== false ||
                     stripos($provinceName, $ghnProvinceName) !== false) {
                     $provinceId = $province['ProvinceID'];
                     break;
@@ -299,7 +299,7 @@ class GHNController extends Controller
 
             // Lấy danh sách districts từ GHN
             $districtsResult = $this->ghnService->getDistricts($provinceId);
-            
+
             if (!$districtsResult['success']) {
                 return response()->json([
                     'success' => false,
@@ -310,18 +310,18 @@ class GHNController extends Controller
             // Tìm district ID - cải thiện matching
             $districtId = null;
             $districtName = $this->normalizeDistrictName($request->district);
-            
+
             foreach ($districtsResult['data'] as $district) {
                 $ghnDistrictName = $this->normalizeDistrictName($district['DistrictName']);
-                
+
                 // Exact match
                 if (strcasecmp($ghnDistrictName, $districtName) === 0) {
                     $districtId = $district['DistrictID'];
                     break;
                 }
-                
+
                 // Contains match
-                if (stripos($ghnDistrictName, $districtName) !== false || 
+                if (stripos($ghnDistrictName, $districtName) !== false ||
                     stripos($districtName, $ghnDistrictName) !== false) {
                     $districtId = $district['DistrictID'];
                     break;
@@ -337,7 +337,7 @@ class GHNController extends Controller
 
             // Lấy danh sách wards từ GHN
             $wardsResult = $this->ghnService->getWards($districtId);
-            
+
             if (!$wardsResult['success']) {
                 return response()->json([
                     'success' => false,
@@ -348,18 +348,18 @@ class GHNController extends Controller
             // Tìm ward code - cải thiện matching
             $wardCode = null;
             $wardName = $this->normalizeWardName($request->ward);
-            
+
             foreach ($wardsResult['data'] as $ward) {
                 $ghnWardName = $this->normalizeWardName($ward['WardName']);
-                
+
                 // Exact match
                 if (strcasecmp($ghnWardName, $wardName) === 0) {
                     $wardCode = $ward['WardCode'];
                     break;
                 }
-                
+
                 // Contains match
-                if (stripos($ghnWardName, $wardName) !== false || 
+                if (stripos($ghnWardName, $wardName) !== false ||
                     stripos($wardName, $ghnWardName) !== false) {
                     $wardCode = $ward['WardCode'];
                     break;
@@ -405,14 +405,14 @@ class GHNController extends Controller
             'TP. Hà Nội' => 'Hà Nội',
             'TP Hà Nội' => 'Hà Nội',
         ];
-        
+
         foreach ($replacements as $key => $value) {
             if (stripos($name, $key) !== false) {
                 $name = $value;
                 break;
             }
         }
-        
+
         return $name;
     }
 
@@ -492,14 +492,14 @@ class GHNController extends Controller
             // Xử lý Logic Mapping
             if (isset($ghnData['status'])) {
                 $ghnCurrentStatus = $ghnData['status'];
-                
+
                 if (array_key_exists($ghnCurrentStatus, $statusMapping)) {
                     // Trường hợp CÓ trong map
                     $newOrderStatus = $statusMapping[$ghnCurrentStatus];
-                    
+
                     if ($newOrderStatus !== $order->order_status) {
                         $order->order_status = $newOrderStatus;
-                        
+
                         // Xử lý thanh toán COD khi giao thành công
                         if ($ghnCurrentStatus === 'delivered' && $order->payment_method === 'cod') {
                             $order->payment_status = 'paid';

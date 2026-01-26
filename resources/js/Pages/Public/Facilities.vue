@@ -19,9 +19,6 @@
                                 Luôn lắng nghe – Luôn đồng hành. Chúng tôi mang đến môi trường
                                 khám chữa bệnh thân thiện, an toàn và hiệu quả.
                             </p>
-                            <button class="btn btn-primary btn-lg px-4 py-2 rounded-pill shadow-sm">
-                                Tìm hiểu ngay
-                            </button>
                         </div>
                     </div>
 
@@ -150,15 +147,6 @@
                                         <span class="fw-medium text-dark">{{ skill }}</span>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="d-flex gap-3">
-                                <button class="btn btn-primary rounded-pill px-4 py-2 shadow-sm">
-                                    <i class="bi bi-chat-dots me-2"></i>Nhắn tin tư vấn
-                                </button>
-                                <button class="btn btn-outline-dark rounded-pill px-4 py-2">
-                                    Xem hồ sơ
-                                </button>
                             </div>
                         </div>
                     </div>

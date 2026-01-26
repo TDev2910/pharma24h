@@ -24,7 +24,8 @@
                     <div class="nav-dropdown">
                         <div class="dropdown-col">
                             <div class="dropdown-title">Tổng quan</div>
-                            <a href="/admin/orders" class="dropdown-link">Quản lý đơn hàng</a>
+                            <a href="/admin/orders-test" class="dropdown-link">Đơn hàng</a>
+                            <!-- <a href="/admin/orders" class="dropdown-link">Quản lý đơn hàng</a> -->
                             <a href="/admin/orders/transport" class="dropdown-link">Vận đơn</a>
                         </div>
                         <div class="dropdown-col">
@@ -93,6 +94,11 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- <a href="/admin/orders-test" class="nav-item flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                    <span class="ml-3 text-red-600 font-bold">Đơn hàng Test</span>
+                </a> -->
+
 
                 <a href="/logout" class="nav-item">Đăng xuất</a>
             </div>

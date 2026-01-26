@@ -959,7 +959,7 @@ const scrollToReviewForm = () => {
 .reviewer-avatar {
     width: 50px;
     height: 50px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #0d6efd;
     border-radius: 50%;
     display: flex;
     align-items: center;

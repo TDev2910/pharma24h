@@ -239,7 +239,6 @@ import OrderEditModal from './modals/edit_modal.vue'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import { router } from '@inertiajs/vue3'
-import InvoiceModal from './invoice_modal.vue'
 import '@Admin/orders/products.css';
 
 export default {
@@ -250,8 +249,7 @@ export default {
     DataTable,
     Column,
     OrderDetailsModal,
-    OrderEditModal,
-    InvoiceModal
+    OrderEditModal
   },
 
   props: {
@@ -532,10 +530,10 @@ export default {
       }
     },
 
-    printInvoice(order) {
-      this.selectedInvoiceOrderId = order.id;
-      this.showInvoiceModal = true;
-    },
+    // printInvoice(order) {
+    //   this.selectedInvoiceOrderId = order.id;
+    //   this.showInvoiceModal = true;
+    // },
 
     applyFilters() {
       router.get('/admin/orders', {

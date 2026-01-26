@@ -16,6 +16,7 @@
     display: flex;
     align-items: center;
     gap: 16px;
+    flex-wrap: wrap; /* Cho phép xuống dòng */
 }
 
 .title-section h4 {
@@ -34,6 +35,7 @@
 
 .search-wrapper .input-group {
     position: relative;
+    width: 100%;
 }
 
 .search-wrapper .input-group-text {
@@ -119,43 +121,62 @@
     display: inline-block;
 }
 
-.bg-secondary {
-    background-color: #6c757d !important;
-    color: white;
+.bg-secondary { background-color: #6c757d !important; color: white; }
+.bg-warning { background-color: #ffc107 !important; }
+.text-dark { color: #212529 !important; }
+.bg-danger { background-color: #dc3545 !important; color: white; }
+.bg-success { background-color: #28a745 !important; color: white; }
+.bg-info { background-color: #17a2b8 !important; color: white; }
+.bg-primary { background-color: #007bff !important; color: white; }
+
+/* Mobile Label (Mặc định ẩn trên PC) */
+.mobile-label {
+    display: none;
+    font-weight: 600;
+    color: #6c757d;
+    min-width: 120px;
+    text-align: left;
 }
 
-.bg-warning {
-    background-color: #ffc107 !important;
-}
-
-.text-dark {
-    color: #212529 !important;
-}
-
-.bg-danger {
-    background-color: #dc3545 !important;
-    color: white;
-}
-
-.bg-success {
-    background-color: #28a745 !important;
-    color: white;
-}
-
-.bg-info {
-    background-color: #17a2b8 !important;
-    color: white;
-}
-
-.bg-primary {
-    background-color: #007bff !important;
-    color: white;
-}
-
-/* Responsive improvements */
+/* --- RESPONSIVE MOBILE (<= 768px) --- */
 @media (max-width: 768px) {
-    .table-container {
+    .stock-products-page {
         padding: 10px;
-        margin-top: 10px;
+    }
+
+    /* 1. Header Layout */
+    .header-control-bar {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .controls-section {
+        flex-direction: column; /* Xếp dọc các phần tử */
+        align-items: stretch !important; /* Kéo dãn full chiều ngang */
+        gap: 12px !important;
+    }
+
+    .title-section h4 {
+        text-align: center;
+        font-size: 1.1rem;
+    }
+
+    .search-wrapper {
+        max-width: 100%;
+        min-width: 100%;
+    }
+
+    .ultility-options {
+        justify-content: space-between;
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    /* 2. Table Container */
+    .table-container {
+        padding: 0; /* Bỏ padding container để card rộng hơn */
+        border: none;
+        box-shadow: none;
+        background: transparent;
     }
 }

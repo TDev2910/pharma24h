@@ -1,269 +1,347 @@
+/* === LAYOUT CHÍNH === */
 .services-page {
+    background-color: #f8f9fa;
+    min-height: 100vh;
     padding: 20px;
+    padding-bottom: 2rem;
 }
 
-/* Header Control Bar */
+/* Header Bar */
 .header-control-bar {
-    background: #fff;
-    border-radius: 12px;
+    background: white;
     padding: 20px;
+    border-bottom: 1px solid #e2e8f0;
     margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .controls-section {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 16px;
+    flex-wrap: wrap;
 }
 
 .title-section h4 {
-    color: #2c3e50;
     margin: 0;
-    font-weight: 600;
-    font-size: 18px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
 }
 
-/* Search Box */
+.title-section .subtitle {
+    font-size: 0.85rem;
+    color: #64748b;
+    display: block;
+    margin-top: 4px;
+}
+
+/* Search & Filter Group */
+.search-filter-container {
+    display: flex;
+    flex: 1;
+    gap: 12px;
+    min-width: 300px;
+    justify-content: flex-end; /* Đẩy sang phải trên PC */
+}
+
 .search-wrapper {
     flex: 1;
-    max-width: 465px;
-    min-width: 280px;
+    max-width: 400px;
 }
 
-.search-wrapper .input-group {
+.input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8fafc;
     position: relative;
 }
 
-.search-wrapper .input-group-text {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
+.input-group-text {
+    padding: 0 12px;
+    color: #94a3b8;
     background: transparent;
     border: none;
-    color: #6c757d;
-    z-index: 2;
-    pointer-events: none;
 }
 
-.search-wrapper .form-control {
-    padding-left: 40px !important;
-    padding-right: 16px !important;
-    border: 2px solid #91C4C3 !important;
-    border-radius: 8px !important;
-    height: 42px !important;
-    font-size: 14px !important;
-    background: #fff !important;
-    transition: all 0.2s ease !important;
+.search-input {
+    border: none;
+    background: transparent;
+    padding: 10px 8px;
+    width: 100%;
+    outline: none;
+    font-size: 14px;
 }
 
-.search-wrapper .form-control:focus {
-    border-color: #007bff !important;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1) !important;
-    outline: none !important;
+.btn-filter {
+    white-space: nowrap;
 }
 
-/* Utility Options */
-.ultility-options {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
+/* Utility Icons */
 .utility-icons {
     display: flex;
     gap: 8px;
 }
 
-.btn {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
-    padding: 8px 10px;
-    color: #6c757d;
-    cursor: pointer;
-    transition: all 0.2s ease;
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #64748b;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.btn:hover {
-    background: #e9ecef;
-    color: #495057;
+.btn-icon:hover {
+    background: #f1f5f9;
+    color: #0f172a;
 }
 
-.btn i {
-    font-size: 14px;
+/* === DATA TABLE === */
+.content-area {
+    /* padding: 0 1.5rem; */ /* Đã có padding ở cha */
 }
 
-/* Table Container */
 .table-container {
-    background: #fff;
+    background: white;
     border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e9ecef;
-    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    border: 1px solid #f1f5f9;
 }
 
-/* Service name styling */
-.service-name {
+/* Status Badges */
+.status-badge {
+    font-size: 11px;           /* Kích thước chữ nhỏ gọn */
+    padding: 4px 8px;          /* Khoảng cách lề */
+    border-radius: 4px;        /* Bo góc nhẹ (Square) thay vì tròn vo (Pill) */
     font-weight: 500;
-    color: #495057;
+    display: inline-block;
+    color: white !important;   /* Bắt buộc chữ màu trắng cho nổi bật */
+    text-align: center;
+    min-width: 80px;           /* Đặt chiều rộng tối thiểu để các badge đều nhau */
 }
 
-/* Booking Detail Container */
+.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important; /* Riêng màu vàng thì chữ đen cho dễ đọc */
+}
+
+.bg-info {
+    background-color: #17a2b8 !important;
+    color: white !important;
+}
+
+.bg-success {
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+.bg-danger {
+    background-color: #dc3545 !important;
+    color: white !important;
+}
+
+.bg-secondary {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+/* === EXPANSION DETAILS === */
 .booking-detail-container {
-    background: #f8f9fa;
-    border-top: 1px solid #e9ecef;
-    padding: 0;
+    padding: 20px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
 }
 
 .detail-tabs {
     display: flex;
-    border-bottom: 1px solid #e9ecef;
-    background: #ffffff;
+    gap: 4px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #fff;
+    padding: 4px;
+    border-radius: 8px;
+    width: fit-content;
 }
 
-.detail-tabs .tab {
+.tab-btn {
     background: none;
     border: none;
-    padding: 12px 20px;
+    padding: 8px 20px;
+    font-weight: 600;
+    color: #64748b;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    color: #6c757d;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s ease;
-}
-
-.detail-tabs .tab:hover {
-    color: #495057;
-    background: #f8f9fa;
-}
-
-.detail-tabs .tab.active {
-    color: #007bff;
-    border-bottom-color: #007bff;
-    background: #ffffff;
-}
-
-.detail-content {
-    padding: 20px;
-    background: #ffffff;
-}
-
-.tab-content {
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.detail-content .table {
-    margin-bottom: 0;
-}
-
-.detail-content .table td {
-    padding: 8px 0;
-    border: none;
-    vertical-align: top;
-}
-
-.detail-content .fw-bold {
-    color: #495057;
-    font-weight: 600;
-}
-
-.detail-content .badge {
-    font-size: 12px;
-    padding: 4px 8px;
-}
-
-.detail-content .text-primary {
-    color: #007bff !important;
-    font-weight: 600;
-}
-
-.detail-content .text-primary i {
-    font-size: 16px;
-}
-
-/* Action buttons in detail */
-.action-buttons-container {
-    padding: 20px;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.action-buttons .p-button {
-    margin-bottom: 8px;
-}
-
-.action-buttons .p-button-sm {
-    padding: 6px 12px;
-    font-size: 12px;
-}
-
-/* Filter Modal */
-.filter-content {
-    padding: 20px 0;
-}
-
-.filter-content .form-label {
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 8px;
-}
-
-.filter-content .form-select {
-    border: 1px solid #ced4da;
+    transition: all 0.2s;
     border-radius: 6px;
-    padding: 8px 12px;
     font-size: 14px;
 }
 
-/* Responsive improvements */
+.tab-btn:hover {
+    background-color: #f1f5f9;
+}
+
+.tab-btn.active {
+    color: #4F46E5;
+    background-color: #EEF2FF;
+}
+
+/* Info Grid trong Expansion */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.info-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.info-header {
+    font-weight: 700;
+    margin-bottom: 16px;
+    font-size: 1rem;
+    color: #334155;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 8px;
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-list li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+
+.info-list li span:first-child {
+    color: #64748b;
+}
+
+/* Action Buttons Grid */
+.actions-wrapper {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.action-buttons-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* Mobile Label (Mặc định ẩn trên PC) */
+.mobile-label {
+    display: none;
+    font-weight: 600;
+    color: #64748b;
+    min-width: 110px;
+}
+
+/* === RESPONSIVE MOBILE (<= 768px) === */
 @media (max-width: 768px) {
-    .table-container {
+    .services-page {
         padding: 10px;
-        margin-top: 10px;
     }
 
-    .detail-content {
+    /* 1. Header Control Bar */
+    .header-control-bar {
         padding: 15px;
+        margin-bottom: 15px;
     }
 
-    .detail-tabs .tab {
-        padding: 10px 15px;
-        font-size: 13px;
-    }
-
-    .detail-content .row {
-        margin: 0;
-    }
-
-    .detail-content .col-md-6 {
-        margin-bottom: 20px;
-    }
-
-    .action-buttons {
+    .controls-section {
         flex-direction: column;
+        align-items: stretch;
+    }
+
+    .title-section {
+        text-align: center;
+    }
+
+    .search-filter-container {
+        width: 100%;
+        max-width: none;
+        flex-direction: row; /* Search và Filter cùng dòng nếu đủ chỗ */
+    }
+
+    .utility-options {
+        display: none; /* Ẩn bớt icon tiện ích trên mobile cho gọn */
+    }
+
+    /* 2. Table -> Cards Transformation */
+    .table-container {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+    }
+
+    /* 2a. Card Header (Tên khách hàng) */
+    .col-customer {
+        background-color: #fff;
+        border-bottom: 1px solid #f1f5f9 !important;
+        padding: 12px 16px !important;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .customer-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    /* 2b. Card Expansion Button (Dòng cuối cùng chứa icon mũi tên) */
+    .col-expander {
+        justify-content: center !important;
+        background: #f8fafc;
+        border-radius: 0 0 12px 12px;
+        padding: 8px !important;
+        border-top: 1px dashed #e2e8f0;
+    }
+
+    /* 3. Chi tiết mở rộng (Expansion) */
+    .booking-detail-container {
+        padding: 15px 10px;
+        border-radius: 0 0 12px 12px;
+        margin-top: -16px; /* Kéo lên để dính vào card */
+        margin-bottom: 16px;
+        border: 1px solid #e9ecef;
+        border-top: none;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr; /* 1 cột trên mobile */
+        gap: 12px;
+    }
+
+    .action-buttons-grid {
+        flex-direction: column;
+    }
+
+    .action-buttons-grid .p-button {
+        width: 100%; /* Nút bấm full chiều ngang */
     }
 }

@@ -1,8 +1,6 @@
-//Set up key và config theo firebase cung cấp
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
-// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBCOzuBfeEwhs1Ybnn2Q9hFoPf2NnSDKuE",
   authDomain: "pharma24h-f0cd2.firebaseapp.com",
@@ -13,10 +11,8 @@ const firebaseConfig = {
   measurementId: "G-21D5BKCZX2"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase Authentication
 const auth = getAuth(app);
 
 export { auth };

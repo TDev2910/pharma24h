@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="details-header">
       <Link href="/user/services" class="back-button">
-      <i class="fas fa-arrow-left"></i> Quay lại
+        <i class="fas fa-arrow-left"></i> Quay lại
       </Link>
       <h1 class="details-title">Chi tiết dịch vụ</h1>
     </div>

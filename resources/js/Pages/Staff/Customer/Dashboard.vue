@@ -1,40 +1,34 @@
 <template>
   <div class="customers-page">
-    <!-- Header Control Bar -->
     <div class="header-control-bar">
-      <div class="controls-section"
-        style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
-        <!-- Title Section -->
+      <div class="controls-section">
         <div class="title-section">
           <h3>Danh sách khách hàng</h3>
         </div>
-        <!-- Search Section -->
-        <div style="flex:1; display:flex; justify-content:center;">
+
+        <div class="search-container">
           <div class="search-wrapper">
             <div class="input-group">
               <span class="input-group-text">
                 <i class="pi pi-search"></i>
               </span>
-              <input type="text" class="form-control" style="border-radius:8px;"
-                placeholder="Tìm kiếm theo tên, email, số điện thoại khách hàng" v-model="searchQuery"
-                @input="debounceSearch">
+              <input type="text" class="form-control search-input" placeholder="Tìm kiếm tên, email, sđt..."
+                v-model="searchQuery" @input="debounceSearch">
             </div>
           </div>
         </div>
-        <!-- Utility Options -->
-        <div class="ultility-options">
-          <!-- Thêm khách hàng -->
-          <Button icon="pi pi-plus" label="Khách hàng" @click="openCreateModal" severity="secondary"
-            style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
-          <!-- Utility Icons -->
+
+        <div class="utility-options">
+          <Button icon="pi pi-plus" label="Thêm mới" @click="openCreateModal" class="btn-create" />
+
           <div class="utility-icons">
-            <button class="btn" title="Chế độ xem">
+            <button class="btn-icon" title="Chế độ xem">
               <i class="pi pi-list"></i>
             </button>
-            <button class="btn" title="Cài đặt">
+            <button class="btn-icon" title="Cài đặt">
               <i class="pi pi-cog"></i>
             </button>
-            <button class="btn" title="Trợ giúp">
+            <button class="btn-icon" title="Trợ giúp">
               <i class="pi pi-question-circle"></i>
             </button>
           </div>
@@ -42,40 +36,36 @@
       </div>
     </div>
 
-    <!-- Content Area -->
     <div class="content-area">
-      <!-- Stats Cards -->
       <div class="stats-row">
         <div class="stats-card">
           <div class="stats-card-inner">
-            <div class="stats-icon" style="background: #4F46E5;">
+            <div class="stats-icon bg-indigo">
               <i class="fas fa-users"></i>
             </div>
-            <div>
+            <div class="stats-info">
               <div class="stats-label">Tổng khách hàng có tài khoản</div>
               <div class="stats-number">{{ stats.totalCustomers }}</div>
             </div>
           </div>
         </div>
       </div>
-      <div>
+
+      <div class="table-wrapper">
         <div class="table-header">
-          <h3 class="table-title">Danh sách dữ liệu khách hàng</h3>
+          <h3 class="table-title">Dữ liệu chi tiết khách hàng</h3>
         </div>
 
-        <!-- Customer Data Table -->
         <div class="table-container">
-          <DataTable :value="filteredCustomers" removableSort tableStyle="min-width: 50rem" class="customers-table"
+          <DataTable :value="filteredCustomers" removableSort scrollable scrollHeight="flex" class="customers-table"
             :paginator="true" :row="5" :rows="pagination.per_page" :totalRecords="pagination.total"
-            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            :rowsPerPageOptions="[5, 10, 25]"
-            currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} khách hàng">
-            <!-- Avatar Column -->
-            <Column field="avatar" header="Avatar" style="width: 10%">
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+            :rowsPerPageOptions="[5, 10, 25]" currentPageReportTemplate="{first} - {last} / {totalRecords}">
+            <Column field="avatar" header="Ảnh" style="min-width: 70px" frozen>
               <template #body="slotProps">
                 <div class="customer-avatar">
                   <img v-if="slotProps.data.avatar_url" :src="slotProps.data.avatar_url" :alt="slotProps.data.name"
-                    style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                    class="avatar-img">
                   <div v-else class="avatar-placeholder">
                     {{ slotProps.data.name ? slotProps.data.name.substring(0, 2).toUpperCase() : 'N/A' }}
                   </div>
@@ -83,72 +73,63 @@
               </template>
             </Column>
 
-            <!-- Name Column -->
-            <Column field="name" header="Tên khách hàng" sortable style="width: 15%">
+            <Column field="name" header="Tên khách hàng" sortable style="min-width: 180px" frozen>
               <template #body="slotProps">
                 <span class="customer-name">{{ slotProps.data.name || 'N/A' }}</span>
               </template>
             </Column>
 
-            <!-- Email Column -->
-            <Column field="email" header="Email" sortable style="width: 20%">
+            <Column field="email" header="Email" sortable style="min-width: 220px">
               <template #body="slotProps">
-                <span>{{ slotProps.data.email || 'N/A' }}</span>
+                <span class="text-truncate" :title="slotProps.data.email">{{ slotProps.data.email || 'N/A' }}</span>
               </template>
             </Column>
 
-            <!-- Phone Column -->
-            <Column field="phone" header="Số điện thoại" sortable style="width: 12%">
+            <Column field="phone" header="SĐT" sortable style="min-width: 130px">
               <template #body="slotProps">
                 <span>{{ slotProps.data.phone || 'N/A' }}</span>
               </template>
             </Column>
 
-            <!-- Address Column -->
-            <Column field="address" header="Địa chỉ" style="width: 20%">
+            <Column field="address" header="Địa chỉ" style="min-width: 250px">
               <template #body="slotProps">
-                <span>{{ slotProps.data.address || 'N/A' }}</span>
+                <span class="text-truncate" :title="slotProps.data.address">{{ slotProps.data.address || 'N/A' }}</span>
               </template>
             </Column>
 
-            <!-- Orders Count Column -->
-            <Column field="orders_count" header="Tổng đơn hàng" sortable style="width: 10%" class="text-center">
+            <Column field="orders_count" header="Đơn hàng" sortable style="min-width: 110px" class="text-center">
               <template #body="slotProps">
                 <span>{{ slotProps.data.orders_count || 0 }}</span>
               </template>
             </Column>
 
-            <!-- Total Amount Column -->
-            <Column field="total_amount" header="Tổng chi tiêu" sortable style="width: 10%" class="text-center">
+            <Column field="total_amount" header="Tổng chi tiêu" sortable style="min-width: 150px" class="text-center">
               <template #body="slotProps">
                 <span>{{ formatCurrency(slotProps.data.total_amount || 0) }}</span>
               </template>
             </Column>
 
-            <!-- Actions Column -->
-            <Column header="Thao tác" style="width: 10%;font-size: 13.4px;">
+            <Column header="Tác vụ" style="min-width: 100px" frozen alignFrozen="right">
               <template #body="slotProps">
                 <div class="action-group">
-                  <Button icon="pi pi-pencil" class="p-button-sm btn-edit" @click="editCustomer(slotProps.data)"
-                    v-tooltip.top="'Sửa'" />
-                  <Button icon="pi pi-trash" class="p-button-sm btn-delete" @click="deleteCustomer(slotProps.data)"
-                    v-tooltip.top="'Xóa'" />
+                  <Button icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-warning btn-action"
+                    @click="editCustomer(slotProps.data)" v-tooltip.top="'Sửa'" />
+                  <Button icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger btn-action"
+                    @click="deleteCustomer(slotProps.data)" v-tooltip.top="'Xóa'" />
                 </div>
               </template>
             </Column>
           </DataTable>
         </div>
       </div>
-
     </div>
+
+    <StaffCreateCustomerModal :visible="showCreateModal" @close="showCreateModal = false"
+      @created="onCustomerCreated" />
+
+    <StaffEditCustomerModal :visible="showEditModal" :customer="selectedCustomer" @close="showEditModal = false"
+      @updated="onCustomerUpdated" />
   </div>
-
-  <!-- Create Customer Modal -->
-  <StaffCreateCustomerModal :visible="showCreateModal" @close="showCreateModal = false" @created="onCustomerCreated" />
-
-  <!-- Edit Customer Modal -->
-  <StaffEditCustomerModal :visible="showEditModal" :customer="selectedCustomer" @close="showEditModal = false"
-    @updated="onCustomerUpdated" />
 </template>
 
 <script>
@@ -216,16 +197,14 @@ export default {
       return this.localCustomers.length > 0 ? this.localCustomers : this.customers;
     },
 
-    //Lọc khách hàng
+    // Lọc khách hàng
     filteredCustomers() {
       const customers = this.localCustomers.length > 0 ? this.localCustomers : this.customers;
 
-      //Nếu không nhập từ khóa , thông tin khách hàng sẽ hiển thị tất cả
       if (!this.searchQuery || !this.searchQuery.trim()) {
-        return customers; //Trả về tất cả khách hàng
+        return customers;
       }
 
-      //Lọc khách hàng theo tên, email, số điện thoại
       const term = this.searchQuery.toLowerCase().trim();
       return customers.filter(customer => {
         const name = (customer.name || '').toLowerCase();
@@ -253,9 +232,9 @@ export default {
     debounceSearch() {
       clearTimeout(this.searchTimeout)
       this.searchTimeout = setTimeout(() => {
+        // Có thể gọi API search ở đây nếu cần search server-side
       }, 200)
     },
-
 
     formatCurrency(amount) {
       return new Intl.NumberFormat('vi-VN', {
@@ -264,19 +243,13 @@ export default {
       }).format(amount)
     },
 
-    viewCustomer(customer) {
-      console.log('View customer:', customer)
-      // Implement view customer logic
-    },
-
     editCustomer(customer) {
-      console.log('Edit customer:', customer)
       this.selectedCustomer = customer
       this.showEditModal = true
     },
 
     async deleteCustomer(customer = null) {
-      if (!customer?.id) return; // guard
+      if (!customer?.id) return;
 
       const result = await Swal.fire({
         title: 'Xác nhận xóa',
@@ -293,15 +266,10 @@ export default {
       if (!result.isConfirmed) return;
 
       try {
-        console.log('Sending DELETE request to:', `/staff/customers/${customer.id}`);
         const response = await axios.delete(`/staff/customers/${customer.id}`);
-        console.log('Response received:', response);
-        console.log('Response data:', response.data);
 
         if (response.data?.success) {
-          // Cập nhật localCustomers
           this.localCustomers = this.localCustomers.filter(c => c.id !== customer.id);
-
           await Swal.fire({
             title: 'Thành công!',
             text: response.data.message || 'Đã xóa khách hàng',
@@ -310,12 +278,10 @@ export default {
             showConfirmButton: false
           });
         } else {
-          console.log('Response success is false:', response.data);
           await Swal.fire({ icon: 'warning', title: 'Không thành công', text: response.data?.message || 'Thao tác thất bại' });
         }
       } catch (error) {
         console.error('Error in deleteCustomer:', error);
-        console.error('Error response:', error.response);
         await Swal.fire({
           title: 'Lỗi!',
           text: error.response?.data?.message || 'Có lỗi xảy ra khi xóa khách hàng',
@@ -324,78 +290,369 @@ export default {
       }
     },
 
-
     onCustomerCreated(customer) {
-      console.log('Customer created:', customer)
-      // Refresh page để load dữ liệu mới
       window.location.reload()
     },
 
     onCustomerUpdated(customer) {
-      console.log('Customer updated:', customer)
-      // Cập nhật localCustomers
       const index = this.localCustomers.findIndex(c => c.id === customer.id);
       if (index !== -1) {
         this.localCustomers[index] = customer;
       }
-    },
-
-    mounted() {
-      // Filter sẽ tự động áp dụng thông qua computed property
     }
   }
 }
 </script>
 
 <style scoped>
-/* Import CSS file - CSS thông thường được tách ra */
-@import '@Staff/customer/dashboard.css';
-</style>
-
-<style>
-/* Giữ nguyên tất cả :deep() trong file Vue */
-:deep(.p-datatable) {
-  font-size: 19px;
+/* === LAYOUT & HEADER === */
+.customers-page {
+  padding-bottom: 2rem;
+  background-color: #f8f9fa;
+  min-height: 100vh;
 }
 
-:deep(.p-datatable .p-datatable-header) {
-  font-size: 13px;
-  padding: 8px 12px;
+.header-control-bar {
+  padding: 1rem 1.5rem;
+  background: #fff;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 1.5rem;
 }
 
-:deep(.p-datatable .p-datatable-thead > tr > th) {
-  font-size: 13.5px;
-  font-weight: 600;
-  padding: 8px 12px;
-  background: #f8f9fa;
-  color: #495057;
+.controls-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-  font-size: 14px;
-  padding: 8px 12px;
+.title-section h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  white-space: nowrap;
+}
+
+/* === SEARCH BOX === */
+.search-container {
+  flex: 1;
+  min-width: 280px;
+}
+
+.search-wrapper .input-group {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8fafc;
+  transition: all 0.2s;
+}
+
+.search-wrapper .input-group:focus-within {
+  border-color: #4F46E5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+  background: #fff;
+}
+
+.input-group-text {
+  padding: 0.6rem 0.8rem;
+  color: #64748b;
+}
+
+.search-input {
+  border: none;
+  padding: 0.6rem;
+  width: 100%;
+  outline: none;
+  background: transparent;
+  font-size: 0.95rem;
+}
+
+/* === UTILITY BUTTONS === */
+.utility-options {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-create {
+  background: #0b1020 !important;
+  border: none !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 4px rgba(11, 16, 32, 0.2);
+  transition: transform 0.1s;
+}
+
+.btn-create:active {
+  transform: translateY(1px);
+}
+
+.utility-icons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: #f1f5f9;
+  color: #0b1020;
+  border-color: #cbd5e1;
+}
+
+/* === STATS CARDS === */
+.content-area {
+  padding: 0 1.5rem;
+}
+
+.stats-row {
+  margin-bottom: 1.5rem;
+}
+
+.stats-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f1f5f9;
+  max-width: 300px;
+}
+
+.stats-card-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stats-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+}
+
+.bg-indigo {
+  background: #4F46E5;
+}
+
+.stats-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.stats-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* === DATA TABLE CUSTOMIZATION === */
+.table-wrapper {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f1f5f9;
+  overflow: hidden;
+}
+
+.table-header {
+  padding: 1rem 1.5rem;
   border-bottom: 1px solid #f1f3f5;
 }
 
+.table-title {
+  font-size: 1.1rem;
+  color: #334155;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Avatar Styling */
+.customer-avatar {
+  display: flex;
+  justify-content: center;
+}
+
+.avatar-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-placeholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+/* Text & Utils */
+.customer-name {
+  font-weight: 600;
+  color: #334155;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%;
+}
+
+.action-group {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn-action {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+/* === RESPONSIVE MEDIA QUERIES === */
+@media (max-width: 768px) {
+  .customers-page {
+    padding-bottom: 1rem;
+  }
+
+  .header-control-bar {
+    padding: 1rem;
+  }
+
+  /* Chuyển Header thành cột dọc */
+  .controls-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .title-section {
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .search-container {
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+
+  .utility-options {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .content-area {
+    padding: 0 1rem;
+  }
+
+  .stats-card {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+
+  /* Ẩn chữ trên nút Thêm mới, chỉ hiện icon */
+  :deep(.btn-create .p-button-label) {
+    display: none;
+  }
+
+  .utility-icons {
+    gap: 4px;
+  }
+
+  /* Điều chỉnh kích thước text bảng */
+  :deep(.p-datatable .p-datatable-tbody > tr > td) {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+</style>
+
+<style>
+/* Global Styles Overrides for PrimeVue within this page */
+/* Giữ nguyên logic cũ nhưng tinh chỉnh font-size */
+:deep(.p-datatable) {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+:deep(.p-datatable .p-datatable-thead > tr > th) {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  color: #64748b;
+  border-bottom: 2px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr > td) {
+  padding: 0.75rem 1rem;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+}
+
 :deep(.p-datatable .p-datatable-tbody > tr:hover) {
-  background: #f6f8fa;
+  background: #f8fafc !important;
 }
 
-/* Pagination styling */
+/* Pagination */
 :deep(.p-paginator) {
-  font-size: 12px;
-  padding: 8px 12px;
+  border-top: 1px solid #f1f5f9;
+  justify-content: flex-end;
+  padding: 0.75rem;
 }
 
-:deep(.p-paginator .p-paginator-pages .p-paginator-page) {
-  font-size: 12px;
-  padding: 4px 8px;
+:deep(.p-paginator .p-paginator-pages .p-paginator-page),
+:deep(.p-paginator .p-paginator-first),
+:deep(.p-paginator .p-paginator-prev),
+:deep(.p-paginator .p-paginator-next),
+:deep(.p-paginator .p-paginator-last) {
+  min-width: 2rem;
+  height: 2rem;
+  margin: 0 2px;
+  border-radius: 6px;
+  font-size: 0.85rem;
 }
 
-:deep(.p-button.p-button-sm) {
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  font-size: 12px;
+:deep(.p-paginator .p-paginator-pages .p-paginator-page.p-highlight) {
+  background: #eff6ff;
+  color: #4F46E5;
+  border-color: #eff6ff;
 }
 </style>
