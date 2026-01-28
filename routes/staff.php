@@ -31,16 +31,28 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
     })->name('staff.services.dashboard');
 
     // Customers
-    Route::prefix('customers')->name('customers.')->group(function () {
-        Route::get('/', [StaffCustomerController::class, 'index'])->name('index');
-        Route::get('/api', [StaffCustomerController::class, 'apiIndex'])->name('api');
-        Route::get('/{id}', [StaffCustomerController::class, 'show'])->name('show');
-        Route::post('/{id}/confirm', [StaffCustomerController::class, 'confirm'])->name('confirm');
-        Route::post('/{id}/cancel', [StaffCustomerController::class, 'cancel'])->name('cancel');
+    Route::prefix('customers')->name('customers.')->controller(StaffCustomerController::class)->group(function () {
+        // 1. Danh sách (GET)
+        Route::get('/', 'index')->name('index');
+
+        // 2. Thêm mới (POST) - Bạn đang thiếu cái này nên chức năng Thêm sẽ lỗi
+        Route::post('/', 'store')->name('store');
+
+        // 3. API Lấy dữ liệu 1 khách hàng để sửa (GET)
+        Route::get('/{id}/edit', 'edit')->name('edit'); // Hoặc get('/{id}') tùy logic frontend
+
+        // 4. Cập nhật (PUT) - SỬA LỖI 405 TẠI ĐÂY
+        // Frontend gửi PUT thì Backend phải hứng bằng PUT
+        Route::put('/{id}', 'update')->name('update');
+
+        // 5. Xóa (DELETE)
+        Route::delete('/{id}', 'destroy')->name('destroy');
+
+        // Các route phụ khác (nếu cần)
+        Route::get('/api', 'apiIndex')->name('api');
+        Route::post('/{id}/confirm', 'confirm')->name('confirm');
+        Route::post('/{id}/cancel', 'cancel')->name('cancel');
     });
-    Route::post('/customers/{customer}', [StaffCustomerController::class, 'update'])->name('customers.update');
-    Route::get('/customers/{customer}/edit', [StaffCustomerController::class, 'edit'])->name('customers.edit');
-    Route::delete('/customers/{id}', [StaffCustomerController::class, 'destroy'])->name('customers.destroy');
 
     // Orders
     Route::prefix('orders')->name('orders.')->group(function () {
