@@ -1,50 +1,35 @@
 <template>
   <div class="customers-page">
-    <!-- Header Control Bar -->
     <div class="header-control-bar">
       <div class="controls-section"
         style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
-        <!-- Title Section -->
         <div class="title-section">
           <h3>Danh sách khách hàng</h3>
         </div>
-        <!-- Search Section -->
+
         <div style="flex:1; display:flex; justify-content:center;">
           <div class="search-wrapper">
             <div class="input-group">
-              <span class="input-group-text">
-                <i class="pi pi-search"></i>
-              </span>
+              <span class="input-group-text"><i class="pi pi-search"></i></span>
               <input type="text" class="form-control" style="border-radius:8px;"
-                placeholder="Tìm kiếm theo tên, email, số điện thoại khách hàng" v-model="searchQuery"
-                @input="debounceSearch">
+                placeholder="Tìm kiếm theo tên, email, sđt..." v-model="searchQuery" @input="handleSearch">
             </div>
           </div>
         </div>
-        <!-- Utility Options -->
+
         <div class="ultility-options">
-          <!-- Thêm khách hàng -->
           <Button icon="pi pi-plus" label="Khách hàng" @click="openCreateModal" severity="secondary"
             style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;" />
-          <!-- Utility Icons -->
+
           <div class="utility-icons">
-            <button class="btn" title="Chế độ xem">
-              <i class="pi pi-list"></i>
-            </button>
-            <button class="btn" title="Cài đặt">
-              <i class="pi pi-cog"></i>
-            </button>
-            <button class="btn" title="Trợ giúp">
-              <i class="pi pi-question-circle"></i>
-            </button>
+            <button class="btn"><i class="pi pi-list"></i></button>
+            <button class="btn"><i class="pi pi-cog"></i></button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Content Area -->
     <div class="content-area">
-      <!-- Stats Cards -->
       <div class="stats-row">
         <div class="stats-card">
           <div class="stats-card-inner">
@@ -52,29 +37,30 @@
               <i class="fas fa-users"></i>
             </div>
             <div>
-              <div class="stats-label">Tổng khách hàng có tài khoản</div>
+              <div class="stats-label">Tổng khách hàng</div>
               <div class="stats-number">{{ stats.totalCustomers }}</div>
             </div>
           </div>
         </div>
       </div>
+
       <div>
         <div class="table-header">
           <h3 class="table-title">Danh sách dữ liệu khách hàng</h3>
         </div>
 
-        <!-- Customer Data Table -->
         <div class="table-container">
-          <DataTable :value="filteredCustomers" removableSort tableStyle="min-width: 50rem" class="customers-table"
-            :paginator="true" :row="5" :rows="pagination.per_page" :totalRecords="pagination.total"
+          <DataTable :value="customers.data" :lazy="true" :paginator="true" :rows="customers.per_page"
+            :totalRecords="customers.total" :first="(customers.current_page - 1) * customers.per_page"
+            @page="onPageChange" removableSort tableStyle="min-width: 50rem" class="customers-table"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            :rowsPerPageOptions="[5, 10, 25]"
+            :rowsPerPageOptions="[5, 10, 20, 50]"
             currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} khách hàng">
-            <!-- Avatar Column -->
+
             <Column field="avatar" header="Avatar" style="width: 10%">
               <template #body="slotProps">
                 <div class="customer-avatar">
-                  <img v-if="slotProps.data.avatar_url" :src="slotProps.data.avatar_url" :alt="slotProps.data.name"
+                  <img v-if="slotProps.data.avatar_url" :src="slotProps.data.avatar_url"
                     style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
                   <div v-else class="avatar-placeholder">
                     {{ slotProps.data.name ? slotProps.data.name.substring(0, 2).toUpperCase() : 'N/A' }}
@@ -83,55 +69,24 @@
               </template>
             </Column>
 
-            <!-- Name Column -->
-            <Column field="name" header="Tên khách hàng" sortable style="width: 15%">
-              <template #body="slotProps">
-                <span class="customer-name">{{ slotProps.data.name || 'N/A' }}</span>
-              </template>
-            </Column>
-
-            <!-- Email Column -->
-            <Column field="email" header="Email" sortable style="width: 20%">
-              <template #body="slotProps">
-                <span>{{ slotProps.data.email || 'N/A' }}</span>
-              </template>
-            </Column>
-
-            <!-- Phone Column -->
-            <Column field="phone" header="Số điện thoại" sortable style="width: 12%">
-              <template #body="slotProps">
-                <span>{{ slotProps.data.phone || 'N/A' }}</span>
-              </template>
-            </Column>
-
-            <!-- Address Column -->
+            <Column field="name" header="Tên khách hàng" style="width: 15%"></Column>
+            <Column field="email" header="Email" style="width: 20%"></Column>
+            <Column field="phone" header="Số điện thoại" style="width: 12%"></Column>
             <Column field="address" header="Địa chỉ" style="width: 20%">
+              <template #body="slotProps">{{ slotProps.data.address || 'N/A' }}</template>
+            </Column>
+
+            <Column field="total_amount" header="Chi tiêu" style="width: 10%" class="text-center">
               <template #body="slotProps">
-                <span>{{ slotProps.data.address || 'N/A' }}</span>
+                <span>{{ formatCurrency(slotProps.data.total_amount) }}</span>
               </template>
             </Column>
 
-            <!-- Orders Count Column -->
-            <Column field="orders_count" header="Tổng đơn hàng" sortable style="width: 13%" class="text-center">
-              <template #body="slotProps">
-                <span>{{ slotProps.data.orders_count || 0 }}</span>
-              </template>
-            </Column>
-
-            <!-- Total Amount Column -->
-            <Column field="total_amount" header="Tổng chi tiêu" sortable style="width: 10%" class="text-center">
-              <template #body="slotProps">
-                <span>{{ formatCurrency(slotProps.data.total_amount || 0) }}</span>
-              </template>
-            </Column>
-
-            <!-- Actions Column -->
             <Column header="Thao tác" style="width: 15%; text-align: center;">
               <template #body="slotProps">
                 <div class="flex justify-content-center gap-2">
                   <Button icon="pi pi-pencil" text rounded severity="warning" size="small"
                     @click="editCustomer(slotProps.data)" v-tooltip.top="'Chỉnh sửa'" />
-
                   <Button icon="pi pi-trash" text rounded severity="danger" size="small"
                     @click="deleteCustomer(slotProps.data)" v-tooltip.top="'Xóa'" />
                 </div>
@@ -140,215 +95,139 @@
           </DataTable>
         </div>
       </div>
-
     </div>
   </div>
 
-  <!-- Create Customer Modal -->
-  <CreateCustomerModal :visible="showCreateModal" @close="showCreateModal = false" @created="onCustomerCreated" />
+  <CreateCustomerModal :visible="showCreateModal" @close="showCreateModal = false" @created="refreshPage" />
 
-  <!-- Edit Customer Modal -->
   <EditCustomerModal :visible="showEditModal" :customer="selectedCustomer" @close="showEditModal = false"
-    @updated="onCustomerUpdated" />
+    @updated="refreshPage" />
 </template>
 
 <script>
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
-import Card from 'primevue/card'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import CreateCustomerModal from './Modals/Create.vue'
 import EditCustomerModal from './Modals/Edit.vue'
-import axios from 'axios'
+import { router } from '@inertiajs/vue3'
 import Swal from 'sweetalert2'
+import debounce from 'lodash/debounce' 
 
 export default {
   name: 'CustomerDashboard',
   components: {
-    Button,
-    InputText,
-    Card,
-    DataTable,
-    Column,
-    CreateCustomerModal,
-    EditCustomerModal
+    Button, InputText, DataTable, Column, CreateCustomerModal, EditCustomerModal
   },
 
   props: {
-    stats: {
-      type: Object,
-      default: () => ({
-        totalCustomers: 0,
-        newCustomers: 0,
-        activeCustomers: 0
-      })
-    },
-    customers: {
-      type: Array,
-      default: () => []
-    },
-    pagination: {
-      type: Object,
-      default: () => ({
-        current_page: 1,
-        last_page: 1,
-        per_page: 10,
-        total: 0,
-        from: 0,
-        to: 0
-      })
-    }
+    stats: Object,
+    customers: Object, // Object chứa pagination data từ Controller
+    filters: Object,   // Chứa search query
   },
 
   data() {
     return {
-      searchQuery: '',
-      searchTimeout: null,
+      searchQuery: this.filters.search || '',
+      isLoading: false,
       showCreateModal: false,
       showEditModal: false,
       selectedCustomer: null,
-      localCustomers: []
-    }
-  },
-
-  computed: {
-    displayCustomers() {
-      return this.localCustomers.length > 0 ? this.localCustomers : this.customers;
-    },
-
-    //Lọc khách hàng
-    filteredCustomers() {
-      const customers = this.localCustomers.length > 0 ? this.localCustomers : this.customers;
-
-      //Nếu không nhập từ khóa , thông tin khách hàng sẽ hiển thị tất cả
-      if (!this.searchQuery || !this.searchQuery.trim()) {
-        return customers; //Trả về tất cả khách hàng
-      }
-
-      //Lọc khách hàng theo tên, email, số điện thoại
-      const term = this.searchQuery.toLowerCase().trim();
-      return customers.filter(customer => {
-        const name = (customer.name || '').toLowerCase();
-        const email = (customer.email || '').toLowerCase();
-        const phone = (customer.phone || '').toLowerCase();
-        return name.includes(term) || email.includes(term) || phone.includes(term);
-      });
-    }
-  },
-
-  watch: {
-    customers: {
-      handler(newCustomers) {
-        this.localCustomers = [...newCustomers];
-      },
-      immediate: true
     }
   },
 
   methods: {
-    openCreateModal() {
-      this.showCreateModal = true
+    onPageChange(event) {
+      this.isLoading = true;
+      const page = event.page + 1;
+      const rows = event.rows;
+
+      router.get('/admin/customers', {
+        search: this.searchQuery,
+        page: page,
+        per_page: rows
+      }, {
+        preserveState: true,
+        preserveScroll: true,
+        onFinish: () => this.isLoading = false
+      });
     },
 
-    debounceSearch() {
-      clearTimeout(this.searchTimeout)
-      this.searchTimeout = setTimeout(() => {
-      }, 200)
-    },
+    // tìm kiếm: Debounce 
+    handleSearch: debounce(function () {
+      this.isLoading = true;
+      router.get('/admin/customers', {
+        search: this.searchQuery,
+        page: 1 // Reset về trang 1 khi tìm
+      }, {
+        preserveState: true,
+        replace: true,
+        onFinish: () => this.isLoading = false
+      });
+    }, 300),
 
+    // 3. RELOAD: Gọi khi Modal thêm/sửa thành công
+    refreshPage() {
+      router.reload({ only: ['customers', 'stats'] });
+    },
 
     formatCurrency(amount) {
-      return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND'
-      }).format(amount)
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     },
 
-    viewCustomer(customer) {
-      console.log('View customer:', customer)
-      // Implement view customer logic
-    },
+    openCreateModal() { this.showCreateModal = true },
 
     editCustomer(customer) {
-      console.log('Edit customer:', customer)
-      this.selectedCustomer = customer
-      this.showEditModal = true
+      this.selectedCustomer = customer;
+      this.showEditModal = true;
     },
 
-    async deleteCustomer(customer = null) {
-      if (!customer?.id) return; // guard
-
-      const result = await Swal.fire({
+    // 4. xóa khách hàng
+    deleteCustomer(customer) {
+      Swal.fire({
         title: 'Xác nhận xóa',
-        text: `Bạn có chắc chắn muốn xóa khách hàng "${customer.name}" không?`,
+        text: `Bạn có chắc chắn muốn xóa "${customer.name}"?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
         confirmButtonText: 'Xóa',
-        cancelButtonText: 'Hủy',
-        reverseButtons: true
-      });
-
-      if (!result.isConfirmed) return;
-
-      try {
-        console.log('Sending DELETE request to:', `/admin/customers/${customer.id}`);
-        const response = await axios.delete(`/admin/customers/${customer.id}`);
-        console.log('Response received:', response);
-        console.log('Response data:', response.data);
-
-        if (response.data?.success) {
-          // Cập nhật localCustomers
-          this.localCustomers = this.localCustomers.filter(c => c.id !== customer.id);
-
-          await Swal.fire({
-            title: 'Thành công!',
-            text: response.data.message || 'Đã xóa khách hàng',
-            icon: 'success',
-            timer: 1500,
-            showConfirmButton: false
+        cancelButtonText: 'Hủy'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.delete(`/admin/customers/${customer.id}`, {
+            onSuccess: () => {
+              Swal.fire('Thành công!', 'Đã xóa khách hàng.', 'success');
+            },
+            onError: () => {
+              Swal.fire('Lỗi!', 'Không thể xóa khách hàng.', 'error');
+            }
           });
-        } else {
-          console.log('Response success is false:', response.data);
-          await Swal.fire({ icon: 'warning', title: 'Không thành công', text: response.data?.message || 'Thao tác thất bại' });
         }
-      } catch (error) {
-        console.error('Error in deleteCustomer:', error);
-        console.error('Error response:', error.response);
-        await Swal.fire({
-          title: 'Lỗi!',
-          text: error.response?.data?.message || 'Có lỗi xảy ra khi xóa khách hàng',
-          icon: 'error'
-        });
-      }
-    },
-
-
-    onCustomerCreated(customer) {
-      console.log('Customer created:', customer)
-      // Refresh page để load dữ liệu mới
-      window.location.reload()
-    },
-
-    onCustomerUpdated(customer) {
-      console.log('Customer updated:', customer)
-      // Cập nhật localCustomers
-      const index = this.localCustomers.findIndex(c => c.id === customer.id);
-      if (index !== -1) {
-        this.localCustomers[index] = customer;
-      }
-    },
-
-    mounted() {
-      // Filter sẽ tự động áp dụng thông qua computed property
+      });
     }
   }
 }
 </script>
 
 <style>
-/* Import Customers CSS */
 @import '@Admin/customers/customers.css';
+
+.customer-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-placeholder {
+  width: 32px;
+  height: 32px;
+  background: #eee;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 12px;
+}
 </style>
