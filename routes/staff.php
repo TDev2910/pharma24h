@@ -55,15 +55,15 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
     });
 
     // Orders
-    Route::prefix('orders')->name('orders.')->group(function () {
-        Route::get('/', [StaffOrderController::class, 'index'])->name('index');
-        Route::get('/api', [StaffOrderController::class, 'apiIndex'])->name('api');
-        Route::get('/{id}', [StaffOrderController::class, 'show'])->name('show');
-        Route::post('/{id}/confirm', [StaffOrderController::class, 'confirm'])->name('confirm');
-        Route::post('/{id}/cancel', [StaffOrderController::class, 'cancel'])->name('cancel');
-        Route::post('/{id}/update-status', [StaffOrderController::class, 'updateStatus'])->name('update-status');
-        Route::patch('/{id}', [StaffOrderController::class, 'update'])->name('update');
-    });
+    Route::get('orders/transport', [StaffOrderController::class, 'transport'])->name('orders.transport');
+    Route::resource('orders', StaffOrderController::class)->names('orders');
+    Route::post('orders/{order}/update-status', [StaffOrderController::class, 'updateStatus'])->name('orders.update-status');
+    Route::get('orders/{order}/invoice', [StaffOrderController::class, 'printInvoice'])->name('orders.invoice');
+    Route::post('/orders/{id}/complete', [StaffOrderController::class, 'markCompleted'])->name('orders.complete');
+    Route::post('orders/{order}/cancellations/approve', [StaffOrderController::class, 'approveCancellation'])
+        ->name('orders.cancellations.approve');
+    Route::post('orders/{order}/cancellations/reject', [StaffOrderController::class, 'rejectCancellation'])
+        ->name('orders.cancellations.reject');
 
     // GHN routes - Thêm nhóm routes này
     Route::prefix('ghn')->name('ghn.')->group(function () {

@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
-// Import Service GHN của bạn
 use App\Services\Shipping\GHNService;
 
 class OrdersTestController extends Controller

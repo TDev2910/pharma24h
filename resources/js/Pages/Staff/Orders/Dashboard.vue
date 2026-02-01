@@ -1,612 +1,716 @@
+<script setup>
+import { ref, watch } from 'vue';
+import { Head, router, Link } from '@inertiajs/vue3';
+import debounce from 'lodash/debounce';
+
+// Components
+import EditModal from './modals/Edit_modal.vue';
+import DetailsModal from './modals/Details_modal.vue';
+
+// PROPS
+const props = defineProps({
+    stats: Object,
+    orders: Object,
+    filters: Object,
+    selectedOrder: Object,
+});
+
+// STATE
+const form = ref({
+    search: props.filters?.search || '',
+    status: props.filters?.status || '',
+});
+const isDetailOpen = ref(false);
+const isEditOpen = ref(false);
+const editingOrder = ref(null);
+
+const PAGE_URL = '/staff/orders';
+
+// LOGIC
+const handleSearch = debounce(() => {
+    router.get(PAGE_URL, form.value, { preserveState: true, replace: true });
+}, 300);
+watch(form, () => handleSearch(), { deep: true });
+
+// Mở Modal Xem
+const openDetail = (id) => {
+    // Gọi Inertia reload lại trang nhưng chỉ lấy dữ liệu 'selectedOrder'
+    router.get('/staff/orders',
+        { ...form.value, order_id: id }, // Truyền ID lên URL
+        {
+            preserveState: true,   // Giữ nguyên bộ lọc/search hiện tại
+            preserveScroll: true,  // Không bị cuộn trang lên đầu
+            only: ['selectedOrder'], // Quan trọng: Chỉ tải dữ liệu selectedOrder (Lazy Load)
+            onSuccess: () => {
+                // Khi server trả về dữ liệu thành công => Mở Modal
+                isDetailOpen.value = true;
+            }
+        }
+    );
+};
+const closeDetail = () => {
+    isDetailOpen.value = false;
+    // Xóa order_id trên URL để sạch sẽ
+    router.get('/staff/orders', { ...form.value }, { preserveState: true, replace: true });
+};
+
+// Mở Modal Sửa
+const openEdit = (order) => {
+    editingOrder.value = order;
+    isEditOpen.value = true;
+};
+
+// In hóa đơn
+const printInvoice = (id) => {
+    window.open(`${PAGE_URL}/${id}/invoice`, '_blank');
+};
+
+// Helper UI: Status Badge Color
+const getStatusClass = (status) => {
+    const map = {
+        'pending': 'status-pending',
+        'confirmed': 'status-confirmed',
+        'delivering': 'status-delivering',
+        'completed': 'status-completed',
+        'cancelled': 'status-cancelled',
+    };
+    return map[status] || 'status-default';
+};
+
+const getStatusLabel = (status) => {
+    const map = {
+        'pending': 'Chờ xử lý',
+        'confirmed': 'Đã xác nhận',
+        'delivering': 'Đang giao',
+        'completed': 'Hoàn thành',
+        'cancelled': 'Đã hủy',
+    };
+    return map[status] || status;
+};
+
+const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND'
+    }).format(amount);
+};
+
+const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN', {
+        day: '2-digit', month: '2-digit', year: 'numeric'
+    });
+};
+</script>
+
 <template>
-    <div class="orders-page">
-      <!-- Header Control Bar -->
-      <div class="header-control-bar">
-        <div class="controls-section" style="width:100%; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
-          <!-- Title Section -->
-          <div class="title-section">
-            <h3>Danh sách đơn hàng</h3>
-          </div>      
-          <!-- Search Section -->
-          <div style="flex:1; display:flex; justify-content:center;">
-            <div class="search-wrapper">
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="pi pi-search"></i>
-                </span>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  style="border-radius:8px;" 
-                  placeholder="Tìm kiếm theo mã đơn hàng, tên khách hàng, số điện thoại" 
-                  v-model="searchQuery" 
-                  @input="debounceSearch"
-                >
-              </div>         
-            </div>
-          </div>
-          <!-- Utility Options -->
-          <div class="ultility-options">
-            <!-- In hóa đơn đã chọn -->
-            <Button 
-              icon="pi pi-print"
-              label="In hóa đơn đã chọn"
-              @click="printSelectedInvoices"
-              :disabled="selectedOrders.length === 0"
-              severity="success"
-              style="background:#10b981; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px;"
-            />
-            <!-- Utility Icons -->
-            <div class="utility-icons">
-              <button class="btn" title="Chế độ xem">
-                <i class="pi pi-list"></i>
-              </button>
-              <button class="btn" title="Cài đặt">
-                <i class="pi pi-cog"></i>
-              </button>
-              <button class="btn" title="Trợ giúp">
-                <i class="pi pi-question-circle"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-  
-      <!-- Content Area -->
-      <div class="content-area">
-        <!-- Stats Cards -->
-        <div class="stats-row">
-          <div class="stats-card">
-            <div class="stats-card-inner">
-              <div class="stats-icon" style="background: #4F46E5;">
-                <i class="fas fa-shopping-cart"></i>
-              </div>
-              <div>
-                <div class="stats-label">Tổng đơn hàng</div>
-                <div class="stats-number">{{ stats.totalOrders }}</div>
-              </div>
-            </div>
-          </div>
-          <div class="stats-card">
-            <div class="stats-card-inner">
-              <div class="stats-icon" style="background: #F59E0B;">
-                <i class="fas fa-clock"></i>
-              </div>
-              <div>
-                <div class="stats-label">Đơn chờ xử lý</div>
-                <div class="stats-number">{{ stats.pendingOrders }}</div>
-              </div>
-            </div>
-          </div>
-          <div class="stats-card">
-            <div class="stats-card-inner">
-              <div class="stats-icon" style="background: #10B981;">
-                <i class="fas fa-check-circle"></i>
-              </div>
-              <div>
-                <div class="stats-label">Đơn hoàn thành</div>
-                <div class="stats-number">{{ stats.completedOrders }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-  
-        <!-- Filter Section -->
-        <div class="filter-section">
-          <div class="filter-wrapper">
-            <div class="filter-row">
-              <!-- Order Code Filter -->
-              <div class="filter-item">
-                <label class="filter-label">Mã đơn hàng</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    placeholder="Tìm theo mã" 
-                    v-model="filters.order_code"
-                    @input="applyFilters"
-                  >
+    <StaffLayout>
+
+        <Head title="Quản lý đơn hàng" />
+
+        <div class="dashboard-wrapper">
+            <div class="top-header">
+                <div class="header-titles">
+                    <h1 class="main-title">Quản Lý Đơn Hàng</h1>
+                    <p class="sub-title">Theo dõi và quản lý tất cả đơn hàng của bạn</p>
                 </div>
-              </div>
-  
-              <!-- Date Range Filter -->
-              <div class="filter-item">
-                <label class="filter-label">Ngày đặt hàng</label>
-                <div class="input-group">
-                  <input 
-                    type="date" 
-                    class="form-control" 
-                    placeholder="Từ ngày" 
-                    v-model="filters.from_date"
-                    @change="applyFilters"
-                  >
-                  <span class="input-group-text">-</span>
-                  <input 
-                    type="date" 
-                    class="form-control" 
-                    placeholder="Đến ngày" 
-                    v-model="filters.to_date"
-                    @change="applyFilters"
-                  >
+
+                <div class="header-actions">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input v-model="form.search" type="text" placeholder="Tìm kiếm đơn hàng..."
+                            class="custom-input" />
+                    </div>
+
+                    <div class="filter-wrapper" style="margin-left: 80px;">
+                        <select v-model="form.status" class="custom-select">
+                            <option value="">Lọc theo trạng thái</option>
+                            <option value="pending">Chờ xử lý</option>
+                            <option value="confirmed">Đã xác nhận</option>
+                            <option value="delivering">Đang giao hàng</option>
+                            <option value="completed">Hoàn thành</option>
+                            <option value="cancelled">Đã hủy</option>
+                        </select>
+                        <i class="fas fa-filter filter-icon"></i>
+                    </div>
                 </div>
-              </div>
-  
-              <!-- Status Filter -->
-              <div class="filter-item">
-                <label class="filter-label">Trạng thái</label>
-                <select 
-                  class="form-select" 
-                  v-model="filters.status"
-                  @change="applyFilters"
-                >
-                  <option value="">Tất cả</option>
-                  <option value="pending">Đang chờ xử lý</option>
-                  <option value="completed">Hoàn thành</option>
-                  <option value="cancelled">Đã hủy</option>
-                </select>
-              </div>
             </div>
-          </div>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <span class="stat-title">Tổng Đơn Hàng</span>
+                        <h2 class="stat-number">{{ stats?.total || 0 }}</h2>
+                        <p class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i> 12% so với tháng trước
+                        </p>
+                    </div>
+                    <div class="stat-icon-box blue">
+                        <i class="fas fa-box"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <span class="stat-title">Doanh Thu</span>
+                        <h2 class="stat-number">{{ stats?.total_amount || 0 }}</h2>
+                        <p class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i> 8% so với tháng trước
+                        </p>
+                    </div>
+                    <div class="stat-icon-box green">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <span class="stat-title">Đơn Chờ Xử Lý</span>
+                        <h2 class="stat-number">{{ stats?.pending || 0 }}</h2>
+                    </div>
+                    <div class="stat-icon-box orange">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <span class="stat-title">Đơn Hoàn Thành</span>
+                        <h2 class="stat-number">{{ stats?.completed || 0 }}</h2>
+                        <p class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i> 15% so với tháng trước
+                        </p>
+                    </div>
+                    <div class="stat-icon-box purple">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <div class="table-header-row">
+                    <h3 class="table-title">Danh Sách Đơn Hàng</h3>
+                    <span class="table-counter">Hiển thị {{ orders.data.length }} đơn hàng</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th class="col-id">Mã Đơn</th>
+                                <th class="col-customer">Khách Hàng</th>
+                                <th class="col-amount">Tổng Tiền</th>
+                                <th class="col-status">Trạng Thái</th>
+                                <th class="col-date">Ngày Đặt</th>
+                                <th class="col-action text-right">Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="order in orders.data" :key="order.id">
+                                <td class="col-id">
+                                    <a href="#" @click.prevent="openDetail(order.id)" class="order-link">
+                                        {{ order.order_code }}
+                                    </a>
+                                </td>
+
+                                <td class="col-customer">
+                                    <div class="customer-cell">
+                                        <span class="customer-name">{{ order.customer_name }}</span>
+                                        <span class="customer-sub">{{ order.customer_phone }}</span>
+                                    </div>
+                                </td>
+
+                                <td class="col-amount">
+                                    <span class="font-bold text-gray-800">{{ formatCurrency(order.total_amount)
+                                        }}</span>
+                                </td>
+
+                                <td class="col-status">
+                                    <span :class="['status-pill', getStatusClass(order.order_status)]">
+                                        <span class="dot">●</span> {{ getStatusLabel(order.order_status) }}
+                                    </span>
+                                </td>
+
+                                <td class="col-date text-gray-500">
+                                    {{ formatDate(order.created_at) }}
+                                </td>
+
+                                <td class="col-action text-right">
+                                    <div class="action-buttons">
+                                        <button @click="openDetail(order.id)" class="btn-icon" title="Xem">
+                                            <i class="far fa-eye"></i>
+                                        </button>
+                                        <button @click="openEdit(order)" class="btn-icon" title="Sửa">
+                                            <i class="fas fa-pen"></i>
+                                        </button>
+                                        <button class="btn-icon delete" title="Xóa">
+                                            <i class="far fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr v-if="orders.data.length === 0">
+                                <td colspan="6" class="text-center py-8 text-gray-500">
+                                    Không tìm thấy đơn hàng nào.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination-wrapper" v-if="orders.links.length > 3">
+                    <div class="pagination">
+                        <template v-for="(link, k) in orders.links" :key="k">
+                            <Link v-if="link.url" :href="link.url" v-html="link.label"
+                                :class="['page-link', { 'active': link.active }]" />
+                            <span v-else v-html="link.label" class="page-link disabled"></span>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
         </div>
-  
-        <!-- Orders Data Table -->
-        <div>
-          <div class="table-header">
-            <h3 class="table-title">Danh sách dữ liệu đơn hàng</h3>
-          </div>
-          
-          <div class="table-container">
-            <DataTable 
-              :value="filteredOrders" 
-              removableSort 
-              tableStyle="min-width: 50rem"
-              class="orders-table"
-              :paginator="true"
-              :rows="pagination.per_page"
-              :totalRecords="pagination.total"
-              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-              :rowsPerPageOptions="[5,10,25]"
-              currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} đơn hàng"
-            >
-              <!-- Checkbox Column -->
-              <Column headerStyle="width: 30px">
-                <template #body="slotProps">
-                  <div class="form-check">
-                    <input 
-                      class="form-check-input order-select" 
-                      type="checkbox" 
-                      :value="slotProps.data.id"
-                      :checked="selectedOrders.includes(slotProps.data.id)"
-                      @change="handleSelectOrder(slotProps.data.id, $event)"
-                    >
-                  </div>
-                </template>
-                <template #header>
-                  <div class="form-check">
-                    <input 
-                      class="form-check-input" 
-                      type="checkbox" 
-                      id="selectAll"
-                      :checked="selectedOrders.length === filteredOrders.length && filteredOrders.length > 0"
-                      @change="handleSelectAll"
-                    >
-                  </div>
-                </template>
-              </Column>
-  
-              <!-- Order Code Column -->
-              <Column field="order_code" header="Mã đơn hàng" sortable style="width: 12%">
-                <template #body="slotProps">
-                  <span class="fw-medium">{{ slotProps.data.order_code || 'N/A' }}</span>
-                </template>
-              </Column>
-              
-              <!-- Customer Name Column -->
-              <Column field="customer_name" header="Tên khách hàng" sortable style="width: 18%">
-                <template #body="slotProps">
-                  <span>{{ slotProps.data.customer_name || 'N/A' }}</span>
-                </template>
-              </Column>
-              
-              <!-- Status Column -->
-              <Column field="order_status" header="Trạng thái" sortable style="width: 15%">
-                <template #body="slotProps">
-                  <span :class="getStatusBadgeClass(slotProps.data.order_status)">
-                    {{ getStatusText(slotProps.data.order_status) }}
-                  </span>
-                </template>
-              </Column>
-              
-              <!-- Payment Method Column -->
-              <Column field="payment_method" header="Phương thức thanh toán" style="width: 15%">
-                <template #body="slotProps">
-                  <span>{{ getPaymentMethodText(slotProps.data.payment_method) }}</span>
-                </template>
-              </Column>
-              
-              <!-- Total Amount Column -->
-              <Column field="total_amount" header="Tổng tiền" sortable style="width: 12%" class="text-center">
-                <template #body="slotProps">
-                  <span>{{ formatCurrency(slotProps.data.total_amount || 0) }}</span>
-                </template>
-              </Column>
-              
-              <!-- Created Date Column -->
-              <Column field="created_at_formatted" header="Ngày tạo" sortable style="width: 10%">
-                <template #body="slotProps">
-                  <span>{{ slotProps.data.created_at_formatted || 'N/A' }}</span>
-                </template>
-              </Column>
-              
-              <!-- Actions Column -->
-              <Column header="Thao tác" style="width: 15%">
-                <template #body="slotProps">
-                  <div class="action-group">
-                    <Button 
-                      icon="pi pi-eye"
-                      class="p-button-sm btn-detail"
-                      @click="viewOrderDetail(slotProps.data)"
-                      v-tooltip.top="'Xem chi tiết'" 
-                    />
-                    <Button 
-                      icon="pi pi-pencil"
-                      class="p-button-sm btn-edit"
-                      @click="editOrder(slotProps.data)"
-                      v-tooltip.top="'Chỉnh sửa'" 
-                    />
-                    <Button 
-                      icon="pi pi-trash" 
-                      class="p-button-sm btn-delete"
-                      @click="deleteOrder(slotProps.data)"
-                      v-tooltip.top="'Xóa'"
-                    />
-                  </div>
-                </template>
-              </Column>
-            </DataTable>
-          </div>
-        </div>
-      </div>
-  
-      <!-- Order Details Modal -->
-      <StaffOrderDetailsModal
-        :visible="showDetailsModal"
-        :orderId="selectedOrderId"
-        @close="showDetailsModal = false"
-      />
-  
-      <!-- Order Edit Modal -->
-      <StaffOrderEditModal
-        :visible="showEditModal"
-        :orderId="selectedEditOrderId"
-        @close="showEditModal = false"
-        @updated="onOrderUpdated"
-      />
-  
-      <!-- <StaffInvoiceModal
-        :visible="showInvoiceModal"
-        :orderId="selectedInvoiceOrderId"
-        @close="showInvoiceModal = false"
-      /> -->
-    </div>
-  </template>
-  
-  <script>
-  import Button from 'primevue/button'
-  import InputText from 'primevue/inputtext'
-  import DataTable from 'primevue/datatable'
-  import Column from 'primevue/column'
-  import StaffOrderDetailsModal from './Modals/Details_modal.vue'
-  import StaffOrderEditModal from './Modals/Edit_modal.vue'
-  import axios from 'axios'
-  import Swal from 'sweetalert2'
-  import { router } from '@inertiajs/vue3'
-  // import StaffInvoiceModal from './Modals/Invoice_modal.vue'
-  
-  export default {
-    name: 'StaffOrdersDashboard',
-    components: {
-      Button,
-      InputText,
-      DataTable,
-      Column,
-      StaffOrderDetailsModal,
-      StaffOrderEditModal,
-      // StaffInvoiceModal
-    },
-    
-    props: {
-      stats: {
-        type: Object,
-        default: () => ({
-          totalOrders: 0,
-          pendingOrders: 0,
-          completedOrders: 0
-        })
-      },
-      orders: {
-        type: Array,
-        default: () => []
-      },
-      pagination: {
-        type: Object,
-        default: () => ({
-          current_page: 1,
-          last_page: 1,
-          per_page: 10,
-          total: 0,
-          from: 0,
-          to: 0
-        })
-      },
-      filters: {
-        type: Object,
-        default: () => ({
-          order_code: '',
-          status: '',
-          from_date: '',
-          to_date: ''
-        })
-      }
-    },
-    
-    data() {
-      return {
-        searchQuery: '',
-        searchTimeout: null,
-        selectedOrders: [],
-        localOrders: [],
-        showDetailsModal: false,
-        showEditModal: false,
-        showInvoiceModal: false,
-        selectedOrderId: null,
-        selectedEditOrderId: null,
-        selectedInvoiceOrderId: null,
-        filters: {
-          order_code: '',
-          status: '',
-          from_date: '',
-          to_date: ''
-        }
-      }
-    },
-    
-    computed: {
-      filteredOrders() {
-        const orders = this.localOrders.length > 0 ? this.localOrders : this.orders;
-  
-        // Nếu không có search query và filters, trả về tất cả
-        if (!this.searchQuery || !this.searchQuery.trim()) {
-          return orders;
-        }
-        
-        // Lọc theo search query
-        const term = this.searchQuery.toLowerCase().trim();
-        return orders.filter(order => {
-          const orderCode = (order.order_code || '').toLowerCase();
-          const customerName = (order.customer_name || '').toLowerCase();
-          const customerPhone = (order.customer_phone || '').toLowerCase();
-          return orderCode.includes(term) || customerName.includes(term) || customerPhone.includes(term);
-        });
-      }
-    },
-    
-    watch: {
-      orders: {
-        handler(newOrders) {
-          this.localOrders = [...newOrders];
-        },
-        immediate: true
-      },
-      filters: {
-        handler(newFilters) {
-          this.filters = { ...newFilters };
-        },
-        immediate: true,
-        deep: true
-      }
-    },
-    
-    methods: {
-      debounceSearch() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(() => {
-          // Search được xử lý qua computed property
-        }, 200);
-      },
-      
-      formatCurrency(amount) {
-        return new Intl.NumberFormat('vi-VN', {
-          style: 'currency',
-          currency: 'VND'
-        }).format(amount);
-      },
-      
-      formatDate(dateString) {
-        if (!dateString) return 'N/A';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN');
-      },
-      
-      getStatusBadgeClass(status) {
-        const s = (status || '').toString().toLowerCase();
-        if (s === 'pending' || s === 'new') {
-          return 'badge bg-warning text-dark';
-        } else if (s === 'completed') {
-          return 'badge bg-success';
-        } else if (s === 'cancelled') {
-          return 'badge bg-danger';
-        }
-        return 'badge bg-secondary';
-      },
-      
-      getStatusText(status) {
-        const s = (status || '').toString().toLowerCase();
-        if (s === 'pending' || s === 'new') {
-          return 'Đang chờ xử lý';
-        } else if (s === 'completed') {
-          return 'Hoàn thành';
-        } else if (s === 'cancelled') {
-          return 'Đã hủy';
-        }
-        return 'Khác';
-      },
-      
-      getPaymentMethodText(method) {
-        const m = (method || '').toString().toLowerCase();
-        switch(m) {
-          case 'cash':
-            return 'Tiền mặt';
-          case 'transfer':
-            return 'Chuyển khoản';
-          case 'vnpay':
-            return 'VNPay';
-          case 'momo':
-            return 'Ví MoMo';
-          case 'zalopay':
-            return 'ZaloPay';
-          default:
-            return method || 'Không xác định';
-        }
-      },
-      
-      handleSelectAll(event) {
-        if (event.target.checked) {
-          this.selectedOrders = this.filteredOrders.map(order => order.id);
-        } else {
-          this.selectedOrders = [];
-        }
-      },
-      
-      handleSelectOrder(orderId, event) {
-        if (event.target.checked) {
-          if (!this.selectedOrders.includes(orderId)) {
-            this.selectedOrders.push(orderId);
-          }
-        } else {
-          this.selectedOrders = this.selectedOrders.filter(id => id !== orderId);
-        }
-      },
-      
-      printSelectedInvoices() {
-        if (this.selectedOrders.length === 0) {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Thông báo',
-            text: 'Vui lòng chọn ít nhất một đơn hàng để in.',
-            timer: 2000,
-            showConfirmButton: false
-          });
-          return;
-        }
-        
-        // Mở từng hóa đơn ở tab mới
-        this.selectedOrders.forEach((id, idx) => {
-          const url = `/staff/orders/${id}/invoice`;
-          setTimeout(() => {
-            window.open(url, '_blank');
-          }, idx * 250);
-        });
-        
-        Swal.fire({
-          icon: 'success',
-          title: 'Thành công',
-          text: `Đang mở ${this.selectedOrders.length} hóa đơn để in.`,
-          timer: 2000,
-          showConfirmButton: false
-        });
-      },
-      
-          viewOrderDetail(order) {
-        this.selectedOrderId = order.id;
-        this.showDetailsModal = true;
-      },
-  
-      editOrder(order) {
-        this.selectedEditOrderId = order.id;
-        this.showEditModal = true;
-      },
-  
-      onOrderUpdated(order) {  
-        router.reload({ only: ['orders'] });
-      },
-      
-      async deleteOrder(order) {
-        if (!order?.id) return;
-  
-        const result = await Swal.fire({
-          title: 'Xác nhận xóa',
-          text: `Bạn có chắc chắn muốn xóa đơn hàng "${order.order_code}" không?`,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#3085d6',
-          confirmButtonText: 'Xóa',
-          cancelButtonText: 'Hủy',
-          reverseButtons: true
-        });
-  
-        if (!result.isConfirmed) return;
-  
-        try {
-          const response = await axios.delete(`/staff/orders/${order.id}`);
-  
-          if (response.data?.success) {
-            // Cập nhật localOrders
-            this.localOrders = this.localOrders.filter(o => o.id !== order.id);
-            
-            // Cập nhật selectedOrders
-            this.selectedOrders = this.selectedOrders.filter(id => id !== order.id);
-  
-            await Swal.fire({
-              title: 'Thành công!',
-              text: response.data.message || 'Đã xóa đơn hàng',
-              icon: 'success',
-              timer: 1500,
-              showConfirmButton: false
-            });
-            
-            // Reload để cập nhật stats
-            router.reload();
-          } else {
-            await Swal.fire({
-              icon: 'warning',
-              title: 'Không thành công',
-              text: response.data?.message || 'Thao tác thất bại'
-            });
-          }
-        } catch (error) {
-          console.error('Error in deleteOrder:', error);
-          await Swal.fire({
-            title: 'Lỗi!',
-            text: error.response?.data?.message || 'Có lỗi xảy ra khi xóa đơn hàng',
-            icon: 'error'
-          });
-        }
-      },
-  
-      printInvoice(order) {
-        this.selectedInvoiceOrderId = order.id;
-        this.showInvoiceModal = true;
-      },
-      
-      applyFilters() {
-        router.get('/staff/orders', {
-          order_code: this.filters.order_code || '',
-          status: this.filters.status || '',
-          from_date: this.filters.from_date || '',
-          to_date: this.filters.to_date || ''
-        }, {
-          preserveState: true,
-          preserveScroll: true
-        });
-      }
+
+        <DetailsModal v-if="isDetailOpen && selectedOrder" :show="isDetailOpen" :order="selectedOrder"
+            @close="closeDetail" />
+        <EditModal v-if="isEditOpen" :show="isEditOpen" :order="editingOrder" @close="isEditOpen = false" />
+    </StaffLayout>
+</template>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.dashboard-wrapper {
+    padding: 24px 40px;
+    background-color: #f8fafc;
+    /* Very light gray bg */
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    color: #334155;
+}
+
+/* --- HEADER --- */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    /* Align bottom to match text and inputs */
+    margin-bottom: 32px;
+}
+
+.main-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.sub-title {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Search Input Styled like Image */
+.search-input-wrapper {
+    position: relative;
+    width: 280px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.custom-input {
+    width: 150%;
+    padding: 10px 12px 10px 36px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.custom-input:focus {
+    border-color: #3b82f6;
+}
+
+.custom-select {
+    appearance: none;
+    padding: 10px 36px 10px 12px;
+    /* Space for icon */
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #fff;
+    font-size: 14px;
+    color: #334155;
+    cursor: pointer;
+    min-width: 50px;
+    /* Adjust if hiding text */
+    outline: none;
+}
+
+.filter-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    pointer-events: none;
+    font-size: 14px;
+}
+
+/* Primary Button */
+.btn-add-order {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+}
+
+.btn-add-order:hover {
+    background-color: #2563eb;
+}
+
+/* --- STATS CARDS --- */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-title {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 8px;
+    line-height: 1;
+}
+
+.stat-trend {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat-trend.up {
+    color: #16a34a;
+    /* Green */
+}
+
+.stat-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.stat-icon-box.blue {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.stat-icon-box.green {
+    background-color: #22c55e;
+    color: white;
+}
+
+.stat-icon-box.orange {
+    background-color: #f59e0b;
+    color: white;
+}
+
+.stat-icon-box.purple {
+    background-color: #a855f7;
+    color: white;
+}
+
+.table-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.table-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.table-counter {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.table-responsive {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.custom-table th {
+    background-color: #f8fafc;
+    text-align: left;
+    padding: 16px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.custom-table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.custom-table tr:last-child td {
+    border-bottom: none;
+}
+
+.custom-table tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Column Styles */
+.order-link {
+    color: #3b82f6;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.order-link:hover {
+    text-decoration: underline;
+}
+
+.customer-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.customer-name {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.customer-sub {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+/* Status Pills */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.dot {
+    font-size: 8px;
+}
+
+/* Status Colors Mapping */
+.status-completed {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+/* Green */
+.status-confirmed {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+/* Blue */
+.status-pending {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+/* Yellow/Orange */
+.status-cancelled {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+/* Red */
+.status-delivering {
+    background-color: #e0e7ff;
+    color: #4f46e5;
+}
+
+/* Indigo */
+.status-default {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #94a3b8;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+.btn-icon:hover {
+    color: #3b82f6;
+}
+
+.btn-icon.delete:hover {
+    color: #ef4444;
+}
+
+/* Utilities */
+.text-right {
+    text-align: right;
+}
+
+.font-bold {
+    font-weight: 600;
+}
+
+.text-gray-800 {
+    color: #1e293b;
+}
+
+.text-gray-500 {
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* Pagination Styles (Minimal update to fit theme) */
+.pagination-wrapper {
+    padding: 16px 24px;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid #f1f5f9;
+    background: white;
+}
+
+.pagination {
+    display: flex;
+    gap: 4px;
+}
+
+.page-link {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    text-decoration: none;
+}
+
+.page-link.active {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
     }
-  }
-  </script>
-  
-  <style scoped>
-  /* Import CSS file - CSS thông thường được tách ra */
-  @import '@Staff/orders/dashboard.css';
-  </style>
+}
+
+@media (max-width: 768px) {
+    .dashboard-wrapper {
+        padding: 16px;
+    }
+
+    .top-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .header-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .search-input-wrapper {
+        flex: 1;
+        width: auto;
+    }
+
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+}
+</style>
