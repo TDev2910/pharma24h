@@ -104,15 +104,8 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
 </script>
 
 <template>
-    <Dialog
-        v-model:visible="isVisible"
-        modal
-        dismissableMask
-        maximizable
-        :style="{ width: '900px', maxWidth: '95vw' }"
-        header="Chỉnh sửa đơn hàng"
-        class="custom-order-modal"
-    >
+    <Dialog v-model:visible="isVisible" modal dismissableMask maximizable :style="{ width: '900px', maxWidth: '95vw' }"
+        header="Chỉnh sửa đơn hàng" class="custom-order-modal">
         <template #header>
             <div class="modal-header-content">
                 <div class="title-group">
@@ -133,19 +126,10 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
                     <i class="pi pi-bolt"></i> Cập nhật trạng thái nhanh
                 </h6>
                 <div class="status-buttons">
-                    <Button
-                        v-for="btn in statusButtons"
-                        :key="btn.value"
-                        :label="btn.label"
-                        :icon="btn.icon"
-                        :severity="btn.severity"
-                        :outlined="order?.order_status !== btn.value"
-                        :loading="statusLoading === btn.value"
-                        @click="updateStatusQuick(btn.value)"
-                        size="small"
-                        class="status-btn"
-                        :class="{ 'active': order?.order_status === btn.value }"
-                    />
+                    <Button v-for="btn in statusButtons" :key="btn.value" :label="btn.label" :icon="btn.icon"
+                        :severity="btn.severity" :outlined="order?.order_status !== btn.value"
+                        :loading="statusLoading === btn.value" @click="updateStatusQuick(btn.value)" size="small"
+                        class="status-btn" :class="{ 'active': order?.order_status === btn.value }" />
                 </div>
             </div>
 
@@ -160,14 +144,17 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
                         <div class="form-group-container">
                             <div class="form-group">
                                 <label>Họ tên <span class="required">*</span></label>
-                                <InputText v-model="form.customer_name" class="input-full" :class="{ 'p-invalid': form.errors.customer_name }" />
-                                <small class="error-text" v-if="form.errors.customer_name">{{ form.errors.customer_name }}</small>
+                                <InputText v-model="form.customer_name" class="input-full"
+                                    :class="{ 'p-invalid': form.errors.customer_name }" />
+                                <small class="error-text" v-if="form.errors.customer_name">{{ form.errors.customer_name
+                                    }}</small>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>SĐT <span class="required">*</span></label>
-                                    <InputText v-model="form.customer_phone" class="input-full" :class="{ 'p-invalid': form.errors.customer_phone }" />
+                                    <InputText v-model="form.customer_phone" class="input-full"
+                                        :class="{ 'p-invalid': form.errors.customer_phone }" />
                                 </div>
                                 <div class="form-group">
                                     <label>Email</label>
@@ -177,13 +164,8 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
 
                             <div class="form-group">
                                 <label>Thanh toán</label>
-                                <Dropdown
-                                    v-model="form.payment_method"
-                                    :options="paymentMethodOptions"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    class="input-full"
-                                />
+                                <Dropdown v-model="form.payment_method" :options="paymentMethodOptions"
+                                    optionLabel="label" optionValue="value" class="input-full" />
                             </div>
                         </div>
                     </div>
@@ -198,19 +180,15 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
                         <div class="form-group-container">
                             <div class="form-group">
                                 <label>Hình thức giao</label>
-                                <Dropdown
-                                    v-model="form.delivery_method"
-                                    :options="deliveryMethodOptions"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    class="input-full"
-                                />
+                                <Dropdown v-model="form.delivery_method" :options="deliveryMethodOptions"
+                                    optionLabel="label" optionValue="value" class="input-full" />
                             </div>
 
                             <template v-if="form.delivery_method === 'shipping'">
                                 <div class="form-group">
                                     <label>Địa chỉ chi tiết</label>
-                                    <InputText v-model="form.shipping_address" placeholder="Số nhà, tên đường..." class="input-full" />
+                                    <InputText v-model="form.shipping_address" placeholder="Số nhà, tên đường..."
+                                        class="input-full" />
                                 </div>
 
                                 <div class="form-row three-cols">
@@ -223,7 +201,8 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
                             <template v-if="form.delivery_method === 'pickup'">
                                 <div class="form-group">
                                     <label>Cửa hàng nhận</label>
-                                    <InputText v-model="form.pickup_location" placeholder="Nhập tên chi nhánh..." class="input-full" />
+                                    <InputText v-model="form.pickup_location" placeholder="Nhập tên chi nhánh..."
+                                        class="input-full" />
                                 </div>
                             </template>
 
@@ -297,7 +276,8 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    background-color: #f8fafc; /* Màu nền nhẹ cho body */
+    background-color: #f8fafc;
+    /* Màu nền nhẹ cho body */
 }
 
 /* --- HEADER --- */
@@ -307,25 +287,30 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
     gap: 5px;
     width: 100%;
 }
+
 .title-group {
     display: flex;
     align-items: center;
     gap: 10px;
 }
+
 .modal-title {
     font-size: 1.25rem;
     font-weight: 700;
     color: #1e293b;
 }
+
 .status-tag {
     text-transform: uppercase;
     font-size: 0.75rem;
     padding: 2px 8px;
 }
+
 .order-code-group {
     font-size: 0.875rem;
     color: #64748b;
 }
+
 .code {
     font-family: monospace;
     font-weight: 700;
@@ -343,8 +328,9 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
     padding: 1rem;
     border-radius: 10px;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
+
 .section-label {
     font-size: 0.75rem;
     font-weight: 700;
@@ -355,17 +341,22 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
     align-items: center;
     gap: 6px;
 }
+
 .section-label i {
-    color: #f59e0b; /* Màu vàng icon sét */
+    color: #f59e0b;
+    /* Màu vàng icon sét */
 }
+
 .status-buttons {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
+
 .status-btn {
     font-size: 0.875rem !important;
 }
+
 /* Hiệu ứng viền cho trạng thái đang active */
 .status-btn.active {
     box-shadow: 0 0 0 2px #fff, 0 0 0 4px #e2e8f0;
@@ -374,12 +365,15 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
 /* --- FORM LAYOUT --- */
 .edit-form {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 Cột */
+    grid-template-columns: 1fr 1fr;
+    /* 2 Cột */
     gap: 1.5rem;
 }
+
 @media (max-width: 768px) {
     .edit-form {
-        grid-template-columns: 1fr; /* Mobile về 1 cột */
+        grid-template-columns: 1fr;
+        /* Mobile về 1 cột */
     }
 }
 
@@ -388,7 +382,7 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
     padding: 1.25rem;
     border-radius: 10px;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -404,8 +398,14 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
     align-items: center;
     gap: 8px;
 }
-.text-blue { color: #3b82f6; }
-.text-orange { color: #f97316; }
+
+.text-blue {
+    color: #3b82f6;
+}
+
+.text-orange {
+    color: #f97316;
+}
 
 .form-group-container {
     display: flex;
@@ -419,24 +419,39 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
     flex-direction: column;
     gap: 5px;
 }
+
 .form-group label {
     font-size: 0.875rem;
     font-weight: 600;
     color: #475569;
 }
-.required { color: #ef4444; }
-.input-full { width: 100%; }
-.error-text { color: #ef4444; font-size: 0.75rem; }
+
+.required {
+    color: #ef4444;
+}
+
+.input-full {
+    width: 100%;
+}
+
+.error-text {
+    color: #ef4444;
+    font-size: 0.75rem;
+}
 
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
+
 .form-row.three-cols {
     grid-template-columns: 1fr 1fr 1fr;
 }
-.mt-auto { margin-top: auto; }
+
+.mt-auto {
+    margin-top: auto;
+}
 
 /* --- PRODUCT TABLE PANEL --- */
 .details-panel {
@@ -445,6 +460,7 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
     overflow: hidden;
     background: white;
 }
+
 .panel-header-custom {
     display: flex;
     align-items: center;
@@ -452,17 +468,40 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
     font-weight: 600;
     color: #334155;
 }
+
 .count-tag {
     font-size: 0.7rem;
     padding: 2px 6px;
 }
 
 /* Table Styles */
-.col-stt { text-align: center; color: #64748b; width: 50px; }
-.col-name { font-weight: 500; color: #1e293b; }
-.col-qty { text-align: center; width: 80px; }
-.col-price { text-align: right; width: 120px; }
-.col-total { text-align: right; font-weight: 700; width: 120px; color: #0f172a; }
+.col-stt {
+    text-align: center;
+    color: #64748b;
+    width: 50px;
+}
+
+.col-name {
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.col-qty {
+    text-align: center;
+    width: 80px;
+}
+
+.col-price {
+    text-align: right;
+    width: 120px;
+}
+
+.col-total {
+    text-align: right;
+    font-weight: 700;
+    width: 120px;
+    color: #0f172a;
+}
 
 .qty-badge {
     background: #f1f5f9;
@@ -481,12 +520,14 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
     padding: 10px;
     background: #f8fafc;
 }
+
 .table-footer .label {
     text-transform: uppercase;
     font-size: 0.75rem;
     font-weight: 700;
     color: #64748b;
 }
+
 .table-footer .value {
     font-size: 1.125rem;
     font-weight: 700;
@@ -500,10 +541,12 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
     align-items: center;
     width: 100%;
 }
+
 .footer-right {
     display: flex;
     gap: 8px;
 }
+
 .cancelled-alert {
     background: #fef2f2;
     color: #dc2626;

@@ -50,7 +50,7 @@ const formatDate = (dateString) => {
 
 const getStatusSeverity = (status) => {
     const map = {
-        'pending': 'warning', 'confirmed': 'info', 'delivering': 'primary',
+        'pending': 'warning', 'confirmed': 'info', 'delivering': 'primary','new':'info',
         'completed': 'success', 'cancelled': 'danger'
     };
     return map[status] || 'secondary';
@@ -58,19 +58,19 @@ const getStatusSeverity = (status) => {
 
 const getStatusLabel = (status) => {
     const map = {
-        'pending': 'Chờ xử lý', 'confirmed': 'Đã xác nhận', 'delivering': 'Đang giao',
+        'pending': 'Chờ xử lý', 'confirmed': 'Đã xác nhận', 'delivering': 'Đang giao','new':'Đơn hàng mới',
         'completed': 'Hoàn thành', 'cancelled': 'Đã hủy'
     };
     return map[status] || status;
 };
 
 const getPaymentStatusSeverity = (status) => {
-    const map = { 'paid': 'success', 'unpaid': 'warning', 'refunded': 'info', 'failed': 'danger', 'cancelled': 'danger' };
+    const map = { 'paid': 'success', 'pending': 'warning', 'refunded': 'info', 'failed': 'danger', 'cancelled': 'danger' };
     return map[status] || 'secondary';
 };
 
 const getPaymentStatusLabel = (status) => {
-    const map = { 'paid': 'Đã thanh toán', 'unpaid': 'Chưa thanh toán', 'refunded': 'Đã hoàn tiền', 'failed': 'Thất bại', 'cancelled': 'Đã hủy' };
+    const map = { 'paid': 'Đã thanh toán', 'pending': 'Chưa thanh toán', 'refunded': 'Đã hoàn tiền', 'failed': 'Thất bại', 'cancelled': 'Đã hủy' };
     return map[status] || status;
 }
 
@@ -242,7 +242,7 @@ const processCancellation = async (action) => {
                     <div class="dm-item">
                         <span class="dm-label">Mã vận đơn:</span>
                         <span class="dm-value text-primary">{{ localOrder.shipping_code || localOrder.ghn_order_code
-                        }}</span>
+                            }}</span>
                     </div>
                     <div class="dm-item">
                         <span class="dm-label">Trạng thái GHN:</span>
@@ -274,7 +274,7 @@ const processCancellation = async (action) => {
                     <Column header="Thành tiền" class="text-right">
                         <template #body="slotProps">
                             <span class="font-bold">{{ formatCurrency(slotProps.data.price * slotProps.data.quantity)
-                            }}</span>
+                                }}</span>
                         </template>
                     </Column>
                 </DataTable>
