@@ -13,7 +13,6 @@ use Inertia\Inertia;
 
 class StaffOrderController extends Controller
 {
-
     protected $ghnService;
     public function __construct(GHNService $ghnService)
     {
@@ -32,7 +31,7 @@ class StaffOrderController extends Controller
         ];
 
         // B. Query danh sách đơn hàng
-        $query = Order::with('user')->latest();
+        $query = Order::with(['user', 'items'])->latest();
 
         // Filter: Tìm kiếm
         if ($request->filled('search')) {
@@ -65,7 +64,17 @@ class StaffOrderController extends Controller
                 'order_status'   => $order->order_status,
                 'payment_status' => $order->payment_status,
                 'created_at'     => $order->created_at ? $order->created_at->format('d/m/Y H:i') : '',
-                // Các trường cần cho logic nút bấm GHN/In
+                'customer_email'   => $order->customer_email,
+                'payment_method'   => $order->payment_method,
+                'delivery_method'  => $order->delivery_method,
+                'shipping_address' => $order->shipping_address,
+                'province'         => $order->province,
+                'district'         => $order->district,
+                'ward'             => $order->ward,
+                'pickup_location'  => $order->pickup_location,
+                'note'             => $order->note,
+                'items'            => $order->items,
+                //GHN
                 'shipping_code'  => $order->shipping_code,
                 'ghn_order_code' => $order->ghn_order_code,
                 'district_id'    => $order->district_id,
@@ -175,54 +184,60 @@ class StaffOrderController extends Controller
     /**
      * Update resource (RESTful) – hiện chỉ hỗ trợ cập nhật order_status.
      */
-    // public function update(Request $request, string $id)
-    // {
-    //     $order = Order::findOrFail($id);
+    public function update(Request $request, string $id)
+    {
+        $order = Order::findOrFail($id);
 
-    //     // Validate các trường thông tin đơn hàng (trừ trạng thái đơn cập nhật qua endpoint riêng)
-    //     $validated = $request->validate([
-    //         'customer_name' => 'nullable|string|max:255',
-    //         'customer_email' => 'nullable|email|max:255',
-    //         'customer_phone' => 'nullable|string|max:50',
-    //         'shipping_address' => 'nullable|string|max:255',
-    //         'province' => 'nullable|string|max:255',
-    //         'district' => 'nullable|string|max:255',
-    //         'ward' => 'nullable|string|max:255',
-    //         'pickup_location' => 'nullable|string|max:255',
-    //         'note' => 'nullable|string|max:1000',
-    //         'delivery_method' => 'nullable|in:shipping,pickup',
-    //         'payment_method' => 'nullable|string|max:50',
-    //     ]);
+        // 1. Validate dữ liệu
+        $validated = $request->validate([
+            'customer_name'    => 'required|string|max:255',
+            'customer_phone'   => 'required|string|max:20',
+            'customer_email'   => 'nullable|email|max:255',
+            'payment_method'   => 'nullable|string|max:50',
+            'delivery_method'  => 'nullable|in:shipping,pickup',
 
-    //     $order->fill($validated);
-    //     $order->save();
+            // Validate 
+            'shipping_address' => 'nullable|required_if:delivery_method,shipping|string|max:255',
+            'province'         => 'nullable|string|max:255',
+            'district'         => 'nullable|string|max:255',
+            'ward'             => 'nullable|string|max:255',
+            'pickup_location'  => 'nullable|required_if:delivery_method,pickup|string|max:255',
+            'note'             => 'nullable|string|max:1000',
+        ]);
 
-    //     if ($request->ajax() || $request->wantsJson()) {
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Cập nhật thông tin đơn hàng thành công',
-    //             'order' => $order,
-    //         ]);
-    //     }
-    //     return redirect()->back()->with('success', 'Cập nhật thông tin đơn hàng thành công');
-    // }
+        try {
+            DB::beginTransaction();
+
+            // 2. Cập nhật dữ liệu
+            $order->fill($validated);
+            $order->save();
+
+            DB::commit();
+
+            // 3. Trả về JSON 
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Cập nhật thông tin thành công!',
+                    'order'   => $order
+                ]);
+            }
+
+            return back()->with('success', 'Cập nhật thông tin thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Lỗi hệ thống: ' . $e->getMessage()]);
+        }
+    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, string $id)
+    public function destroy(string $id)
     {
         $order = Order::findOrFail($id);
         $order->delete();
-
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Đơn hàng đã được xóa thành công!',
-            ]);
-        }
-
-        return redirect()->route('staff.orders.index')->with('success', 'Đơn hàng đã được xóa thành công!');
+        return back()->with('success', 'Đơn hàng đã được xóa thành công!');
     }
 
     public function markCompleted(int $id, CheckoutService $checkout)
@@ -246,7 +261,7 @@ class StaffOrderController extends Controller
         $order = Order::findOrFail($id);
 
         //kiểm tra đơn hàng có mã vận đơn GHN chưa
-        if(!$order->ghn_order_code) {
+        if (!$order->ghn_order_code) {
             return back()->with('error', 'Đơn hàng chưa có mã vận đơn GHN.');
         }
 
@@ -300,7 +315,6 @@ class StaffOrderController extends Controller
             } else {
                 return back()->with('error', 'Lỗi từ GHN: ' . ($result['message'] ?? 'Không lấy được dữ liệu'));
             }
-
         } catch (\Exception $e) {
             return back()->with('error', 'Lỗi hệ thống: ' . $e->getMessage());
         }
@@ -318,7 +332,7 @@ class StaffOrderController extends Controller
         // Nếu không, bạn cần gọi API GHN để lấy token in đơn.
         // Tạm thời trả về thông báo hoặc link tracking nếu có.
         if ($order->ghn_tracking_url) {
-             return Inertia::location($order->ghn_tracking_url);
+            return Inertia::location($order->ghn_tracking_url);
         }
 
         return back()->with('warning', 'Chức năng in vận đơn đang được cập nhật.');

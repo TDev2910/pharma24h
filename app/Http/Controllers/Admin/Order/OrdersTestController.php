@@ -33,15 +33,15 @@ class OrdersTestController extends Controller
         ];
 
         // B. Query danh sách đơn hàng
-        $query = Order::with('user')->latest();
+        $query = Order::with(['user', 'items'])->latest();
 
         // Filter: Tìm kiếm
         if ($request->filled('search')) {
             $term = $request->search;
-            $query->where(function($q) use ($term) {
+            $query->where(function ($q) use ($term) {
                 $q->where('order_code', 'like', "%{$term}%")
-                  ->orWhere('customer_name', 'like', "%{$term}%")
-                  ->orWhere('customer_phone', 'like', "%{$term}%");
+                    ->orWhere('customer_name', 'like', "%{$term}%")
+                    ->orWhere('customer_phone', 'like', "%{$term}%");
             });
         }
 
@@ -66,7 +66,17 @@ class OrdersTestController extends Controller
                 'order_status'   => $order->order_status,
                 'payment_status' => $order->payment_status,
                 'created_at'     => $order->created_at ? $order->created_at->format('d/m/Y H:i') : '',
-                // Các trường cần cho logic nút bấm GHN/In
+                'customer_email'   => $order->customer_email,
+                'payment_method'   => $order->payment_method,
+                'delivery_method'  => $order->delivery_method,
+                'shipping_address' => $order->shipping_address,
+                'province'         => $order->province,
+                'district'         => $order->district,
+                'ward'             => $order->ward,
+                'pickup_location'  => $order->pickup_location,
+                'note'             => $order->note,
+                'items'            => $order->items,
+                //GHN/In
                 'shipping_code'  => $order->shipping_code,
                 'ghn_order_code' => $order->ghn_order_code,
                 'district_id'    => $order->district_id,
@@ -118,8 +128,6 @@ class OrdersTestController extends Controller
             }
 
             $order->save();
-
-            // TODO: Gửi email/notification cho khách tại đây nếu cần
         });
 
         return back()->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
@@ -161,7 +169,6 @@ class OrdersTestController extends Controller
                 // Thất bại: Trả về lỗi từ GHN
                 return back()->with('error', 'Lỗi GHN: ' . ($result['message'] ?? 'Không xác định'));
             }
-
         } catch (\Exception $e) {
             return back()->with('error', 'Lỗi hệ thống: ' . $e->getMessage());
         }
@@ -186,7 +193,7 @@ class OrdersTestController extends Controller
         $order = Order::findOrFail($id);
 
         //kiểm tra đơn hàng có mã vận đơn GHN chưa
-        if(!$order->ghn_order_code) {
+        if (!$order->ghn_order_code) {
             return back()->with('error', 'Đơn hàng chưa có mã vận đơn GHN.');
         }
 
@@ -240,7 +247,6 @@ class OrdersTestController extends Controller
             } else {
                 return back()->with('error', 'Lỗi từ GHN: ' . ($result['message'] ?? 'Không lấy được dữ liệu'));
             }
-
         } catch (\Exception $e) {
             return back()->with('error', 'Lỗi hệ thống: ' . $e->getMessage());
         }
@@ -261,7 +267,7 @@ class OrdersTestController extends Controller
         // Nếu không, bạn cần gọi API GHN để lấy token in đơn.
         // Tạm thời trả về thông báo hoặc link tracking nếu có.
         if ($order->ghn_tracking_url) {
-             return Inertia::location($order->ghn_tracking_url);
+            return Inertia::location($order->ghn_tracking_url);
         }
 
         return back()->with('warning', 'Chức năng in vận đơn đang được cập nhật.');

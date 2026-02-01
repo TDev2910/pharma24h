@@ -68,6 +68,7 @@ const printInvoice = (id) => {
 // Helper UI: Status Badge Color
 const getStatusClass = (status) => {
     const map = {
+        'new': 'status-new',
         'pending': 'status-pending',
         'confirmed': 'status-confirmed',
         'delivering': 'status-delivering',
@@ -79,6 +80,7 @@ const getStatusClass = (status) => {
 
 const getStatusLabel = (status) => {
     const map = {
+        'new': 'Đơn hàng mới',
         'pending': 'Chờ xử lý',
         'confirmed': 'Đã xác nhận',
         'delivering': 'Đang giao',
@@ -223,7 +225,7 @@ const formatDate = (dateString) => {
 
                                 <td class="col-amount">
                                     <span class="font-bold text-gray-800">{{ formatCurrency(order.total_amount)
-                                        }}</span>
+                                    }}</span>
                                 </td>
 
                                 <td class="col-status">
@@ -471,11 +473,6 @@ const formatDate = (dateString) => {
 .stat-icon-box.purple {
     background-color: #a855f7;
     color: white;
-}
-
-/* --- TABLE SECTION --- */
-.table-section {
-    /* No bg here, just title and table */
 }
 
 .table-header-row {

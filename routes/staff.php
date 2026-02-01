@@ -64,6 +64,8 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
         ->name('orders.cancellations.approve');
     Route::post('orders/{order}/cancellations/reject', [StaffOrderController::class, 'rejectCancellation'])
         ->name('orders.cancellations.reject');
+    Route::post('orders/{order}/update-info', [StaffOrderController::class, 'update'])
+        ->name('orders.update-info');
 
     // GHN routes - Thêm nhóm routes này
     Route::prefix('ghn')->name('ghn.')->group(function () {
@@ -76,4 +78,3 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
         Route::post('orders/{order}/sync-status', [StafGHNController::class, 'syncGhnStatus'])->name('orders.sync-status');
     });
 });
-

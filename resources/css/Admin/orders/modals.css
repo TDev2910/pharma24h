@@ -594,15 +594,10 @@
     border-top: 1px solid #e0e0e0;
 }
 
-.dm-label-total {
-    color: #757575;
-    font-size: 14px;
-}
-
 .dm-total-value {
     color: #1976d2; /* Strong Blue */
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 /* Footer Buttons */

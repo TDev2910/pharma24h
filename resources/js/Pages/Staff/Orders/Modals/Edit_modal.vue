@@ -7,7 +7,7 @@ import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
-import Dropdown from 'primevue/dropdown';
+import Select from 'primevue/select';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Tag from 'primevue/tag';
@@ -164,7 +164,7 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
 
                             <div class="form-group">
                                 <label>Thanh toán</label>
-                                <Dropdown v-model="form.payment_method" :options="paymentMethodOptions"
+                                <Select v-model="form.payment_method" :options="paymentMethodOptions"
                                     optionLabel="label" optionValue="value" class="input-full" />
                             </div>
                         </div>
@@ -180,7 +180,7 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
                         <div class="form-group-container">
                             <div class="form-group">
                                 <label>Hình thức giao</label>
-                                <Dropdown v-model="form.delivery_method" :options="deliveryMethodOptions"
+                                <Select v-model="form.delivery_method" :options="deliveryMethodOptions"
                                     optionLabel="label" optionValue="value" class="input-full" />
                             </div>
 
@@ -215,7 +215,7 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
                 </div>
             </form>
 
-            <Panel toggleable :collapsed="!showDetails" @toggle="showDetails = !showDetails" class="details-panel">
+            <!-- <Panel toggleable :collapsed="!showDetails" @toggle="showDetails = !showDetails" class="details-panel">
                 <template #header>
                     <div class="panel-header-custom">
                         <i class="pi pi-list"></i>
@@ -240,14 +240,16 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
                     <Column header="Thành tiền" class="col-total">
                         <template #body="{ data }">{{ formatCurrency(data.price * data.quantity) }}</template>
                     </Column>
-                    <template #footer>
+                   <template #footer>
                         <div class="table-footer">
+                            <span class="label">Phí vận chuyển:</span>
+                            <span class="value">{{ formatCurrency(props.order?.ghn_fee) }}</span>
                             <span class="label">Tổng tiền:</span>
                             <span class="value">{{ formatCurrency(props.order?.total_amount) }}</span>
                         </div>
                     </template>
                 </DataTable>
-            </Panel>
+            </Panel> -->
 
         </div>
 
@@ -261,8 +263,8 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
                 </div>
 
                 <div class="footer-right">
-                    <Button label="Hủy bỏ" icon="pi pi-times" text severity="secondary" @click="emit('close')" />
-                    <Button label="Lưu thông tin" icon="pi pi-check" :loading="form.processing" @click="submitForm" />
+                    <Button label="Hủy bỏ" severity="secondary" @click="emit('close')" />
+                    <Button label="Cập nhật" :loading="form.processing" @click="submitForm" />
                 </div>
             </div>
         </template>

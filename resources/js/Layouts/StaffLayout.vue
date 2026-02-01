@@ -91,10 +91,6 @@
             <span class="font-bold text-xl">Dashboard</span>
          </div>
          <div class="topbar-actions">
-            <div class="search-box">
-               <i class="pi pi-search"></i>
-               <input type="text" placeholder="Tìm kiếm thuốc, đơn hàng..." />
-            </div>
             <button class="btn-icon"><i class="pi pi-bell"></i></button>
             <button class="btn-icon"><i class="pi pi-question-circle"></i></button>
          </div>
