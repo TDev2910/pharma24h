@@ -174,7 +174,6 @@ const subjects = [
 /* 1. Banner Style */
 .contact-banner {
     background: linear-gradient(180deg, #E6F3FF 0%, #FFFFFF 100%);
-    /* Gradient xanh nhạt giống ảnh */
     padding: 60px 0 40px;
     border-bottom: 1px solid #f0f0f0;
 }

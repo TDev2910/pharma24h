@@ -323,7 +323,6 @@ onUnmounted(() => {
 /* --- 1. CẤU HÌNH CHUNG --- */
 .mediaid-header {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  /* Bóng đổ nhẹ Header */
   background: #fff;
 }
 
