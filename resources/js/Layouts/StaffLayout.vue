@@ -46,7 +46,15 @@
               <span>Danh sách khách hàng</span>
             </a>
           </li>
-          
+
+          <li class="menu-label">Tickets</li>
+          <li>
+            <a href="/staff/tickets" class="menu-item">
+              <i class="pi pi-ticket"></i>
+              <span>Quản lý Tickets</span>
+            </a>
+          </li>
+
           <li class="menu-label">CÁ NHÂN</li>
           <li>
             <a href="/staff/my-schedule" class="menu-item">
@@ -57,14 +65,14 @@
         </ul>
 
         <div class="bottom-menu">
-           <li class="menu-label">HỆ THỐNG</li>
-           <li>
+          <li class="menu-label">HỆ THỐNG</li>
+          <li>
             <a href="/settings" class="menu-item">
               <i class="pi pi-cog"></i>
               <span>Cài đặt</span>
             </a>
           </li>
-           <li>
+          <li>
             <a href="/logout" class="menu-item logout-item">
               <i class="pi pi-sign-out"></i>
               <span>Đăng xuất</span>
@@ -87,13 +95,13 @@
 
     <main class="main-content">
       <header class="topbar">
-         <div class="page-breadcrumb">
-            <span class="font-bold text-xl">Dashboard</span>
-         </div>
-         <div class="topbar-actions">
-            <button class="btn-icon"><i class="pi pi-bell"></i></button>
-            <button class="btn-icon"><i class="pi pi-question-circle"></i></button>
-         </div>
+        <div class="page-breadcrumb">
+          <span class="font-bold text-xl">Dashboard</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn-icon"><i class="pi pi-bell"></i></button>
+          <button class="btn-icon"><i class="pi pi-question-circle"></i></button>
+        </div>
       </header>
 
       <div class="content-body">
@@ -117,13 +125,13 @@ const auth = page.props.auth;
 const getUserRoleDisplay = () => {
   const role = auth?.user?.role;
   if (!role) return 'Nhân viên';
-  
+
   const roleMap = {
     'staff': 'Nhân viên',
     'admin': 'Quản trị viên',
     'user': 'Khách hàng'
   };
-  
+
   return roleMap[role] || 'Nhân viên';
 };
 </script>
@@ -132,18 +140,21 @@ const getUserRoleDisplay = () => {
 .layout-wrapper {
   display: flex;
   min-height: 100vh;
-  background-color: #f8fafc; /* Màu nền xám nhạt tổng thể */
+  background-color: #f8fafc;
+  /* Màu nền xám nhạt tổng thể */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* --- 1. SIDEBAR STYLES --- */
 .sidebar {
-  width: 260px; /* Chiều rộng cố định sidebar */
+  width: 260px;
+  /* Chiều rộng cố định sidebar */
   background: white;
   border-right: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  position: fixed; /* Cố định bên trái */
+  position: fixed;
+  /* Cố định bên trái */
   top: 0;
   bottom: 0;
   left: 0;
@@ -161,7 +172,8 @@ const getUserRoleDisplay = () => {
 .logo-icon {
   width: 32px;
   height: 32px;
-  background: #3b82f6; /* Màu xanh logo */
+  background: #3b82f6;
+  /* Màu xanh logo */
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -234,7 +246,8 @@ const getUserRoleDisplay = () => {
 
 /* Active State (Giống ảnh mẫu) */
 .menu-item.active {
-  background-color: #3b82f6; /* Màu xanh dương chủ đạo */
+  background-color: #3b82f6;
+  /* Màu xanh dương chủ đạo */
   color: white;
   font-weight: 600;
   box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5);
@@ -293,7 +306,8 @@ const getUserRoleDisplay = () => {
 
 /* --- 2. MAIN CONTENT STYLES --- */
 .main-content {
-  margin-left: 260px; /* Đẩy nội dung sang phải bằng width sidebar */
+  margin-left: 260px;
+  /* Đẩy nội dung sang phải bằng width sidebar */
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -301,7 +315,8 @@ const getUserRoleDisplay = () => {
 }
 
 .topbar {
-  background: white; /* Hoặc trong suốt tùy thích */
+  background: white;
+  /* Hoặc trong suốt tùy thích */
   height: 64px;
   padding: 0 32px;
   display: flex;
@@ -320,11 +335,11 @@ const getUserRoleDisplay = () => {
 }
 
 .version-badge {
-    font-size: 12px;
-    background: #e2e8f0;
-    color: #64748b;
-    padding: 2px 6px;
-    border-radius: 4px;
+  font-size: 12px;
+  background: #e2e8f0;
+  color: #64748b;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .topbar-actions {
@@ -370,23 +385,34 @@ const getUserRoleDisplay = () => {
 }
 
 .content-body {
-  padding: 0; /* Padding do component con tự xử lý */
+  padding: 0;
+  /* Padding do component con tự xử lý */
   flex: 1;
 }
 
 /* Responsive Tablet/Mobile */
 @media (max-width: 1024px) {
   .sidebar {
-    width: 80px; /* Thu nhỏ sidebar */
+    width: 80px;
+    /* Thu nhỏ sidebar */
   }
-  .app-name, .menu-item span, .menu-label, .user-info {
-    display: none; /* Ẩn chữ */
+
+  .app-name,
+  .menu-item span,
+  .menu-label,
+  .user-info {
+    display: none;
+    /* Ẩn chữ */
   }
-  .sidebar-header, .sidebar-menu, .menu-item {
+
+  .sidebar-header,
+  .sidebar-menu,
+  .menu-item {
     justify-content: center;
     padding-left: 0;
     padding-right: 0;
   }
+
   .main-content {
     margin-left: 80px;
     width: calc(100% - 80px);
