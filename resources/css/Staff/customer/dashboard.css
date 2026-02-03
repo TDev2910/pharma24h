@@ -7,6 +7,7 @@
   padding: 16px;
   max-width: 1600px;
   margin: 0 auto;
+  font-family: 'Inter', sans-serif;
 }
 
 /* --- Header Control Bar --- */
@@ -30,31 +31,36 @@
 .title-section h3 {
   color: #111827;
   margin: 0;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 20px;
   white-space: nowrap;
 }
 
+.address-content {
+  white-space: normal;      
+  overflow-wrap: break-word; 
+  word-break: break-word;    
+  line-height: 1.5;         
+}
 /* Search Box Container */
 .search-container {
   flex: 1;
   display: flex;
   justify-content: center;
-  min-width: 300px; /* Ensure search doesn't get too small */
+  min-width: 300px;
 }
 
 .search-wrapper {
   width: 100%;
   max-width: 500px;
-  position: relative;
 }
 
-.search-wrapper .input-group {
+.input-group {
   position: relative;
   width: 100%;
 }
 
-.search-wrapper .form-control {
+.form-control {
   width: 100%;
   padding-left: 44px !important;
   padding-right: 16px !important;
@@ -67,14 +73,14 @@
   color: #374151 !important;
 }
 
-.search-wrapper .form-control:focus {
+.form-control:focus {
   background: #fff !important;
-  border-color: #6366f1 !important; /* Indigo-500 */
+  border-color: #6366f1 !important;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
   outline: none !important;
 }
 
-.search-wrapper .input-group-text {
+.input-group-text {
   position: absolute;
   left: 14px;
   top: 50%;
@@ -85,7 +91,7 @@
   font-size: 16px;
 }
 
-.search-wrapper .form-control:focus + .input-group-text {
+.form-control:focus + .input-group-text {
   color: #6366f1;
 }
 
@@ -98,7 +104,7 @@
 
 /* Primary Button Style (Khách hàng) */
 .btn-create-customer {
-  background: #111827 !important; /* Gray-900 */
+  background: #111827 !important;
   border: 1px solid transparent !important;
   color: white !important;
   font-weight: 600 !important;
@@ -118,11 +124,6 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.utility-icons {
-  display: flex;
-  gap: 8px;
-}
-
 .btn-icon {
   width: 40px;
   height: 40px;
@@ -135,6 +136,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 16px;
 }
 
 .btn-icon:hover {
@@ -146,9 +148,9 @@
 /* --- Stats Cards --- */
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 20px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .stats-card {
@@ -169,21 +171,26 @@
 .stats-card-inner {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .stats-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 20px;
   color: white;
   flex-shrink: 0;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
+
+.icon-blue { background: #007BFF; }
+.icon-green { background: #10B981; }
+.icon-orange { background: #F59E0B; }
+.icon-dark { background: #1F2937; }
 
 .stats-info {
   display: flex;
@@ -191,14 +198,14 @@
 }
 
 .stats-label {
-  font-size: 14px;
+  font-size: 13px;
   color: #6b7280;
   margin-bottom: 4px;
   font-weight: 500;
 }
 
 .stats-number {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   color: #111827;
   line-height: 1.2;
@@ -209,18 +216,11 @@
   background: transparent;
 }
 
-.table-header {
-  margin-bottom: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.table-title {
+.table-section-title {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   color: #374151;
-  margin: 0;
+  margin-bottom: 16px;
 }
 
 .table-container {
@@ -228,7 +228,7 @@
   border-radius: 16px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   border: 1px solid #f3f4f6;
-  overflow: hidden; /* Important for rounding corners */
+  overflow: hidden;
 }
 
 /* Customizing DataTable */
@@ -236,14 +236,19 @@
   background: #f9fafb;
   color: #4b5563;
   font-weight: 600;
-  padding: 1rem 1rem;
+  padding: 1rem 1.5rem;
   border-bottom: 1px solid #e5e7eb;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 :deep(.p-datatable .p-datatable-tbody > tr > td) {
-  padding: 1rem 1rem;
+  padding: 1.2rem 1.5rem;
   border-bottom: 1px solid #f3f4f6;
   color: #374151;
+  font-size: 14px;
+  vertical-align: middle;
 }
 
 .customer-avatar {
@@ -256,76 +261,38 @@
   height: 36px;
   background: #e5e7eb;
   border-radius: 50%;
+  padding-bottom: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
   font-size: 13px;
-  color: #4b5563;
+  color: white; /* Text color white for colored backgrounds */
 }
 
+/* Utility classes for consistency without Tailwind */
+.text-blue-500 { color: #3b82f6 !important; }
+.text-red-500 { color: #ef4444 !important; }
+.text-gray-900 { color: #111827 !important; }
+.font-bold { font-weight: 700 !important; }
+
+.hover\:bg-blue-50:hover { background-color: #eff6ff !important; }
+.hover\:bg-red-50:hover { background-color: #fef2f2 !important; }
+
 /* --- Responsive Adjustments --- */
-
 @media (max-width: 992px) {
-  .customers-page {
-    padding: 12px;
-  }
-  
-  .controls-section {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-  }
-  
-  .title-section {
-    width: 100%;
-    text-align: center;
-    order: 1;
-  }
-  
-  .search-container {
-    width: 100%;
-    order: 2;
-  }
-  
-  .search-wrapper {
-    max-width: 100%;
-  }
-
-  .ultility-options {
-    width: 100%;
-    justify-content: space-between;
-    order: 3;
-  }
-  
-  .btn-create-customer {
-    flex: 1;
-    justify-content: center;
-  }
+  .customers-page { padding: 12px; }
+  .controls-section { flex-direction: column; align-items: stretch; gap: 16px; }
+  .title-section, .search-container, .ultility-options { width: 100%; order: unset; }
+  .title-section { text-align: center; }
+  .ultility-options { justify-content: space-between; }
+  .btn-create-customer { flex: 1; justify-content: center; }
 }
 
 @media (max-width: 640px) {
-  .header-control-bar {
-    padding: 16px;
-  }
-
-  .stats-number {
-    font-size: 24px;
-  }
-  
-  .stats-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 20px;
-  }
-
-  /* Force table to scroll horizontally */
-  .table-container {
-    overflow-x: auto;
-  }
-  
-  /* Ensure table min-width */
-  .customers-table {
-    min-width: 800px;
-  }
+  .header-control-bar { padding: 16px; }
+  .stats-number { font-size: 24px; }
+  .stats-icon { width: 44px; height: 44px; font-size: 18px; }
+  .table-container { overflow-x: auto; }
+  .customers-table { min-width: 800px; }
 }

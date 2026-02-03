@@ -46,8 +46,6 @@ class StaffCustomerController extends Controller
                     'total_amount' => $customer->orders_sum_total_amount ?? 0
                 ];
             });
-
-        // LƯU Ý: Kiểm tra kỹ tên folder 'Customer' hay 'Customers' trong resources/js/Pages/Staff/
         return Inertia::render('Staff/Customer/Dashboard', [
             'customers' => $customers,
             'stats' => $stats,
@@ -57,42 +55,26 @@ class StaffCustomerController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required|string|min:8|confirmed',
-                'phone' => 'nullable|string|max:15',
-            ]);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+            'phone' => 'nullable|string|max:15',
+        ]);
 
-            // Xử lý an toàn dữ liệu Tỉnh/Thành
-            $province = $this->safeInput($request->province);
-            $district = $this->safeInput($request->district);
-            $ward = $this->safeInput($request->ward);
-
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'province' => $province,
-                'district' => $district,
-                'ward' => $ward,
-                'role' => 'user',
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Thêm khách hàng thành công!',
-                'data' => $user
-            ]);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['success' => false, 'errors' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        }
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'phone' => $request->phone,
+            'role' => 'user',
+            //tỉnh thành
+            'province' => $this->safeInput($request->province),
+            'district' => $this->safeInput($request->district),
+            'ward' => $this->safeInput($request->ward),
+            'role' => 'user',
+        ]);
+        return redirect()->back()->with('success', 'Thêm khách hàng thành công!');
     }
 
     public function edit(string $id)
@@ -104,48 +86,38 @@ class StaffCustomerController extends Controller
 
     public function update(Request $request, string $id)
     {
-        try {
-            $user = User::findOrFail($id);
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $id,
-            ]);
+        $user = User::findOrFail($id);
 
-            $updateData = $request->only(['name', 'email', 'phone', 'address']);
+        //Validate
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:15',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
 
-            // Kiểm tra nếu có thay đổi Tỉnh/Thành thì mới update, và xử lý an toàn
-            if ($request->has('province')) $updateData['province'] = $this->safeInput($request->province);
-            if ($request->has('district')) $updateData['district'] = $this->safeInput($request->district);
-            if ($request->has('ward')) $updateData['ward'] = $this->safeInput($request->ward);
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'province' => $this->safeInput($request->province),
+            'district' => $this->safeInput($request->district),
+            'ward' => $this->safeInput($request->ward),
+        ];
 
-            if ($request->filled('password')) {
-                $updateData['password'] = bcrypt($request->password);
-            }
-
-            $user->update($updateData);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Cập nhật thành công!',
-                'data' => $user
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        if ($request->filled('password')) {
+            $data['password'] = bcrypt($request->password);
         }
+        $user->update($data);
+        return redirect()->back()->with('success', 'Cập nhật khách hàng thành công!');
     }
 
     public function destroy(string $id)
     {
-        try {
-            $user = User::findOrFail($id);
-            $user->delete();
-            return redirect()->back()->with('success', 'Xóa khách hàng thành công!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Lỗi: ' . $e->getMessage());
-        }
+        $user = User::find($id);
+        $user->delete();
+        return redirect()->back()->with('success', 'Xóa khách hàng thành công!');
     }
-
-    // --- CÁC HÀM HELPER ---
 
     /**
      * Helper: Tránh lỗi truy cập mảng trên null hoặc chuỗi
@@ -162,13 +134,12 @@ class StaffCustomerController extends Controller
     {
         if (!$avatarPath) return null;
         if (str_starts_with($avatarPath, 'http')) return $avatarPath;
-        
-        // Chuẩn hóa đường dẫn
+
+        //đường dẫn avatar
         $path = str_starts_with($avatarPath, 'avatars/') ? $avatarPath : 'avatars/' . $avatarPath;
 
-        // Nếu file tồn tại vật lý
         if (file_exists(public_path('storage/' . $path))) {
-             return url('storage/' . $path);
+            return url('storage/' . $path);
         }
         return Storage::url($path);
     }

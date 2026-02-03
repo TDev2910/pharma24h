@@ -5,7 +5,6 @@
         <div class="title-section">
           <h3>Danh sách khách hàng</h3>
         </div>
-
         <div class="search-container">
           <div class="search-wrapper">
             <div class="input-group">
@@ -15,197 +14,194 @@
             </div>
           </div>
         </div>
-
         <div class="ultility-options">
-          <Button icon="pi pi-plus" label="Khách hàng" @click="openCreateModal" class="btn-create-customer" />
-
-          <div class="utility-icons">
-            <button class="btn-icon"><i class="pi pi-list"></i></button>
-            <button class="btn-icon"><i class="pi pi-cog"></i></button>
-          </div>
+          <Button label="Khách hàng" icon="pi pi-plus" class="btn-create-customer" @click="openCreateModal" />
+          <button class="btn-icon"><i class="pi pi-bars"></i></button>
+          <button class="btn-icon"><i class="pi pi-cog"></i></button>
         </div>
       </div>
     </div>
 
     <div class="content-area">
       <div class="stats-row">
+        <!-- Card 1: Total Customers -->
         <div class="stats-card">
           <div class="stats-card-inner">
-            <div class="stats-icon" style="background: #4F46E5;">
-              <i class="fas fa-users"></i>
-            </div>
-            <div>
+            <div class="stats-icon icon-blue"><i class="fas fa-users"></i></div>
+            <div class="stats-info">
               <div class="stats-label">Tổng khách hàng</div>
-              <div class="stats-number">{{ stats.totalCustomers }}</div>
+              <div class="stats-number">{{ stats.totalCustomers || 0 }}</div>
+            </div>
+          </div>
+        </div>
+        <!-- Card 2: Active Customers -->
+        <div class="stats-card">
+          <div class="stats-card-inner">
+            <div class="stats-icon icon-orange"><i class="fas fa-user-check"></i></div>
+            <div class="stats-info">
+              <div class="stats-label">Khách hàng hoạt động</div>
+              <div class="stats-number">{{ stats.activeCustomers || 0 }}</div>
+            </div>
+          </div>
+        </div>
+        <!-- Card 3: New Customers -->
+        <div class="stats-card">
+          <div class="stats-card-inner">
+            <div class="stats-icon icon-dark"><i class="fas fa-clock"></i></div>
+            <div class="stats-info">
+              <div class="stats-label">Khách hàng mới</div>
+              <div class="stats-number">{{ stats.newCustomers || 0 }}</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div>
-        <div class="table-header">
-          <h3 class="table-title">Danh sách dữ liệu khách hàng</h3>
-        </div>
+      <h4 class="table-section-title">Danh sách dữ liệu khách hàng</h4>
 
-        <div class="table-container">
-          <DataTable :value="customers.data" :lazy="true" :paginator="true" :rows="customers.per_page"
-            :totalRecords="customers.total" :first="(customers.current_page - 1) * customers.per_page"
-            @page="onPageChange" removableSort tableStyle="min-width: 50rem" class="customers-table"
-            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            :rowsPerPageOptions="[5, 10, 20, 50]"
-            currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} khách hàng">
+      <div class="table-container">
+        <DataTable :value="customers.data" :lazy="true" :paginator="true" :rows="customers.per_page"
+          :totalRecords="customers.total" :first="(customers.current_page - 1) * customers.per_page"
+          @page="onPageChange" removableSort class="customers-table">
 
-            <Column field="avatar" header="Avatar" style="width: 10%">
-              <template #body="slotProps">
-                <div class="customer-avatar">
-                  <img v-if="slotProps.data.avatar_url" :src="slotProps.data.avatar_url"
-                    style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
-                  <div v-else class="avatar-placeholder">
-                    {{ slotProps.data.name ? slotProps.data.name.substring(0, 2).toUpperCase() : 'N/A' }}
-                  </div>
+          <Column field="avatar" header="Avatar">
+            <template #body="{ data }">
+              <div class="customer-avatar">
+                <img v-if="data.avatar_url" :src="data.avatar_url"
+                  style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;" />
+                <div v-else class="avatar-placeholder" :style="{ backgroundColor: getAvatarColor(data.name) }">
+                  {{ data.name.substring(0, 2).toUpperCase() }}
                 </div>
-              </template>
-            </Column>
+              </div>
+            </template>
+          </Column>
+          <Column field="name" header="Tên khách hàng" bodyClass="font-bold text-gray-900" />
+          <Column field="email" header="Email" />
+          <Column field="phone" header="Số điện thoại" />
+          <Column field="address" header="Địa chỉ" :style="{ maxWidth: '300px', minWidth: '200px' }">
+            <template #body="{ data }">
+              <div class="address-content">
+                {{ data.address || 'N/A' }}
+              </div>
+            </template>
+          </Column>
 
-            <Column field="name" header="Tên khách hàng" style="width: 15%"></Column>
-            <Column field="email" header="Email" style="width: 20%"></Column>
-            <Column field="phone" header="Số điện thoại" style="width: 12%"></Column>
-            <Column field="address" header="Địa chỉ" style="width: 20%">
-              <template #body="slotProps">{{ slotProps.data.address || 'N/A' }}</template>
-            </Column>
-
-            <Column field="total_amount" header="Chi tiêu" style="width: 10%" class="text-center">
-              <template #body="slotProps">
-                <span>{{ formatCurrency(slotProps.data.total_amount) }}</span>
-              </template>
-            </Column>
-
-            <Column header="Thao tác" style="width: 15%; text-align: center;">
-              <template #body="slotProps">
-                <div class="flex justify-content-center gap-2">
-                  <Button icon="pi pi-pencil" text rounded severity="warning" size="small"
-                    @click="editCustomer(slotProps.data)" v-tooltip.top="'Chỉnh sửa'" />
-                  <Button icon="pi pi-trash" text rounded severity="danger" size="small"
-                    @click="deleteCustomer(slotProps.data)" v-tooltip.top="'Xóa'" />
-                </div>
-              </template>
-            </Column>
-          </DataTable>
-        </div>
+          <Column header="Thao tác" style="text-align: center;">
+            <template #body="{ data }">
+              <div class="flex gap-2 justify-content-center">
+                <Button icon="pi pi-pencil" text rounded class="text-blue-500 hover:bg-blue-50"
+                  @click="editCustomer(data)" />
+                <Button icon="pi pi-trash" text rounded class="text-red-500 hover:bg-red-50"
+                  @click="deleteCustomer(data)" />
+              </div>
+            </template>
+          </Column>
+        </DataTable>
       </div>
     </div>
+
+    <StaffCreateCustomerModal :visible="showCreateModal" @close="showCreateModal = false" />
+    <StaffEditCustomerModal :visible="showEditModal" :customer="selectedCustomer" @close="showEditModal = false" />
   </div>
-
-  <StaffCreateCustomerModal :visible="showCreateModal" @close="showCreateModal = false" @created="refreshPage" />
-
-  <StaffEditCustomerModal :visible="showEditModal" :customer="selectedCustomer" @close="showEditModal = false"
-    @updated="refreshPage" />
 </template>
 
 <script>
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import StaffCreateCustomerModal from './Modals/Create.vue'
-import StaffEditCustomerModal from './Modals/Edit.vue'
-import { router } from '@inertiajs/vue3'
-import Swal from 'sweetalert2'
-import debounce from 'lodash/debounce'
+import { ref, watch } from 'vue';
+import { router, usePage } from '@inertiajs/vue3'; // Import usePage
+import Button from 'primevue/button';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Swal from 'sweetalert2';
+import debounce from 'lodash/debounce';
+import StaffCreateCustomerModal from './Modals/Create.vue';
+import StaffEditCustomerModal from './Modals/Edit.vue';
 
 export default {
   name: 'StaffCustomerDashboard',
-  components: {
-    Button, InputText, DataTable, Column, StaffCreateCustomerModal, StaffEditCustomerModal
-  },
-
+  components: { Button, DataTable, Column, StaffCreateCustomerModal, StaffEditCustomerModal },
   props: {
     stats: Object,
-    customers: Object, // Object chứa pagination data từ Controller
-    filters: Object,   // Chứa search query
+    customers: Object,
+    filters: Object,
   },
+  // Dùng setup() để lắng nghe Flash Message
+  setup() {
+    const page = usePage();
 
+    // Lắng nghe thay đổi của Flash message từ Server
+    watch(() => page.props.flash, (flash) => {
+      if (flash?.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Thành công!',
+          text: flash.success,
+          timer: 2000,
+          showConfirmButton: false,
+          position: 'top-end',
+          toast: true
+        });
+      }
+    }, { deep: true });
+
+    return {};
+  },
   data() {
     return {
       searchQuery: this.filters.search || '',
-      isLoading: false,
       showCreateModal: false,
       showEditModal: false,
       selectedCustomer: null,
-    }
+    };
   },
-
   methods: {
     onPageChange(event) {
-      this.isLoading = true;
-      const page = event.page + 1;
-      const rows = event.rows;
-
       router.get('/staff/customers', {
         search: this.searchQuery,
-        page: page,
-        per_page: rows
-      }, {
-        preserveState: true,
-        preserveScroll: true,
-        onFinish: () => this.isLoading = false
-      });
+        page: event.page + 1,
+        per_page: event.rows
+      }, { preserveState: true, preserveScroll: true });
     },
-
-    // tìm kiếm: Debounce 
     handleSearch: debounce(function () {
-      this.isLoading = true;
-      router.get('/staff/customers', {
-        search: this.searchQuery,
-        page: 1 // Reset về trang 1 khi tìm
-      }, {
-        preserveState: true,
-        replace: true,
-        onFinish: () => this.isLoading = false
-      });
+      router.get('/staff/customers', { search: this.searchQuery, page: 1 },
+        { preserveState: true, replace: true });
     }, 300),
 
-    // 3. RELOAD: Gọi khi Modal thêm/sửa thành công
-    refreshPage() {
-      router.reload({ only: ['customers', 'stats'] });
-    },
-
-    formatCurrency(amount) {
-      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-    },
-
-    openCreateModal() { this.showCreateModal = true },
+    openCreateModal() { this.showCreateModal = true; },
 
     editCustomer(customer) {
       this.selectedCustomer = customer;
       this.showEditModal = true;
     },
 
-    // 4. xóa khách hàng
     deleteCustomer(customer) {
       Swal.fire({
-        title: 'Xác nhận xóa',
-        text: `Bạn có chắc chắn muốn xóa "${customer.name}"?`,
+        title: 'Xóa khách hàng?',
+        text: `Bạn muốn xóa ${customer.name}?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        confirmButtonText: 'Xóa',
-        cancelButtonText: 'Hủy'
+        confirmButtonText: 'Xóa'
       }).then((result) => {
         if (result.isConfirmed) {
           router.delete(`/staff/customers/${customer.id}`, {
-            onSuccess: () => {
-              Swal.fire('Thành công!', 'Đã xóa khách hàng.', 'success');
-            },
-            onError: () => {
-              Swal.fire('Lỗi!', 'Không thể xóa khách hàng.', 'error');
-            }
           });
         }
       });
+    },
+    formatCurrency(value) {
+      if (!value) return '0 đ';
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+    },
+    getAvatarColor(name) {
+      if (!name) return '#e5e7eb';
+      const colors = ['#FCD34D', '#F87171', '#60A5FA', '#34D399', '#A78BFA', '#F472B6'];
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return colors[Math.abs(hash) % colors.length];
     }
   }
-}
+};
 </script>
 
 <style scoped>
