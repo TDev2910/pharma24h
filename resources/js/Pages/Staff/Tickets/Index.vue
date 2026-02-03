@@ -1,29 +1,21 @@
 <template>
+
     <Head title="Danh sách Yêu cầu Hỗ trợ" />
 
     <div class="tickets-page">
         <div class="header-control-bar mb-4 d-flex justify-content-between align-items-center">
             <h4 class="m-0 fw-bold text-primary-dark">Danh sách Yêu cầu</h4>
-            
+
             <span class="p-input-icon-left">
-                <i class="pi pi-search" />
                 <InputText v-model="search" placeholder="Tìm kiếm..." class="p-inputtext-sm" />
             </span>
+
         </div>
 
         <div class="table-container bg-white p-3 rounded shadow-sm">
-            <DataTable 
-                :value="tickets.data" 
-                :lazy="true" 
-                :paginator="true" 
-                :rows="tickets.per_page"
-                :totalRecords="tickets.total" 
-                :first="(tickets.current_page - 1) * tickets.per_page"
-                @page="onPage" 
-                stripedRows 
-                responsiveLayout="scroll"
-                tableStyle="min-width: 50rem"
-            >
+            <DataTable :value="tickets.data" :lazy="true" :paginator="true" :rows="tickets.per_page"
+                :totalRecords="tickets.total" :first="(tickets.current_page - 1) * tickets.per_page" @page="onPage"
+                stripedRows responsiveLayout="scroll" tableStyle="min-width: 50rem">
                 <Column field="ticket_id" header="Mã Ticket">
                     <template #body="{ data }">
                         <span class="fw-bold text-primary">#{{ data.ticket_id }}</span>
@@ -31,7 +23,7 @@
                 </Column>
 
                 <Column field="full_name" header="Người gửi" />
-                
+
                 <Column field="message" header="Nội dung" style="max-width: 300px;">
                     <template #body="{ data }">
                         <div class="text-truncate" v-tooltip.top="data.message">
@@ -50,18 +42,14 @@
 
                 <Column header="Thao tác" class="text-center">
                     <template #body="{ data }">
-                        <Button icon="pi pi-eye" rounded severity="info" text 
-                            @click="openDetailModal(data)" v-tooltip.top="'Xem chi tiết'" />
+                        <Button icon="pi pi-eye" rounded severity="info" text @click="openDetailModal(data)"
+                            v-tooltip.top="'Xem chi tiết'" />
                     </template>
                 </Column>
             </DataTable>
         </div>
 
-        <TicketDetailModal 
-            :visible="showModal" 
-            :ticket="selectedTicket" 
-            @close="showModal = false" 
-        />
+        <TicketDetailModal :visible="showModal" :ticket="selectedTicket" @close="showModal = false" />
     </div>
 </template>
 
@@ -99,9 +87,9 @@ watch(search, debounce((value) => {
 
 // 4. Logic phân trang
 const onPage = (event) => {
-    router.get(window.location.pathname, { 
-        page: event.page + 1, 
-        search: search.value 
+    router.get(window.location.pathname, {
+        page: event.page + 1,
+        search: search.value
     }, {
         preserveState: true,
         preserveScroll: true

@@ -87,8 +87,7 @@ const form = useForm({
 
 // 2. Submit Form
 const submitReply = () => {
-    const prefix = window.location.pathname.startsWith('/admin') ? '/admin' : '/staff';
-    const url = `/admin/tickets/${props.ticket.id}/reply`; form.post(url, {
+    const url = `/staff/tickets/${props.ticket.id}/reply`; form.post(url, {
         onSuccess: () => {
             form.reset();
             emit('close');

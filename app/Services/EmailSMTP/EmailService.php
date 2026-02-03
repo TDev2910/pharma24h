@@ -44,8 +44,6 @@ class EmailService
         }
 
         try {
-            // Sử dụng queue để gửi ngầm (tối ưu tốc độ phản hồi Modal)
-            // Nếu chưa cấu hình queue, bạn đổi ->queue() thành ->send()
             Mail::to($ticket->email)
                 ->send(new TicketReplyMail($ticket, $replyContent));
 

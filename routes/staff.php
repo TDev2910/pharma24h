@@ -6,7 +6,8 @@ use App\Http\Controllers\Staff\StaffStockController;
 use App\Http\Controllers\Staff\StaffServiceBookingController;
 use App\Http\Controllers\Staff\StaffCustomerController;
 use App\Http\Controllers\Staff\StaffOrderController;
-use App\Http\Controllers\Staff\StafGHNController; // Thêm dòng này
+use App\Http\Controllers\Staff\StafGHNController; 
+use App\Http\Controllers\SupportTicketController;
 
 Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
@@ -76,5 +77,12 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
         Route::post('wards', [StafGHNController::class, 'getWards'])->name('wards');
         Route::get('orders/{order}/track', [StafGHNController::class, 'trackOrder'])->name('orders.track');
         Route::post('orders/{order}/sync-status', [StafGHNController::class, 'syncGhnStatus'])->name('orders.sync-status');
+    });
+    // Tickets
+    Route::prefix('tickets')->name('tickets.')->middleware(['auth', 'staff'])->group(function () {
+        Route::get('/', [SupportTicketController::class, 'index'])->name('index');
+        Route::get('/api', [SupportTicketController::class, 'getTickets'])->name('api');
+        Route::get('/{id}', [SupportTicketController::class, 'show'])->name('show');
+        Route::post('/{id}/reply', [SupportTicketController::class, 'reply'])->name('reply');
     });
 });

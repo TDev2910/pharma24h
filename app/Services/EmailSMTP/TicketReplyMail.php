@@ -41,7 +41,6 @@ class TicketReplyMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            // Chúng ta sẽ tạo file view này ở Bước 3
             view: 'emails.tickets.reply',
         );
     }

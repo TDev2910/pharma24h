@@ -17,17 +17,37 @@ class SupportTicketController extends Controller
     {
         $this->emailService = $emailService;
     }
+
     //Danh sách Ticket
-    //Hàm này chỉ trả về khung giao diện (View)
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
-        // Kiểm tra quyền để trả về đúng View layout
+
+        $tickets = SupportTicket::query()
+            ->when($request->search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('ticket_id', 'like', "%{$search}%")
+                        ->orWhere('full_name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->when($request->status, function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString(); // Giữ lại tham số search/page trên URL khi phân trang
+
+        // Phân định View theo Role
         $view = ($user && $user->isAdmin())
             ? 'Admin/Tickets/Index'
             : 'Staff/Tickets/Index';
 
-        return Inertia::render($view); // Không truyền biến 'tickets' vào đây nữa
+        // Trả về Inertia
+        return Inertia::render($view, [
+            'tickets' => $tickets,
+            'filters' => $request->only(['search', 'status']),
+        ]);
     }
 
     //Hàm API này trả về dữ liệu JSON (Vue sẽ gọi hàm này)
@@ -56,10 +76,11 @@ class SupportTicketController extends Controller
         return response()->json($tickets); // Trả về JSON
     }
 
-    //Xử lý lưu Form (Create - từ trang Contact)
+    /**
+     * TẠO MỚI TICKET
+     */
     public function store(Request $request)
     {
-        // Validate dữ liệu từ form Vue
         $validated = $request->validate([
             'fullName' => 'required|string|max:255',
             'email'    => 'required|email|max:255',
@@ -74,16 +95,19 @@ class SupportTicketController extends Controller
             'subject'   => $validated['subject'],
             'message'   => $validated['message'],
             'status'    => 'pending',
-            'user_id'   => Auth::id() ?? null, // Cho phép khách vãng lai (null)
+            'user_id'   => Auth::id() ?? null,
         ]);
 
-        // Trả về JSON
-        return redirect()->back()->with('success', 'Gửi yêu cầu thành công!');
+        // Redirect back kèm Flash Message
+        return redirect()->back()->with('success', 'Gửi yêu cầu hỗ trợ thành công!');
     }
 
-    //chi tiết Ticket
+    /**
+     * CHI TIẾT TICKET
+     */
     public function show($id)
     {
+        // Eager load 'responder' để hiển thị ai là người trả lời
         $ticket = SupportTicket::with(['responder', 'user'])->findOrFail($id);
 
         $user = Auth::user();
@@ -96,28 +120,34 @@ class SupportTicketController extends Controller
         ]);
     }
 
-    // 4. Xử lý Trả lời
+    /**
+     * TRẢ LỜI TICKET
+     * Thay đổi: Không trả JSON, dùng Redirect để refresh UI
+     */
     public function reply(Request $request, $id)
     {
         $request->validate(['message' => 'required|min:5']);
 
         $ticket = SupportTicket::findOrFail($id);
 
-        // 1. Cập nhật Database
+        // Update Database
         $ticket->update([
-            'admin_reply' => $request->message,
+            'admin_reply'  => $request->message,
             'responded_by' => Auth::id(),
             'responded_at' => now(),
-            'status' => 'replied'
+            'status'       => 'replied'
         ]);
 
-        //Gọi Service gửi Email (Tái sử dụng cấu trúc có sẵn)
-        $this->emailService->sendTicketReply($ticket, $request->message);
+        // Gửi Email
+        try {
+            $this->emailService->sendTicketReply($ticket, $request->message);
+            $message = 'Đã gửi phản hồi và email thông báo thành công!';
+        } catch (\Exception $e) {
+            // Vẫn báo thành công nhưng cảnh báo lỗi mail (tùy nghiệp vụ)
+            $message = 'Đã lưu phản hồi, nhưng lỗi gửi email: ' . $e->getMessage();
+        }
 
-        //Trả về JSON cho Axios (Modal)
-        return response()->json([
-            'success' => true,
-            'message' => 'Đã gửi phản hồi và email thông báo thành công!'
-        ]);
+        // QUAN TRỌNG: Redirect back để Inertia tự load lại data mới nhất
+        return redirect()->back()->with('success', $message);
     }
 }
