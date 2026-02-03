@@ -27,8 +27,7 @@
                 <div class="col-md-8">
                     <div class="mb-4">
                         <h6>Nội dung chi tiết</h6>
-                        <div class="bg-white p-3 rounded border text-secondary"
-                            style="white-space: pre-line; min-height: 100px;">
+                        <div class="bg-white p-3 rounded border text-secondary ticket-message-content">
                             {{ ticket.message }}
                         </div>
                     </div>
@@ -102,6 +101,8 @@ const getStatusSeverity = (status) => ({ 'pending': 'warning', 'replied': 'succe
 </script>
 
 <style scoped>
+@import url('../../../../../css/Staff/tickets/modals.css');
+
 :deep(.p-dialog-content) {
     padding: 1.5rem;
 }

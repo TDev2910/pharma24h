@@ -1,0 +1,73 @@
+/* Ticket Modal Styles */
+
+.ticket-detail {
+    font-family: 'Inter', sans-serif;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+.border-top {
+    border-top: 1px solid #dee2e6 !important;
+}
+
+.reply-section {
+    margin-top: 2rem;
+}
+
+/* Message Content Box - Fix Text Overflow */
+.ticket-message-content {
+    white-space: pre-line;     
+    min-height: 100px;
+    word-break: break-word;   
+    overflow-wrap: break-word; 
+    word-wrap: break-word;      
+}
+
+/* Responsive Grid Fallback (if Bootstrap grid not fully available or needs override) */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -0.75rem;
+    margin-left: -0.75rem;
+}
+
+.col-md-4, .col-md-8 {
+    position: relative;
+    width: 100%;
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .col-md-4 {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+    }
+    .col-md-8 {
+        flex: 0 0 66.666667%;
+        max-width: 66.666667%;
+    }
+}
+
+@media (max-width: 768px) {
+    .ticket-detail .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+    }
+
+    .ticket-detail .col-md-4 {
+        order: 2; /* Move info to bottom on mobile if desired, or keep logic */
+        margin-top: 1rem;
+    }
+
+    .ticket-detail .col-md-8 {
+        order: 1;
+    }
+}

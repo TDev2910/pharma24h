@@ -128,6 +128,8 @@ watch(() => page.props.flash, (flash) => {
 </script>
 
 <style scoped>
+@import url('../../../../css/Staff/tickets/dashboard.css');
+
 .text-truncate {
     white-space: nowrap;
     overflow: hidden;
