@@ -1,0 +1,745 @@
+/* Hero Section */
+.hero-section {
+    padding: 120px 0 80px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e8f3ff 100%);
+}
+
+.hero-subtitle {
+    color: #2196F3;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+.hero-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.2;
+    margin-bottom: 24px;
+}
+
+.highlight-text {
+    color: #2196F3;
+}
+
+.hero-description {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.btn-hero {
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.btn-primary {
+    background: #1976D2 !important;
+    /* Đổi từ #2196F3 sang màu xanh đậm hơn */
+    border: none;
+    color: white !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:not(:disabled):not(.disabled):active {
+    background: #1976D2 !important;
+    border-color: #1976D2 !important;
+    color: white !important;
+    transform: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+
+.btn-outline-primary {
+    border: 2px solid #2196F3;
+    color: #2196F3;
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: #2196F3;
+    color: white;
+}
+
+.hero-image {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Features Section */
+.features-section {
+    padding: 60px 0;
+    background: #e8f3ff;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 24px 16px;
+    background: white;
+    border-radius: 12px;
+    transition: transform 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+    color: white;
+}
+
+.feature-icon.blue {
+    background: #2196F3;
+}
+
+.feature-icon.cyan {
+    background: #00BCD4;
+}
+
+.feature-icon.light-blue {
+    background: #64B5F6;
+}
+
+.feature-icon.medium-blue {
+    background: #1976D2;
+}
+
+.feature-icon.dark-blue {
+    background: #0D47A1;
+}
+
+.feature-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.feature-text {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+/* Service Categories Section */
+.service-categories-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.section-header {
+    margin-bottom: 48px;
+}
+
+.section-subtitle {
+    color: #2196F3;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.section-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+}
+
+.section-description {
+    font-size: 16px;
+    color: #666;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.category-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 32px 24px;
+    height: 100%;
+    transition: all 0.3s;
+}
+
+.category-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.category-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: white;
+}
+
+.blue-icon {
+    background: #2196F3;
+}
+
+.green-icon {
+    background: #4CAF50;
+}
+
+.purple-icon {
+    background: #9C27B0;
+}
+
+.orange-icon {
+    background: #FF9800;
+}
+
+.category-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+}
+
+.category-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.category-list li {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.category-link {
+    color: #2196F3;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0;
+    font-size: 14px;
+}
+
+.category-link:hover {
+    text-decoration: underline;
+}
+
+/* Home Care Section */
+.home-care-section {
+    padding: 80px 0;
+    background: #f8fafc;
+}
+
+.home-care-badge {
+    display: inline-block;
+    background: #E8F5E9;
+    color: #2E7D32;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+.home-care-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+}
+
+.home-care-description {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.home-care-features {
+    margin-bottom: 32px;
+}
+
+.feature-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.feature-item-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+    color: white;
+}
+
+.feature-item-icon.green {
+    background: #4CAF50;
+}
+
+.feature-item-content h5 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.feature-item-content p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.btn-home-care {
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    background: #4CAF50;
+    border: none;
+    color: white;
+}
+
+.btn-home-care:hover {
+    background: #45a049;
+}
+
+.home-care-image {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.home-care-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.home-care-stats {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    right: 24px;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stat-item i {
+    font-size: 24px;
+    color: #4CAF50;
+}
+
+.stat-item span {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Booking Section */
+.booking-section {
+    padding: 80px 0;
+    background: #F0F8FF;
+}
+
+.booking-section .section-header {
+    margin-bottom: 48px;
+}
+
+.booking-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    height: 100%;
+    transition: all 0.3s;
+}
+
+.booking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+
+.booking-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    background: #E3F2FD;
+    color: #2196F3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 28px;
+}
+
+.booking-icon.white {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.booking-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+}
+
+.booking-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+.booking-fields {
+    margin-bottom: 24px;
+}
+
+.booking-label {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.booking-form input {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.btn-booking {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+}
+
+/* Doctors Section */
+.doctors-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.view-all-link {
+    color: #2196F3;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 12px;
+}
+
+.view-all-link:hover {
+    text-decoration: underline;
+}
+
+.doctor-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.doctor-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.doctor-image {
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #E0F2F1 0%, #B2DFDB 100%);
+}
+
+.doctor-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.doctor-info {
+    padding: 20px;
+}
+
+.doctor-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.doctor-specialty {
+    font-size: 14px;
+    color: #2196F3;
+    margin-bottom: 8px;
+}
+
+.doctor-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 80px 0;
+    background: #f8fafc;
+}
+
+.cta-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+}
+
+.cta-description {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 32px;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-cta {
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-cta i {
+    font-size: 18px;
+}
+
+/* Footer Section */
+.footer-section {
+    padding: 60px 0 20px;
+    background: #1a1a1a;
+    color: #999;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 20px;
+    font-weight: 600;
+    color: white;
+}
+
+.footer-logo i {
+    font-size: 32px;
+    color: #2196F3;
+}
+
+.footer-description {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.footer-social {
+    display: flex;
+    gap: 12px;
+}
+
+.footer-social a {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #2a2a2a;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.footer-social a:hover {
+    background: #2196F3;
+}
+
+.footer-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 12px;
+}
+
+.footer-links a {
+    color: #999;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: #2196F3;
+}
+
+.footer-contact {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-contact li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.footer-contact i {
+    color: #2196F3;
+    width: 20px;
+}
+
+.footer-bottom {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #2a2a2a;
+    text-align: center;
+}
+
+.footer-bottom p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .hero-title {
+        font-size: 36px;
+    }
+
+    .section-title {
+        font-size: 28px;
+    }
+
+    .home-care-title,
+    .cta-title {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 767px) {
+    .hero-section {
+        padding: 80px 0 40px;
+    }
+
+    .hero-title {
+        font-size: 28px;
+    }
+
+    .section-title {
+        font-size: 24px;
+    }
+
+    .home-care-title,
+    .cta-title {
+        font-size: 24px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+    .btn-hero {
+        width: 100%;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+    }
+
+    .btn-cta {
+        width: 100%;
+        justify-content: center;
+    }
+}
