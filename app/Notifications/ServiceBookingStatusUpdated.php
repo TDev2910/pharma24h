@@ -17,8 +17,8 @@ class ServiceBookingStatusUpdated extends Notification
     public function __construct(ServiceBooking $booking, $oldStatus, $newStatus)
     {
         $this->booking = $booking;
-        $this->oldStatus = $oldStatus; // Lưu status cũ
-        $this->newStatus = $newStatus; // Lưu status mới
+        $this->oldStatus = $oldStatus; 
+        $this->newStatus = $newStatus; 
     }
 
     public function via($notifiable)

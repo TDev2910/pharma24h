@@ -22,15 +22,15 @@ class StaffOrderController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-        // A. Thống kê nhanh (Stats)
+    {   
+        // Thống kê nhanh (Stats)
         $stats = [
             'total'     => Order::count(),
             'pending'   => Order::where('order_status', 'pending')->count(),
             'completed' => Order::where('order_status', 'completed')->count(),
         ];
 
-        // B. Query danh sách đơn hàng
+        // Query danh sách đơn hàng
         $query = Order::with(['user', 'items'])->latest();
 
         // Filter: Tìm kiếm
@@ -53,7 +53,7 @@ class StaffOrderController extends Controller
             $query->whereBetween('created_at', [$request->from_date, $request->to_date]);
         }
 
-        // C. Phân trang & Format dữ liệu trả về cho Table
+        // Phân trang & Format dữ liệu trả về cho Table
         $orders = $query->paginate(10)->withQueryString()->through(function ($order) {
             return [
                 'id'             => $order->id,
@@ -82,7 +82,7 @@ class StaffOrderController extends Controller
             ];
         });
 
-        // D. Render View với Inertia
+        // Render View với Inertia
         return Inertia::render('Staff/Orders/Dashboard', [
             'stats'   => $stats,
             'orders'  => $orders,

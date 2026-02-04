@@ -106,7 +106,7 @@
 
 <script>
 import { ref, watch } from 'vue';
-import { router, usePage } from '@inertiajs/vue3'; // Import usePage
+import { router, usePage } from '@inertiajs/vue3'; 
 import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';

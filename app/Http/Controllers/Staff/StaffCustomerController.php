@@ -41,6 +41,9 @@ class StaffCustomerController extends Controller
                     'email' => $customer->email,
                     'phone' => $customer->phone,
                     'address' => $customer->address,
+                    'province' => $customer->province,
+                    'district' => $customer->district,
+                    'ward' => $customer->ward,
                     'avatar_url' => $this->getAvatarUrl($customer->avatar),
                     'orders_count' => $customer->orders_count ?? 0,
                     'total_amount' => $customer->orders_sum_total_amount ?? 0
@@ -93,6 +96,10 @@ class StaffCustomerController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:15',
+            'address' => 'nullable|string|max:255',
+            'province' => 'nullable|string|max:255',
+            'district' => 'nullable|string|max:255',
+            'ward' => 'nullable|string|max:255',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -100,6 +107,7 @@ class StaffCustomerController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
+            'address' => $request->address,
             'province' => $this->safeInput($request->province),
             'district' => $this->safeInput($request->district),
             'ward' => $this->safeInput($request->ward),

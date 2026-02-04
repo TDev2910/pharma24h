@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use App\Models\Medicine;
@@ -35,12 +36,12 @@ class DashboardController extends Controller
         $processingOrderCount = $user->orders()
             ->whereIn('order_status', [Order::STATUS['PENDING'], Order::STATUS['NEW']])
             ->count();
-        
+
         //Thông báo mới
         $newNotificationsCount = $user->notifications()
             ->whereNull('read_at')
             ->count();
-            
+
         // Lấy 5 thông báo mới nhất
         $recentNotifications = $user->notifications()
             ->latest()
@@ -48,10 +49,10 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($notification) {
                 $data = $notification->data;
-                
+
                 // Xác định icon và màu dựa trên type
                 $iconConfig = $this->getNotificationIcon($data['type'] ?? 'default');
-                
+
                 return [
                     'id' => $notification->id,
                     'type' => $data['type'] ?? 'default',
@@ -65,40 +66,40 @@ class DashboardController extends Controller
                 ];
             });
 
-          // Lấy 5 đơn hàng gần nhất (format đẹp)
-          $recentOrders = $user->orders()
-              ->with('items')
-              ->latest()
-              ->take(5)
-              ->get()
-              ->map(function ($order) {
-                  // Lấy tên sản phẩm đầu tiên hoặc tổng hợp
-                  $productNames = $order->items->take(2)->map(function ($item) {
-                      return $item->product_name ?? $item->name ?? 'Sản phẩm';
-                  })->toArray();
+        // Lấy 5 đơn hàng gần nhất (format đẹp)
+        $recentOrders = $user->orders()
+            ->with('items')
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function ($order) {
+                // Lấy tên sản phẩm đầu tiên hoặc tổng hợp
+                $productNames = $order->items->take(2)->map(function ($item) {
+                    return $item->product_name ?? $item->name ?? 'Sản phẩm';
+                })->toArray();
 
-                  $productDisplay = count($productNames) > 0
-                      ? implode(', ', $productNames) . (count($order->items) > 2 ? '...' : '')
-                      : 'Không có sản phẩm';
+                $productDisplay = count($productNames) > 0
+                    ? implode(', ', $productNames) . (count($order->items) > 2 ? '...' : '')
+                    : 'Không có sản phẩm';
 
-                  // Xác định status class dựa trên order_status
-                  $statusClass = $this->getOrderStatusClass($order->order_status);
-                  $statusText = $this->getOrderStatusText($order->order_status);
+                // Xác định status class dựa trên order_status
+                $statusClass = $this->getOrderStatusClass($order->order_status);
+                $statusText = $this->getOrderStatusText($order->order_status);
 
-                  return [
-                      'id'          => $order->id,
-                      'code'        => $order->order_code ?? '#' . str_pad($order->id, 4, '0', STR_PAD_LEFT),
-                      'date'        => $order->created_at ? $order->created_at->format('d/m/Y') : '',
-                      'product'     => $productDisplay,
-                      'total'       => number_format($order->total_amount ?? 0, 0, ',', '.') . '₫',
-                      'status'      => $statusText,
-                      'statusClass' => $statusClass,
-                  ];
-              });
-        
+                return [
+                    'id'          => $order->id,
+                    'code'        => $order->order_code ?? '#' . str_pad($order->id, 4, '0', STR_PAD_LEFT),
+                    'date'        => $order->created_at ? $order->created_at->format('d/m/Y') : '',
+                    'product'     => $productDisplay,
+                    'total'       => number_format($order->total_amount ?? 0, 0, ',', '.') . '₫',
+                    'status'      => $statusText,
+                    'statusClass' => $statusClass,
+                ];
+            });
+
         return Inertia::render('User/Dashboard', [
             'ordersCount' => $ordersCount,
-            'bookingsCount' => $bookingsCount, 
+            'bookingsCount' => $bookingsCount,
             'unreadNotificationsCount' => $unreadNotificationsCount,
             'recentNotifications' => $recentNotifications,
             'recentOrders' => $recentOrders,
@@ -109,7 +110,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    private function getOrderStatusClass($status) 
+    private function getOrderStatusClass($status)
     {
         $statusMap = [
             'new' => 'processing',
@@ -125,7 +126,7 @@ class DashboardController extends Controller
 
         return $statusMap[$status] ?? 'default';
     }
-    
+
     private function getNotificationIcon($type)
     {
         $configs = [
@@ -146,7 +147,7 @@ class DashboardController extends Controller
                 'color' => 'blue'
             ],
         ];
-        
+
         return $configs[$type] ?? $configs['default'];
     }
 
@@ -163,67 +164,66 @@ class DashboardController extends Controller
             'cancelled' => 'Đã hủy',
             'cancellation_requested' => 'Yêu cầu hủy',
         ];
-        
+
         return $statusMap[$status] ?? 'Chờ xử lý';
     }
 
 
     public function profileSettings()
     {
+        $user = Auth::user();
         return Inertia::render('User/ProfileSettings', [
             'pageTitle' => 'Cài đặt hồ sơ',
             'pageDescription' => 'Quản lý thông tin cá nhân và tùy chọn tài khoản của bạn',
+            'user' => $user
         ]);
     }
 
     public function updateProfileSettings(Request $request)
     {
+        /** @var User $user */
         $user = Auth::user();
 
-        // Xử lý cập nhật thông tin cá nhân
+        //Validate
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:255',
-            'province' => 'nullable|string',
-            'district' => 'nullable|string',
-            'ward' => 'nullable|string',
-            'current_password' => 'nullable|string',
-            'new_password' => 'nullable|string|min:6|confirmed',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email,' . $user->id,
+            'phone'    => 'nullable|string|max:20',
+            'address'  => 'nullable|string|max:255',
+            'province' => 'nullable',
+            'district' => 'nullable',
+            'ward'     => 'nullable',
+            'current_password' => 'nullable|required_with:new_password|string',
+            'new_password'     => 'nullable|string|min:6|confirmed',
         ], [
             'name.required' => 'Vui lòng nhập họ tên',
-            'email.required' => 'Vui lòng nhập email',
-            'email.email' => 'Email không hợp lệ',
-            'email.unique' => 'Email này đã được sử dụng',
-            'new_password.min' => 'Mật khẩu mới phải có ít nhất 6 ký tự',
+            'email.unique'  => 'Email này đã được sử dụng',
             'new_password.confirmed' => 'Xác nhận mật khẩu không khớp',
         ]);
 
         try {
-            // Cập nhật thông tin cơ bản
-            $user->update([
-                'name' => $validatedData['name'],
-                'email' => $validatedData['email'],
-                'phone' => $validatedData['phone'],
-                'address' => $validatedData['address'],
-                'province' => $validatedData['province'],
-                'district' => $validatedData['district'],
-                'ward' => $validatedData['ward'],
-            ]);
+            DB::beginTransaction();
 
-            // Cập nhật mật khẩu nếu có
-            if ($request->filled('current_password') && $request->filled('new_password')) {
-                if (!\Hash::check($request->current_password, $user->password)) {
+            $userData = collect($validatedData)
+                ->only(['name', 'email', 'phone', 'address', 'province', 'district', 'ward'])
+                ->toArray();
+
+            $user->update($userData);
+
+            //Update mật khẩu 
+            if ($request->filled('new_password')) {
+                if (!Hash::check($request->current_password, $user->password)) {
                     return back()->withErrors(['current_password' => 'Mật khẩu hiện tại không đúng']);
                 }
-
-                $user->update(['password' => \Hash::make($request->new_password)]);
+                $user->update(['password' => Hash::make($request->new_password)]);
             }
+
+            DB::commit();
 
             return back()->with('success', 'Cập nhật thông tin thành công!');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Có lỗi xảy ra: ' . $e->getMessage()]);
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Lỗi hệ thống: ' . $e->getMessage()]);
         }
     }
 
@@ -240,14 +240,14 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($order) {
                 $order->append([
-                    'ghn_status_text',     
+                    'ghn_status_text',
                     'ghn_expected_delivery_formatted',
                 ]);
                 $order->is_shipping = $order->isShipping();
 
-            return $order;
-        });
-        
+                return $order;
+            });
+
         // Load images cho các đơn hàng cũ (nếu chưa có image)
         foreach ($orders as $order) {
             foreach ($order->items as $item) {
@@ -260,7 +260,7 @@ class DashboardController extends Controller
                         } elseif ($item->item_type === 'goods') {
                             $product = Goods::find($item->item_id);
                         }
-                        
+
                         if ($product && isset($product->image)) {
                             $item->image = $product->image;
                         }
@@ -271,7 +271,7 @@ class DashboardController extends Controller
                 }
             }
         }
-        
+
         return Inertia::render('User/Orders/Index', [
             'orders' => $orders,
         ]);
@@ -353,7 +353,7 @@ class DashboardController extends Controller
     public function services()
     {
         $user = Auth::user();
-        
+
         $bookings = ServiceBooking::where('user_id', $user->id)
             ->with('service')
             ->latest()
@@ -376,7 +376,7 @@ class DashboardController extends Controller
             ->with(['service', 'user'])
             ->where('id', $bookingId)
             ->firstOrFail();
-        
+
         return Inertia::render('User/Services/Details', [
             'booking' => $booking,
             'pageTitle' => 'Chi tiết dịch vụ',
@@ -394,7 +394,7 @@ class DashboardController extends Controller
 
         // Đánh dấu đã đọc khi vào trang
         $user->unreadNotifications->markAsRead();
-        
+
         return Inertia::render('User/Notifications/Index', [
             'notifications' => $notifications,
             'pageTitle' => 'Thông báo',
@@ -415,7 +415,7 @@ class DashboardController extends Controller
         $user = Auth::user();
         $notification = $user->notifications()->findOrFail($notificationId);
         $notification->markAsRead();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Đã đánh dấu đã đọc'
@@ -426,7 +426,7 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $user->unreadNotifications->markAsRead();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Đã đánh dấu tất cả đã đọc'
@@ -438,7 +438,7 @@ class DashboardController extends Controller
         $user = Auth::user();
         $notification = $user->notifications()->findOrFail($notificationId);
         $notification->delete();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Đã xóa thông báo'

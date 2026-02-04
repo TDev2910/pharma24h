@@ -6,7 +6,7 @@ use App\Http\Controllers\Staff\StaffStockController;
 use App\Http\Controllers\Staff\StaffServiceBookingController;
 use App\Http\Controllers\Staff\StaffCustomerController;
 use App\Http\Controllers\Staff\StaffOrderController;
-use App\Http\Controllers\Staff\StafGHNController; 
+use App\Http\Controllers\Staff\StafGHNController;
 use App\Http\Controllers\SupportTicketController;
 
 Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(function () {

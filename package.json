@@ -26,6 +26,7 @@
     "dompurify": "^3.3.0",
     "firebase": "^12.4.0",
     "leaflet": "^1.9.4",
+    "lodash": "^4.17.23",
     "primeicons": "^7.0.0",
     "primevue": "^4.4.0",
     "quill": "^2.0.3",

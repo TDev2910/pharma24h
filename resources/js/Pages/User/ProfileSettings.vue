@@ -1,215 +1,165 @@
 ﻿<template>
   <div class="settings-content">
-    <!-- Profile Photo Section -->
-    <div class="profile-section">
-      <div class="profile-photo">
-        <div class="profile-avatar" :class="{ uploading: uploadingAvatar }">
-          <img 
-            v-if="auth?.user?.avatar" 
-            :src="`/storage/avatars/${auth.user.avatar}`" 
-            alt="Avatar" 
-            class="avatar-img"
-          />
-          <i v-else class="fas fa-user"></i>
+    <!-- Left Column: Profile Card -->
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="avatar-container">
+          <div class="avatar-wrapper" :class="{ uploading: uploadingAvatar }">
+            <img v-if="user?.avatar" :src="`/storage/avatars/${user.avatar}`" alt="Avatar" class="avatar-img" />
+            <div v-else class="avatar-placeholder">
+              <i class="fas fa-user"></i>
+            </div>
+
+            <button class="btn-camera" @click="triggerFileInput" title="Đổi ảnh đại diện">
+              <i class="fas fa-camera"></i>
+            </button>
+          </div>
+          <input ref="avatarInput" type="file" accept="image/*" class="d-none" @change="handleFileSelect" />
         </div>
-        <h5>Ảnh đại diện</h5>
-        <p>Ảnh đại diện sẽ được hiển thị trên hồ sơ của bạn</p>
-        <div class="photo-buttons">
-          <button class="btn-upload" @click="triggerFileInput">
-            <i class="fas fa-camera me-1"></i>Tải lên ảnh mới
-          </button>
-          <button class="btn-remove" @click="removeAvatar">Xóa</button>
+
+        <h5 class="profile-title">Ảnh đại diện</h5>
+        <p class="profile-subtitle">JPG, PNG tối đa 2MB</p>
+      </div>
+
+      <div class="profile-info-list">
+        <div class="info-item">
+          <span class="info-label">Trạng thái</span>
+          <span class="info-value status-active"><span class="dot"></span> Hoạt động</span>
         </div>
-        <input 
-          ref="avatarInput" 
-          type="file" 
-          accept="image/*" 
-          style="display: none;" 
-          @change="handleFileSelect"
-        />
+        <div class="info-item">
+          <span class="info-label">Ngày tham gia</span>
+          <span class="info-value">{{ formatDate(user?.created_at) }}</span>
+        </div>
       </div>
     </div>
 
-    <!-- Form Section -->
-    <div class="form-section">
-      <!-- Success Alert -->
-      <div v-if="$page.props.flash?.success" class="alert alert-success">
-        <i class="fas fa-check-circle me-2"></i>{{ $page.props.flash.success }}
-      </div>
-
-      <!-- Error Alert -->
-      <div v-if="Object.keys(errors).length > 0" class="alert alert-danger">
-        <i class="fas fa-exclamation-circle me-2"></i>
-        <ul class="mb-0">
-          <li v-for="(error, key) in errors" :key="key">
-            {{ Array.isArray(error) ? error[0] : error }}
-          </li>
-        </ul>
-      </div>
-
-      <h3 class="section-title">Thông tin cá nhân</h3>
-      
+    <!-- Right Column: Main Form -->
+    <div class="form-card">
       <form @submit.prevent="submitForm">
-        <div class="form-group">
-          <label class="form-label">Họ và tên</label>
-          <input 
-            type="text" 
-            v-model="form.name" 
-            class="form-control" 
-            :class="{ 'is-invalid': errors.name }"
-            required
-          />
-          <div v-if="errors.name" class="invalid-feedback">{{ errors.name[0] }}</div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input 
-            type="email" 
-            v-model="form.email" 
-            class="form-control" 
-            :class="{ 'is-invalid': errors.email }"
-            required
-          />
-          <div v-if="errors.email" class="invalid-feedback">{{ errors.email[0] }}</div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Số điện thoại</label>
-            <input 
-              type="text" 
-              v-model="form.phone" 
-              class="form-control" 
-              :class="{ 'is-invalid': errors.phone }"
-              placeholder="+84 xxx xxx xxx"
-            />
-            <div v-if="errors.phone" class="invalid-feedback">{{ errors.phone[0] }}</div>
+        <!-- Section: Personal Info -->
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon icon-user">
+              <i class="far fa-user"></i>
+            </div>
+            <div class="section-text">
+              <h4>Thông tin cá nhân</h4>
+              <p>Cập nhật thông tin cơ bản của bạn</p>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Vai trò</label>
-            <input 
-              type="text" 
-              class="form-control" 
-              :value="auth?.user?.role ? auth.user.role.charAt(0).toUpperCase() + auth.user.role.slice(1) : 'User'" 
-              readonly
-            />
-          </div>
-        </div>
 
-        <div class="form-group">
-          <label class="form-label">Địa chỉ</label>
-          <input 
-            type="text" 
-            v-model="form.address" 
-            class="form-control" 
-            :class="{ 'is-invalid': errors.address }"
-            placeholder="Địa chỉ của bạn"
-          />
-          <div v-if="errors.address" class="invalid-feedback">{{ errors.address[0] }}</div>
-        </div>
-
-        <!-- Address Details Section -->
-        <div class="form-group">
-          <label class="form-label">Địa chỉ chi tiết (tùy chọn)</label>
-          <div class="address-details">
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">Tỉnh/Thành phố</label>
-                <select 
-                  v-model="form.province" 
-                  class="form-control address-select"
-                  :class="{ 'is-invalid': errors.province }"
-                >
-                  <option value="">-- Chọn tỉnh/thành phố --</option>
-                  <option v-for="province in provinces" :key="province.code" :value="province.code">
-                    {{ province.name }}
-                  </option>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Họ và tên</label>
+              <input type="text" v-model="form.name" class="form-control" placeholder="Nhập họ tên" />
+              <div v-if="form.errors.name" class="invalid-feedback d-block">{{ form.errors.name }}</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="far fa-envelope me-1"></i> Email</label>
+              <input type="email" v-model="form.email" class="form-control" readonly disabled />
+              <!-- Email usually shouldn't be changed or needs verification -->
+              <div v-if="form.errors.email" class="invalid-feedback d-block">{{ form.errors.email }}</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-phone-alt me-1"></i> Số điện thoại</label>
+              <input type="text" v-model="form.phone" class="form-control" placeholder="Nhập số điện thoại" />
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="far fa-id-badge me-1"></i> Vai trò</label>
+              <div class="select-wrapper">
+                <select class="form-control" disabled>
+                  <option>{{ user?.role === 'admin' ? 'Quản trị viên' : 'Người dùng' }}</option>
                 </select>
-                <div v-if="errors.province" class="invalid-feedback">{{ errors.province[0] }}</div>
+                <i class="fas fa-chevron-down select-arrow"></i>
               </div>
-              <div class="form-group">
-                <label class="form-label">Quận/Huyện</label>
-                <select 
-                  v-model="form.district" 
-                  class="form-control address-select"
-                  :class="{ 'is-invalid': errors.district }"
-                  :disabled="!form.province || loadingDistricts"
-                >
-                  <option value="">{{ loadingDistricts ? 'Đang tải...' : '-- Chọn quận/huyện --' }}</option>
-                  <option v-for="district in districts" :key="district.code" :value="district.code">
-                    {{ district.name }}
-                  </option>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Section: Address -->
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon icon-location">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="section-text">
+              <h4>Địa chỉ</h4>
+              <p>Thông tin địa chỉ liên hệ</p>
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Địa chỉ (Số nhà, đường)</label>
+            <input type="text" v-model="form.address" class="form-control" placeholder="Số nhà, tên đường..." />
+          </div>
+
+          <div class="form-row three-cols">
+            <div class="form-group">
+              <label class="form-label">Tỉnh/Thành phố</label>
+              <div class="select-wrapper">
+                <select v-model="form.province" class="form-control">
+                  <option value="">Chọn Tỉnh/Thành</option>
+                  <option v-for="p in provinces" :key="p.code" :value="p.code">{{ p.name }}</option>
                 </select>
-                <div v-if="errors.district" class="invalid-feedback">{{ errors.district[0] }}</div>
+                <i class="fas fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quận/Huyện</label>
+              <div class="select-wrapper">
+                <select v-model="form.district" class="form-control" :disabled="!form.province || loadingDistricts">
+                  <option value="">{{ loadingDistricts ? 'Đang tải...' : 'Chọn Quận/Huyện' }}</option>
+                  <option v-for="d in districts" :key="d.code" :value="d.code">{{ d.name }}</option>
+                </select>
+                <i class="fas fa-chevron-down select-arrow"></i>
               </div>
             </div>
             <div class="form-group">
               <label class="form-label">Xã/Phường</label>
-              <select 
-                v-model="form.ward" 
-                class="form-control address-select"
-                :class="{ 'is-invalid': errors.ward }"
-                :disabled="!form.district || loadingWards"
-              >
-                <option value="">{{ loadingWards ? 'Đang tải...' : '-- Chọn xã/phường --' }}</option>
-                <option v-for="ward in wards" :key="ward.code" :value="ward.code">
-                  {{ ward.name }}
-                </option>
-              </select>
-              <div v-if="errors.ward" class="invalid-feedback">{{ errors.ward[0] }}</div>
+              <div class="select-wrapper">
+                <select v-model="form.ward" class="form-control" :disabled="!form.district || loadingWards">
+                  <option value="">{{ loadingWards ? 'Đang tải...' : 'Chọn Xã/Phường' }}</option>
+                  <option v-for="w in wards" :key="w.code" :value="w.code">{{ w.name }}</option>
+                </select>
+                <i class="fas fa-chevron-down select-arrow"></i>
+              </div>
             </div>
           </div>
         </div>
 
-        <div style="margin-top: 32px;">
-          <h3 class="section-title">Thay đổi mật khẩu</h3>
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Mật khẩu hiện tại</label>
-              <input 
-                type="password" 
-                v-model="form.current_password" 
-                class="form-control" 
-                :class="{ 'is-invalid': errors.current_password }"
-                placeholder="Nhập mật khẩu hiện tại"
-              />
-              <div v-if="errors.current_password" class="invalid-feedback">{{ errors.current_password[0] }}</div>
+        <hr class="divider">
+
+        <!-- Section: Password -->
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon icon-lock">
+              <i class="fas fa-lock"></i>
             </div>
-            <div class="form-group">
-              <label class="form-label">Mật khẩu mới</label>
-              <input 
-                type="password" 
-                v-model="form.new_password" 
-                class="form-control" 
-                :class="{ 'is-invalid': errors.new_password }"
-                placeholder="Nhập mật khẩu mới"
-              />
-              <div v-if="errors.new_password" class="invalid-feedback">{{ errors.new_password[0] }}</div>
+            <div class="section-text">
+              <h4>Đổi mật khẩu</h4>
+              <p>Cập nhật mật khẩu để bảo mật tài khoản</p>
             </div>
           </div>
-          
-          <div class="form-group">
-            <label class="form-label">Xác nhận mật khẩu mới</label>
-            <input 
-              type="password" 
-              v-model="form.new_password_confirmation" 
-              class="form-control" 
-              :class="{ 'is-invalid': errors.new_password_confirmation }"
-              placeholder="Nhập lại mật khẩu mới"
-            />
-            <div v-if="errors.new_password_confirmation" class="invalid-feedback">{{ errors.new_password_confirmation[0] }}</div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Mật khẩu mới</label>
+            <div class="password-input-wrapper">
+              <input :type="showPassword ? 'text' : 'password'" v-model="form.new_password" class="form-control"
+                placeholder="Nhập mật khẩu mới" autocomplete="new-password">
+              <i class="far fa-eye toggle-password" @click="showPassword = !showPassword"></i>
+            </div>
+            <small class="form-text text-muted mt-2 d-block">Mật khẩu tối thiểu 6 ký tự</small>
           </div>
         </div>
 
-        <div class="d-flex justify-content-end gap-3 mt-4">
-          <Link href="/user/dashboard" class="btn-secondary">
-            Hủy bỏ
-          </Link>
-          <button type="submit" class="btn-primary" :disabled="submitting">
-            <span v-if="submitting">Đang lưu...</span>
-            <span v-else>Lưu thay đổi</span>
+        <hr class="divider">
+
+        <div class="form-footer">
+          <button type="submit" class="btn-save" :disabled="form.processing">
+            <i class="far fa-save me-2"></i>
+            {{ form.processing ? 'Đang lưu...' : 'Lưu thay đổi' }}
           </button>
         </div>
       </form>
@@ -218,561 +168,432 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed, watch } from 'vue'
-import { Link, router, usePage, useForm } from '@inertiajs/vue3'
+import { ref, onMounted, watch } from 'vue'
+import { useForm, router } from '@inertiajs/vue3'
 import { useToast } from 'primevue/usetoast'
 import axios from 'axios'
 
-const page = usePage()
-const toast = useToast()
-
-// Props
 const props = defineProps({
-  auth: {
-    type: Object,
-    default: () => ({ user: null })
-  }
+  user: Object,
+  auth: Object
 })
 
-// Form data
+const toast = useToast()
+const userData = props.user || props.auth.user
+
 const form = useForm({
-  name: props.auth?.user?.name || '',
-  email: props.auth?.user?.email || '',
-  phone: props.auth?.user?.phone || '',
-  address: props.auth?.user?.address || '',
-  province: props.auth?.user?.province || '',
-  district: props.auth?.user?.district || '',
-  ward: props.auth?.user?.ward || '',
-  current_password: '',
+  name: userData.name || '',
+  email: userData.email || '',
+  phone: userData.phone || '',
+  address: userData.address || '',
+  province: userData.province ? String(userData.province) : '',
+  district: userData.district ? String(userData.district) : '',
+  ward: userData.ward ? String(userData.ward) : '',
   new_password: '',
-  new_password_confirmation: '',
 })
 
-// Errors
-const errors = computed(() => form.errors)
-
-// States
-const submitting = ref(false)
+// UI States
 const uploadingAvatar = ref(false)
+const showPassword = ref(false)
 const avatarInput = ref(null)
 
-// Address API states
+// Location Data States
 const provinces = ref([])
 const districts = ref([])
 const wards = ref([])
 const loadingDistricts = ref(false)
 const loadingWards = ref(false)
 
-// Avatar functions
-const triggerFileInput = () => {
-  avatarInput.value?.click()
+// Formatting
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  return new Date(dateString).toLocaleDateString('en-GB')
 }
 
-const handleFileSelect = (event) => {
-  const file = event.target.files[0]
-  if (!file) return
-
-  if (file.size > 10 * 1024 * 1024) {
-    toast.add({
-      severity: 'error',
-      summary: 'Lỗi',
-      detail: 'KĂ­ch thÆ°á»›c file pháº£i nhá» hÆ¡n 10MB',
-      life: 3000
-    })
-    return
-  }
-
-  if (!file.type.startsWith('image/')) {
-    toast.add({
-      severity: 'error',
-      summary: 'Lỗi',
-      detail: 'Vui lĂ²ng chá»n file hĂ¬nh áº£nh',
-      life: 3000
-    })
-    return
-  }
-
-  uploadAvatar(file)
+// --- Address API Logic ---
+const fetchApi = async (url) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('API Error');
+  return await res.json();
 }
 
-const uploadAvatar = async (file) => {
-  uploadingAvatar.value = true
-  const formData = new FormData()
-  formData.append('avatar', file)
-
-  try {
-    const response = await axios.post('/user/upload/avatar', formData)
-    
-    if (response.data.success) {
-      toast.add({
-        severity: 'success',
-        summary: 'ThĂ nh cĂ´ng',
-        detail: 'Cập nhật ảnh đại diện thành công!',
-        life: 3000
-      })
-      
-      // Reload page to update avatar
-      router.reload({ only: ['auth'] })
-    } else {
-      toast.add({
-        severity: 'error',
-        summary: 'Lỗi',
-        detail: response.data.message || 'Táº£i áº£nh lĂªn tháº¥t báº¡i',
-        life: 3000
-      })
-    }
-  } catch (error) {
-    console.error('Error uploading avatar:', error)
-    toast.add({
-      severity: 'error',
-      summary: 'Lỗi',
-      detail: 'Táº£i áº£nh lĂªn tháº¥t báº¡i',
-      life: 3000
-    })
-  } finally {
-    uploadingAvatar.value = false
-    if (avatarInput.value) {
-      avatarInput.value.value = ''
-    }
-  }
-}
-
-const removeAvatar = async () => {
-  if (!confirm('Bạn có chắc chắn muốn xóa ảnh đại diện?')) {
-    return
-  }
-
-  try {
-    const response = await axios.post('/user/remove/avatar')
-    
-    if (response.data.success) {
-      toast.add({
-        severity: 'success',
-        summary: 'Thành công',
-        detail: 'Xóa ảnh đại diện thành công!',
-        life: 3000
-      })
-      
-      // Reload page to update avatar
-      router.reload({ only: ['auth'] })
-    } else {
-      toast.add({
-        severity: 'error',
-        summary: 'Lỗi',
-        detail: response.data.message || 'XĂ³a áº£nh tháº¥t báº¡i',
-        life: 3000
-      })
-    }
-  } catch (error) {
-    console.error('Error removing avatar:', error)
-    toast.add({
-      severity: 'error',
-      summary: 'Lỗi',
-      detail: 'Xóa ảnh thất bại',
-      life: 3000
-    })
-  }
-}
-
-// Form submission
-const submitForm = () => {
-  submitting.value = true
-  
-  form.post('/user/profile-settings', {
-    preserveScroll: true,
-    onSuccess: () => {
-      toast.add({
-        severity: 'success',
-        summary: 'Thành công',
-        detail: 'Cập nhật thông tin thành công!',
-        life: 3000
-      })
-    },
-    onError: (errors) => {
-      toast.add({
-        severity: 'error',
-        summary: 'Lỗi',
-        detail: 'Vui lĂ²ng kiá»ƒm tra láº¡i thĂ´ng tin nháº­p vĂ o',
-        life: 5000
-      })
-    },
-    onFinish: () => {
-      submitting.value = false
-    }
-  })
-}
-
-// Helper function Ä‘á»ƒ fetch vá»›i fallback HTTP khi HTTPS bá»‹ lá»—i SSL
-const fetchWithFallback = async (url) => {
-  try {
-    // Thá»­ HTTPS trÆ°á»›c
-    const response = await fetch(url)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    return response
-  } catch (error) {
-    // Náº¿u lá»—i SSL hoáº·c network, thá»­ HTTP fallback
-    if (error.message.includes('CERT') || error.message.includes('Failed to fetch') || error.name === 'TypeError') {
-      console.warn('HTTPS failed, trying HTTP fallback...', error.message)
-      const httpUrl = url.replace('https://', 'http://')
-      try {
-        const response = await fetch(httpUrl)
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        return response
-      } catch (fallbackError) {
-        console.error('HTTP fallback also failed:', fallbackError)
-        throw new Error(`Cáº£ HTTPS vĂ  HTTP Ä‘á»u tháº¥t báº¡i: ${fallbackError.message}`)
-      }
-    }
-    throw error
-  }
-}
-
-// Address API functions
 const loadProvinces = async () => {
   try {
-    // Sá»­ dá»¥ng shared ProvinceService náº¿u cĂ³ sáºµn
-    if (window.provinceService) {
-      const provincesData = await window.provinceService.loadProvinces()
-      provinces.value = provincesData.map(province => ({
-        name: province.name,
-        code: province.code
-      }))
-    } else {
-      // Gá»i API trá»±c tiáº¿p vá»›i fallback
-      const response = await fetchWithFallback('https://provinces.open-api.vn/api/?depth=1')
-      const data = await response.json()
-      provinces.value = data.map(province => ({
-        name: province.name,
-        code: province.code
-      }))
-    }
-  } catch (error) {
-    console.error('Error loading provinces:', error)
-    toast.add({
-      severity: 'error',
-      summary: 'Lá»—i',
-      detail: 'KhĂ´ng thá»ƒ táº£i danh sĂ¡ch tá»‰nh/thĂ nh phá»‘',
-      life: 3000
-    })
-  }
+    const data = await fetchApi('https://provinces.open-api.vn/api/?depth=1');
+    provinces.value = data.map(p => ({ name: p.name, code: String(p.code) }));
+  } catch (e) { console.error(e); }
 }
 
-const loadDistricts = async (provinceCode = null) => {
-  const code = provinceCode || form.province
-  if (!code) {
-    districts.value = []
-    wards.value = []
-    form.district = ''
-    form.ward = ''
-    return
-  }
-
-  loadingDistricts.value = true
+const loadDistricts = async (provinceCode) => {
+  if (!provinceCode) return;
+  loadingDistricts.value = true;
   try {
-    const response = await fetchWithFallback(`https://provinces.open-api.vn/api/p/${code}?depth=2`)
-    const data = await response.json()
-    districts.value = (data.districts || []).map(district => ({
-      name: district.name,
-      code: district.code
-    }))
-    wards.value = []
-    form.district = ''
-    form.ward = ''
-  } catch (error) {
-    console.error('Error loading districts:', error)
-    toast.add({
-      severity: 'error',
-      summary: 'Lá»—i',
-      detail: 'KhĂ´ng thá»ƒ táº£i danh sĂ¡ch quáº­n/huyá»‡n',
-      life: 3000
-    })
-  } finally {
-    loadingDistricts.value = false
-  }
+    const data = await fetchApi(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
+    districts.value = data.districts.map(d => ({ name: d.name, code: String(d.code) }));
+  } catch (e) { console.error(e); }
+  finally { loadingDistricts.value = false; }
 }
 
-// Watch for province changes
-watch(() => form.province, (newProvince) => {
-  if (newProvince) {
-    loadDistricts(newProvince)
-  } else {
-    districts.value = []
-    wards.value = []
-    form.district = ''
-    form.ward = ''
-  }
-}, { immediate: false })
-
-// Watch for district changes
-watch(() => form.district, (newDistrict) => {
-  if (newDistrict) {
-    loadWards(newDistrict)
-  } else {
-    wards.value = []
-    form.ward = ''
-  }
-}, { immediate: false })
-
-const loadWards = async (districtCode = null) => {
-  const code = districtCode || form.district
-  if (!code) {
-    wards.value = []
-    form.ward = ''
-    return
-  }
-
-  loadingWards.value = true
+const loadWards = async (districtCode) => {
+  if (!districtCode) return;
+  loadingWards.value = true;
   try {
-    const response = await fetchWithFallback(`https://provinces.open-api.vn/api/d/${code}?depth=2`)
-    const data = await response.json()
-    wards.value = (data.wards || []).map(ward => ({
-      name: ward.name,
-      code: ward.code
-    }))
-    form.ward = ''
-  } catch (error) {
-    console.error('Error loading wards:', error)
-    toast.add({
-      severity: 'error',
-      summary: 'Lá»—i',
-      detail: 'KhĂ´ng thá»ƒ táº£i danh sĂ¡ch xĂ£/phÆ°á»ng',
-      life: 3000
-    })
-  } finally {
-    loadingWards.value = false
-  }
+    const data = await fetchApi(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
+    wards.value = data.wards.map(w => ({ name: w.name, code: String(w.code) }));
+  } catch (e) { console.error(e); }
+  finally { loadingWards.value = false; }
 }
 
-// Load current address on mount
-const loadCurrentAddress = async () => {
-  if (form.province) {
-    // Load districts without resetting current district/ward
-    const provinceCode = form.province
-    loadingDistricts.value = true
-    try {
-      const response = await fetchWithFallback(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
-      const data = await response.json()
-      districts.value = (data.districts || []).map(district => ({
-        name: district.name,
-        code: district.code
-      }))
-      
-      // Only load wards if district is already set
-      if (form.district) {
-        loadingWards.value = true
-        try {
-          const response = await fetchWithFallback(`https://provinces.open-api.vn/api/d/${form.district}?depth=2`)
-          const data = await response.json()
-          wards.value = (data.wards || []).map(ward => ({
-            name: ward.name,
-            code: ward.code
-          }))
-        } catch (error) {
-          console.error('Error loading wards:', error)
-        } finally {
-          loadingWards.value = false
-        }
-      }
-    } catch (error) {
-      console.error('Error loading districts:', error)
-    } finally {
-      loadingDistricts.value = false
-    }
+watch(() => form.province, (newVal, oldVal) => {
+  if (oldVal !== undefined && newVal !== oldVal) {
+    form.district = '';
+    form.ward = '';
+    districts.value = [];
+    wards.value = [];
+    if (newVal) loadDistricts(newVal);
   }
-}
+});
 
-// Lifecycle
+watch(() => form.district, (newVal, oldVal) => {
+  if (oldVal !== undefined && newVal !== oldVal) {
+    form.ward = '';
+    wards.value = [];
+    if (newVal) loadWards(newVal);
+  }
+});
+
 onMounted(async () => {
-  await loadProvinces()
-  await loadCurrentAddress()
-})
+  await loadProvinces();
+  if (form.province) {
+    await loadDistricts(form.province);
+    if (form.district) {
+      await loadWards(form.district);
+    }
+  }
+});
+
+// --- Actions ---
+const submitForm = () => {
+  form.post('/user/profile-settings', {
+    preserveScroll: true,
+    onSuccess: () => toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật hồ sơ', life: 3000 }),
+    onError: () => toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng kiểm tra lại', life: 3000 }),
+    onFinish: () => form.reset('new_password'),
+  });
+}
+
+const triggerFileInput = () => avatarInput.value?.click();
+
+const handleFileSelect = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('avatar', file);
+  uploadingAvatar.value = true;
+
+  axios.post('/user/upload/avatar', formData)
+    .then(res => {
+      if (res.data.success) {
+        toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã đổi ảnh đại diện' });
+        router.reload({ only: ['user', 'auth'] });
+      }
+    })
+    .catch(err => toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Upload thất bại' }))
+    .finally(() => uploadingAvatar.value = false);
+}
 </script>
 
 <style scoped>
-/* Settings Content */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
 .settings-content {
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 40px;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
   max-width: 1200px;
+  font-family: 'Inter', sans-serif;
+  color: #1e293b;
 }
 
-/* Profile Section */
-.profile-section {
-  background: white;
-  border-radius: 16px;
-  padding: 30px;
-  border: 1px solid #e2e8f0;
+/* --- Card Styles --- */
+.profile-card,
+.form-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
   height: fit-content;
 }
 
-.profile-photo {
+/* --- Left Profile Card --- */
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  margin-bottom: 30px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 24px;
 }
 
-.profile-avatar {
+.avatar-container {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.avatar-wrapper {
   width: 120px;
   height: 120px;
-  background: #3b82f6;
-  border-radius: 20px;
-  margin: 0 auto 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 48px;
-  color: white;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 1px #e2e8f0;
+  overflow: visible;
+  /* Changed to visible for btn-camera absolute position */
   position: relative;
-  overflow: hidden;
-}
-
-.profile-avatar.uploading {
-  opacity: 0.7;
-  pointer-events: none;
+  background: #f8fafc;
 }
 
 .avatar-img {
   width: 100%;
   height: 100%;
+  border-radius: 50%;
   object-fit: cover;
-  border-radius: 20px;
 }
 
-.profile-photo h5 {
-  color: #1e293b;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.profile-photo p {
-  color: #64748b;
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
-.photo-buttons {
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 12px;
+  font-size: 48px;
+  color: #cbd5e1;
 }
 
-.btn-upload {
-  background: #3b82f6;
+.btn-camera {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #0F9D58;
+  /* Green brand color */
   color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
-.btn-upload:hover {
-  background: #2563eb;
+.btn-camera:hover {
+  background: #0b7a43;
+  transform: scale(1.05);
 }
 
-.btn-remove {
-  background: transparent;
-  color: #ef4444;
-  border: none;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-remove:hover {
-  background: #fef2f2;
-  border-radius: 8px;
-}
-
-/* Form Section */
-.form-section {
-  background: white;
-  border-radius: 16px;
-  padding: 30px;
-  border: 1px solid #e2e8f0;
-}
-
-.section-title {
-  color: #1e293b;
+.profile-title {
   font-weight: 600;
-  font-size: 18px;
-  margin-bottom: 20px;
+  font-size: 16px;
+  margin-bottom: 4px;
+  color: #0f172a;
 }
 
-.form-group {
+.profile-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.profile-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.info-label {
+  color: #64748b;
+}
+
+.info-value {
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.status-active {
+  color: #0F9D58;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-active .dot {
+  width: 8px;
+  height: 8px;
+  background: #0F9D58;
+  border-radius: 50%;
+}
+
+/* --- Right Form Card --- */
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
   margin-bottom: 24px;
 }
 
-.form-label {
-  display: block;
-  color: #374151;
-  font-weight: 500;
-  font-size: 14px;
-  margin-bottom: 8px;
+.section-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
 }
 
-.form-control {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  background: #ffffff;
+.icon-user {
+  background: #E6F4EA;
+  color: #0F9D58;
 }
 
-.form-control:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+.icon-location {
+  background: #E6F4EA;
+  color: #0F9D58;
 }
 
-.form-control.is-invalid {
-  border-color: #ef4444;
+/* Changed to match image green theme */
+.icon-lock {
+  background: #E6F4EA;
+  color: #0F9D58;
 }
 
-.invalid-feedback {
-  display: block;
-  color: #ef4444;
-  font-size: 12px;
-  margin-top: 4px;
+.section-text h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #0f172a;
 }
 
-.form-row {
+.section-text p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
 
-/* Address Details */
-.address-details {
-  background: #f8fafc;
+.form-group {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
+  width: 100%;
+}
+
+.form-row.three-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 14px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  padding: 20px;
-  margin-top: 8px;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 14px;
+  transition: all 0.2s;
+  outline: none;
 }
 
-.address-select {
-  background: white;
+.form-control:focus {
+  background: #fff;
+  border-color: #0F9D58;
+  box-shadow: 0 0 0 3px rgba(15, 157, 88, 0.1);
 }
 
-.address-select:disabled {
+.form-control:disabled {
   background: #f1f5f9;
   color: #94a3b8;
-  cursor: not-allowed;
+  cursor: default;
 }
 
-.btn-primary {
-  background: #3b82f6;
+.select-wrapper {
+  position: relative;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+  font-size: 12px;
+}
+
+select.form-control {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.password-input-wrapper {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.toggle-password:hover {
+  color: #64748b;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #f1f5f9;
+  margin: 32px 0;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-save {
+  background: #0F9D58;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -780,73 +601,45 @@ onMounted(async () => {
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
 }
 
-.btn-primary:hover:not(:disabled) {
-  background: #2563eb;
+.btn-save:hover:not(:disabled) {
+  background: #0b7a43;
+  box-shadow: 0 4px 6px -1px rgba(15, 157, 88, 0.2);
 }
 
-.btn-primary:disabled {
-  opacity: 0.6;
+.btn-save:disabled {
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
-.btn-secondary {
-  background: #f8fafc;
-  color: #64748b;
-  border: 1px solid #e2e8f0;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  display: inline-block;
-}
-
-.btn-secondary:hover {
-  background: #f1f5f9;
-  color: #475569;
-  text-decoration: none;
-}
-
-.alert {
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  font-size: 14px;
-}
-
-.alert-success {
-  background: #f0fdf4;
-  color: #166534;
-  border: 1px solid #bbf7d0;
-}
-
-.alert-danger {
-  background: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
-}
-
-.alert ul {
-  margin: 0;
-  padding-left: 20px;
+.invalid-feedback {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
   .settings-content {
     grid-template-columns: 1fr;
-    gap: 30px;
   }
-}
 
-@media (max-width: 768px) {
-  .form-row {
+  .form-row.three-cols {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .form-group.full-width {
+    grid-column: span 1;
   }
 }
 </style>

@@ -116,11 +116,11 @@
                                             <h6 class="info-header"><i class="pi pi-user me-2"></i>Khách hàng</h6>
                                             <ul class="info-list">
                                                 <li><span>Họ tên:</span> <strong>{{ slotProps.data.customer_name
-                                                        }}</strong></li>
+                                                }}</strong></li>
                                                 <li><span>SĐT:</span> <strong>{{ slotProps.data.customer_phone
-                                                        }}</strong></li>
+                                                }}</strong></li>
                                                 <li><span>Email:</span> <span>{{ slotProps.data.customer_email || '-'
-                                                        }}</span></li>
+                                                }}</span></li>
                                             </ul>
                                         </div>
 
@@ -129,16 +129,16 @@
                                             </h6>
                                             <ul class="info-list">
                                                 <li><span>Dịch vụ:</span> <strong>{{ slotProps.data.service?.ten_dich_vu
-                                                        }}</strong></li>
+                                                }}</strong></li>
                                                 <li><span>Ngày đặt:</span> <span>{{
-                                                        formatDate(slotProps.data.booking_date) }} - {{
-                                                        slotProps.data.booking_time }}</span></li>
+                                                    formatDate(slotProps.data.booking_date) }} - {{
+                                                            slotProps.data.booking_time }}</span></li>
                                                 <li><span>Ghi chú:</span> <span class="text-italic">{{
-                                                        slotProps.data.notes || 'Không có'
-                                                        }}</span></li>
+                                                    slotProps.data.notes || 'Không có'
+                                                }}</span></li>
                                                 <li><span>Tổng tiền:</span> <strong class="text-success">{{
-                                                        formatCurrency(slotProps.data.price)
-                                                        }}</strong></li>
+                                                    formatCurrency(slotProps.data.price)
+                                                }}</strong></li>
                                             </ul>
                                         </div>
                                     </div>

@@ -195,9 +195,6 @@ const initFormData = async () => {
   form.password = ''; // Luôn trống khi edit
   form.password_confirmation = '';
 
-  // --- LOGIC PHỨC TẠP: MAP CHUỖI VỀ OBJECT CHO DROPDOWN ---
-  // Database lưu "Hà Nội", nhưng Dropdown cần {name: "Hà Nội", code: 1}
-
   // Load Tỉnh
   if (provinceOptions.value.length === 0) {
     const pData = await fetchApi('https://provinces.open-api.vn/api/?depth=1');
@@ -237,14 +234,12 @@ const initFormData = async () => {
   }
 };
 
-// 5. Watcher: Khi mở modal -> Init data
 watch(() => props.visible, (newVal) => {
   if (newVal) {
     initFormData();
   }
 });
 
-// 6. Xử lý thay đổi Dropdown (User chọn lại)
 const onProvinceChange = async () => {
   districtOptions.value = []; wardOptions.value = [];
   form.district = null; form.ward = null;
@@ -262,21 +257,17 @@ const onDistrictChange = async () => {
   }
 };
 
-// 7. Submit với Inertia
 const submit = () => {
-  // TRANSFORM: Chuyển Object Dropdown thành String trước khi gửi về Server
   form.transform((data) => ({
     ...data,
     province: data.province?.name || null,
     district: data.district?.name || null,
     ward: data.ward?.name || null,
   }))
-    .put(`/staff/customers/${props.customer.id}`, { // Dùng PUT và ID
+    .put(`/staff/customers/${props.customer.id}`, { 
       onSuccess: () => {
         handleClose();
-        // Inertia tự reload trang cha, không cần emit update thủ công
       },
-      // onError: Inertia tự điền vào form.errors
     });
 };
 
@@ -288,6 +279,5 @@ const handleClose = () => {
 </script>
 
 <style scoped>
-/* Giữ nguyên CSS Responsive Mobile First của bạn */
 @import url('../../../../../css/Staff/customer/modals.css');
 </style>
