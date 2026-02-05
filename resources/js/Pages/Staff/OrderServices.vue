@@ -30,8 +30,8 @@
 
         <div class="content-area">
             <div class="table-container">
-                <DataTable :value="filteredBookings" v-model:expandedRows="expandedRows" dataKey="id"
-                    class="mobile-responsive-table" :paginator="true" :rows="pagination.per_page"
+                <DataTable :value="bookings" :lazy="true" @page="onPage" v-model:expandedRows="expandedRows"
+                    dataKey="id" class="mobile-responsive-table" :paginator="true" :rows="pagination.per_page"
                     :totalRecords="pagination.total" :rowsPerPageOptions="[5, 10, 25]"
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                     currentPageReportTemplate="{first}-{last} / {totalRecords}" loadingIcon="pi pi-spinner"
@@ -135,10 +135,10 @@
                                                             slotProps.data.booking_time }}</span></li>
                                                 <li><span>Ghi chú:</span> <span class="text-italic">{{
                                                     slotProps.data.notes || 'Không có'
-                                                }}</span></li>
+                                                        }}</span></li>
                                                 <li><span>Tổng tiền:</span> <strong class="text-success">{{
                                                     formatCurrency(slotProps.data.price)
-                                                }}</strong></li>
+                                                        }}</strong></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -287,8 +287,18 @@ export default {
                 this.loading = false
             }
         },
-        debounceSearch() { clearTimeout(this.searchTimeout); this.searchTimeout = setTimeout(() => { }, 200) },
-        showFilterModal() { this.showFilterDialog = true },
+        onPage(event) {
+            this.pagination.current_page = event.page + 1;
+            this.pagination.per_page = event.rows;
+            this.loadBookings();
+        },
+        debounceSearch() {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                this.pagination.current_page = 1; // Reset về trang 1
+                this.loadBookings();
+            }, 500) // Tăng delay lên chút cho đỡ spam request
+        }, showFilterModal() { this.showFilterDialog = true },
         applyFilter() { this.showFilterDialog = false },
         resetFilters() { this.statusFilter = ''; this.paymentStatusFilter = ''; this.showFilterDialog = false; },
         switchTab(tab) { this.activeTab = tab },
