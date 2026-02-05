@@ -93,7 +93,9 @@ class CartController extends Controller
                 return response()->json($cartData);
             }
 
-            return view('store.cart.index', compact('cartData'));
+            return \Inertia\Inertia::render('Public/Cart/Cart', [
+                'cartData' => $cartData
+            ]);
         } catch (\Exception $e) {
 
             if ($request->ajax() || $request->wantsJson() || $request->query('format') === 'json') {
@@ -107,7 +109,7 @@ class CartController extends Controller
                 ]);
             }
 
-            return view('store.cart.index', ['cartData' => [
+            return \Inertia\Inertia::render('Public/Cart/Cart', ['cartData' => [
                 'items' => [],
                 'preview_items' => [],
                 'count' => 0,
