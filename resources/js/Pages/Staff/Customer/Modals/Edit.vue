@@ -264,7 +264,7 @@ const submit = () => {
     district: data.district?.name || null,
     ward: data.ward?.name || null,
   }))
-    .put(`/staff/customers/${props.customer.id}`, { 
+    .put(`/staff/customers/${props.customer.id}`, {
       onSuccess: () => {
         handleClose();
       },

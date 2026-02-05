@@ -19,6 +19,8 @@
         <div class="ultility-options">
           <Button icon="pi pi-upload" label="Xuất file" @click="exportData" severity="secondary"
             style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px; font-size: 13px;" />
+          <Button icon="pi pi-filter" label="Lọc" @click="filterData" severity="secondary"
+            style="background:#0b1020; border:none; color:white; font-weight:600; padding:6px 18px; border-radius:8px; font-size: 13px;" />
           <div class="utility-icons">
             <button class="btn" title="Chế độ xem">
               <i class="pi pi-list"></i>
@@ -157,6 +159,15 @@ const exportData = () => {
     severity: 'info',
     summary: 'Xuất file',
     detail: 'Tính năng xuất file đang được phát triển',
+    life: 3000
+  })
+}
+
+const filterData = () => {
+  toast.add({
+    severity: 'info',
+    summary: 'Lọc dữ liệu',
+    detail: 'Tính năng lọc dữ liệu đang được phát triển',
     life: 3000
   })
 }

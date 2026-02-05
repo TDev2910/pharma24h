@@ -1,6 +1,5 @@
 ﻿<template>
   <div class="settings-content">
-    <!-- Left Column: Profile Card -->
     <div class="profile-card">
       <div class="profile-header">
         <div class="avatar-container">
@@ -33,10 +32,8 @@
       </div>
     </div>
 
-    <!-- Right Column: Main Form -->
     <div class="form-card">
       <form @submit.prevent="submitForm">
-        <!-- Section: Personal Info -->
         <div class="form-section">
           <div class="section-header">
             <div class="section-icon icon-user">
@@ -57,7 +54,6 @@
             <div class="form-group">
               <label class="form-label"><i class="far fa-envelope me-1"></i> Email</label>
               <input type="email" v-model="form.email" class="form-control" readonly disabled />
-              <!-- Email usually shouldn't be changed or needs verification -->
               <div v-if="form.errors.email" class="invalid-feedback d-block">{{ form.errors.email }}</div>
             </div>
             <div class="form-group">
@@ -78,7 +74,6 @@
 
         <hr class="divider">
 
-        <!-- Section: Address -->
         <div class="form-section">
           <div class="section-header">
             <div class="section-icon icon-location">
@@ -131,7 +126,6 @@
 
         <hr class="divider">
 
-        <!-- Section: Password -->
         <div class="form-section">
           <div class="section-header">
             <div class="section-icon icon-lock">
@@ -179,16 +173,20 @@ const props = defineProps({
 })
 
 const toast = useToast()
+// Ưu tiên lấy user từ props (được truyền từ Controller)
 const userData = props.user || props.auth.user
 
+// Khởi tạo Form
+// Lưu ý: province/district/ward ban đầu sẽ set là chuỗi rỗng để tránh lỗi hiển thị
+// Logic điền dữ liệu sẽ nằm ở onMounted
 const form = useForm({
   name: userData.name || '',
   email: userData.email || '',
   phone: userData.phone || '',
   address: userData.address || '',
-  province: userData.province ? String(userData.province) : '',
-  district: userData.district ? String(userData.district) : '',
-  ward: userData.ward ? String(userData.ward) : '',
+  province: '',
+  district: '',
+  ward: '',
   new_password: '',
 })
 
@@ -212,11 +210,18 @@ const formatDate = (dateString) => {
 
 // --- Address API Logic ---
 const fetchApi = async (url) => {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('API Error');
-  return await res.json();
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (e) {
+    // Fallback http nếu https lỗi
+    const httpUrl = url.replace('https://', 'http://');
+    try { return await (await fetch(httpUrl)).json(); } catch (err) { return []; }
+  }
 }
 
+// 1. Load danh sách Tỉnh
 const loadProvinces = async () => {
   try {
     const data = await fetchApi('https://provinces.open-api.vn/api/?depth=1');
@@ -224,6 +229,7 @@ const loadProvinces = async () => {
   } catch (e) { console.error(e); }
 }
 
+// 2. Load danh sách Huyện
 const loadDistricts = async (provinceCode) => {
   if (!provinceCode) return;
   loadingDistricts.value = true;
@@ -234,6 +240,7 @@ const loadDistricts = async (provinceCode) => {
   finally { loadingDistricts.value = false; }
 }
 
+// 3. Load danh sách Xã
 const loadWards = async (districtCode) => {
   if (!districtCode) return;
   loadingWards.value = true;
@@ -244,7 +251,9 @@ const loadWards = async (districtCode) => {
   finally { loadingWards.value = false; }
 }
 
+// --- Watchers để reset các cấp con khi cấp cha thay đổi ---
 watch(() => form.province, (newVal, oldVal) => {
+  // Chỉ reset khi người dùng thay đổi (oldVal có giá trị), tránh reset lúc init
   if (oldVal !== undefined && newVal !== oldVal) {
     form.district = '';
     form.ward = '';
@@ -262,24 +271,71 @@ watch(() => form.district, (newVal, oldVal) => {
   }
 });
 
+// --- HELPER: Tìm Code dựa trên Tên (Để pre-fill Dropdown) ---
+const findCodeByName = (list, nameStr) => {
+  if (!nameStr) return '';
+  const normName = nameStr.trim().toLowerCase();
+  const item = list.find(i => {
+    const normItem = i.name.trim().toLowerCase();
+    // So sánh mềm: bằng nhau hoặc chứa nhau
+    return normItem === normName || normItem.includes(normName) || normName.includes(normItem);
+  });
+  return item ? item.code : '';
+};
+
+// --- HELPER: Tìm Tên dựa trên Code (Để gửi lên Server) ---
+const getNameByCode = (list, code) => {
+  const item = list.find(i => i.code == code);
+  return item ? item.name : null;
+};
+
+// --- ON MOUNTED: Logic Thác nước (Waterfall) để fill dữ liệu ---
 onMounted(async () => {
-  await loadProvinces();
-  if (form.province) {
-    await loadDistricts(form.province);
-    if (form.district) {
-      await loadWards(form.district);
+  await loadProvinces(); // B1: Load Tỉnh
+
+  // Kiểm tra nếu User đã có Tỉnh trong DB (Dạng Tên)
+  if (userData.province) {
+    // B2: Tìm code của Tỉnh đó
+    const pCode = findCodeByName(provinces.value, userData.province);
+    form.province = pCode; // Set vào form để Dropdown hiển thị
+
+    if (pCode) {
+      await loadDistricts(pCode); // B3: Load Huyện của Tỉnh đó
+
+      if (userData.district) {
+        // B4: Tìm code của Huyện
+        const dCode = findCodeByName(districts.value, userData.district);
+        form.district = dCode;
+
+        if (dCode) {
+          await loadWards(dCode); // B5: Load Xã của Huyện đó
+
+          if (userData.ward) {
+            // B6: Tìm code của Xã
+            const wCode = findCodeByName(wards.value, userData.ward);
+            form.ward = wCode;
+          }
+        }
+      }
     }
   }
 });
 
 // --- Actions ---
 const submitForm = () => {
-  form.post('/user/profile-settings', {
-    preserveScroll: true,
-    onSuccess: () => toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật hồ sơ', life: 3000 }),
-    onError: () => toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng kiểm tra lại', life: 3000 }),
-    onFinish: () => form.reset('new_password'),
-  });
+  // TRANSFORM: Đổi từ Code -> Tên trước khi gửi lên Server
+  form.transform((data) => ({
+    ...data,
+    province: getNameByCode(provinces.value, data.province),
+    district: getNameByCode(districts.value, data.district),
+    ward: getNameByCode(wards.value, data.ward),
+  }))
+    .post('/user/profile-settings', {
+      preserveScroll: true,
+      onSuccess: () => toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật hồ sơ', life: 3000 }),
+      onError: () => toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng kiểm tra lại thông tin', life: 3000 }),
+      onFinish: () => form.reset('new_password'),
+    });
 }
 
 const triggerFileInput = () => avatarInput.value?.click();
@@ -349,7 +405,6 @@ const handleFileSelect = (event) => {
   border: 4px solid #fff;
   box-shadow: 0 0 0 1px #e2e8f0;
   overflow: visible;
-  /* Changed to visible for btn-camera absolute position */
   position: relative;
   background: #f8fafc;
 }
@@ -380,7 +435,6 @@ const handleFileSelect = (event) => {
   height: 36px;
   border-radius: 50%;
   background: #0F9D58;
-  /* Green brand color */
   color: white;
   border: 2px solid #fff;
   display: flex;
@@ -472,7 +526,6 @@ const handleFileSelect = (event) => {
   color: #0F9D58;
 }
 
-/* Changed to match image green theme */
 .icon-lock {
   background: #E6F4EA;
   color: #0F9D58;

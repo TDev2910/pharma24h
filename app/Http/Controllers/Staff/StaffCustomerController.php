@@ -76,6 +76,7 @@ class StaffCustomerController extends Controller
             'district' => $this->safeInput($request->district),
             'ward' => $this->safeInput($request->ward),
             'role' => 'user',
+            'role' => 'user',
         ]);
         return redirect()->back()->with('success', 'Thêm khách hàng thành công!');
     }
