@@ -42,7 +42,18 @@ class CheckoutController extends Controller
             ['id' => 3, 'name' => 'Nhà thuốc Sức Khỏe 24h - Chi nhánh 3', 'address' => '789 Trần Văn C, Quận 3, TP.HCM'],
         ];
 
-        return view('store.checkout.index', compact('cartItems', 'cartTotal', 'user', 'pharmacyLocations'));
+        return Inertia::render('Public/Checkout/Index', [
+            'cartItems' => $cartItems,
+            'cartTotal' => $cartTotal,
+            'pharmacyLocations' => $pharmacyLocations,
+            'user' => $user,
+            'routes' => [
+                'cart_index' => route('cart.index'),
+                'checkout_process' => route('checkout.process'),
+                'ghn_map_address' => route('ghn.map-address'),
+                'get_shipping_fee' => route('checkout.get_shipping_fee'),
+            ]
+        ]);
     }
 
     // Xử lý đặt hàng

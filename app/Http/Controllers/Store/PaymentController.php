@@ -24,7 +24,8 @@ class PaymentController extends Controller
     {
         $order = Order::findOrFail($order_id); //Lấy đơn hàng theo order_id
         $url = $this->vnpayService->generatePaymentUrl($order);
-        return redirect()->away($url);
+        // Inertia external redirect
+        return \Inertia\Inertia::location($url);
     }
 
     // Return URL từ VNPAY
