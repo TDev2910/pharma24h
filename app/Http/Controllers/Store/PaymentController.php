@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\Payment\VNPayService;
 use App\Services\EmailSMTP\EmailService;
+use Inertia\Inertia;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -25,7 +26,7 @@ class PaymentController extends Controller
         $order = Order::findOrFail($order_id); //Lấy đơn hàng theo order_id
         $url = $this->vnpayService->generatePaymentUrl($order);
         // Inertia external redirect
-        return \Inertia\Inertia::location($url);
+        return Inertia::location($url);
     }
 
     // Return URL từ VNPAY

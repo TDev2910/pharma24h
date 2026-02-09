@@ -29,7 +29,8 @@
             <span class="nav-text">Dịch vụ</span>
           </Link>
 
-          <Link href="/user/notifications" :class="{ 'active': page.url.startsWith('/user/notifications') }" class="nav-item">
+          <Link href="/user/notifications" :class="{ 'active': page.url.startsWith('/user/notifications') }"
+            class="nav-item">
             <div class="nav-item-content">
               <div class="icon-wrapper">
                 <i class="fas fa-bell"></i>
@@ -39,7 +40,8 @@
             </div>
           </Link>
 
-          <Link href="/user/profile-settings" :class="{ 'active': page.url.startsWith('/user/profile-settings') }" class="nav-item">
+          <Link href="/user/profile-settings" :class="{ 'active': page.url.startsWith('/user/profile-settings') }"
+            class="nav-item">
             <i class="fas fa-user-cog"></i>
             <span class="nav-text">Cài đặt hồ sơ</span>
           </Link>
@@ -66,7 +68,7 @@
         </div>
 
         <div class="topbar-actions">
-           <div class="search-box">
+          <div class="search-box">
             <i class="fas fa-search"></i>
             <input type="text" placeholder="Tìm kiếm thuốc, đơn hàng..." />
           </div>
@@ -148,11 +150,34 @@ const currentDate = computed(() => {
   padding: 0 24px;
 }
 
-.logo { display: flex; align-items: center; gap: 10px; }
-.logo-icon { width: 32px; height: 32px; background: #3B82F6; color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-.brand-name { font-weight: 700; font-size: 18px; color: #1E293B; }
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-.sidebar-content { padding: 20px 16px; flex: 1; overflow-y: auto; }
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: #3B82F6;
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-name {
+  font-weight: 700;
+  font-size: 18px;
+  color: #1E293B;
+}
+
+.sidebar-content {
+  padding: 20px 16px;
+  flex: 1;
+  overflow-y: auto;
+}
 
 /* User Card in Sidebar */
 .user-card {
@@ -164,11 +189,41 @@ const currentDate = computed(() => {
   gap: 12px;
   margin-bottom: 24px;
 }
-.avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
-.avatar-placeholder { width: 40px; height: 40px; border-radius: 50%; background: #CBD5E1; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-.user-meta { display: flex; flex-direction: column; }
-.user-meta .name { font-weight: 600; font-size: 14px; color: #1E293B; }
-.user-meta .role { font-size: 12px; color: #64748B; }
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #CBD5E1;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-meta .name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1E293B;
+}
+
+.user-meta .role {
+  font-size: 12px;
+  color: #64748B;
+}
 
 /* Nav Menu */
 .nav-item {
@@ -196,8 +251,16 @@ const currentDate = computed(() => {
   flex-shrink: 0;
 }
 
-.nav-item:hover { background: #F8FAFC; color: #3B82F6; }
-.nav-item.active { background: #EFF6FF; color: #3B82F6; font-weight: 600; }
+.nav-item:hover {
+  background: #F8FAFC;
+  color: #3B82F6;
+}
+
+.nav-item.active {
+  background: #EFF6FF;
+  color: #3B82F6;
+  font-weight: 600;
+}
 
 .nav-item-content {
   display: flex;
@@ -224,15 +287,33 @@ const currentDate = computed(() => {
   border: 1px solid white;
 }
 
-.badge { background: #EF4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
+.badge {
+  background: #EF4444;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+}
 
-.sidebar-footer { padding: 16px; border-top: 1px solid #E2E8F0; }
-.logout { color: #EF4444; }
-.logout:hover { background: #FEF2F2; color: #DC2626; }
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid #E2E8F0;
+}
+
+.logout {
+  color: #EF4444;
+}
+
+.logout:hover {
+  background: #FEF2F2;
+  color: #DC2626;
+}
 
 /* --- MAIN WRAPPER --- */
 .main-wrapper {
-  margin-left: 260px; /* Width of Sidebar */
+  margin-left: 260px;
+  /* Width of Sidebar */
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -241,7 +322,8 @@ const currentDate = computed(() => {
 /* --- TOPBAR --- */
 .topbar {
   height: 70px;
-  background: white; /* Or transparent depending on preference */
+  background: white;
+  /* Or transparent depending on preference */
   padding: 0 32px;
   display: flex;
   align-items: center;
@@ -252,18 +334,70 @@ const currentDate = computed(() => {
   z-index: 40;
 }
 
-.page-title h2 { font-size: 20px; font-weight: 700; margin: 0; color: #1E293B; }
-.page-title .date { font-size: 13px; color: #94A3B8; }
+.page-title h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: #1E293B;
+}
 
-.topbar-actions { display: flex; align-items: center; gap: 16px; }
-.search-box { background: #F1F5F9; border-radius: 8px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; width: 300px; }
-.search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: #334155; }
-.search-box i { color: #94A3B8; }
-.icon-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #E2E8F0; background: white; color: #64748B; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-.icon-btn:hover { background: #F8FAFC; color: #3B82F6; }
+.page-title .date {
+  font-size: 13px;
+  color: #94A3B8;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search-box {
+  background: #F1F5F9;
+  border-radius: 8px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 300px;
+}
+
+.search-box input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  color: #334155;
+}
+
+.search-box i {
+  color: #94A3B8;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #E2E8F0;
+  background: white;
+  color: #64748B;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.icon-btn:hover {
+  background: #F8FAFC;
+  color: #3B82F6;
+}
 
 /* --- CONTENT --- */
-.page-content { padding: 32px; }
+.page-content {
+  padding: 32px;
+}
 
 /* Responsive */
 @media (max-width: 1024px) {
