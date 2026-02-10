@@ -55,6 +55,13 @@
             </a>
           </li>
 
+          <li class="menu-label">Tin Tức</li>
+          <li>
+            <a href="/staff/news" class="menu-item">
+              <i class="pi pi-ticket"></i>
+              <span>Quản lý Tin Tức</span>
+            </a>
+          </li>
           <li class="menu-label">CÁ NHÂN</li>
           <li>
             <a href="/staff/my-schedule" class="menu-item">

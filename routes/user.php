@@ -12,6 +12,9 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/profile-settings', [DashboardController::class, 'profileSettings'])->name('profile.settings');
     Route::post('/profile-settings', [DashboardController::class, 'updateProfileSettings'])->name('profile.settings.update');
     
+    // Payment
+    Route::get('/payment', [DashboardController::class, 'payment'])->name('payment');
+    
     // Other Features
     Route::get('/orders', [DashboardController::class, 'orders'])->name('orders');
     Route::get('/orders/{orderId}', [DashboardController::class, 'orderDetails'])->name('orders.details');

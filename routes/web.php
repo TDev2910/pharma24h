@@ -9,8 +9,6 @@ use App\Http\Controllers\Public\ReviewController;
 use App\Http\Controllers\Api\ChatbotController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Staff\StaffController;
-use App\Http\Controllers\User\DashboardController;
-use App\Http\Controllers\Api\GHNWebhookController;
 use App\Http\Controllers\Store\CheckoutController;
 use App\Http\Controllers\SupportTicketController;
 use Inertia\Inertia;
@@ -38,6 +36,7 @@ Route::get('/products', [HomeController::class, 'products'])->name('products');
 Route::get('/products/{type}/{id}', [HomeController::class, 'productDetail'])->name('products.detail');
 Route::get('/services', [HomeController::class, 'services'])->name('services');
 Route::get('/services/{id}', [HomeController::class, 'serviceDetail'])->name('services.detail');
+Route::get('/posts', [HomeController::class, 'posts'])->name('posts');
 Route::get('/contact', fn () => Inertia::render('Public/Contact'))->name('contact');
 Route::post('/contact', [SupportTicketController::class, 'store'])->name('contact.store');
 // Review routes

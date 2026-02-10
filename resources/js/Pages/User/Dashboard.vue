@@ -2,41 +2,17 @@
   <div class="dashboard-container">
     <!-- Stats Row -->
     <div class="stats-row">
-      <StatsCard 
-        :value="processingOrderCount"
-        label="Đơn hàng đang xử lý"
-        trend="+1 hôm nay"
-        trend-type="positive"
-        icon="fas fa-shopping-cart"
-        icon-color="blue"
-      />
-      
-      <StatsCard 
-        value="1,250"
-        label="Điểm thưởng tích lũy"
-        trend="+50 điểm"
-        trend-type="positive"
-        icon="fas fa-star"
-        icon-color="purple"
-      />
-      
-      <StatsCard 
-        value="15.4tr"
-        label="Công nợ hiện tại"
-        trend="Đến hạn: 30/12"
-        trend-type="neutral"
-        icon="fas fa-wallet"
-        icon-color="orange"
-      />
-      
-      <StatsCard 
-        :value="newNotificationsCount"
-        label="Thông báo mới"
-        trend="Xem tất cả"
-        link-to="/user/notifications"
-        icon="fas fa-envelope"
-        icon-color="red"
-      />
+      <StatsCard :value="processingOrderCount" label="Đơn hàng đang xử lý" trend="+1 hôm nay" trend-type="positive"
+        icon="fas fa-shopping-cart" icon-color="blue" />
+
+      <StatsCard value="1,250" label="Điểm thưởng tích lũy" trend="+50 điểm" trend-type="positive" icon="fas fa-star"
+        icon-color="purple" />
+
+      <StatsCard value="15.4tr" label="Công nợ hiện tại" trend="Đến hạn: 30/12" trend-type="neutral"
+        icon="fas fa-wallet" icon-color="orange" link-to="/user/payment" />
+
+      <StatsCard :value="newNotificationsCount" label="Thông báo mới" trend="Xem tất cả" link-to="/user/notifications"
+        icon="fas fa-envelope" icon-color="red" />
     </div>
 
     <!-- Dashboard Grid -->
@@ -308,14 +284,37 @@ const markAllAsRead = () => {
   font-size: 20px;
 }
 
-.bg-blue-100 { background: #DBEAFE; }
-.text-blue { color: #2563EB; }
-.bg-purple-100 { background: #EDE9FE; }
-.text-purple { color: #7C3AED; }
-.bg-green-100 { background: #D1FAE5; }
-.text-green { color: #059669; }
-.bg-orange-100 { background: #FED7AA; }
-.text-orange { color: #EA580C; }
+.bg-blue-100 {
+  background: #DBEAFE;
+}
+
+.text-blue {
+  color: #2563EB;
+}
+
+.bg-purple-100 {
+  background: #EDE9FE;
+}
+
+.text-purple {
+  color: #7C3AED;
+}
+
+.bg-green-100 {
+  background: #D1FAE5;
+}
+
+.text-green {
+  color: #059669;
+}
+
+.bg-orange-100 {
+  background: #FED7AA;
+}
+
+.text-orange {
+  color: #EA580C;
+}
 
 /* Notifications */
 .notification-list {
@@ -361,10 +360,21 @@ const markAllAsRead = () => {
   color: white;
 }
 
-.notif-icon.blue { background: #3B82F6; }
-.notif-icon.green { background: #10B981; }
-.notif-icon.orange { background: #F59E0B; }
-.notif-icon.red { background: #EF4444; }
+.notif-icon.blue {
+  background: #3B82F6;
+}
+
+.notif-icon.green {
+  background: #10B981;
+}
+
+.notif-icon.orange {
+  background: #F59E0B;
+}
+
+.notif-icon.red {
+  background: #EF4444;
+}
 
 .notif-text p {
   font-size: 13px;
@@ -383,7 +393,7 @@ const markAllAsRead = () => {
   .stats-row {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .dashboard-grid {
     grid-template-columns: 1fr;
   }

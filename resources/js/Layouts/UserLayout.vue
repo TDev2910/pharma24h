@@ -29,6 +29,18 @@
             <span class="nav-text">Dịch vụ</span>
           </Link>
 
+          <Link href="/user/medical-records" :class="{ 'active': page.url.startsWith('/user/medical-records') }"
+            class="nav-item">
+            <i class="fas fa-user-md"></i>
+            <span class="nav-text">Hồ sơ y tế</span>
+          </Link>
+
+          <Link href="/user/payment" :class="{ 'active': page.url.startsWith('/user/payment') }" class="nav-item">
+            <i class="fas fa-credit-card"></i>
+            <span class="nav-text">Thanh toán</span>
+          </Link>
+
+
           <Link href="/user/notifications" :class="{ 'active': page.url.startsWith('/user/notifications') }"
             class="nav-item">
             <div class="nav-item-content">

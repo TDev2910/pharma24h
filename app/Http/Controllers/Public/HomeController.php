@@ -51,7 +51,7 @@ class HomeController extends Controller
      */
     public function cosokhambenh()
     {
-        return view('public.cosokhambenh');
+        return Inertia::render('Public/Cosokhambenh');
     }
 
     /**
@@ -222,9 +222,14 @@ class HomeController extends Controller
         ]);
     }
 
+    public function posts()
+    {
+        return Inertia::render('Public/Posts');
+    }
+    
     public function contact()
     {
-        return Inertia::render('public/contact');
+        return Inertia::render('Public/Contact');
     }
 }
 

@@ -19,6 +19,7 @@
             <li class="nav-item"><a class="nav-link" href="/co-so-kham-benh" data-inertia>Đội ngũ</a></li>
             <li class="nav-item"><a class="nav-link" href="/products" data-inertia>Sản phẩm</a></li>
             <li class="nav-item"><a class="nav-link" href="/services" data-inertia>Dịch vụ</a></li>
+            <li class="nav-item"><a class="nav-link" href="/posts" data-inertia>Góc sức khỏe</a></li>
             <li class="nav-item"><a class="nav-link" href="/contact" data-inertia>Liên hệ</a></li>
           </ul>
 
