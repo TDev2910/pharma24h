@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
+use App\Models\Post; 
+use App\Http\Requests\Staff\Post\StorePostRequest; 
+use App\Http\Requests\Staff\Post\UpdatePostRequest;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -13,7 +16,14 @@ class PostController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Staff/Posts/Index');
+        $posts = Post::with('author')
+            ->latest()
+            ->paginate(10);
+
+        return Inertia::render('Staff/Posts/Index', [
+            'posts' => $posts
+        ]);
+
     }
 
     /**
@@ -21,7 +31,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -29,7 +39,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
