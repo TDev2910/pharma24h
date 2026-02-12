@@ -8,7 +8,7 @@ import Toast from 'primevue/toast';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
 
-const props = defineProps({ categories: Object });
+const props = defineProps({ categories: Object, baseUrl: String });
 const toast = useToast();
 
 // State
@@ -41,7 +41,7 @@ const editCategory = (category) => {
 
 const saveCategory = () => {
     if (isEditing.value) {
-        form.put(route('staff.categories.update', form.id), {
+        form.put(`${props.baseUrl}/${form.id}`, {
             onSuccess: () => {
                 categoryDialog.value = false;
                 toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật danh mục', life: 3000 });
@@ -49,7 +49,7 @@ const saveCategory = () => {
             }
         });
     } else {
-        form.post(route('staff.categories.store'), {
+        form.post(props.baseUrl, {
             onSuccess: () => {
                 categoryDialog.value = false;
                 toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã tạo danh mục mới', life: 3000 });
@@ -65,7 +65,7 @@ const confirmDelete = (cat) => {
 };
 
 const deleteCategory = () => {
-    router.delete(route('staff.categories.destroy', categoryToDelete.value.id), {
+    router.delete(`${props.baseUrl}/${categoryToDelete.value.id}`, {
         onSuccess: () => {
             deleteDialog.value = false;
             toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa danh mục', life: 3000 });
@@ -123,7 +123,7 @@ const deleteCategory = () => {
                             <td class="text-gray-500">{{ category.description }}</td>
                             <td class="text-center font-medium">{{ category.posts_count }}</td>
                             <td class="text-gray-500">{{ new Date(category.created_at).toLocaleDateString('vi-VN')
-                            }}</td>
+                                }}</td>
                             <td class="text-right">
                                 <div class="actions">
                                     <button class="btn-icon" @click="editCategory(category)">

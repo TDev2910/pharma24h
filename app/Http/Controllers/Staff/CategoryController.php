@@ -19,7 +19,8 @@ class CategoryController extends Controller
             ->paginate(10);
 
         return Inertia::render('Staff/Categories/Index', [
-            'categories' => $categories
+            'categories' => $categories,
+            'baseUrl' => route('staff.categories.index'), 
         ]);
     }
 
