@@ -9,9 +9,9 @@ use App\Http\Controllers\Staff\StaffOrderController;
 use App\Http\Controllers\Staff\StafGHNController;
 use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\Staff\PostController;
+use App\Http\Controllers\Staff\CategoryController;
 
 Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(function () {
-    Route::resource('posts', PostController::class);
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
     Route::get('/my-schedule', [StaffController::class, 'mySchedule'])->name('my-schedule');
     Route::get('/my-schedule/api/weekly', [StaffController::class, 'getMyWeeklySchedule'])->name('my-schedule.api');
@@ -87,4 +87,10 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
         Route::get('/{id}', [SupportTicketController::class, 'show'])->name('show');
         Route::post('/{id}/reply', [SupportTicketController::class, 'reply'])->name('reply');
     });
+
+    //Category
+    Route::resource('categories', CategoryController::class);
+
+    //Post
+    Route::resource('posts', PostController::class);
 });

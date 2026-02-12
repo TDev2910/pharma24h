@@ -57,9 +57,13 @@
 
           <li class="menu-label">Tin Tức</li>
           <li>
+            <a href="/staff/categories" class="menu-item">
+              <i class="pi pi-list"></i>
+              <span>Quản lý danh mục</span>
+            </a>
             <a href="/staff/posts" class="menu-item">
-              <i class="pi pi-ticket"></i>
-              <span>Quản lý Tin Tức</span>
+              <i class="pi pi-file"></i>
+              <span>Quản lý bài viết</span>
             </a>
           </li>
           <li class="menu-label">CÁ NHÂN</li>
