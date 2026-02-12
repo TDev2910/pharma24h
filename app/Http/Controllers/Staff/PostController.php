@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Models\Post; 
 use App\Http\Requests\Staff\Post\StorePostRequest; 
 use App\Http\Requests\Staff\Post\UpdatePostRequest;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -31,7 +32,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        
+
     }
 
     /**
@@ -39,7 +40,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        
+
     }
 
     /**
