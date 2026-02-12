@@ -17,7 +17,7 @@
     <link href="{{ asset('css/home.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
 
-    @routes
+    <!-- @routes -->
     @vite(['resources/css/app.css','resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/home-sections.css') }}">
 </head>
