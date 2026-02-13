@@ -18,11 +18,17 @@ class Post extends Model
         'content',
         'is_published',
         'user_id',
+        'category_id',
     ];
     
     public function author()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(\App\Models\Content\Category::class);
     }
 
     //format date to d/m/Y

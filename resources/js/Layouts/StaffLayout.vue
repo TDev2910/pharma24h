@@ -31,6 +31,10 @@
               <i class="pi pi-shopping-cart"></i>
               <span>Quản lý đơn hàng</span>
             </a>
+            <a href="#" class="menu-item">
+              <i class="pi pi-truck"></i>
+              <span>Vận đơn</span>
+            </a>
           </li>
           <li>
             <a href="/staff/service-bookings" class="menu-item">

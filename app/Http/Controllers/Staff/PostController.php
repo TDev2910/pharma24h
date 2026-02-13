@@ -3,54 +3,90 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
-use Inertia\Inertia;
-use App\Models\Post; 
-use App\Http\Requests\Staff\Post\StorePostRequest; 
+use App\Models\Post;
+use App\Models\Content\Category;
+use App\Models\Content\PostImage;
+use App\Http\Requests\Staff\Post\StorePostRequest;
 use App\Http\Requests\Staff\Post\UpdatePostRequest;
-use App\Models\Category;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        
+        $posts = Post::with(['category', 'author', 'images']) 
+            ->when($request->search, function ($query, $search) {
+                $query->where('title', 'like', "%{$search}%");
+            })
+            ->latest() 
+            ->paginate(10) 
+            ->withQueryString(); 
+
+        $categories = Category::select('id', 'name')->get();
+
+        return Inertia::render('Staff/Posts/Index', [
+            'posts' => $posts,
+            'categories' => $categories,
+            'baseUrl' => '/staff/posts',
+            'filters' => $request->only(['search']),
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
+        $data = $request->validated();
+        $data['slug'] = Str::slug($data['title']) . '-' . time();
+        $data['user_id'] = $request->user()->id;
 
-    }
+        if ($request->hasFile('thumbnail')) {
+            $data['thumbnail'] = $request->file('thumbnail')->store('posts/thumbnails', 'public');
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        $post = Post::create($data);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $file) {
+                $path = $file->store('posts/gallery', 'public');
+                $post->images()->create(['path' => $path]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Đăng bài viết thành công!');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdatePostRequest $request, string $id)
     {
-        //
+        $post = Post::findOrFail($id);
+        $data = $request->validated();
+        $data['slug'] = Str::slug($data['title']) . '-' . time();
+        $data['user_id'] = $request->user()->id;
+
+        if ($request->hasFile('thumbnail')) {
+            $data['thumbnail'] = $request->file('thumbnail')->store('posts/thumbnails', 'public');
+        }
+
+        $post->update($data);
+
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $file) {
+                $path = $file->store('posts/gallery', 'public');
+                $post->images()->create(['path' => $path]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Cập nhật bài viết thành công!');
     }
 
     /**
@@ -58,6 +94,8 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $post = Post::findOrFail($id);
+        $post->delete();
+        return redirect()->back()->with('success', 'Xóa bài viết thành công!');
     }
 }
