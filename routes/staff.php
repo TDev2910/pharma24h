@@ -92,5 +92,6 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
     Route::resource('categories', CategoryController::class);
 
     //Post
+    Route::delete('posts/images/{id}', [PostController::class, 'deleteImage']);
     Route::resource('posts', PostController::class);
 });

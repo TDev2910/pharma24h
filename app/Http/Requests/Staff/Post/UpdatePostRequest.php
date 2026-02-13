@@ -21,21 +21,24 @@ class UpdatePostRequest extends FormRequest
      */
     public function rules(): array
     {
-        $postId = $this->route('posts') ? $this->route('posts')->id : null;
+        $postId = $this->route('post') ? $this->route('post')->id : null;
         return [
-            'title' => 'required|string|max:255|unique:posts,title,' . $postId,
-            'summary' => 'required|string|max:500',
-            'content' => 'required|string',
-            'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif|max:3072',
-            'is_published' => 'required|boolean',
+            'title'        => 'required|string|max:255|unique:posts,title,' . $postId,
+            'category_id'  => 'required|exists:categories,id',
+            'summary'      => 'required|string|max:500',
+            'content'      => 'required|string',
+            'thumbnail'    => 'nullable|image|max:3072', 
+            'gallery.*'    => 'image|max:3072',
+            'is_published' => 'boolean',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'title.required' => 'Tiêu đề không được để trống.',
-            'title.unique'   => 'Tiêu đề này đã được sử dụng bài viết khác.',
+            'title.required'     => 'Vui lòng nhập tiêu đề bài viết.',
+            'title.unique'       => 'Tiêu đề này đã tồn tại.',
+            'thumbnail.max'      => 'Dung lượng ảnh không được quá 3MB.',
         ];
     }
 }

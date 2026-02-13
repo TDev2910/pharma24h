@@ -21,12 +21,14 @@ class StorePostRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'title' => 'required|string|max:255|unique:posts,title',
-            'summary' => 'required|string|max:500',
-            'content' => 'required|string',
-            'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'is_published' => 'required|boolean',
+            return [
+            'title'        => 'required|string|max:255|unique:posts,title',
+            'category_id'  => 'required|exists:categories,id', 
+            'summary'      => 'required|string|max:500',
+            'content'      => 'required|string',
+            'thumbnail'    => 'required|image|max:3072', 
+            'gallery.*'    => 'image|max:3072',          
+            'is_published' => 'boolean',
         ];
     }
     public function messages(): array

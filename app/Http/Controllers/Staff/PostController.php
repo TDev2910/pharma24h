@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Models\Post; 
 use App\Http\Requests\Staff\Post\StorePostRequest; 
 use App\Http\Requests\Staff\Post\UpdatePostRequest;
+use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
@@ -17,22 +18,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::with('author')
-            ->latest()
-            ->paginate(10);
-
-        return Inertia::render('Staff/Posts/Index', [
-            'posts' => $posts
-        ]);
-
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-
+        
     }
 
     /**
