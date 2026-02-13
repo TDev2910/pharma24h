@@ -1,0 +1,88 @@
+{
+  "_firebase-CLx4k24K.js": {
+    "file": "assets/firebase-CLx4k24K.js",
+    "name": "firebase"
+  },
+  "node_modules/chart.js/auto/auto.js": {
+    "file": "assets/auto-CpL4W96M.js",
+    "name": "auto",
+    "src": "node_modules/chart.js/auto/auto.js",
+    "isDynamicEntry": true
+  },
+  "node_modules/primeicons/fonts/primeicons.eot": {
+    "file": "assets/primeicons-DMOk5skT.eot",
+    "src": "node_modules/primeicons/fonts/primeicons.eot"
+  },
+  "node_modules/primeicons/fonts/primeicons.svg": {
+    "file": "assets/primeicons-Dr5RGzOO.svg",
+    "src": "node_modules/primeicons/fonts/primeicons.svg"
+  },
+  "node_modules/primeicons/fonts/primeicons.ttf": {
+    "file": "assets/primeicons-MpK4pl85.ttf",
+    "src": "node_modules/primeicons/fonts/primeicons.ttf"
+  },
+  "node_modules/primeicons/fonts/primeicons.woff": {
+    "file": "assets/primeicons-WjwUDZjB.woff",
+    "src": "node_modules/primeicons/fonts/primeicons.woff"
+  },
+  "node_modules/primeicons/fonts/primeicons.woff2": {
+    "file": "assets/primeicons-C6QP2o4f.woff2",
+    "src": "node_modules/primeicons/fonts/primeicons.woff2"
+  },
+  "node_modules/quill/quill.js": {
+    "file": "assets/quill-q-py66Vk.js",
+    "name": "quill",
+    "src": "node_modules/quill/quill.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_firebase-CLx4k24K.js"
+    ]
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-ldgIohEo.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-DNBlcsRt.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "_firebase-CLx4k24K.js"
+    ],
+    "dynamicImports": [
+      "node_modules/chart.js/auto/auto.js",
+      "node_modules/quill/quill.js"
+    ],
+    "css": [
+      "assets/app-DpuoY8_h.css"
+    ],
+    "assets": [
+      "assets/primeicons-DMOk5skT.eot",
+      "assets/primeicons-C6QP2o4f.woff2",
+      "assets/primeicons-WjwUDZjB.woff",
+      "assets/primeicons-MpK4pl85.ttf",
+      "assets/primeicons-Dr5RGzOO.svg"
+    ]
+  },
+  "resources/js/library/firebaseGoogleAuth.js": {
+    "file": "assets/firebaseGoogleAuth-BLSOBM37.js",
+    "name": "firebaseGoogleAuth",
+    "src": "resources/js/library/firebaseGoogleAuth.js",
+    "isEntry": true,
+    "imports": [
+      "_firebase-CLx4k24K.js"
+    ]
+  },
+  "resources/js/library/firebasePhoneAuth.js": {
+    "file": "assets/firebasePhoneAuth-BO20SdqS.js",
+    "name": "firebasePhoneAuth",
+    "src": "resources/js/library/firebasePhoneAuth.js",
+    "isEntry": true,
+    "imports": [
+      "_firebase-CLx4k24K.js"
+    ]
+  }
+}
