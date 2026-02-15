@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\Medicine;
 use App\Models\Goods;
 use App\Models\Service;
+use App\Models\Content\Category;
+use App\Models\Post;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 use App\Models\ProductReview;
 
 class HomeController extends Controller
@@ -222,9 +225,59 @@ class HomeController extends Controller
         ]);
     }
 
-    public function posts()
+    public function posts(Request $request)
     {
-        return Inertia::render('Public/Posts');
+        //lấy danh sách category
+        $categories = Category::has('posts')->withCount('posts')->get();
+
+        //lấy danh sách bài viết
+        $query = Post::with('category')->where('is_published', true)->latest();
+
+        if ($request->has('category')) {
+            $slug = $request->category;
+            $query->whereHas('category', function($q) use ($slug) {
+                $q->where('slug', $slug);
+            });
+        }
+
+        $allPosts = $query->take(10)->get(); //lấy 10 bài viết mới nhất
+
+        //format post
+        $formatPost = function ($post) {
+            return [
+                'id' => $post->id,
+                'title' => $post->title,
+                'summary' => Str::limit($post->summary, 120),
+                'category' => $post->category->name ?? 'Tin tức',
+                'categorySlug' => $post->category->slug ?? '',
+                'image' => $post->thumbnail 
+                    ? (str_starts_with($post->thumbnail, 'http') ? $post->thumbnail : asset('storage/' . $post->thumbnail))
+                    : 'https://via.placeholder.com/800x600.png?text=No+Image',
+                'slug' => $post->slug,
+                'date' => $post->created_at ? $post->created_at->format('d/m/Y') : '',
+                'views' => rand(100, 2000), 
+            ];
+        };
+        
+        $featuredPosts = $allPosts->take(2)->map($formatPost)->values(); //2 bài viết đầu làm nổi bật
+        $latestPosts = $allPosts->skip(2)->map($formatPost)->values(); // tin mới
+
+        $user = auth()->user();
+
+        return Inertia::render('Public/Posts', [
+            'categories' => $categories,
+            'featuredPosts' => $featuredPosts,
+            'latestPosts' => $latestPosts,
+            'filters' => $request->only(['category']),
+             'auth' => [
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                ] : null,
+            ],
+        ]);
     }
     
     public function contact()

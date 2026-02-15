@@ -36,8 +36,11 @@ Route::get('/products', [HomeController::class, 'products'])->name('products');
 Route::get('/products/{type}/{id}', [HomeController::class, 'productDetail'])->name('products.detail');
 Route::get('/services', [HomeController::class, 'services'])->name('services');
 Route::get('/services/{id}', [HomeController::class, 'serviceDetail'])->name('services.detail');
+// posts
 Route::get('/posts', [HomeController::class, 'posts'])->name('posts');
+// 3. Trang liên hệ
 Route::get('/contact', fn () => Inertia::render('Public/Contact'))->name('contact');
+// 4. Gửi liên hệ
 Route::post('/contact', [SupportTicketController::class, 'store'])->name('contact.store');
 // Review routes
 Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
