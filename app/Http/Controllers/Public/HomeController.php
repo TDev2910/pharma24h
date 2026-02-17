@@ -168,7 +168,7 @@ class HomeController extends Controller
     public function services(Request $request)
     {
         $query = Service::with(['category'])
-            ->where('trang_thai', 'kich_hoat'); // Chỉ hiển thị dịch vụ đang kích hoạt
+            ->where('trang_thai', 'kich_hoat'); 
 
         // Search functionality
         if ($request->filled('search')) {
@@ -297,6 +297,63 @@ class HomeController extends Controller
             'categorySections' => $categorySections,
             'filters' => $request->only(['category']),
              'auth' => [
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                ] : null,
+            ],
+        ]);
+    }
+
+    public function DetailsPost(Request $request, $slug)
+    {
+        $post = Post::with(['category', 'author'])
+            ->where('slug', $slug)
+            ->where('is_published', true)
+            ->firstOrFail(); //nếu ko có báo lỗi 
+
+        $postData = [
+            'id' => $post->id,
+            'title' => $post->title,
+            'content' => $post->content, 
+            'summary' => $post->summary,
+            'image' => $post->thumbnail 
+                ? (str_starts_with($post->thumbnail, 'http') ? $post->thumbnail : asset('storage/' . $post->thumbnail))
+                : 'https://via.placeholder.com/1200x600.png?text=No+Image',
+            'category' => $post->category->name ?? 'Tin tức',
+            'categorySlug' => $post->category->slug ?? '',
+            'author' => $post->author ? $post->author->name : 'Admin',
+            'date' => $post->created_at ? $post->created_at->format('d/m/Y') : '',
+            'views' => rand(100, 5000), 
+        ];
+
+        //tìm các bài viết liên quan tới category
+        $relatedPosts = Post::where('category_id', $post->category_id)
+            ->where('id', '!=', $post->id)
+            ->where('is_published', true)
+            ->take(4)
+            ->latest()
+            ->get()
+            ->map(function($p) {
+                 return [
+                    'id' => $p->id,
+                    'title' => $p->title,
+                    'slug' => $p->slug,
+                    'image' => $p->thumbnail 
+                        ? (str_starts_with($p->thumbnail, 'http') ? $p->thumbnail : asset('storage/' . $p->thumbnail))
+                        : 'https://via.placeholder.com/800x600.png?text=No+Image',
+                    'date' => $p->created_at ? $p->created_at->format('d/m/Y') : '',
+                 ];
+            });
+
+        $user = $request->user();
+
+        return Inertia::render('Public/Posts/Show', [
+            'post' => $postData,
+            'relatedPosts' => $relatedPosts,
+            'auth' => [
                 'user' => $user ? [
                     'id' => $user->id,
                     'name' => $user->name,

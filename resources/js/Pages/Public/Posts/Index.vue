@@ -1,12 +1,12 @@
 <script setup>
 import { computed } from 'vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     auth: { type: Object, default: () => ({ user: null }) },
     categories: { type: Array, default: () => [] },
     featuredPosts: { type: Array, default: () => [] },
-    categorySections: { type: Array, default: () => [] }, // New prop from backend
+    categorySections: { type: Array, default: () => [] },
     filters: { type: Object, default: () => ({}) },
 });
 
@@ -90,32 +90,32 @@ const loadMore = () => {
         </div>
     </div>
     <section class="health-corner-container">
-        <!-- các bài viết nổi bật (HERO SECTION) -->
         <section class="post-section">
             <h3 class="section-title">Bài viết nổi bật</h3>
 
             <div v-if="processedFeaturedPosts.length > 0" class="hero-layout mb-5">
-                <!-- Main Hero Post (Left) -->
-                <div class="hero-main" v-if="processedFeaturedPosts[0]">
+                <Link v-if="processedFeaturedPosts[0]" :href="`/bai-viet/${processedFeaturedPosts[0].slug}`"
+                    class="hero-main cursor-pointer block text-decoration-none">
                     <div class="hero-img-wrapper">
                         <img :src="processedFeaturedPosts[0].image" :alt="processedFeaturedPosts[0].title">
                     </div>
                     <div class="hero-body">
-                        <h2 class="hero-title">{{ processedFeaturedPosts[0].title }}</h2>
-                        <p class="hero-desc d-none d-md-block">{{ processedFeaturedPosts[0].desc }}</p>
+                        <h2 class="hero-title text-dark">{{ processedFeaturedPosts[0].title }}</h2>
+                        <p class="hero-desc d-none d-md-block text-secondary">{{ processedFeaturedPosts[0].desc }}</p>
                     </div>
-                </div>
+                </Link>
 
                 <!-- Side Posts List (Right) -->
                 <div class="hero-side">
-                    <div v-for="post in processedFeaturedPosts.slice(1, 6)" :key="post.id" class="side-item">
+                    <Link v-for="post in processedFeaturedPosts.slice(1, 6)" :key="post.id"
+                        :href="`/bai-viet/${post.slug}`" class="side-item cursor-pointer block text-decoration-none">
                         <div class="side-img-wrapper">
                             <img :src="post.image" :alt="post.title">
                         </div>
                         <div class="side-body">
-                            <h4 class="side-title">{{ post.title }}</h4>
+                            <h4 class="side-title text-dark">{{ post.title }}</h4>
                         </div>
-                    </div>
+                    </Link>
                 </div>
             </div>
 
@@ -142,26 +142,30 @@ const loadMore = () => {
 
                             <div class="block-grid">
                                 <!-- First Post: Large -->
-                                <div v-if="group.posts[0]" class="post-large">
+                                <Link v-if="group.posts[0]" :href="`/bai-viet/${group.posts[0].slug}`"
+                                    class="post-large cursor-pointer block text-decoration-none">
                                     <div class="img-wrapper">
                                         <img :src="group.posts[0].image" :alt="group.posts[0].title">
                                     </div>
-                                    <h4 class="post-title-lg">{{ group.posts[0].title }}</h4>
-                                    <p class="post-desc">{{ group.posts[0].desc }}</p>
-                                </div>
+                                    <h4 class="post-title-lg text-dark">{{ group.posts[0].title }}</h4>
+                                    <p class="post-desc text-secondary">{{ group.posts[0].desc }}</p>
+                                </Link>
 
                                 <!-- Second Post: Large (if exists) or List -->
-                                <div v-if="group.posts[1]" class="post-medium">
-                                    <h4 class="post-title-md">{{ group.posts[1].title }}</h4>
-                                    <p class="post-desc">{{ group.posts[1].desc }}</p>
-                                </div>
+                                <Link v-if="group.posts[1]" :href="`/bai-viet/${group.posts[1].slug}`"
+                                    class="post-medium cursor-pointer block text-decoration-none">
+                                    <h4 class="post-title-md text-dark">{{ group.posts[1].title }}</h4>
+                                    <p class="post-desc text-secondary">{{ group.posts[1].desc }}</p>
+                                </Link>
 
                                 <!-- Remaining posts: Small list below -->
                                 <div v-if="group.posts.length > 2" class="post-list-row">
-                                    <div v-for="post in group.posts.slice(2, 5)" :key="post.id" class="post-small">
-                                        <h5 class="post-title-sm">{{ post.title }}</h5>
-                                        <p class="post-desc-sm d-none d-lg-block">{{ post.desc }}</p>
-                                    </div>
+                                    <Link v-for="post in group.posts.slice(2, 5)" :key="post.id"
+                                        :href="`/bai-viet/${post.slug}`"
+                                        class="post-small cursor-pointer block text-decoration-none">
+                                        <h5 class="post-title-sm text-dark">{{ post.title }}</h5>
+                                        <p class="post-desc-sm d-none d-lg-block text-secondary">{{ post.desc }}</p>
+                                    </Link>
                                 </div>
                             </div>
                             <hr class="section-divider" />
@@ -177,7 +181,7 @@ const loadMore = () => {
                     <div class="sidebar-box">
                         <h3 class="sidebar-title">Chuyên đề nổi bật</h3>
                         <div class="topic-list">
-                            <div v-for="cat in processedCategories" :key="cat.id" class="topic-item"
+                            <div v-for="cat in processedCategories" :key="cat.id" class="topic-item cursor-pointer"
                                 @click="handleCategoryClick(cat)">
                                 <div class="topic-name"># {{ cat.name }}</div>
                                 <div class="topic-count">{{ cat.count }} bài viết</div>

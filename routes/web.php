@@ -38,6 +38,7 @@ Route::get('/services', [HomeController::class, 'services'])->name('services');
 Route::get('/services/{id}', [HomeController::class, 'serviceDetail'])->name('services.detail');
 // posts
 Route::get('/posts', [HomeController::class, 'posts'])->name('posts');
+Route::get('/bai-viet/{slug}', [HomeController::class, 'detailsPost'])->name('posts.details');
 // 3. Trang liên hệ
 Route::get('/contact', fn () => Inertia::render('Public/Contact'))->name('contact');
 // 4. Gửi liên hệ
