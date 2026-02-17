@@ -19,7 +19,7 @@ class HomeController extends Controller
     /**
      * Trang chủ dùng Inertia + Vue (SPA)
      */
-    public function homeInertia()
+    public function homeInertia(Request $request)
     {
         $medicines = Medicine::with(['category', 'manufacturer'])
             ->where('ban_truc_tiep', true)
@@ -33,7 +33,7 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
-        $user = auth()->user();
+        $user = $request->user();
 
         return Inertia::render('Public/Home', [
             'medicines' => $medicines,
@@ -114,7 +114,7 @@ class HomeController extends Controller
             'products' => $allProducts
         ]);
     }
-    public function productDetail($type, $id)
+    public function productDetail(Request $request, $type, $id)
     {
         if ($type === 'medicine') {
             $product = Medicine::with(['category', 'manufacturer', 'drugRoute', 'position'])->findOrFail($id);
@@ -122,7 +122,7 @@ class HomeController extends Controller
             $product = Goods::with(['category', 'manufacturer', 'position'])->findOrFail($id);
         }
 
-        $user = auth()->user();
+        $user = $request->user();
 
         //lấy thông tin tất cả review của sản phẩm
         $reviews = ProductReview::where('product_id', $id)
@@ -186,7 +186,7 @@ class HomeController extends Controller
 
         $services = $query->latest()->get();
 
-        $user = auth()->user();
+        $user = $request->user();
 
         return Inertia::render('Public/Service/Index', [
             'services' => $services,
@@ -204,13 +204,13 @@ class HomeController extends Controller
     /**
      * Hiển thị chi tiết dịch vụ
      */
-    public function serviceDetail($id)
+    public function serviceDetail(Request $request, $id)
     {
         $service = Service::with(['category','doctor'])
             ->where('trang_thai', 'kich_hoat')
             ->findOrFail($id);
 
-        $user = auth()->user();
+        $user = $request->user();
 
         return Inertia::render('Public/Service/Show', [
             'service' => $service,
@@ -289,9 +289,9 @@ class HomeController extends Controller
             }
         }
 
-        $user = auth()->user();
+        $user = $request->user();
 
-        return Inertia::render('Public/Posts', [
+        return Inertia::render('Public/Posts/Index', [
             'categories' => $categories,
             'featuredPosts' => $featuredPosts,
             'categorySections' => $categorySections,

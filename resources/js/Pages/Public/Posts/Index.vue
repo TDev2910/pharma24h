@@ -198,4 +198,4 @@ const loadMore = () => {
 </template>
 
 
-<style src="../../../css/Public/Posts/index.css"></style>
+<style src="../../../../css/Public/Posts/index.css"></style>
