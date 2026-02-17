@@ -240,7 +240,7 @@ class HomeController extends Controller
             });
         }
 
-        $allPosts = $query->take(10)->get(); //lấy 10 bài viết mới nhất
+        $allPosts = $query->take(6)->get(); // Chỉ cần lấy 6 bài cho phần Featured
 
         //format post
         $formatPost = function ($post) {
@@ -259,15 +259,42 @@ class HomeController extends Controller
             ];
         };
         
-        $featuredPosts = $allPosts->take(2)->map($formatPost)->values(); //2 bài viết đầu làm nổi bật
-        $latestPosts = $allPosts->skip(2)->map($formatPost)->values(); // tin mới
+        $featuredPosts = $allPosts->map($formatPost)->values(); // 6 bài nổi bật
+
+        // Lấy tất cả danh mục có bài viết (đã xuất bản) để hiển thị Section
+        // Thay vì hardcode slug, ta query lấy hết các Category
+        $activeCategories = Category::whereHas('posts', function($q) {
+            $q->where('is_published', true);
+        })->get();
+
+        $categorySections = [];
+
+        foreach ($activeCategories as $cat) {
+            $posts = Post::with('category')
+                ->where('category_id', $cat->id)
+                ->where('is_published', true)
+                ->latest()
+                ->take(5) // Lấy 5 bài cho bố cục (1 to, 1 vừa, 3 nhỏ)
+                ->get()
+                ->map($formatPost)
+                ->values();
+
+            if ($posts->count() > 0) {
+                $categorySections[] = [
+                    'id' => $cat->id,
+                    'name' => $cat->name,
+                    'slug' => $cat->slug,
+                    'posts' => $posts
+                ];
+            }
+        }
 
         $user = auth()->user();
 
         return Inertia::render('Public/Posts', [
             'categories' => $categories,
             'featuredPosts' => $featuredPosts,
-            'latestPosts' => $latestPosts,
+            'categorySections' => $categorySections,
             'filters' => $request->only(['category']),
              'auth' => [
                 'user' => $user ? [

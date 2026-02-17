@@ -119,7 +119,7 @@ const props = defineProps({
 })
 
 const handleSubmit = () => {
-    if(!form.fullName || !form.email) {
+    if (!form.fullName || !form.email) {
         alert("Vui lòng nhập đầy đủ thông tin!");
         return;
     }

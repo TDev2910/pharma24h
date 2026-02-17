@@ -6,10 +6,11 @@ const props = defineProps({
     auth: { type: Object, default: () => ({ user: null }) },
     categories: { type: Array, default: () => [] },
     featuredPosts: { type: Array, default: () => [] },
-    latestPosts: { type: Array, default: () => [] },
+    categorySections: { type: Array, default: () => [] }, // New prop from backend
     filters: { type: Object, default: () => ({}) },
 });
 
+// --- HELPER: Map Category Slug to Icon/Color ---
 const getCategoryMeta = (slug) => {
     const metaMap = {
         'tim-mach': { icon: '❤️', color: 'red' },
@@ -18,11 +19,9 @@ const getCategoryMeta = (slug) => {
         'giac-ngu': { icon: '🌙', color: 'orange' },
         'kham-benh': { icon: '🩺', color: 'blue' },
         'thao-duoc': { icon: '🍃', color: 'green' },
-
         'lam-dep': { icon: '💄', color: 'pink' },
         'me-va-be': { icon: '👶', color: 'purple' },
         'covid-19': { icon: '🦠', color: 'red' },
-
         'default': { icon: '⚕️', color: 'blue' }
     };
     return metaMap[slug] || metaMap['default'];
@@ -54,14 +53,18 @@ const processedFeaturedPosts = computed(() => {
     });
 });
 
-// 3. Latest Posts
-const processedLatestPosts = computed(() => {
-    return props.latestPosts.map(post => {
-        const meta = getCategoryMeta(post.categorySlug);
+// Category Sections (Processed with colors/meta)
+const processedCategorySections = computed(() => {
+    return props.categorySections.map(section => {
+        const meta = getCategoryMeta(section.slug);
         return {
-            ...post,
-            desc: post.summary,
-            catColor: meta.color
+            ...section,
+            color: meta.color,
+            posts: section.posts.map(post => ({
+                ...post,
+                desc: post.summary,
+                catColor: meta.color
+            }))
         };
     });
 });
@@ -72,7 +75,7 @@ const handleCategoryClick = (category) => {
 };
 
 const loadMore = () => {
-    console.log('Load more functionality to be implemented with pagination');
+    console.log('Load more');
 };
 </script>
 
@@ -80,88 +83,111 @@ const loadMore = () => {
 
     <Head title="Góc sức khỏe" />
 
-    <section class="health-corner-container" style="margin-top: 100px;">
-        <div class="banner-wrapper">
-            <div class="banner-content">
-                <div class="banner-info">
-                    <div class="cross-bg-icon">+</div>
-
-                    <div class="info-box">
-                        <h2>Góc Sức Khỏe</h2>
-                        <p>Cập nhật kiến thức sức khỏe, dinh dưỡng và lối sống lành mạnh mỗi ngày</p>
-                    </div>
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwTFBgKETz62uwA5D0Tg6bC0RQNHEcEnLJ_Q&s"
-                        alt="Medicine" class="sub-img" />
-                </div>
-
-                <div class="banner-image">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwTFBgKETz62uwA5D0Tg6bC0RQNHEcEnLJ_Q&s"
-                        alt="Doctor consulting" />
-                </div>
-            </div>
+    <div class="contact-banner" style="margin-top: 80px;">
+        <div class="container">
+            <h1 class="fw-bold text-primary-dark">Góc sức khỏe</h1>
+            <p class="text-secondary">Hãy tìm hiểu thông tin y tế, sức khỏe và các thông tin liên quan đến sức khỏe.</p>
         </div>
-
-        <div class="category-wrapper">
-            <h3 class="section-title">Danh mục sức khỏe</h3>
-
-            <div class="category-grid">
-                <div v-for="item in processedCategories" :key="item.id" class="category-card"
-                    @click="handleCategoryClick(item)">
-                    <div class="icon-circle">
-                        <span class="icon">{{ item.icon }}</span>
-                    </div>
-                    <h4 class="cat-name">{{ item.name }}</h4>
-                    <small style="font-size: 10px">({{ item.slug }})</small>
-                    <span class="cat-count">{{ item.count }} bài viết</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- các bài viết nổi bật -->
+    </div>
+    <section class="health-corner-container">
+        <!-- các bài viết nổi bật (HERO SECTION) -->
         <section class="post-section">
             <h3 class="section-title">Bài viết nổi bật</h3>
 
-            <div v-if="processedFeaturedPosts.length > 0" class="featured-grid">
-                <div v-for="post in processedFeaturedPosts" :key="post.id" class="card-horizontal">
-                    <div class="card-img-wrapper">
-                        <img :src="post.image" :alt="post.title">
+            <div v-if="processedFeaturedPosts.length > 0" class="hero-layout mb-5">
+                <!-- Main Hero Post (Left) -->
+                <div class="hero-main" v-if="processedFeaturedPosts[0]">
+                    <div class="hero-img-wrapper">
+                        <img :src="processedFeaturedPosts[0].image" :alt="processedFeaturedPosts[0].title">
                     </div>
-                    <div class="card-body">
-                        <span class="badge" :class="post.catColor">{{ post.category }}</span>
-                        <h4 class="card-title">{{ post.title }}</h4>
-                        <!-- Use summary/desc -->
-                        <p class="card-desc">{{ post.desc }}</p>
-                        <div class="card-meta">
-                            <span>🕒 {{ post.date }}</span>
-                            <span>👁️ {{ post.views }}</span>
+                    <div class="hero-body">
+                        <h2 class="hero-title">{{ processedFeaturedPosts[0].title }}</h2>
+                        <p class="hero-desc d-none d-md-block">{{ processedFeaturedPosts[0].desc }}</p>
+                    </div>
+                </div>
+
+                <!-- Side Posts List (Right) -->
+                <div class="hero-side">
+                    <div v-for="post in processedFeaturedPosts.slice(1, 6)" :key="post.id" class="side-item">
+                        <div class="side-img-wrapper">
+                            <img :src="post.image" :alt="post.title">
+                        </div>
+                        <div class="side-body">
+                            <h4 class="side-title">{{ post.title }}</h4>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div v-else class="text-center py-4 text-gray-500">
                 Chưa có bài viết nổi bật.
             </div>
 
-            <h3 class="section-title mt-large">Tin tức mới nhất</h3>
+            <!-- NEW LAYOUT: Content + Sidebar -->
+            <div class="content-layout">
+                <!-- LEFT COLUMN: Categories & Posts -->
+                <div class="main-content">
+                    <div v-if="processedCategorySections.length > 0">
+                        <div v-for="group in processedCategorySections" :key="group.id" class="category-block mb-5">
+                            <div class="block-header">
+                                <h3 class="block-title" :class="group.color">{{ group.name }}</h3>
+                                <div class="block-links d-none d-md-flex">
+                                    <span class="sub-link-mock">Kiến thức y khoa</span>
+                                    <span class="sub-link-mock">Sức khỏe gia đình</span>
+                                </div>
+                                <a href="#" class="view-all"
+                                    @click.prevent="handleCategoryClick({ slug: group.slug })">Xem tất cả <i
+                                        class="fas fa-chevron-right"></i></a>
+                            </div>
 
-            <div v-if="processedLatestPosts.length > 0" class="latest-grid">
-                <div v-for="post in processedLatestPosts" :key="post.id" class="card-vertical">
-                    <div class="card-img-wrapper">
-                        <img :src="post.image" :alt="post.title">
-                        <span class="badge-overlay" :class="post.catColor">{{ post.category }}</span>
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">{{ post.title }}</h4>
-                        <p class="card-desc">{{ post.desc }}</p>
-                        <div class="card-meta">
-                            <span>🕒 {{ post.date }}</span>
-                            <span>👁️ {{ post.views }}</span>
+                            <div class="block-grid">
+                                <!-- First Post: Large -->
+                                <div v-if="group.posts[0]" class="post-large">
+                                    <div class="img-wrapper">
+                                        <img :src="group.posts[0].image" :alt="group.posts[0].title">
+                                    </div>
+                                    <h4 class="post-title-lg">{{ group.posts[0].title }}</h4>
+                                    <p class="post-desc">{{ group.posts[0].desc }}</p>
+                                </div>
+
+                                <!-- Second Post: Large (if exists) or List -->
+                                <div v-if="group.posts[1]" class="post-medium">
+                                    <h4 class="post-title-md">{{ group.posts[1].title }}</h4>
+                                    <p class="post-desc">{{ group.posts[1].desc }}</p>
+                                </div>
+
+                                <!-- Remaining posts: Small list below -->
+                                <div v-if="group.posts.length > 2" class="post-list-row">
+                                    <div v-for="post in group.posts.slice(2, 5)" :key="post.id" class="post-small">
+                                        <h5 class="post-title-sm">{{ post.title }}</h5>
+                                        <p class="post-desc-sm d-none d-lg-block">{{ post.desc }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="section-divider" />
                         </div>
                     </div>
+                    <div v-else class="text-center py-4 text-gray-500">
+                        Chưa có bài viết mới.
+                    </div>
                 </div>
-            </div>
-            <div v-else class="text-center py-4 text-gray-500">
-                Chưa có bài viết mới.
+
+                <!-- RIGHT COLUMN: Sidebar Categories -->
+                <aside class="sidebar-content">
+                    <div class="sidebar-box">
+                        <h3 class="sidebar-title">Chuyên đề nổi bật</h3>
+                        <div class="topic-list">
+                            <div v-for="cat in processedCategories" :key="cat.id" class="topic-item"
+                                @click="handleCategoryClick(cat)">
+                                <div class="topic-name"># {{ cat.name }}</div>
+                                <div class="topic-count">{{ cat.count }} bài viết</div>
+                            </div>
+                        </div>
+                        <div class="text-end mt-3">
+                            <a href="#" class="view-all-topics">Xem tất cả <i class="fas fa-chevron-right"></i></a>
+                        </div>
+                    </div>
+                </aside>
             </div>
 
             <div class="action-area">
@@ -173,141 +199,17 @@ const loadMore = () => {
 
 
 <style scoped>
+.contact-banner {
+    background: linear-gradient(180deg, #E6F3FF 0%, #FFFFFF 100%);
+    padding: 60px 0 40px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
 /* Container chung */
 .health-corner-container {
     font-family: 'Arial', sans-serif;
     max-width: 1200px;
     margin: 0 auto;
-}
-
-/* --- Banner Styling --- */
-.banner-wrapper {
-    background: linear-gradient(90deg, #007bff 0%, #4facfe 100%);
-    /* Màu xanh dương gradient */
-    color: white;
-    border-radius: 0 0 20px 20px;
-    /* Bo tròn 2 góc dưới nếu muốn giống ảnh hoặc full width */
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-}
-
-.banner-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 40px 20px 0 20px;
-    /* Padding trên để chừa chỗ */
-}
-
-.banner-info {
-    position: relative;
-    flex: 1;
-    z-index: 2;
-}
-
-/* Mô phỏng khung trắng bo tròn bao quanh chữ "Góc Sức Khỏe" */
-.info-box {
-    background: rgba(255, 255, 255, 0.9);
-    color: #333;
-    padding: 20px;
-    border-radius: 12px;
-    display: inline-block;
-    max-width: 400px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
-.info-box h2 {
-    margin: 0 0 10px 0;
-    color: #000;
-    font-weight: bold;
-}
-
-.banner-image img {
-    max-height: 300px;
-    /* Điều chỉnh chiều cao ảnh bác sĩ */
-    object-fit: contain;
-    vertical-align: bottom;
-    /* Để ảnh sát đáy */
-}
-
-/* Decor chữ thập nền */
-.cross-bg-icon {
-    position: absolute;
-    top: -50px;
-    left: 50px;
-    font-size: 300px;
-    font-weight: bold;
-    color: rgba(255, 255, 255, 0.2);
-    /* Màu trắng mờ */
-    z-index: -1;
-    line-height: 0.8;
-}
-
-/* --- Category Styling --- */
-.category-wrapper {
-    padding: 40px 20px;
-}
-
-.section-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.category-grid {
-    display: grid;
-    /* Responsive: Tự động chia cột, tối thiểu 150px mỗi cột */
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 20px;
-}
-
-.category-card {
-    background: white;
-    border: 1px solid #eee;
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.category-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-    border-color: #bdf;
-}
-
-.icon-circle {
-    background: #f0f9ff;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
-    font-size: 24px;
-}
-
-.cat-name {
-    margin: 5px 0;
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-}
-
-.cat-count {
-    font-size: 12px;
-    color: #888;
 }
 
 .post-section {
@@ -324,45 +226,113 @@ const loadMore = () => {
     color: #333;
 }
 
-.mt-large {
-    margin-top: 50px;
-}
-
-/* --- GRID SYSTEMS --- */
-.featured-grid {
+/* --- HERO LAYOUT STYLES --- */
+.hero-layout {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    /* 2 cột đều nhau */
+    grid-template-columns: 1.8fr 1.2fr;
+    /* Chia tỉ lệ ~60/40 hoặc 65/35 */
     gap: 30px;
 }
 
-.latest-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    /* 4 cột đều nhau */
-    gap: 20px;
+.hero-main {
+    display: flex;
+    flex-direction: column;
 }
 
-/* Responsive cho Mobile/Tablet */
-@media (max-width: 992px) {
-    .latest-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.hero-img-wrapper {
+    width: 100%;
+    height: 350px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.hero-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
+
+.hero-desc {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.hero-side {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.side-item {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.side-item:last-child {
+    border-bottom: none;
+}
+
+.side-img-wrapper {
+    width: 120px;
+    height: 80px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.side-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.side-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.4;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.side-title:hover {
+    color: #007bff;
 }
 
 @media (max-width: 768px) {
-
-    .featured-grid,
-    .latest-grid {
+    .hero-layout {
         grid-template-columns: 1fr;
     }
 
-    /* Về 1 cột hết */
+    .hero-img-wrapper {
+        height: 250px;
+    }
+
+    .side-item {
+        align-items: center;
+    }
 }
 
 /* --- CARD STYLING --- */
-.card-horizontal,
-.card-vertical {
+.card-horizontal {
     background: #fff;
     border-radius: 12px;
     overflow: hidden;
@@ -372,8 +342,7 @@ const loadMore = () => {
     cursor: pointer;
 }
 
-.card-horizontal:hover,
-.card-vertical:hover {
+.card-horizontal:hover {
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
@@ -395,24 +364,6 @@ const loadMore = () => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-}
-
-/* Vertical specific */
-.card-vertical {
-    display: flex;
-    flex-direction: column;
-}
-
-.card-vertical .card-img-wrapper {
-    width: 100%;
-    height: 180px;
-    /* Cố định chiều cao ảnh */
-    position: relative;
-    /* Để đặt badge overlay */
-}
-
-.card-vertical .card-body {
-    padding: 15px;
 }
 
 /* Common Image Style */
@@ -467,26 +418,10 @@ const loadMore = () => {
     background: #eee;
 }
 
-.badge-overlay {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 11px;
-    color: white;
-    font-weight: bold;
-}
-
 /* Màu sắc badge */
 .green {
     background: #e6f9ed;
     color: #28a745;
-}
-
-.badge-overlay.green {
-    background: #28a745;
-    color: white;
 }
 
 .red {
@@ -494,19 +429,9 @@ const loadMore = () => {
     color: #dc3545;
 }
 
-.badge-overlay.red {
-    background: #dc3545;
-    color: white;
-}
-
 .blue {
     background: #e8f0fe;
     color: #007bff;
-}
-
-.badge-overlay.blue {
-    background: #007bff;
-    color: white;
 }
 
 .orange {
@@ -514,9 +439,247 @@ const loadMore = () => {
     color: #ffc107;
 }
 
-.badge-overlay.orange {
-    background: #ffc107;
-    color: black;
+.purple {
+    background: #f3e5f5;
+    color: #9c27b0;
+}
+
+.pink {
+    background: #fce4ec;
+    color: #e91e63;
+}
+
+/* === NEW LAYOUT STYLES === */
+.content-layout {
+    display: flex;
+    gap: 30px;
+}
+
+.main-content {
+    flex: 3;
+    /* 75% */
+}
+
+.sidebar-content {
+    flex: 1;
+    /* 25% */
+    min-width: 250px;
+}
+
+/* Category Block */
+.category-block {
+    margin-bottom: 40px;
+}
+
+.block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.block-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0056b3;
+    /* Default blue */
+    margin: 0;
+}
+
+/* Dynamic title colors text */
+.block-title.red {
+    color: #dc3545;
+}
+
+.block-title.green {
+    color: #28a745;
+}
+
+.block-title.blue {
+    color: #007bff;
+}
+
+.block-title.orange {
+    color: #ffc107;
+}
+
+.block-title.purple {
+    color: #9c27b0;
+}
+
+.block-title.pink {
+    color: #e91e63;
+}
+
+
+.block-links {
+    display: flex;
+    gap: 15px;
+}
+
+.sub-link {
+    font-size: 13px;
+    color: #666;
+    text-decoration: none;
+}
+
+.sub-link:hover {
+    color: #007bff;
+}
+
+.view-all {
+    font-size: 13px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.block-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.post-large .img-wrapper {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.post-large .img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.post-title-lg {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.post-title-md {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.post-desc {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.post-list-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding-top: 20px;
+    border-top: 1px dashed #eee;
+}
+
+.post-small {
+    cursor: pointer;
+}
+
+.post-small:hover .post-title-sm {
+    color: #007bff;
+}
+
+.post-title-sm {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    transition: color 0.2s;
+}
+
+.post-desc-sm {
+    font-size: 12px;
+    color: #777;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.section-divider {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 30px 0;
+}
+
+/* Sidebar Box */
+.sidebar-box {
+    background: #eef3fc;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.sidebar-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0056b3;
+    margin-bottom: 20px;
+}
+
+.topic-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.topic-item {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.topic-item:last-child {
+    border-bottom: none;
+}
+
+.topic-item:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    border-radius: 4px;
+}
+
+.topic-item:hover .topic-name {
+    color: #007bff;
+}
+
+.topic-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 2px;
+    transition: color 0.2s;
+}
+
+.topic-count {
+    font-size: 12px;
+    color: #888;
+}
+
+.view-all-topics {
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.view-all-topics:hover {
+    text-decoration: underline;
 }
 
 /* Button */
@@ -538,5 +701,34 @@ const loadMore = () => {
 
 .btn-load-more:hover {
     background: #0052a3;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .content-layout {
+        flex-direction: column;
+    }
+
+    .sidebar-content {
+        order: 1;
+        /* Sidebar below main content on smaller screens */
+    }
+
+    .block-links {
+        display: none;
+        /* Hide sub-links on smaller screens */
+    }
+}
+
+@media (max-width: 768px) {
+    .block-grid {
+        grid-template-columns: 1fr;
+        /* Single column for block grid */
+    }
+
+    .post-list-row {
+        grid-template-columns: 1fr;
+        /* Single column for post list row */
+    }
 }
 </style>
