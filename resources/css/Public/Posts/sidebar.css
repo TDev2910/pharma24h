@@ -1,0 +1,63 @@
+/* Sidebar Styles */
+.sidebar-box {
+    background: #eef3fc;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.sidebar-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0056b3;
+    margin-bottom: 20px;
+}
+
+.topic-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.topic-item {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.topic-item:last-child {
+    border-bottom: none;
+}
+
+.topic-item:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    border-radius: 4px;
+}
+
+.topic-item:hover .topic-name {
+    color: #007bff;
+}
+
+.topic-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 2px;
+    transition: color 0.2s;
+}
+
+.topic-count {
+    font-size: 12px;
+    color: #888;
+}
+
+.view-all-topics {
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.view-all-topics:hover {
+    text-decoration: underline;
+}

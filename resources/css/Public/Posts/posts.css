@@ -1,0 +1,130 @@
+/* Category Blocks and Post Lists */
+.category-block {
+    margin-bottom: 40px;
+}
+
+.block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.block-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0056b3;
+    margin: 0;
+}
+
+.block-links {
+    display: flex;
+    gap: 15px;
+}
+
+.view-all {
+    font-size: 13px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.block-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* Post Large */
+.post-large .img-wrapper {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.post-large .img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.post-title-lg {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Post Medium */
+.post-title-md {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Common Post Description */
+.post-desc {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Post List Row (Small Posts) */
+.post-list-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding-top: 20px;
+    border-top: 1px dashed #eee;
+}
+
+.post-small {
+    cursor: pointer;
+}
+
+.post-small:hover .post-title-sm {
+    color: #007bff;
+}
+
+.post-title-sm {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    transition: color 0.2s;
+}
+
+.post-desc-sm {
+    font-size: 12px;
+    color: #777;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+@media (max-width: 991px) {
+    .block-links {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .block-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .post-list-row {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,152 @@
+/* Components & Utilities */
+
+/* Buttons */
+.action-area {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.btn-load-more {
+    background: #0066cc;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-load-more:hover {
+    background: #0052a3;
+}
+
+/* Links */
+.sub-link {
+    font-size: 13px;
+    color: #666;
+    text-decoration: none;
+}
+
+.sub-link:hover {
+    color: #007bff;
+}
+
+
+/* Colors (Used for dynamic category styling) */
+.green {
+    background: #e6f9ed;
+    color: #28a745;
+}
+
+.red {
+    background: #fde8e8;
+    color: #dc3545;
+}
+
+.blue {
+    background: #e8f0fe;
+    color: #007bff;
+}
+
+.orange {
+    background: #fff3cd;
+    color: #ffc107;
+}
+
+.purple {
+    background: #f3e5f5;
+    color: #9c27b0;
+}
+
+.pink {
+    background: #fce4ec;
+    color: #e91e63;
+}
+
+/* Specific text colors for block titles */
+.block-title.red { color: #dc3545; }
+.block-title.green { color: #28a745; }
+.block-title.blue { color: #007bff; }
+.block-title.orange { color: #ffc107; }
+.block-title.purple { color: #9c27b0; }
+.block-title.pink { color: #e91e63; }
+
+/* Badges (Legacy/Unused but preserved) */
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    width: fit-content;
+    background: #eee;
+}
+
+/* Card Horizontal (Legacy/Unused but preserved) */
+.card-horizontal {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+    transition: transform 0.2s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+}
+
+.card-horizontal:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-horizontal .card-img-wrapper {
+    width: 40%;
+    flex-shrink: 0;
+}
+
+.card-horizontal .card-body {
+    padding: 20px;
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-horizontal .card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 10px 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-desc {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-meta {
+    font-size: 12px;
+    color: #999;
+    display: flex;
+    gap: 15px;
+    margin-top: auto;
+}

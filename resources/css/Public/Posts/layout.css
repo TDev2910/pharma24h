@@ -1,0 +1,50 @@
+/* Main Layout & Containers */
+.contact-banner {
+    background: linear-gradient(180deg, #E6F3FF 0%, #FFFFFF 100%);
+    padding: 60px 0 40px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.health-corner-container {
+    font-family: 'Arial', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.post-section {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: 'Arial', sans-serif;
+}
+
+.content-layout {
+    display: flex;
+    gap: 30px;
+}
+
+.main-content {
+    flex: 3;
+}
+
+.sidebar-content {
+    flex: 1;
+    min-width: 250px;
+}
+
+.section-divider {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 30px 0;
+}
+
+/* Responsive Layout */
+@media (max-width: 991px) {
+    .content-layout {
+        flex-direction: column;
+    }
+
+    .sidebar-content {
+        order: 1;
+    }
+}
