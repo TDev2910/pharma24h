@@ -42,31 +42,6 @@ const resetFont = () => fontSize.value = 16;
                     <h1 class="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-6 font-display">
                         {{ post.title }}
                     </h1>
-
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-6 mb-8">
-                        <div class="flex items-center gap-4 text-sm text-gray-500">
-                            <span class="font-bold text-blue-600">{{ post.author }}</span>
-                            <span class="text-gray-300">|</span>
-                            <span>{{ post.date }}</span>
-                            <span class="text-gray-300 hidden sm:inline">|</span>
-                            <span class="hidden sm:inline"><i class="far fa-eye mr-1"></i> {{ post.views }}</span>
-                        </div>
-
-                        <!-- Font size controls -->
-                        <div class="flex items-center gap-2 text-sm text-gray-500">
-                            <span class="hidden sm:inline mr-2">Cỡ chữ:</span>
-                            <button @click="decreaseFont"
-                                class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition"
-                                title="Giảm cỡ chữ">A-</button>
-                            <button @click="resetFont"
-                                class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition font-bold"
-                                title="Mặc định">A</button>
-                            <button @click="increaseFont"
-                                class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition text-lg"
-                                title="Tăng cỡ chữ">A+</button>
-                        </div>
-                    </div>
-
                     <!-- Summary Box -->
                     <div class="bg-gray-50 border-l-4 border-blue-600 p-6 mb-10 rounded-r-lg relative">
                         <i class="fas fa-quote-left text-blue-200 text-4xl absolute top-4 left-4 -z-10 opacity-50"></i>

@@ -230,7 +230,7 @@ class HomeController extends Controller
         //lấy danh sách category
         $categories = Category::has('posts')->withCount('posts')->get();
 
-        //lấy danh sách bài viết
+        //lấy danh sách bài viết được đăng công khai
         $query = Post::with('category')->where('is_published', true)->latest();
 
         if ($request->has('category')) {
@@ -240,7 +240,7 @@ class HomeController extends Controller
             });
         }
 
-        $allPosts = $query->take(6)->get(); // Chỉ cần lấy 6 bài cho phần Featured
+        $allPosts = $query->take(6)->get(); //lấy 6 bài cho phần Featured
 
         //format post
         $formatPost = function ($post) {

@@ -53,7 +53,6 @@ const processedFeaturedPosts = computed(() => {
     });
 });
 
-// Category Sections (Processed with colors/meta)
 const processedCategorySections = computed(() => {
     return props.categorySections.map(section => {
         const meta = getCategoryMeta(section.slug);

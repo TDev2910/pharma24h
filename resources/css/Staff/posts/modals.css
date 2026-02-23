@@ -14,28 +14,25 @@
 
 .modal-container {
     background-color: #ffffff;
-    width: 600px;
-    /* Wider for post form */
+    width: 650px; /* Reduced width */
     max-width: 95%;
-    max-height: 90vh;
-    overflow-y: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 24px;
-    animation: modal-fade-in 0.2s ease-out;
+    max-height: 85vh; /* Reduced max-height so it doesn't touch edges */
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
+    padding: 0;
+    animation: modal-fade-in 0.2s ease-out;
 }
 
 @keyframes modal-fade-in {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: scale(0.98);
     }
-
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: scale(1);
     }
 }
 
@@ -43,7 +40,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    padding: 16px 24px;
+    border-bottom: 1px solid #f3f4f6;
+    background-color: #fff;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    flex-shrink: 0;
 }
 
 .modal-title {
@@ -72,10 +74,24 @@
 .modal-body {
     flex: 1;
     overflow-y: auto;
-    /* Allow scrolling within body if needed */
-    margin-bottom: 20px;
-    padding-right: 4px;
-    /* Prevent scrollbar overlapping content too much */
+    padding: 24px;
+    
+    /* Scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 20px;
 }
 
 /* Form Elements */
@@ -171,8 +187,12 @@
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    padding-top: 16px;
+    padding: 16px 24px;
     border-top: 1px solid #f3f4f6;
+    background-color: #fff;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    flex-shrink: 0;
 }
 
 .btn-cancel {

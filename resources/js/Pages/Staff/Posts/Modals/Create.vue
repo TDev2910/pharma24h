@@ -77,7 +77,7 @@ const submit = () => {
                             </option>
                         </select>
                         <small class="error-message" v-if="form.errors.category_id">{{ form.errors.category_id
-                            }}</small>
+                        }}</small>
                     </div>
                     <div class="col-half">
                         <label class="form-label">Trạng thái</label>
