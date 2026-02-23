@@ -26,6 +26,7 @@ class UpdateCategoryRequest extends FormRequest
         return [
             'name'        => 'required|string|max:255|unique:categories,name,' . $categoryId,
             'description' => 'nullable|string|max:500',
+            'parent_id'   => 'nullable|exists:categories,id',
         ];
     }
 }

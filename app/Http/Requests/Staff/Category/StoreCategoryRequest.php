@@ -24,6 +24,7 @@ class StoreCategoryRequest extends FormRequest
         return [
             'name' => 'required|string|max:255|unique:categories,name',
             'description' => 'nullable|string|max:500',
+            'parent_id' => 'nullable|exists:categories,id',
         ];
     }
 
@@ -31,7 +32,8 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'name.required' => 'Tên danh mục không được để trống.',
-            'name.unique'   => 'Tên danh mục này đã tồn tại.'
+            'name.unique'   => 'Tên danh mục này đã tồn tại.',
+            'parent_id.exists' => 'Danh mục cha không tồn tại.',
         ];
     }
 }

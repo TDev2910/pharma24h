@@ -12,15 +12,25 @@ use App\Models\Content\Category;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $categories = Category::withCount('posts')
+            ->with('parent')
+            ->when($request->search, function($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
             ->latest()
             ->paginate(10);
+        
+        $parentCategories = Category::where('parent_id')
+            ->select('id', 'name')
+            ->get();
 
         return Inertia::render('Staff/Categories/Index', [
             'categories' => $categories,
+            'parentCategories' => $parentCategories,
             'baseUrl' => route('staff.categories.index'), 
+            'filters' => $request->only('search'),
         ]);
     }
 
@@ -30,6 +40,7 @@ class CategoryController extends Controller
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
+            'parent_id' => $request->parent_id,
         ]);
 
         return redirect()->back()->with('success', 'Thêm danh mục mới thành công');
@@ -41,6 +52,7 @@ class CategoryController extends Controller
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
+            'parent_id' => $request->parent_id,
         ]);
 
         return redirect()->back()->with('success', 'Cập nhật danh mục thành công');
@@ -51,6 +63,10 @@ class CategoryController extends Controller
         //Kiểm tra danh mục có bài viết không
         if ($category->posts()->exists()) {
             return redirect()->back()->with('error', 'Không thể xóa danh mục đang chứa bài viết!');
+        }
+
+        if($category->children()->exists()) {
+            return redirect()->back()->with('error', 'Không thể xóa danh mục vì có danh mục con!');
         }
 
         $category->delete();
