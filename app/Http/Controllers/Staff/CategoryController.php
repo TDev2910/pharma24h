@@ -14,26 +14,70 @@ class CategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $categories = Category::withCount('posts')
+        $allCategories = Category::withCount('posts')
             ->with('parent')
-            ->when($request->search, function($query, $search) {
-                $query->where('name', 'like', "%{$search}%");
-            })
-            ->latest()
-            ->paginate(10);
-        
-        $parentCategories = Category::where('parent_id')
-            ->select('id', 'name')
+            ->orderBy('name')
             ->get();
+
+        if ($request->search) {
+            $categories = $allCategories->filter(function($cat) use ($request) {
+                return str_contains(strtolower($cat->name), strtolower($request->search));
+            });
+        } else {
+            // Build a flattened tree for display in the table
+            $categories = $this->buildFlattenedTree($allCategories);
+        }
+        
+        // Prepare categories for TreeSelect in modal
+        $categoryTree = $this->buildTreeNodes($allCategories);
 
         return Inertia::render('Staff/Categories/Index', [
             'categories' => $categories,
-            'parentCategories' => $parentCategories,
+            'categoryTree' => $categoryTree,
             'baseUrl' => route('staff.categories.index'), 
             'filters' => $request->only('search'),
         ]);
     }
 
+    /**
+     * Build a flat list ordered by hierarchy for table display
+     */
+    private function buildFlattenedTree($elements, $parentId = null, $level = 0)
+    {
+        $flat = [];
+        foreach ($elements as $element) {
+            if ($element->parent_id == $parentId) {
+                $element->level = $level;
+                $flat[] = $element;
+                $children = $this->buildFlattenedTree($elements, $element->id, $level + 1);
+                $flat = array_merge($flat, $children);
+            }
+        }
+        return $flat;
+    }
+
+    /**
+     * Build standard Tree Nodes for PrimeVue TreeSelect
+     */
+    private function buildTreeNodes($elements, $parentId = null) 
+    {
+        $branch = array();
+        foreach ($elements as $element) {
+            if ($element->parent_id == $parentId) {
+                $children = $this->buildTreeNodes($elements, $element->id);
+                $node = [
+                    'key' => (string)$element->id,
+                    'label' => $element->name,
+                    'data' => $element->id
+                ];
+                if ($children) {
+                    $node['children'] = $children;
+                }
+                $branch[] = $node;
+            }
+        }
+        return $branch;
+    }
     public function store(StoreCategoryRequest $request)
     {
         Category::create([
@@ -48,6 +92,10 @@ class CategoryController extends Controller
 
     public function update(UpdateCategoryRequest $request, Category $category)
     {
+        if($request->parent_id && $request->parent_id == $category->id) {
+            return redirect()->back()->with('error', 'Không thể chọn chính nó làm danh mục cha');
+        }
+
         $category->update([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
@@ -66,7 +114,7 @@ class CategoryController extends Controller
         }
 
         if($category->children()->exists()) {
-            return redirect()->back()->with('error', 'Không thể xóa danh mục vì có danh mục con!');
+            return redirect()->back()->with('error', 'Không thể xóa danh mục vì co có con!');
         }
 
         $category->delete();

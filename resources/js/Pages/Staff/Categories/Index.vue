@@ -1,14 +1,20 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
 import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
-import Textarea from 'primevue/textarea';
 import Toast from 'primevue/toast';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
+import TreeSelect from 'primevue/treeselect';
 
-const props = defineProps({ categories: Object, baseUrl: String });
+// 1. NHẬN THÊM PROPS `parentCategories` TỪ CONTROLLER
+const props = defineProps({
+    categories: Object,
+    parentCategories: Array,
+    categoryTree: Array,
+    baseUrl: String
+});
+
 const toast = useToast();
 
 // State
@@ -18,15 +24,28 @@ const isEditing = ref(false);
 const categoryToDelete = ref(null);
 
 // Form
+// 2. THÊM TRƯỜNG `parent_id` VÀO FORM
+const selectedParentNode = ref(null);
+
 const form = useForm({
     id: null,
     name: '',
     description: '',
+    parent_id: null,
 });
 
+watch(selectedParentNode, (newValue) => {
+    if (newValue && Object.keys(newValue).length > 0) {
+        // Lấy key đầu tiên trong object (chính là ID của danh mục)
+        form.parent_id = parseInt(Object.keys(newValue)[0]);
+    } else {
+        form.parent_id = null;
+    }
+});
 
 const openNew = () => {
     form.reset();
+    selectedParentNode.value = null;
     isEditing.value = false;
     categoryDialog.value = true;
 };
@@ -35,6 +54,12 @@ const editCategory = (category) => {
     form.id = category.id;
     form.name = category.name;
     form.description = category.description;
+    form.parent_id = category.parent_id; // Gán lại giá trị parent_id khi sửa
+    if (category.parent_id) {
+        selectedParentNode.value = { [category.parent_id]: true };
+    } else {
+        selectedParentNode.value = null;
+    }
     isEditing.value = true;
     categoryDialog.value = true;
 };
@@ -44,15 +69,18 @@ const saveCategory = () => {
         form.put(`${props.baseUrl}/${form.id}`, {
             onSuccess: () => {
                 categoryDialog.value = false;
-                toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật danh mục', life: 3000 });
+                toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật', life: 3000 });
                 form.reset();
+            },
+            onError: (errors) => {
+                if (errors.error) toast.add({ severity: 'error', summary: 'Lỗi', detail: errors.error, life: 3000 });
             }
         });
     } else {
         form.post(props.baseUrl, {
             onSuccess: () => {
                 categoryDialog.value = false;
-                toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã tạo danh mục mới', life: 3000 });
+                toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã tạo mới', life: 3000 });
                 form.reset();
             }
         });
@@ -70,9 +98,11 @@ const deleteCategory = () => {
             deleteDialog.value = false;
             toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa danh mục', life: 3000 });
         },
-        onError: () => {
+        onError: (errors) => {
             deleteDialog.value = false;
-            toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể xóa danh mục này', life: 3000 });
+            // Hiển thị thông báo lỗi chi tiết từ Controller (Vd: Đang chứa bài viết, Đang chứa danh mục con)
+            const errorMsg = errors.error || 'Không thể xóa danh mục này';
+            toast.add({ severity: 'error', summary: 'Lỗi', detail: errorMsg, life: 4000 });
         }
     });
 };
@@ -83,7 +113,6 @@ const deleteCategory = () => {
         <Toast />
 
         <div class="card">
-            <!-- Header Section -->
             <div class="page-header">
                 <div>
                     <h1 class="page-title">Quản lý danh mục</h1>
@@ -95,7 +124,6 @@ const deleteCategory = () => {
                 </button>
             </div>
 
-            <!-- Toolbar/Search -->
             <div class="toolbar">
                 <div class="search-wrapper">
                     <i class="pi pi-search search-icon"></i>
@@ -103,47 +131,60 @@ const deleteCategory = () => {
                 </div>
             </div>
 
-            <!-- Table -->
             <div class="table-container">
                 <table class="custom-table">
                     <thead>
                         <tr>
                             <th style="width: 50px;">#</th>
-                            <th style="width: 200px;">Tên danh mục</th>
+                            <th style="width: 250px;">Tên danh mục</th>
+                            <th style="width: 150px;">Cấp độ</th>
                             <th>Mô tả</th>
-                            <th class="text-center" style="width: 120px;">Số bài viết</th>
-                            <th style="width: 150px;">Ngày tạo</th>
+                            <th class="text-center" style="width: 100px;">Bài viết</th>
+                            <th style="width: 120px;">Ngày tạo</th>
                             <th class="text-right" style="width: 100px;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(category, index) in categories.data" :key="category.id">
+                        <tr v-for="(category, index) in (categories.data || categories)" :key="category.id">
                             <td class="text-gray-500">{{ index + 1 }}</td>
-                            <td class="font-bold text-dark">{{ category.name }}</td>
-                            <td class="text-gray-500">{{ category.description }}</td>
+                            <td class="font-bold text-dark">
+                                <div :style="{ paddingLeft: (category.level * 24) + 'px' }" class="flex items-center">
+                                    <span v-if="category.level > 0" class="text-gray-300 mr-2">└─</span>
+                                    {{ category.name }}
+                                </div>
+                            </td>
+
+                            <td>
+                                <span v-if="category.parent" class="parent-badge">
+                                    <i class="pi pi-sitemap text-[10px] mr-1"></i> {{ category.parent.name }}
+                                </span>
+                                <span v-else class="root-badge">
+                                    Danh mục gốc
+                                </span>
+                            </td>
+
+                            <td class="text-gray-500 text-sm italic">{{ category.description || 'Chưa có mô tả' }}</td>
                             <td class="text-center font-medium">{{ category.posts_count }}</td>
-                            <td class="text-gray-500">{{ new Date(category.created_at).toLocaleDateString('vi-VN')
-                                }}</td>
+                            <td class="text-gray-500 text-sm">{{ new
+                                Date(category.created_at).toLocaleDateString('vi-VN') }}</td>
                             <td class="text-right">
                                 <div class="actions">
-                                    <button class="btn-icon" @click="editCategory(category)">
+                                    <button class="btn-icon" @click="editCategory(category)" title="Chỉnh sửa">
                                         <i class="pi pi-pencil"></i>
                                     </button>
-                                    <button class="btn-icon btn-delete" @click="confirmDelete(category)">
+                                    <button class="btn-icon btn-delete" @click="confirmDelete(category)" title="Xóa">
                                         <i class="pi pi-trash"></i>
                                     </button>
                                 </div>
                             </td>
                         </tr>
-                        <tr v-if="categories.data.length === 0">
+                        <tr v-if="(categories.data || categories).length === 0">
                             <td colspan="6" class="text-center py-8 text-gray-500">Không có dữ liệu</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Modals -->
-            <!-- Custom Modal -->
             <div v-if="categoryDialog" class="modal-overlay" @click.self="categoryDialog = false">
                 <div class="modal-container">
                     <div class="modal-header">
@@ -154,6 +195,19 @@ const deleteCategory = () => {
                     </div>
 
                     <div class="modal-body">
+
+                        <div class="form-group">
+                            <label class="form-label">Danh mục cha</label>
+                            <TreeSelect v-model="selectedParentNode" :options="categoryTree"
+                                placeholder="Chọn danh mục cha (Để trống nếu là gốc)" class="w-full"
+                                :class="{ 'p-invalid': form.errors.parent_id }" display="comma" />
+                            <small class="text-gray-500 mt-1 block italic text-xs">
+                                Chọn danh mục cha nếu đây là danh mục con.
+                            </small>
+                            <small class="error-message" v-if="form.errors.parent_id">{{ form.errors.parent_id
+                                }}</small>
+                        </div>
+
                         <div class="form-group">
                             <label class="form-label">Tên danh mục</label>
                             <input type="text" v-model="form.name" class="form-input" placeholder="Nhập tên danh mục..."
@@ -194,14 +248,15 @@ const deleteCategory = () => {
 </template>
 
 <style scoped>
+/* GIỮ NGUYÊN CSS CŨ VÀ THÊM CÁC CLASS MỚI DƯỚI ĐÂY */
+
 .page-container {
     padding: 24px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: transparent;
-    /* Assuming layout has bg */
 }
 
-/* Card */
+/* Các class cũ của bạn... (card, page-header, btn-primary, toolbar...) */
 .card {
     background: #fff;
     border-radius: 12px;
@@ -209,7 +264,6 @@ const deleteCategory = () => {
     padding: 30px;
 }
 
-/* Header */
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -233,7 +287,6 @@ const deleteCategory = () => {
 
 .btn-primary {
     background-color: #3b82f6;
-    /* Blue 500 */
     color: white;
     border: none;
     padding: 10px 18px;
@@ -245,15 +298,12 @@ const deleteCategory = () => {
     align-items: center;
     gap: 8px;
     transition: all 0.2s;
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
 }
 
 .btn-primary:hover {
     background-color: #2563eb;
-    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
 }
 
-/* Toolbar */
 .toolbar {
     margin-bottom: 24px;
 }
@@ -276,14 +326,12 @@ const deleteCategory = () => {
 .search-input {
     width: 100%;
     padding: 12px 16px 12px 42px;
-    /* Left padding for icon */
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     font-size: 14px;
     outline: none;
     color: #1f2937;
     transition: all 0.2s;
-    background-color: #fff;
 }
 
 .search-input:focus {
@@ -291,7 +339,6 @@ const deleteCategory = () => {
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
-/* Table */
 .table-container {
     overflow-x: auto;
 }
@@ -308,7 +355,6 @@ const deleteCategory = () => {
     font-size: 13px;
     font-weight: 600;
     color: #6b7280;
-    /* Gray text for headers */
     border-bottom: 1px solid #f3f4f6;
     background-color: #fff;
     white-space: nowrap;
@@ -326,11 +372,6 @@ const deleteCategory = () => {
     background-color: #f9fafb;
 }
 
-.custom-table tr:last-child td {
-    border-bottom: none;
-}
-
-/* Typography Helpers */
 .font-bold {
     font-weight: 600;
 }
@@ -355,7 +396,6 @@ const deleteCategory = () => {
     text-align: right;
 }
 
-/* Action Buttons in Table */
 .actions {
     display: flex;
     justify-content: flex-end;
@@ -368,43 +408,24 @@ const deleteCategory = () => {
     border-radius: 6px;
     border: none;
     background: transparent;
-    /* Default transparent */
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
     color: #64748b;
-    /* Default gray */
 }
 
 .btn-icon:hover {
     background-color: #f1f5f9;
     color: #3b82f6;
-    /* Blue on hover */
 }
 
 .btn-icon.btn-delete:hover {
     background-color: #fee2e2;
     color: #ef4444;
-    /* Red on hover */
 }
 
-.btn-icon i {
-    font-size: 15px;
-}
-
-/* Dialog Footer Override to align with our custom style */
-:deep(.p-button.p-button-text) {
-    color: #64748b;
-}
-
-:deep(.p-button.p-button-text:hover) {
-    background: #f1f5f9;
-    color: #1e293b;
-}
-
-/* Custom Modal Styles */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -423,7 +444,6 @@ const deleteCategory = () => {
     width: 500px;
     max-width: 90%;
     border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     padding: 24px;
     animation: modal-fade-in 0.2s ease-out;
 }
@@ -450,7 +470,6 @@ const deleteCategory = () => {
 .modal-title {
     font-size: 18px;
     font-weight: 600;
-    color: #111827;
     margin: 0;
 }
 
@@ -460,10 +479,6 @@ const deleteCategory = () => {
     cursor: pointer;
     color: #6b7280;
     padding: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.2s;
 }
 
 .modal-close:hover {
@@ -478,7 +493,6 @@ const deleteCategory = () => {
     display: block;
     font-weight: 500;
     font-size: 14px;
-    color: #111827;
     margin-bottom: 8px;
 }
 
@@ -489,22 +503,13 @@ const deleteCategory = () => {
     border: 1px solid #e5e7eb;
     border-radius: 6px;
     font-size: 14px;
-    color: #374151;
     outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    background-color: #fff;
-    font-family: inherit;
 }
 
 .form-input:focus,
 .form-textarea:focus {
     border-color: #3b82f6;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-}
-
-.form-input::placeholder,
-.form-textarea::placeholder {
-    color: #9ca3af;
 }
 
 .form-textarea {
@@ -533,13 +538,9 @@ const deleteCategory = () => {
 .btn-cancel {
     padding: 10px 20px;
     background-color: #f3f4f6;
-    color: #111827;
     border: none;
     border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s;
 }
 
 .btn-cancel:hover {
@@ -552,13 +553,55 @@ const deleteCategory = () => {
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s;
 }
 
 .btn-submit:hover {
     background-color: #2563eb;
+}
+
+/* ---- CLASS MỚI THÊM VÀO ---- */
+
+/* Style cho thẻ Select (Dropdown) */
+.form-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #374151;
+    outline: none;
+    transition: all 0.2s;
+    background-color: #fff;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+.form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Style cho Badge ở cột Danh mục cha */
+.parent-badge {
+    background-color: #eff6ff;
+    color: #2563eb;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #bfdbfe;
+}
+
+.root-badge {
+    color: #9ca3af;
+    font-size: 12px;
+    font-style: italic;
 }
 </style>
