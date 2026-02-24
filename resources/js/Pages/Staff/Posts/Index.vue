@@ -16,6 +16,7 @@ import EditModal from './Modals/Edit.vue';
 const props = defineProps({
     posts: Object,
     categories: Array,
+    categoryTree: Array,
     baseUrl: String,
     filters: Object
 });
@@ -191,11 +192,11 @@ const onSaveSuccess = () => {
         </div>
 
         <!-- Modals -->
-        <CreateModal v-if="createDialog" :categories="categories" :baseUrl="baseUrl" @close="createDialog = false"
-            @success="onSaveSuccess" />
+        <CreateModal v-if="createDialog" :categories="categories" :categoryTree="categoryTree" :baseUrl="baseUrl"
+            @close="createDialog = false" @success="onSaveSuccess" />
 
-        <EditModal v-if="editDialog" :post="selectedPost" :categories="categories" :baseUrl="baseUrl"
-            @close="editDialog = false" @success="onSaveSuccess" />
+        <EditModal v-if="editDialog" :post="selectedPost" :categories="categories" :categoryTree="categoryTree"
+            :baseUrl="baseUrl" @close="editDialog = false" @success="onSaveSuccess" />
 
         <Dialog v-model:visible="deleteDialog" :style="{ width: '450px' }" header="Xác nhận" :modal="true">
             <div class="flex items-center p-4">

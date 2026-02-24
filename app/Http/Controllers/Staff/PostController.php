@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Staff;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\TreeBaseController;
 use App\Models\Post;
 use App\Models\Content\Category;
 use App\Models\Content\PostImage;
@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
-class PostController extends Controller
+class PostController extends TreeBaseController
 {
     /**
      * Display a listing of the resource.
@@ -28,11 +28,13 @@ class PostController extends Controller
             ->paginate(10) 
             ->withQueryString(); 
 
-        $categories = Category::select('id', 'name')->get();
+        $categories = Category::select('id', 'name', 'parent_id')->get();
+        $categoryTree = $this->buildTreeNodes($categories);
 
         return Inertia::render('Staff/Posts/Index', [
             'posts' => $posts,
             'categories' => $categories,
+            'categoryTree' => $categoryTree,
             'baseUrl' => '/staff/posts',
             'filters' => $request->only(['search']),
         ]);

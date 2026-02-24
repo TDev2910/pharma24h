@@ -235,19 +235,19 @@ class HomeController extends Controller
 
         if ($request->has('category')) {
             $slug = $request->category;
-            $query->whereHas('category', function($q) use ($slug) {
-                $q->where('slug', $slug);
-            });
+            $filterCat = Category::where('slug', $slug)->first();
+            if ($filterCat) {
+                $catIds = $this->getDescendantIds($filterCat);
+                $query->whereIn('category_id', $catIds);
+            }
         }
 
-        $allPosts = $query->take(6)->get(); //lấy 6 bài cho phần Featured
-
-        //format post
+        // format post helper
         $formatPost = function ($post) {
             return [
                 'id' => $post->id,
                 'title' => $post->title,
-                'summary' => Str::limit($post->summary, 120),
+                'summary' => Str::limit($post->summary, 160),
                 'category' => $post->category->name ?? 'Tin tức',
                 'categorySlug' => $post->category->slug ?? '',
                 'image' => $post->thumbnail 
@@ -258,32 +258,48 @@ class HomeController extends Controller
                 'views' => rand(100, 2000), 
             ];
         };
-        
-        $featuredPosts = $allPosts->map($formatPost)->values(); // 6 bài nổi bật
 
-        // Lấy tất cả danh mục có bài viết (đã xuất bản) để hiển thị Section
-        // Thay vì hardcode slug, ta query lấy hết các Category
-        $activeCategories = Category::whereHas('posts', function($q) {
-            $q->where('is_published', true);
-        })->get();
+        $allPosts = $query->take(6)->get(); // lấy 6 bài cho phần Featured
+        $featuredPosts = $allPosts->map($formatPost)->values(); 
+
+        // Lấy Section theo Danh mục gốc (Inheritance)
+        $rootCategories = Category::whereNull('parent_id')
+            ->where(function($q) {
+                $q->whereHas('posts', function($pq) {
+                    $pq->where('is_published', true);
+                })->orWhereHas('children.posts', function($pq) {
+                    $pq->where('is_published', true);
+                });
+            })
+            ->with(['children' => function($q) {
+                $q->whereHas('posts', function($pq) {
+                    $pq->where('is_published', true);
+                });
+            }])->get();
 
         $categorySections = [];
 
-        foreach ($activeCategories as $cat) {
+        foreach ($rootCategories as $root) {
+            $catIds = $this->getDescendantIds($root);
+
             $posts = Post::with('category')
-                ->where('category_id', $cat->id)
+                ->whereIn('category_id', $catIds)
                 ->where('is_published', true)
                 ->latest()
-                ->take(5) // Lấy 5 bài cho bố cục (1 to, 1 vừa, 3 nhỏ)
+                ->take(5) 
                 ->get()
                 ->map($formatPost)
                 ->values();
 
             if ($posts->count() > 0) {
                 $categorySections[] = [
-                    'id' => $cat->id,
-                    'name' => $cat->name,
-                    'slug' => $cat->slug,
+                    'id' => $root->id,
+                    'name' => $root->name,
+                    'slug' => $root->slug,
+                    'subcategories' => $root->children->map(fn($c) => [
+                        'name' => $c->name,
+                        'slug' => $c->slug
+                    ]),
                     'posts' => $posts
                 ];
             }
@@ -309,7 +325,7 @@ class HomeController extends Controller
 
     public function DetailsPost(Request $request, $slug)
     {
-        $post = Post::with(['category', 'author'])
+        $post = Post::with(['category.parent', 'author'])
             ->where('slug', $slug)
             ->where('is_published', true)
             ->firstOrFail(); //nếu ko có báo lỗi 
@@ -329,11 +345,27 @@ class HomeController extends Controller
             'views' => rand(100, 5000), 
         ];
 
-        //tìm các bài viết liên quan tới category
-        $relatedPosts = Post::where('category_id', $post->category_id)
-            ->where('id', '!=', $post->id)
-            ->where('is_published', true)
-            ->take(4)
+        // Tìm root category để lấy bài liên quan từ cả "nhánh"
+        $rootCategory = $post->category;
+        while ($rootCategory && $rootCategory->parent_id) {
+            $rootCategory = $rootCategory->parent;
+            // Load children if not loaded to help getDescendantIds
+            if (!$rootCategory->relationLoaded('children')) {
+                $rootCategory->load('children');
+            }
+        }
+
+        $relatedPostQuery = Post::where('is_published', true)
+            ->where('id', '!=', $post->id);
+
+        if ($rootCategory) {
+            $relatedCatIds = $this->getDescendantIds($rootCategory);
+            $relatedPostQuery->whereIn('category_id', $relatedCatIds);
+        } else {
+            $relatedPostQuery->where('category_id', $post->category_id);
+        }
+
+        $relatedPosts = $relatedPostQuery->take(4)
             ->latest()
             ->get()
             ->map(function($p) {
@@ -367,6 +399,19 @@ class HomeController extends Controller
     public function contact()
     {
         return Inertia::render('Public/Contact');
+    }
+
+    private function getDescendantIds($category)
+    {
+        $ids = [$category->id];
+        // Ensure children are loaded
+        if (!$category->relationLoaded('children')) {
+            $category->load('children');
+        }
+        foreach ($category->children as $child) {
+            $ids = array_merge($ids, $this->getDescendantIds($child));
+        }
+        return array_unique($ids);
     }
 }
 

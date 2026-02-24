@@ -1,11 +1,14 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import TreeSelect from 'primevue/treeselect';
 import { useToast } from 'primevue/usetoast';
+
 import Editor from 'primevue/editor';
 
 const props = defineProps({
     categories: Array,
+    categoryTree: Array,
     baseUrl: String,
 });
 
@@ -20,6 +23,16 @@ const form = useForm({
     thumbnail: null,
     gallery: [],
     is_published: false,
+});
+
+const selectedCategoryNode = ref(null);
+
+watch(selectedCategoryNode, (newValue) => {
+    if (newValue && Object.keys(newValue).length > 0) {
+        form.category_id = parseInt(Object.keys(newValue)[0]);
+    } else {
+        form.category_id = null;
+    }
 });
 
 const thumbnailPreview = ref(null);
@@ -70,12 +83,8 @@ const submit = () => {
                 <div class="form-row">
                     <div class="col-half">
                         <label class="form-label">Danh mục</label>
-                        <select v-model="form.category_id" class="form-select"
-                            :class="{ 'border-error': form.errors.category_id }">
-                            <option :value="null" disabled>Chọn danh mục</option>
-                            <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}
-                            </option>
-                        </select>
+                        <TreeSelect v-model="selectedCategoryNode" :options="categoryTree" placeholder="Chọn danh mục"
+                            class="w-full" :class="{ 'p-invalid': form.errors.category_id }" display="comma" />
                         <small class="error-message" v-if="form.errors.category_id">{{ form.errors.category_id
                         }}</small>
                     </div>

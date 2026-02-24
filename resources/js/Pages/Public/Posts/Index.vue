@@ -122,52 +122,88 @@ const loadMore = () => {
                 Chưa có bài viết nổi bật.
             </div>
 
-            <!-- NEW LAYOUT: Content + Sidebar -->
+            <!-- Content + Sidebar -->
             <div class="content-layout">
                 <!-- LEFT COLUMN: Categories & Posts -->
                 <div class="main-content">
                     <div v-if="processedCategorySections.length > 0">
                         <div v-for="group in processedCategorySections" :key="group.id" class="category-block mb-5">
-                            <div class="block-header">
-                                <h3 class="block-title" :class="group.color">{{ group.name }}</h3>
-                                <div class="block-links d-none d-md-flex">
-                                    <span class="sub-link-mock">Kiến thức y khoa</span>
-                                    <span class="sub-link-mock">Sức khỏe gia đình</span>
-                                </div>
-                                <a href="#" class="view-all"
-                                    @click.prevent="handleCategoryClick({ slug: group.slug })">Xem tất cả <i
-                                        class="fas fa-chevron-right"></i></a>
-                            </div>
-
-                            <div class="block-grid">
-                                <!-- First Post: Large -->
-                                <Link v-if="group.posts[0]" :href="`/bai-viet/${group.posts[0].slug}`"
-                                    class="post-large cursor-pointer block text-decoration-none">
-                                    <div class="img-wrapper">
-                                        <img :src="group.posts[0].image" :alt="group.posts[0].title">
-                                    </div>
-                                    <h4 class="post-title-lg text-dark">{{ group.posts[0].title }}</h4>
-                                    <p class="post-desc text-secondary">{{ group.posts[0].desc }}</p>
-                                </Link>
-
-                                <!-- Second Post: Large (if exists) or List -->
-                                <Link v-if="group.posts[1]" :href="`/bai-viet/${group.posts[1].slug}`"
-                                    class="post-medium cursor-pointer block text-decoration-none">
-                                    <h4 class="post-title-md text-dark">{{ group.posts[1].title }}</h4>
-                                    <p class="post-desc text-secondary">{{ group.posts[1].desc }}</p>
-                                </Link>
-
-                                <!-- Remaining posts: Small list below -->
-                                <div v-if="group.posts.length > 2" class="post-list-row">
-                                    <Link v-for="post in group.posts.slice(2, 5)" :key="post.id"
-                                        :href="`/bai-viet/${post.slug}`"
-                                        class="post-small cursor-pointer block text-decoration-none">
-                                        <h5 class="post-title-sm text-dark">{{ post.title }}</h5>
-                                        <p class="post-desc-sm d-none d-lg-block text-secondary">{{ post.desc }}</p>
+                            <div
+                                class="block-header d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                                <div class="d-flex align-items-center">
+                                    <Link :href="`/posts?category=${group.slug}`" class="text-decoration-none">
+                                        <h3 class="block-title group-hover-primary" :class="group.color"
+                                            style="font-size: 22px; font-weight: 700; margin-bottom: 0;">{{ group.name
+                                            }}
+                                        </h3>
                                     </Link>
+                                    <div class="block-links d-none d-lg-flex ms-3 ps-3 border-start">
+                                        <template v-for="(sub, sIndex) in group.subcategories" :key="sIndex">
+                                            <Link :href="`/posts?category=${sub.slug}`"
+                                                class="text-secondary text-decoration-none hover-primary small">
+                                                {{ sub.name }}
+                                            </Link>
+                                            <span v-if="sIndex < group.subcategories.length - 1"
+                                                class="mx-2 text-muted opacity-50">|</span>
+                                        </template>
+                                    </div>
+                                </div>
+                                <Link :href="`/posts?category=${group.slug}`"
+                                    class="text-primary text-decoration-none fw-bold small">
+                                    Xem tất cả <i class="fas fa-chevron-right ms-1" style="font-size: 10px;"></i>
+                                </Link>
+                            </div>
+
+                            <div class="block-content">
+                                <!-- Row 1: Featured + Secondary -->
+                                <div class="row g-4 mb-4">
+                                    <div class="col-lg-8" v-if="group.posts[0]">
+                                        <Link :href="`/bai-viet/${group.posts[0].slug}`"
+                                            class="text-decoration-none article-group d-flex gap-4">
+                                            <div class="flex-shrink-0 featured-img-wrapper"
+                                                style="width: 320px; height: 200px; border-radius: 12px; overflow: hidden;">
+                                                <img :src="group.posts[0].image"
+                                                    class="w-100 h-100 object-cover transition-transform duration-500"
+                                                    :alt="group.posts[0].title">
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h4
+                                                    class="fs-4 fw-bold text-dark group-hover-primary transition-colors line-clamp-2 mb-2">
+                                                    {{
+                                                        group.posts[0].title }}</h4>
+                                                <p class="text-secondary small line-clamp-4 leading-relaxed mb-0">{{
+                                                    group.posts[0].desc }}</p>
+                                            </div>
+                                        </Link>
+                                    </div>
+                                    <div class="col-lg-4 border-start" v-if="group.posts[1]">
+                                        <Link :href="`/bai-viet/${group.posts[1].slug}`"
+                                            class="text-decoration-none article-group h-100 d-block">
+                                            <h4
+                                                class="fs-5 fw-bold text-dark group-hover-primary transition-colors line-clamp-2 mb-2">
+                                                {{
+                                                    group.posts[1].title }}</h4>
+                                            <p class="text-secondary small line-clamp-4 leading-relaxed mb-0">{{
+                                                group.posts[1].desc }}</p>
+                                        </Link>
+                                    </div>
+                                </div>
+
+                                <!-- Row 2: Three columns -->
+                                <div class="row g-4 pt-4 border-top" v-if="group.posts.length > 2">
+                                    <div v-for="post in group.posts.slice(2, 5)" :key="post.id" class="col-md-4">
+                                        <Link :href="`/bai-viet/${post.slug}`"
+                                            class="text-decoration-none article-group">
+                                            <h4
+                                                class="fs-6 fw-bold text-dark group-hover-primary transition-colors line-clamp-2 mb-2">
+                                                {{ post.title }}
+                                            </h4>
+                                            <p class="text-secondary smaller line-clamp-3 leading-relaxed mb-0">{{
+                                                post.desc }}</p>
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
-                            <hr class="section-divider" />
                         </div>
                     </div>
                     <div v-else class="text-center py-4 text-gray-500">
@@ -201,4 +237,70 @@ const loadMore = () => {
 </template>
 
 
-<style src="../../../../css/Public/Posts/index.css"></style>
+<style scoped>
+@import "../../../../css/Public/Posts/index.css";
+
+.hover-primary:hover {
+    color: #007bff !important;
+}
+
+.group-hover-primary {
+    transition: color 0.3s ease;
+}
+
+.article-group:hover .group-hover-primary {
+    color: #007bff !important;
+}
+
+.featured-img-wrapper img:hover {
+    transform: scale(1.05);
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.transition-colors {
+    transition: color 0.3s ease;
+}
+
+.transition-transform {
+    transition: transform 0.5s ease;
+}
+
+.smaller {
+    font-size: 0.8rem;
+}
+
+@media (max-width: 991px) {
+    .featured-img-wrapper {
+        width: 100% !important;
+        height: 240px !important;
+        margin-bottom: 1rem;
+    }
+
+    .article-group {
+        flex-direction: column !important;
+    }
+}
+</style>
