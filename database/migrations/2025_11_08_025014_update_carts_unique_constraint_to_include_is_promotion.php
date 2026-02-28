@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::table('carts', function (Blueprint $table) {
             // Xóa foreign key trước (nếu có)
             $table->dropForeign(['user_id']);
+            $table->dropUnique('carts_user_id_session_id_item_id_item_type_unique');
         });
-        
-        // Xóa unique constraint cũ bằng raw SQL
-        \Illuminate\Support\Facades\DB::statement('ALTER TABLE `carts` DROP INDEX `carts_user_id_session_id_item_id_item_type_unique`');
         
         Schema::table('carts', function (Blueprint $table) {
             // Thêm unique constraint mới bao gồm is_promotion
@@ -37,10 +35,8 @@ return new class extends Migration
         Schema::table('carts', function (Blueprint $table) {
             // Xóa foreign key trước
             $table->dropForeign(['user_id']);
+            $table->dropUnique('carts_unique');
         });
-        
-        // Xóa unique constraint mới
-        \Illuminate\Support\Facades\DB::statement('ALTER TABLE `carts` DROP INDEX `carts_unique`');
         
         Schema::table('carts', function (Blueprint $table) {
             // Khôi phục unique constraint cũ
