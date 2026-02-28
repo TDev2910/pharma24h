@@ -367,7 +367,6 @@ class OrdersController extends Controller
      */
     public function transport(Request $request)
     {
-        // GROUP MAP: Dùng để LỌC dữ liệu (Filter)
         // Khi người dùng chọn "delivering", hệ thống sẽ tìm tất cả các trạng thái con bên phải
         $filterGroups = [
             'delivering'     => [

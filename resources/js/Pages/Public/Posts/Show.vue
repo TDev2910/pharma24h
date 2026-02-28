@@ -1,107 +1,83 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import Header from '@/Components/Global/Header.vue';
-import { ref, onMounted, computed } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps({
     auth: { type: Object, default: () => ({ user: null }) },
-    post: { type: Object, required: true },
-    relatedPosts: { type: Array, default: () => [] },
+    post: {
+        type: Object,
+        default: () => ({
+            title: "5 Lợi ích của việc uống nước ấm mỗi ngày sau khi thức dậy",
+            category: { name: "Sức khỏe" },
+            author: { name: "BS. Nguyễn Văn A" },
+            created_at: "2026-02-23",
+            readTime: "6 phút đọc",
+            image: "https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=1200&auto=format&fit=crop",
+            summary: "Một thói quen đơn giản nhưng có khả năng thanh lọc cơ thể và kích hoạt hệ tiêu hóa hiệu quả nhất.",
+            content: "<p>Nội dung chi tiết bài viết sẽ được hiển thị ở đây...</p>"
+        })
+    }
 });
 
-// Font size control
-const fontSize = ref(16);
-const increaseFont = () => { if (fontSize.value < 24) fontSize.value += 2; };
-const decreaseFont = () => { if (fontSize.value > 14) fontSize.value -= 2; };
-const resetFont = () => fontSize.value = 16;
-
+// Helper format ngày
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    return date.toLocaleDateString('vi-VN');
+};
 </script>
 
 <template>
 
     <Head :title="post.title" />
 
-    <div class="bg-white min-h-screen font-roboto text-gray-800">
+    <div class="bg-[#fcfdfd] min-h-screen font-roboto text-gray-800 pb-20">
         <Header :auth="auth" />
 
-        <div class="container mx-auto px-4 py-8 max-w-6xl">
-            <!-- Breadcrumbs -->
-            <div class="text-sm text-gray-500 mb-6 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
-                <Link href="/" class="hover:text-blue-600 transition">Trang chủ</Link>
-                <i class="fas fa-chevron-right text-[10px]"></i>
-                <Link href="/posts" class="hover:text-blue-600 transition">Góc sức khỏe</Link>
-                <i class="fas fa-chevron-right text-[10px]"></i>
-                <span class="text-blue-600 font-medium cursor-default">{{ post.category }}</span>
-            </div>
+        <div class="container mx-auto px-4 py-8 max-w-5xl">
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div class="relative w-full h-[350px] md:h-[500px] rounded-2xl overflow-hidden shadow-sm"
+                style="text-align: center;">
 
-                <!-- Main Content -->
-                <div class="lg:col-span-8">
+                <img :src="post.image || post.thumbnail" :alt="post.title"
+                    class="absolute inset-0 w-full h-full object-cover">
 
-                    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-6 font-display">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+
+                <div class="absolute bottom-8 left-6 md:bottom-12 md:left-10 pr-6 z-10 text-white max-w-4xl">
+                    <span
+                        class="inline-block bg-[#10b981] text-white text-xs font-bold px-3 py-1 rounded-md mb-4 uppercase tracking-wider">
+                        {{ post.category?.name || post.category || 'Sức khỏe' }}
+                    </span>
+                    <h1
+                        class="text-3xl md:text-4xl lg:text-5xl font-bold leading-snug font-display text-white drop-shadow-md">
                         {{ post.title }}
                     </h1>
-                    <!-- Summary Box -->
-                    <div class="bg-gray-50 border-l-4 border-blue-600 p-6 mb-10 rounded-r-lg relative">
-                        <i class="fas fa-quote-left text-blue-200 text-4xl absolute top-4 left-4 -z-10 opacity-50"></i>
-                        <p class="text-gray-800 font-bold text-lg italic leading-relaxed z-10 relative">
-                            {{ post.summary }}
-                        </p>
-                    </div>
-
-                    <!-- Content -->
-                    <div class="article-content" :style="{ fontSize: fontSize + 'px' }" v-html="post.content"></div>
-
-                    <!-- Tags -->
-                    <div v-if="post.tags && post.tags.length > 0" class="mt-12 pt-6 border-t border-gray-100">
-                        <div class="flex flex-wrap gap-2">
-                            <i class="fas fa-tags text-gray-400 mt-1.5"></i>
-                            <span v-for="tag in post.tags" :key="tag"
-                                class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm px-3 py-1 rounded-full transition cursor-pointer">
-                                #{{ tag }}
-                            </span>
-                        </div>
-                    </div>
                 </div>
-
-                <!-- Sidebar -->
-                <div class="lg:col-span-4 space-y-8">
-                    <!-- Related Posts -->
-                    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden sticky top-8">
-                        <div class="p-4 border-b border-gray-50 bg-gray-50/50">
-                            <h3 class="font-bold text-gray-900 text-lg">Bài viết liên quan</h3>
-                        </div>
-                        <div class="divide-y divide-gray-50">
-                            <Link v-for="item in relatedPosts" :key="item.id" :href="`/bai-viet/${item.slug}`"
-                                class="flex gap-4 p-4 hover:bg-blue-50/30 transition group">
-                                <div class="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                                    <img :src="item.image"
-                                        class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-                                        :alt="item.title">
-                                </div>
-                                <div>
-                                    <h4
-                                        class="text-sm font-bold text-gray-800 group-hover:text-blue-600 line-clamp-2 leading-snug mb-2">
-                                        {{ item.title }}
-                                    </h4>
-                                    <span class="text-xs text-gray-400 group-hover:text-blue-500 transition"><i
-                                            class="far fa-clock mr-1"></i> {{ item.date }}</span>
-                                </div>
-                            </Link>
-                        </div>
-                        <div v-if="relatedPosts.length === 0" class="p-4 text-center text-gray-400 text-sm">
-                            Không có bài viết liên quan.
-                        </div>
-                    </div>
-                </div>
-
             </div>
+
+            <!-- Content -->
+
+            <!-- <div class="max-w-4xl mx-auto">
+
+                <div v-if="post.summary" class="bg-[#ecfdf5] border-l-4 border-[#10b981] p-6 mb-10 rounded-r-xl">
+                    <p class="text-[#064e3b] font-medium text-lg leading-relaxed italic">
+                        {{ post.summary }}
+                    </p>
+                </div>
+
+                <div class="article-content" v-html="post.content"></div>
+
+            </div> -->
+
         </div>
     </div>
 </template>
 
 <style>
+/* Font chữ */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
 
 .font-roboto {
@@ -112,55 +88,38 @@ const resetFont = () => fontSize.value = 16;
     font-family: 'Playfair Display', serif;
 }
 
-/* Article Content Styles */
+/* Định dạng nội dung bài viết */
 .article-content {
-    color: #1f2937;
-    /* gray-800 */
-    line-height: 1.8;
+    font-size: 1.125rem;
+    /* 18px */
+    line-height: 1.85;
+    color: #374151;
+    /* gray-700 */
 }
 
 .article-content p {
-    margin-bottom: 1.5em;
+    margin-bottom: 1.5rem;
 }
 
 .article-content h2 {
-    font-size: 1.75em;
+    font-size: 1.75rem;
     font-weight: 700;
     color: #111827;
-    /* gray-900 */
-    margin-top: 1.5em;
-    margin-bottom: 0.75em;
-    line-height: 1.3;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
 }
 
-.article-content h3 {
-    font-size: 1.5em;
-    font-weight: 600;
-    color: #1f2937;
-    margin-top: 1.5em;
-    margin-bottom: 0.75em;
-}
-
-.article-content ul,
-.article-content ol {
-    margin-bottom: 1.5em;
-    padding-left: 1.5em;
+.article-content ul {
     list-style-type: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .article-content img {
-    max-width: 100%;
-    height: auto;
+    width: 100%;
     border-radius: 12px;
-    margin: 2em 0;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.article-content blockquote {
-    border-left: 4px solid #3b82f6;
-    padding-left: 1.25em;
-    font-style: italic;
-    color: #4b5563;
-    margin: 1.5em 0;
+    margin: 2rem 0;
 }
 </style>

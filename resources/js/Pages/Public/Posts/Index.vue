@@ -13,15 +13,15 @@ const props = defineProps({
 // --- HELPER: Map Category Slug to Icon/Color ---
 const getCategoryMeta = (slug) => {
     const metaMap = {
-        'tim-mach': { icon: '❤️', color: 'red' },
-        'dinh-duong': { icon: '🍏', color: 'green' },
+        'tim-mach': { icon: '❤️', color: 'blue' },
+        'dinh-duong': { icon: '🍏', color: 'blue' },
         'thuoc-dieu-tri': { icon: '💊', color: 'blue' },
-        'giac-ngu': { icon: '🌙', color: 'orange' },
+        'giac-ngu': { icon: '🌙', color: 'blue' },
         'kham-benh': { icon: '🩺', color: 'blue' },
-        'thao-duoc': { icon: '🍃', color: 'green' },
-        'lam-dep': { icon: '💄', color: 'pink' },
-        'me-va-be': { icon: '👶', color: 'purple' },
-        'covid-19': { icon: '🦠', color: 'red' },
+        'thao-duoc': { icon: '🍃', color: 'blue' },
+        'lam-dep': { icon: '💄', color: 'blue' },
+        'me-va-be': { icon: '👶', color: 'blue' },
+        'covid-19': { icon: '🦠', color: 'blue' },
         'default': { icon: '⚕️', color: 'blue' }
     };
     return metaMap[slug] || metaMap['default'];
