@@ -1,0 +1,11 @@
+/* Responsive overrides */
+@media (max-width: 768px) {
+    .product-img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .product-name {
+        font-size: 0.9rem;
+    }
+}

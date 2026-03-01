@@ -14,8 +14,9 @@
           <!-- Item 1 -->
           <div class="col-12 col-md-6 col-lg-3 mb-4">
             <div class="service-item">
-              <img src="https://online.vinmec.com/sites/default/files/inline-images/2%20%281%29.png" style="height: 205px;"
-                alt="Khám bệnh BHYT" class="img-fluid mb-3">
+              <img
+                src="https://cdn-01.tokyofamilyclinic.com.vn/tokyo-website/images/Temp_khamnhi/kham-suc-khoe-tre-em-man-non.jpg"
+                style="height: 205px;" alt="Khám bệnh BHYT" class="img-fluid mb-3">
               <h6 class="fw-semibold text-dark">GÓI KHÁM CHO TRẺ EM</h6>
             </div>
           </div>
@@ -23,8 +24,8 @@
           <!-- Item 2 -->
           <div class="col-12 col-md-6 col-lg-3 mb-4">
             <div class="service-item">
-              <img src="https://medlatec.vn/media/23623/file/_kham-suc-khoe-tai-nha-1+(1).jpg"
-                alt="Khám bệnh tại nhà" class="img-fluid mb-3">
+              <img src="https://medlatec.vn/media/23623/file/_kham-suc-khoe-tai-nha-1+(1).jpg" alt="Khám bệnh tại nhà"
+                class="img-fluid mb-3">
               <h6 class="fw-semibold text-dark">KHÁM BỆNH TẠI NHÀ</h6>
             </div>
           </div>
@@ -32,8 +33,8 @@
           <!-- Item 3 -->
           <div class="col-12 col-md-6 col-lg-3 mb-4">
             <div class="service-item">
-              <img src="https://login.medlatec.vn//ImagePath/images/20200304/20200304_kham-suc-khoe-di-hoc.jpg" alt="Nội soi"
-                class="img-fluid mb-3">
+              <img src="https://login.medlatec.vn//ImagePath/images/20200304/20200304_kham-suc-khoe-di-hoc.jpg"
+                alt="Nội soi" class="img-fluid mb-3">
               <h6 class="fw-semibold text-dark">KHÁM SỨC KHỎE ĐI HỌC</h6>
             </div>
           </div>
@@ -41,8 +42,7 @@
           <!-- Item 4 -->
           <div class="col-12 col-md-6 col-lg-3 mb-4">
             <div class="service-item">
-              <img
-                src="https://bvdkkvnhkt.org.vn/upload/64346/fck/files/wps5.jpg" style="padding-top:25px"
+              <img src="https://bvdkkvnhkt.org.vn/upload/64346/fck/files/wps5.jpg" style="padding-top:25px"
                 alt="Đặt lịch hẹn" class="img-fluid mb-3">
               <h6 class="fw-semibold text-dark">ĐẶT LỊCH HẸN ONLINE</h6>
             </div>
@@ -72,4 +72,3 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 </style>
-

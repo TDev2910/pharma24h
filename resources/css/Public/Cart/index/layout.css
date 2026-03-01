@@ -1,0 +1,17 @@
+/* Layout and General Utilities */
+.cart-wrapper {
+    background-color: #f8f9fa;
+    min-height: 80vh;
+}
+
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.fs-xs {
+    font-size: 0.75rem;
+}

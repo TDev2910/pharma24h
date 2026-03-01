@@ -1,0 +1,90 @@
+/* Booking Section */
+.booking-section {
+    padding: 80px 0;
+    background: #F0F8FF;
+}
+
+.booking-section .section-header {
+    margin-bottom: 48px;
+}
+
+.booking-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    height: 100%;
+    transition: all 0.3s;
+}
+
+.booking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+
+.booking-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    background: #E3F2FD;
+    color: #2196F3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 28px;
+}
+
+.booking-icon.white {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.booking-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+}
+
+.booking-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+.booking-fields {
+    margin-bottom: 24px;
+}
+
+.booking-label {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.booking-form input {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.btn-booking {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+}

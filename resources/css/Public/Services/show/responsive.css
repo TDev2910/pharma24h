@@ -1,0 +1,65 @@
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+    .root-container {
+        margin-top: 80px !important;
+        /* Giảm margin top trên mobile */
+    }
+
+    .service-detail-info {
+        padding: 0;
+        margin-top: 20px;
+    }
+
+    .service-name {
+        font-size: 1.5rem;
+    }
+
+    .service-description {
+        padding: 15px;
+        /* Giảm padding */
+    }
+
+    .service-description h3 {
+        font-size: 1.25rem;
+    }
+
+    .html-content {
+        font-size: 0.95rem;
+    }
+
+    /* Đảm bảo ảnh trong nội dung không bị tràn */
+    .html-content :deep(img) {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Doctor card responsive */
+    .doctor-card .d-flex {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .doctor-avatar-wrapper {
+        margin: 0 auto 15px auto;
+    }
+
+    .doctor-info {
+        text-align: center;
+    }
+
+    .doctor-meta p {
+        justify-content: center;
+        display: flex;
+        align-items: center;
+    }
+
+    .service-actions .btn {
+        width: 100%;
+        /* Full width button on mobile */
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        /* Stack modal form fields */
+    }
+}

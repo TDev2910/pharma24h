@@ -1,0 +1,79 @@
+.title-filter {
+  font-family: 'Roboto', Arial, sans-serif;
+  font-size: 15px;
+  color: #333;
+  margin-right: 7px;
+  white-space: nowrap;
+}
+
+.products-toolbar {
+  min-height: 40px;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.reset-link {
+  color: #0d6efd;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.reset-link:hover {
+  text-decoration: underline;
+}
+
+/* Nút reset bộ lọc */
+.reset-btn {
+  color: #6b7280;
+  background-color: #fff;
+  border: 1px solid #d9dde3;
+  padding: 0.35rem 0.9rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.reset-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #6b7280;
+  color: #374151;
+}
+
+.sort-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-sort {
+  background: #fff;
+  border: 1px solid #d9dde3;
+  color: #6b7280;
+  padding: .35rem .9rem;
+  border-radius: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.btn-sort:hover {
+  background: #f8f9fb;
+}
+
+.btn-sort.active {
+  color: #0d6efd;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, .12);
+}
+
+/* Nút sắp xếp */
+.sort-btn {
+  color: #666;
+  background-color: #fff;
+}
+
+.sort-btn:hover {
+  background-color: #f8f9fa;
+}

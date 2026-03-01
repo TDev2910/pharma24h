@@ -1,0 +1,129 @@
+/* Hero Section */
+.hero-section {
+    padding: 120px 0 80px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e8f3ff 100%);
+}
+
+.hero-subtitle {
+    color: #2196F3;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+.hero-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.2;
+    margin-bottom: 24px;
+}
+
+.highlight-text {
+    color: #2196F3;
+}
+
+.hero-description {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.btn-hero {
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.btn-primary {
+    background: #1976D2 !important;
+    border: none;
+    color: white !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:not(:disabled):not(.disabled):active {
+    background: #1976D2 !important;
+    border-color: #1976D2 !important;
+    color: white !important;
+    transform: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+
+.btn-outline-primary {
+    border: 2px solid #2196F3;
+    color: #2196F3;
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: #2196F3;
+    color: white;
+}
+
+.hero-image {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 80px 0;
+    background: #f8fafc;
+}
+
+.cta-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+}
+
+.cta-description {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 32px;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-cta {
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-cta i {
+    font-size: 18px;
+}
