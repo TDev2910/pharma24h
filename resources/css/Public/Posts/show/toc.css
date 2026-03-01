@@ -48,7 +48,9 @@
    SIDEBAR MỤC LỤC
    ============================== */
 .toc-sidebar {
-    display: none;
+    display: block;       /* hoặc flex nếu bạn cần */
+    position: sticky;
+    top: 100px;           /* khoảng cách từ top khi scroll */
 }
 
 @media (min-width: 1024px) {
@@ -61,7 +63,8 @@
     position: sticky;
     top: 5.5rem;
     background: #ffffff;
-    border: 1px solid #e9ebee;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
     border-radius: 14px;
     padding: 1.25rem 1.25rem 1.5rem;
     overflow: hidden;
@@ -70,8 +73,8 @@
 
 .toc-title {
     font-size: 0.68rem;
-    font-weight: 800;
-    color: #374151;
+    font-weight: 600;
+    color: #000;
     text-transform: uppercase;
     letter-spacing: 0.14em;
     margin: 0 0 0.85rem;
@@ -112,8 +115,7 @@
 }
 
 .toc-link--active {
-    background-color: #ecfdf5;
-    color: #10b981 !important;
+    color: #1250dc !important;
     font-weight: 600;
 }
 

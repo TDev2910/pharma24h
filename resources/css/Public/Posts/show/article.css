@@ -1,14 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500;700&display=swap');
 
 .font-roboto {
-    font-family: 'Roboto', sans-serif;
+    font-family: Arial, Helvetica, 'Roboto', sans-serif;
 }
 
 .font-display {
-    font-family: 'Playfair Display', serif;
+    font-family: Arial, Helvetica, 'Roboto', sans-serif !important;
 }
 
 .article-content {
+    font-family: Arial, Helvetica, 'Roboto', sans-serif;
     font-size: 1.125rem;
     line-height: 1.85;
     color: #374151;
@@ -29,6 +30,7 @@
 }
 
 .article-content h2 {
+    font-family: Arial, Helvetica, 'Roboto', sans-serif;
     font-size: 1.65rem;
     font-weight: 700;
     color: #111827;
@@ -36,14 +38,17 @@
     margin-bottom: 1.25rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid #e5e7eb;
+    scroll-margin-top: 120px;
 }
 
 .article-content h3 {
+    font-family: Arial, Helvetica, 'Roboto', sans-serif;
     font-size: 1.35rem;
     font-weight: 600;
     color: #1f2937;
     margin-top: 2rem;
     margin-bottom: 1rem;
+    scroll-margin-top: 120px;
 }
 
 .article-content ul {

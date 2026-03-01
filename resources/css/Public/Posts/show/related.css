@@ -27,7 +27,7 @@
     font-weight: 800;
     color: #111827;
     margin: 0;
-    font-family: 'Playfair Display', serif;
+    font-family: Arial, Helvetica, 'Roboto', sans-serif;
 }
 
 .related-grid {
@@ -120,9 +120,6 @@
     transition: color 0.2s ease;
 }
 
-.related-item:hover .related-item-title {
-    color: #10b981;
-}
 
 .related-item-summary {
     font-size: 0.825rem;
