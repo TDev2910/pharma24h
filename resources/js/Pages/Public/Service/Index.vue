@@ -105,8 +105,7 @@
 
                 <div class="row g-4">
                     <div class="row g-4">
-                        <div v-for="(service, index) in props.services.slice(0, 4)" :key="service.id"
-                            class="col-lg-3 col-md-6">
+                        <div v-for="service in props.services.slice(0, 4)" :key="service.id" class="col-lg-3 col-md-6">
                             <div class="category-card" @click="goToServiceDetail(service)" style="cursor: pointer;">
                                 <!-- Hình ảnh dịch vụ -->
                                 <div class="service-image mb-3"
@@ -419,5 +418,4 @@ const scrollToBooking = () => {
     }
 }
 </script>
-
-<style scoped src="../../../../css/Public/Services/Index.css"></style>
+<style scoped src="../../../../css/Public/Services/index/index.css"></style>

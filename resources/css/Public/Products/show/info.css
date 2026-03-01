@@ -1,0 +1,137 @@
+.product-image-container {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.product-detail-image {
+    max-width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.product-detail-info {
+    padding: 20px;
+}
+
+.product-name {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.product-price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.current-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a56db;
+}
+
+.unit {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.product-meta {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.meta-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.meta-item:last-child {
+    border-bottom: none;
+}
+
+.meta-item strong {
+    color: #495057;
+    margin-right: 8px;
+}
+
+/* CSS cho link tra cứu số đăng ký thuốc */
+.registry-link {
+    display: inline-block;
+    margin: 12px 0;
+    padding: 8px 12px;
+    background: #e3f2fd;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.registry-link:hover {
+    background: #bbdefb;
+}
+
+.registry-link h7 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #1a56db;
+    font-weight: 500;
+}
+
+.product-actions {
+    margin-top: 30px;
+}
+
+.product-actions .btn {
+    min-width: 200px;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* CSS cụ thể cho btn-primary trong product-actions */
+.product-actions .btn.btn-primary {
+    background: #1a56db;
+    color: #fff;
+    border: none;
+}
+
+.product-actions .btn.btn-primary:hover {
+    background: #1650cf;
+    color: #fff;
+}
+
+.product-actions .btn.btn-primary:active,
+.product-actions .btn.btn-primary:focus {
+    background: #1650cf;
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.25);
+}
+
+/* CSS cho btn-success (khi có khuyến mãi) */
+.product-actions .btn.btn-success {
+    background: #10b981;
+    color: #fff;
+    border: none;
+}
+
+.product-actions .btn.btn-success:hover {
+    background: #059669;
+    color: #fff;
+}
+
+/*CSS cho btn-secondary (khi hết hàng) */
+.product-actions .btn.btn-secondary {
+    background: #6b7280;
+    color: #fff;
+    border: none;
+}
+
+.product-actions .btn.btn-secondary:hover {
+    background: #4b5563;
+    color: #fff;
+}

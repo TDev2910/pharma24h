@@ -307,7 +307,7 @@ const removeAll = async () => {
     if (!confirm('Bạn có chắc muốn xóa tất cả sản phẩm?')) return;
 
     const itemsToDelete = [...cartItems.value];
-    cartItems.value = []; 
+    cartItems.value = [];
     selectedItems.value = [];
     try {
         await Promise.all(itemsToDelete.map(item =>
@@ -325,4 +325,4 @@ const checkout = () => {
 
 </script>
 
-<style scoped src="../../../../css/Public/Cart/cart.css"></style>
+<style scoped src="../../../../css/Public/Cart/index/index.css"></style>

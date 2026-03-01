@@ -1,0 +1,189 @@
+/* Features Section */
+.features-section {
+    padding: 60px 0;
+    background: #e8f3ff;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 24px 16px;
+    background: white;
+    border-radius: 12px;
+    transition: transform 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+    color: white;
+}
+
+.feature-icon.blue {
+    background: #2196F3;
+}
+
+.feature-icon.cyan {
+    background: #00BCD4;
+}
+
+.feature-icon.light-blue {
+    background: #64B5F6;
+}
+
+.feature-icon.medium-blue {
+    background: #1976D2;
+}
+
+.feature-icon.dark-blue {
+    background: #0D47A1;
+}
+
+.feature-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.feature-text {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+/* Home Care Section */
+.home-care-section {
+    padding: 80px 0;
+    background: #f8fafc;
+}
+
+.home-care-badge {
+    display: inline-block;
+    background: #E8F5E9;
+    color: #2E7D32;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+.home-care-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+}
+
+.home-care-description {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.home-care-features {
+    margin-bottom: 32px;
+}
+
+.feature-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.feature-item-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+    color: white;
+}
+
+.feature-item-icon.green {
+    background: #4CAF50;
+}
+
+.feature-item-content h5 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.feature-item-content p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.btn-home-care {
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    background: #4CAF50;
+    border: none;
+    color: white;
+}
+
+.btn-home-care:hover {
+    background: #45a049;
+}
+
+.home-care-image {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.home-care-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.home-care-stats {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    right: 24px;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stat-item i {
+    font-size: 24px;
+    color: #4CAF50;
+}
+
+.stat-item span {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}

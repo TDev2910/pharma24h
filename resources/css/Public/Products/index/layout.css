@@ -1,0 +1,17 @@
+.banner-wrapper {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.input-group {
+  width: 219px;
+}
+
+.banner-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+  min-height: 120px;
+}

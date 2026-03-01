@@ -1,0 +1,128 @@
+/* =========================================
+   MEDIA QUERIES FOR RESPONSIVE (ADDITIONS)
+   ========================================= */
+
+/* Tablet & Mobile (Dưới 992px) */
+@media (max-width: 991px) {
+  .products-toolbar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 10px 0;
+  }
+
+  .products-toolbar .toolbar-left,
+  .products-toolbar .toolbar-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .products-toolbar .toolbar-right {
+    margin-left: 0 !important;
+    flex-wrap: wrap;
+  }
+
+  .search-input {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-top: 8px;
+  }
+
+  .reset-btn {
+    margin-left: auto !important;
+  }
+
+  .sidebar-btn, .sidebar-divider {
+    width: 100% !important;
+  }
+
+  .product-card-modern {
+    min-height: 340px;
+    padding: 12px;
+  }
+}
+
+/* Mobile (Dưới 768px) */
+@media (max-width: 767px) {
+  .responsive-top-spacing {
+    padding-top: 80px !important;
+  }
+
+  .products-toolbar {
+    gap: 8px;
+  }
+
+  .sort-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .btn-sort {
+    flex: 1;
+    text-align: center;
+    font-size: 0.8rem;
+    padding: 6px 4px;
+  }
+
+  .title-filter {
+    display: none;
+  }
+
+  .product-card-modern {
+    min-height: 290px;
+    padding: 10px 8px;
+    border-radius: 10px;
+  }
+
+  .product-img-wrapper {
+    height: 110px;
+  }
+
+  .product-img {
+    max-height: 100px;
+  }
+
+  .product-title-modern {
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+    min-height: 2.5em;
+  }
+
+  .product-price-modern {
+    font-size: 0.95rem;
+    padding-bottom: 8px;
+  }
+
+  .price-old {
+    font-size: 0.75rem;
+  }
+
+  .product-btn {
+    font-size: 0.8rem;
+    padding: 6px 0;
+  }
+
+  .filter-tabs {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  .filter-tabs>div.ms-auto {
+    margin-top: 10px;
+    margin-left: 0 !important;
+  }
+
+  .product-title {
+    font-size: 0.85rem;
+  }
+}
+
+/* Extra small devices (Dưới 400px) */
+@media (max-width: 400px) {
+  .product-card-modern {
+    min-height: 270px;
+  }
+  .product-img-wrapper {
+    height: 90px;
+  }
+}
