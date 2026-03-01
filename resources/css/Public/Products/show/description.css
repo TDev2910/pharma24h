@@ -1,0 +1,68 @@
+.product-description {
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.product-description h3 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #1a56db;
+}
+
+.description-content p {
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+.html-content {
+    line-height: 1.6;
+    color: #333;
+    overflow-wrap: break-word;
+    /* Chỉ ngắt dòng khi từ quá dài (URL), không ngắt từ thường */
+    word-wrap: break-word;
+    max-width: 100%;
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .product-description {
+        padding: 15px;
+        /* Giảm padding trên mobile để thêm không gian cho chữ */
+        border-radius: 8px;
+    }
+
+    .html-content {
+        font-size: 15px;
+        /* Cỡ chữ dễ đọc hơn trên mobile */
+        text-align: left;
+    }
+
+    .product-name {
+        font-size: 1.5rem;
+    }
+
+    .current-price {
+        font-size: 1.5rem;
+    }
+
+    .product-actions .btn {
+        width: 100%;
+    }
+
+    .html-content :deep(h1) {
+        font-size: 1.5rem;
+    }
+
+    .html-content :deep(h2) {
+        font-size: 1.35rem;
+    }
+
+    .html-content :deep(h3) {
+        font-size: 1.2rem;
+    }
+}

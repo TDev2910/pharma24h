@@ -23,7 +23,7 @@
                         <div class="product-price mb-4">
                             <template v-if="isPromotionActive">
                                 <span class="current-price text-danger">{{ formatCurrency(product.gia_khuyen_mai)
-                                }}</span>
+                                    }}</span>
                                 <span class="badge bg-warning text-dark ms-2">KM</span>
                                 <span class="original-price ms-3"
                                     style="text-decoration:line-through; color:#999; font-size:1rem;">
@@ -399,4 +399,4 @@ const scrollToReviewForm = () => {
 }
 </script>
 
-<style scoped src="../../../../css/Public/Products/show.css"></style>
+<style scoped src="../../../../css/Public/Products/show/show.css"></style>

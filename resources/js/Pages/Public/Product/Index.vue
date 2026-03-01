@@ -22,19 +22,22 @@
           <span class="title-filter">Sắp xếp theo:</span>
 
           <div class="sort-buttons">
-             <button type="button" class="btn-sort" :class="{ 'active': currentSort === 'desc' }"
-            @click="sortProducts('desc')">
-            Giá giảm dần
-          </button>
+            <button type="button" class="btn-sort" :class="{ 'active': currentSort === 'desc' }"
+              @click="sortProducts('desc')">
+              Giá giảm dần
+            </button>
 
-          <button type="button" class="btn-sort" :class="{ 'active': currentSort === 'asc' }"
-            @click="sortProducts('asc')">
-            Giá tăng dần
-          </button>
+            <button type="button" class="btn-sort" :class="{ 'active': currentSort === 'asc' }"
+              @click="sortProducts('asc')">
+              Giá tăng dần
+            </button>
           </div>
 
-          <input type="text" class="form-control search-input" placeholder="Tìm kiếm" style="width: 300px;margin-left: 10px;"
-            v-model="searchQuery" @input="handleSearch">
+          <input type="text" class="form-control search-input" placeholder="Tìm kiếm" style="width: 300px;margin-left: 10px;background-color: #f9fbff; /* bỏ nền trắng */
+            border: 1.5px solid #cfe0ff;
+            border-radius: 10px;
+            padding: 8px 14px;
+            transition: all 0.3s ease;" v-model="searchQuery" @input="handleSearch">
         </div>
       </div>
       <hr class="light-divider sidebar-divider" style="width: 215px; background-color: grey;">
@@ -88,8 +91,10 @@
         <div class="col-lg-9 col-md-8">
           <div class="row g-3 g-md-4 product-grid" id="productGrid">
             <div v-for="product in displayedProducts" :key="product.id + '-' + product.type"
-              class="col-6 col-md-6 col-lg-3"> <div class="product-card-modern">
-                <div class="product-label" v-if="isPromotionActive(product)">-{{ Math.round((1 - product.gia_khuyen_mai/product.gia_ban) * 100) }}%</div>
+              class="col-6 col-md-6 col-lg-3">
+              <div class="product-card-modern">
+                <div class="product-label" v-if="isPromotionActive(product)">-{{ Math.round((1 -
+                  product.gia_khuyen_mai / product.gia_ban) * 100) }}%</div>
                 <div class="product-img-wrapper" @click="goToProductDetail(product)">
                   <img :src="product.image || 'https://via.placeholder.com/150'" class="product-img"
                     :alt="product.name" />
@@ -101,7 +106,7 @@
                       <div class="d-flex flex-column flex-wrap">
                         <span class="text-danger price-main">{{ formatPrice(product.gia_khuyen_mai) }}</span>
                         <div class="price-old-group">
-                           <span class="text-muted text-decoration-line-through price-old">
+                          <span class="text-muted text-decoration-line-through price-old">
                             {{ formatPrice(product.gia_ban) }}
                           </span>
                         </div>
@@ -112,14 +117,14 @@
                     </template>
                   </div>
                   <button class="btn product-btn" :class="{
-                        'btn-status-disabled': isOutOfStock(product),
-                        'btn-status-promo': isPromotionActive(product) && !isOutOfStock(product),
-                        'btn-status-default': !isPromotionActive(product) && !isOutOfStock(product)
-                    }" @click.stop="addToCartHandler(product)" :disabled="isButtonDisabled(product)">
+                    'btn-status-disabled': isOutOfStock(product),
+                    'btn-status-promo': isPromotionActive(product) && !isOutOfStock(product),
+                    'btn-status-default': !isPromotionActive(product) && !isOutOfStock(product)
+                  }" @click.stop="addToCartHandler(product)" :disabled="isButtonDisabled(product)">
 
                     <i class="fas fa-cart-plus me-1"></i>
                     <span class="btn-text">{{ getButtonLabel(product) }}</span>
-                    </button>
+                  </button>
                 </div>
               </div>
             </div>
@@ -345,439 +350,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.title-filter {
-  font-family: 'Roboto', Arial, sans-serif;
-  font-size: 15px;
-  color: #333;
-  margin-right: 7px;
-  white-space: nowrap;
-}
-
-
-.products-toolbar {
-  min-height: 40px;
-  gap: 12px;
-  flex-wrap: nowrap;
-}
-
-.reset-link {
-  color: #0d6efd;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.reset-link:hover {
-  text-decoration: underline;
-}
-
-/* Nút reset bộ lọc */
-.reset-btn {
-  color: #6b7280;
-  background-color: #fff;
-  border: 1px solid #d9dde3;
-  padding: 0.35rem 0.9rem;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 0.875rem;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.reset-btn:hover {
-  background-color: #f8f9fa;
-  border-color: #6b7280;
-  color: #374151;
-}
-
-.sort-buttons {
-  display: flex;
-  gap: 8px;
-}
-
-.btn-sort {
-  background: #fff;
-  border: 1px solid #d9dde3;
-  color: #6b7280;
-  padding: .35rem .9rem;
-  border-radius: 12px;
-  font-weight: 500;
-  line-height: 1.2;
-  white-space: nowrap;
-  font-size: 0.9rem;
-}
-
-.btn-sort:hover {
-  background: #f8f9fb;
-}
-
-.btn-sort.active {
-  color: #0d6efd;
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 2px rgba(13, 110, 253, .12);
-}
-
-/* Nút sắp xếp */
-.sort-btn {
-  color: #666;
-  background-color: #fff;
-}
-
-.sort-btn:hover {
-  background-color: #f8f9fa;
-}
-
-/* Card sản phẩm */
-.product-card {
-  transition: all 0.2s ease;
-  box-shadow: none;
-}
-
-.product-card:hover {
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
-}
-
-.product-title {
-  font-size: 0.9rem;
-  min-height: 40px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Nút "Cần tư vấn dược sĩ" */
-.btn-warning {
-  background-color: #FF9800;
-  border-color: #FF9800;
-  font-size: 0.9rem;
-}
-
-.btn-warning:hover {
-  background-color: #F57C00;
-  border-color: #F57C00;
-}
-
-/* Nút "Chọn sản phẩm" */
-.btn-primary.product-btn:active {
-  background: #1a56db !important;
-  border-color: transparent !important;
-  color: #fff !important;
-}
-
-.btn-primary:hover {
-  background-color: #1650cf;
-  border-color: #1650cf;
-}
-
-
-/* Responsive */
-@media (max-width: 767px) {
-  .filter-tabs {
-    flex-direction: column;
-    align-items: flex-start !important;
-  }
-
-  .filter-tabs>div.ms-auto {
-    margin-top: 10px;
-    margin-left: 0 !important;
-  }
-
-  .product-title {
-    font-size: 0.85rem;
-  }
-}
-
-.product-grid {
-  margin-bottom: 0;
-}
-
-.product-card-modern {
-  background: #fff;
-  border: 1px solid #e3e6ef;
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  padding: 16px 16px 12px 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-  min-height: 360px;
-  position: relative;
-  transition: box-shadow 0.2s;
-}
-
-.product-card-modern:hover {
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
-  cursor: pointer;
-}
-
-.product-label {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: #dc3545;
-  color: #fff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  border-radius: 4px;
-  padding: 2px 6px;
-  z-index: 2;
-  display: inline-block;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.product-img-wrapper {
-  width: 100%;
-  height: 160px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-
-.product-img {
-  max-width: 100%;
-  max-height: 140px;
-  object-fit: contain;
-  border-radius: 8px;
-  background: #fff; /* Đổi nền trắng cho ảnh */
-}
-
-.product-body {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  flex: 1;
-}
-
-.product-title-modern {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #222;
-  margin-bottom: 8px;
-  min-height: 2.4em;
-  max-height: 2.4em;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.25;
-}
-
-.product-price-modern {
-  color: #1a56db;
-  font-size: 1.15rem;
-  font-weight: 700;
-  margin-bottom: auto; /* Đẩy button xuống đáy */
-  padding-bottom: 12px;
-  width: 100%;
-}
-
-.price-old-group {
-  line-height: 1;
-  margin-top: 2px;
-}
-
-.price-old {
-  font-size: 0.85rem;
-  font-weight: 400;
-}
-
-.product-btn {
-  width: 100%;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  padding: 8px 0;
-  border: none !important;
-  color: #fff !important;
-  /* Tắt hiệu ứng chuyển màu mượt để cảm giác bấm chắc chắn hơn */
-  transition: none !important;
-  margin-top: auto;
-  box-shadow: none !important;
-}
-
-/* 1. TRẠNG THÁI KHUYẾN MÃI (Màu Xanh Lá) */
-.btn-status-promo,
-.btn-status-promo:hover,
-.btn-status-promo:focus,
-.btn-status-promo:active {
-  background-color: #28a745 !important; /* Xanh lá cây */
-  opacity: 1 !important;
-}
-
-/* 2. TRẠNG THÁI MẶC ĐỊNH (Màu Xanh Dương hiện tại) */
-.btn-status-default,
-.btn-status-default:hover,
-.btn-status-default:focus,
-.btn-status-default:active {
-  background-color: #1a56db !important; /* Xanh dương chuẩn của bạn */
-  opacity: 1 !important;
-}
-
-/* 3. TRẠNG THÁI HẾT HÀNG (Màu Xám) */
-.btn-status-disabled,
-.btn-status-disabled:hover,
-.btn-status-disabled:focus,
-.btn-status-disabled:active {
-  background-color: #6c757d !important; /* Màu xám */
-  cursor: not-allowed;
-  opacity: 0.8 !important;
-}
-
-.product-btn:hover {
-  background: #1650cf;
-}
-
-.banner-wrapper {
-  width: 100%;
-  margin-bottom: 24px;
-}
-
-.input-group
-{
-    width: 219px;
-}
-
-.banner-image {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-radius: 12px;
-  display: block;
-  min-height: 120px; /* Đảm bảo banner không bị quá bé */
-}
-
-/* =========================================
-   MEDIA QUERIES FOR RESPONSIVE (ADDITIONS)
-   ========================================= */
-
-/* Tablet & Mobile (Dưới 992px) */
-@media (max-width: 991px) {
-  .products-toolbar {
-    flex-wrap: wrap; /* Cho phép xuống dòng */
-    height: auto;
-    padding: 10px 0;
-  }
-
-  .products-toolbar .toolbar-left,
-  .products-toolbar .toolbar-right {
-    width: 100%; /* Chiếm hết chiều ngang */
-    justify-content: space-between;
-  }
-
-  .products-toolbar .toolbar-right {
-    margin-left: 0 !important; /* Ghi đè margin inline cũ */
-    flex-wrap: wrap;
-  }
-
-  /* Ghi đè inline style của input search */
-  .search-input {
-    width: 100% !important;
-    margin-left: 0 !important;
-    margin-top: 8px;
-  }
-
-  /* Ghi đè inline style của nút reset */
-  .reset-btn {
-    margin-left: auto !important; /* Đẩy sang phải thay vì margin cứng 70px */
-  }
-
-  /* Ẩn bớt bộ lọc trên mobile nếu cần hoặc style lại */
-  .sidebar-btn, .sidebar-divider {
-    width: 100% !important; /* Ghi đè width 215px inline */
-  }
-
-  .product-card-modern {
-    min-height: 340px;
-    padding: 12px;
-  }
-}
-
-/* Mobile (Dưới 768px) */
-@media (max-width: 767px) {
-  /* Xử lý khoảng cách top cho banner */
-  .responsive-top-spacing {
-    padding-top: 80px !important; /* Ghi đè 100px inline */
-  }
-
-  /* Toolbar sắp xếp lại */
-  .products-toolbar {
-    gap: 8px;
-  }
-
-  .sort-buttons {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .btn-sort {
-    flex: 1;
-    text-align: center;
-    font-size: 0.8rem;
-    padding: 6px 4px;
-  }
-
-  .title-filter {
-    display: none; /* Ẩn chữ 'Sắp xếp theo' trên mobile cho gọn */
-  }
-
-  /* Product Card Mobile */
-  .product-card-modern {
-    min-height: 290px;
-    padding: 10px 8px;
-    border-radius: 10px;
-  }
-
-  .product-img-wrapper {
-    height: 110px;
-  }
-
-  .product-img {
-    max-height: 100px;
-  }
-
-  .product-title-modern {
-    font-size: 0.85rem;
-    margin-bottom: 4px;
-    min-height: 2.5em; /* Giảm chiều cao tiêu đề */
-  }
-
-  .product-price-modern {
-    font-size: 0.95rem;
-    padding-bottom: 8px;
-  }
-
-  .price-old {
-    font-size: 0.75rem;
-  }
-
-  .product-btn {
-    font-size: 0.8rem;
-    padding: 6px 0;
-  }
-
-  .btn-text {
-    /* Có thể ẩn chữ 'Thêm vào giỏ' chỉ hiện icon nếu muốn, ở đây giữ lại nhưng font bé */
-  }
-
-  /* Input giá bộ lọc nằm ngang */
-  .col-lg-3 .d-flex.gap-2 {
-    /* Giữ input min/max nằm ngang */
-  }
-}
-
-/* Extra small devices (Dưới 400px) */
-@media (max-width: 400px) {
-  .product-card-modern {
-    min-height: 270px;
-  }
-  .product-img-wrapper {
-    height: 90px;
-  }
-}
+@import "../../../../css/Public/Products/index/index.css";
 </style>

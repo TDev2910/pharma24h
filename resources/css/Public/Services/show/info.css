@@ -1,0 +1,112 @@
+.root-container {
+    margin-top: 100px;
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
+}
+
+.service-image-container {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.service-detail-image {
+    max-width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.service-detail-info {
+    padding: 20px;
+}
+
+.service-name {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.service-price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.current-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a56db;
+}
+
+.service-meta {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.meta-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.meta-item:last-child {
+    border-bottom: none;
+}
+
+.meta-item strong {
+    color: #495057;
+    margin-right: 8px;
+}
+
+.service-actions {
+    margin-top: 30px;
+}
+
+.service-actions .btn {
+    min-width: 200px;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Button Primary Styles - Màu xanh đậm mặc định, không hover */
+.btn-primary,
+button.btn-primary,
+.btn.btn-primary {
+    background: #1976D2 !important;
+    border: none !important;
+    border-color: #1976D2 !important;
+    color: white !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:not(:disabled):not(.disabled):active,
+button.btn-primary:hover,
+button.btn-primary:focus,
+button.btn-primary:active,
+.btn.btn-primary:hover,
+.btn.btn-primary:focus,
+.btn.btn-primary:active {
+    background: #1976D2 !important;
+    border-color: #1976D2 !important;
+    color: white !important;
+    transform: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Override Bootstrap button states */
+button.btn-primary:not(:disabled):not(.disabled):active:focus,
+button.btn-primary:not(:disabled):not(.disabled).active,
+.btn-primary:not(:disabled):not(.disabled):active:focus,
+.btn-primary:not(:disabled):not(.disabled).active {
+    background-color: #1976D2 !important;
+    border-color: #1976D2 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}

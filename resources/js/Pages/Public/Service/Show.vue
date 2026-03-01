@@ -306,5 +306,4 @@ function resetForm() {
     errors.value = {}
 }
 </script>
-
-<style scoped src="../../../../css/Public/Services/Show.css"></style>
+<style scoped src="../../../../css/Public/Services/show/show.css"></style>

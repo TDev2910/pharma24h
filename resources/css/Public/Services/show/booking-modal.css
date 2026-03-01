@@ -1,0 +1,69 @@
+/* Booking Modal Styles */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 20px;
+    align-items: start;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field-label {
+    font-weight: 600;
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.field-input {
+    width: 100%;
+    border-radius: 6px !important;
+    font-size: 15px !important;
+    padding: 6px 10px !important;
+    border: 1px solid #ced4da !important;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.field-input:not(textarea) {
+    height: 32px !important;
+}
+
+.field-input textarea,
+textarea.field-input {
+    min-height: 100px;
+    padding: 10px;
+}
+
+.p-error {
+    color: #e24c4c;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.p-invalid {
+    border-color: #e24c4c !important;
+}
+
+.service-info {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.service-info h5 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.service-info p {
+    margin-bottom: 5px;
+    color: #495057;
+    font-size: 0.9rem;
+}
