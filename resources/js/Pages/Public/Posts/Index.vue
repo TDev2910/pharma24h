@@ -10,33 +10,17 @@ const props = defineProps({
     filters: { type: Object, default: () => ({}) },
 });
 
-// --- HELPER: Map Category Slug to Icon/Color ---
-const getCategoryMeta = (slug) => {
-    const metaMap = {
-        'tim-mach': { icon: '❤️', color: 'blue' },
-        'dinh-duong': { icon: '🍏', color: 'blue' },
-        'thuoc-dieu-tri': { icon: '💊', color: 'blue' },
-        'giac-ngu': { icon: '🌙', color: 'blue' },
-        'kham-benh': { icon: '🩺', color: 'blue' },
-        'thao-duoc': { icon: '🍃', color: 'blue' },
-        'lam-dep': { icon: '💄', color: 'blue' },
-        'me-va-be': { icon: '👶', color: 'blue' },
-        'covid-19': { icon: '🦠', color: 'blue' },
-        'default': { icon: '⚕️', color: 'blue' }
-    };
-    return metaMap[slug] || metaMap['default'];
-};
+// Mặc định màu cho chuyên mục
+const DEFAULT_CATEGORY_COLOR = '#1250dc';
 
 // categories
 const processedCategories = computed(() => {
     return props.categories.map(cat => {
-        const meta = getCategoryMeta(cat.slug);
         return {
             id: cat.id,
             name: cat.name,
             slug: cat.slug,
-            count: cat.posts_count || 0,
-            icon: meta.icon
+            count: cat.posts_count || 0
         };
     });
 });
@@ -44,25 +28,23 @@ const processedCategories = computed(() => {
 // featured Posts
 const processedFeaturedPosts = computed(() => {
     return props.featuredPosts.map(post => {
-        const meta = getCategoryMeta(post.categorySlug);
         return {
             ...post,
             desc: post.summary,
-            catColor: meta.color
+            catColor: DEFAULT_CATEGORY_COLOR
         };
     });
 });
 
 const processedCategorySections = computed(() => {
     return props.categorySections.map(section => {
-        const meta = getCategoryMeta(section.slug);
         return {
             ...section,
-            color: meta.color,
+            color: DEFAULT_CATEGORY_COLOR,
             posts: section.posts.map(post => ({
                 ...post,
                 desc: post.summary,
-                catColor: meta.color
+                catColor: DEFAULT_CATEGORY_COLOR
             }))
         };
     });
@@ -132,10 +114,9 @@ const loadMore = () => {
                                 class="block-header d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
                                 <div class="d-flex align-items-center">
                                     <Link :href="`/posts?category=${group.slug}`" class="text-decoration-none">
-                                        <h3 class="block-title group-hover-primary" :class="group.color"
+                                        <h3 class="block-title group-hover-primary" :style="{ color: group.color }"
                                             style="font-size: 22px; font-weight: 700; margin-bottom: 0;">{{ group.name
-                                            }}
-                                        </h3>
+                                            }}</h3>
                                     </Link>
                                     <div class="block-links d-none d-lg-flex ms-3 ps-3 border-start">
                                         <template v-for="(sub, sIndex) in group.subcategories" :key="sIndex">

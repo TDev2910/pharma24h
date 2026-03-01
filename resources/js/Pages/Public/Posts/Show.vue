@@ -10,6 +10,7 @@ const generateTOC = () => {
     const contentDiv = document.querySelector('.article-content');
     if (!contentDiv) return;
 
+    // 1. Lấy tất cả các thẻ tiêu đề (thường là thẻ h2)
     const headings = contentDiv.querySelectorAll('h2');
     tableOfContents.value = [];
 
@@ -30,8 +31,7 @@ const generateTOC = () => {
 const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (element) {
-        const y = element.getBoundingClientRect().top + window.scrollY - 100;
-        window.scrollTo({ top: y, behavior: 'smooth' });
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 };
 
@@ -130,23 +130,22 @@ const formatDate = (dateString) => {
 
     <Head :title="post.title" />
 
-    <div class="bg-[#fcfdfd] min-h-screen font-roboto text-gray-800 pb-20">
+    <div class="bg-[#fcfdfd] min-h-screen text-gray-800 pb-20">
         <Header :auth="auth" />
 
         <div class="container mx-auto px-4 py-8 max-w-5xl">
 
             <div class="relative w-full h-[350px] md:h-[500px] rounded-2xl overflow-hidden shadow-sm"
                 style="text-align: center;">
-                <img :src="post.image || post.thumbnail" :alt="post.title"
-                    class="absolute inset-0 w-full h-full object-cover">
+                <!-- <img :src="post.image || post.thumbnail" :alt="post.title"
+                    class="absolute inset-0 w-full h-full object-cover"> -->
                 <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
                 <div class="absolute bottom-8 left-6 md:bottom-12 md:left-10 pr-6 z-10 text-white max-w-4xl text-left">
                     <span
                         class="inline-block bg-[#10b981] text-white text-xs font-bold px-3 py-1 rounded-md mb-4 uppercase tracking-wider">
                         {{ post.category?.name || post.category || 'Sức khỏe' }}
                     </span>
-                    <h1
-                        class="text-3xl md:text-4xl lg:text-5xl font-bold leading-snug font-display text-white drop-shadow-md">
+                    <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold leading-snug text-white drop-shadow-md">
                         {{ post.title }}
                     </h1>
                 </div>
@@ -203,8 +202,7 @@ const formatDate = (dateString) => {
             <div v-if="relatedPosts && relatedPosts.length > 0" class="related-section">
 
                 <div class="related-header">
-                    <div class="related-bar"></div>
-                    <h2 class="related-heading">Bài viết liên quan</h2>
+                    <h2 class="">Bài viết liên quan</h2>
                 </div>
 
                 <div class="related-grid">
