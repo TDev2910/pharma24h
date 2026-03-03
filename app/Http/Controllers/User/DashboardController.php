@@ -227,37 +227,6 @@ class DashboardController extends Controller
         }
     }
 
-
-
-    public function payment()
-    {
-        $user = Auth::user();
-
-        // Lấy lịch sử giao dịch từ đơn hàng (demo)
-        // Trong thực tế, bạn sẽ join với bảng transactions
-        $transactions = $user->orders()
-            ->whereIn('order_status', ['completed', 'delivered', 'shipping']) 
-            ->latest()
-            ->take(10)
-            ->get()
-            ->map(function ($order) {
-                return [
-                    'id' => $order->id,
-                    'type' => 'payment', // payment, deposit, refund
-                    'description' => 'Thanh toán đơn hàng #' . ($order->order_code ?? $order->id),
-                    'amount' => -$order->total_amount, // Negative for spending
-                    'date' => $order->created_at->format('d/m/Y H:i'),
-                ];
-            });
-
-        return Inertia::render('User/Payment/Index', [
-            'pageTitle' => 'Thanh toán & Ví',
-            'user' => $user,
-            'debtAmount' => 0, // Mock nợ = 0
-            'transactions' => $transactions
-        ]);
-    }
-
     /**
      * Hiển thị trang đơn hàng của user
      */
@@ -539,5 +508,27 @@ class DashboardController extends Controller
                 'message' => 'Remove failed: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Medical Gift (Đổi quà) - Đang phát triển
+     */
+    public function medicalGift()
+    {
+        return Inertia::render('User/MedicalGift/Index', [
+            'pageTitle' => 'Đổi quà',
+            'pageDescription' => 'Tính năng đang trong giai đoạn phát triển'
+        ]);
+    }
+
+    /**
+     * Health Index (Chỉ số sức khỏe) - Đang phát triển
+     */
+    public function healthIndex()
+    {
+        return Inertia::render('User/HealthIndex/Index', [
+            'pageTitle' => 'Theo dõi chỉ số sức khỏe',
+            'pageDescription' => 'Tính năng đang trong giai đoạn phát triển'
+        ]);
     }
 }

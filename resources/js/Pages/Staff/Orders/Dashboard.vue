@@ -6,8 +6,8 @@ import StaffLayout from '@/Layouts/StaffLayout.vue';
 import Swal from 'sweetalert2';
 
 // Components
-import EditModal from './modals/Edit_modal.vue';
-import DetailsModal from './modals/Details_modal.vue';
+import EditModal from './Modals/Edit_modal.vue';
+import DetailsModal from './Modals/Details_modal.vue';
 
 // PROPS
 const props = defineProps({
@@ -42,7 +42,7 @@ const openDetail = (id) => {
         {
             preserveState: true,   // Giữ nguyên bộ lọc/search hiện tại
             preserveScroll: true,  // Không bị cuộn trang lên đầu
-            only: ['selectedOrder'], // Quan trọng: Chỉ tải dữ liệu selectedOrder (Lazy Load)
+            only: ['selectedOrder'],
             onSuccess: () => {
                 // Khi server trả về dữ liệu thành công => Mở Modal
                 isDetailOpen.value = true;
@@ -260,7 +260,7 @@ const formatDate = (dateString) => {
 
                             <td class="col-amount">
                                 <span class="font-bold text-gray-800">{{ formatCurrency(order.total_amount)
-                                }}</span>
+                                    }}</span>
                             </td>
 
                             <td class="col-status">

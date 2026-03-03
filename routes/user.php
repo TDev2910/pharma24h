@@ -8,12 +8,13 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     // Dashboard Overview
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
+    // Feature Placeholder (Under Development)
+    Route::get('/medical-gift', [DashboardController::class, 'medicalGift'])->name('medical-gift');
+    Route::get('/health-index', [DashboardController::class, 'healthIndex'])->name('health-index');
+    
     // Profile Settings (Account Settings)
     Route::get('/profile-settings', [DashboardController::class, 'profileSettings'])->name('profile.settings');
     Route::post('/profile-settings', [DashboardController::class, 'updateProfileSettings'])->name('profile.settings.update');
-    
-    // Payment
-    Route::get('/payment', [DashboardController::class, 'payment'])->name('payment');
     
     // Other Features
     Route::get('/orders', [DashboardController::class, 'orders'])->name('orders');
