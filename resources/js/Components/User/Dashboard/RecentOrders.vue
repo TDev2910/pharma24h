@@ -1,7 +1,7 @@
 <template>
   <div class="section-card">
     <div class="card-header">
-      <h3><i class="fas fa-history"></i> Đơn hàng gần đây</h3>
+      <h3><i class="fas fa-box"></i> Đơn hàng gần đây</h3>
       <Link href="/user/orders" class="link-text">Xem tất cả</Link>
     </div>
 
@@ -9,22 +9,25 @@
       <table class="custom-table">
         <thead>
           <tr>
-            <th>Mã đơn</th>
-            <th>Sản phẩm</th>
-            <th>Tổng tiền</th>
-            <th>Trạng thái</th>
-            <th></th>
+            <th style="width: 20%;">Mã đơn</th>
+            <th style="width: 40%;">Sản phẩm</th>
+            <th style="width: 20%;" class="text-right">Tổng tiền</th>
+            <th style="width: 20%;" class="text-center">Trạng thái</th>
           </tr>
         </thead>
         <tbody>
           <tr v-if="orders.length === 0">
-            <td colspan="5" class="text-center text-muted">Chưa có đơn hàng nào</td>
+            <td colspan="4" class="text-center text-muted">Chưa có đơn hàng nào</td>
           </tr>
           <tr v-for="order in orders" :key="order.id">
-            <td class="code">{{ order.code }} <br></td>
-            <td>{{ order.product }}</td>
-            <td class="price">{{ order.total }}</td>
-            <td>
+            <td class="code">{{ order.code }}</td>
+            <td class="product-col">
+              <div class="truncate-text" :title="order.product">
+                {{ order.product }}
+              </div>
+            </td>
+            <td class="price text-right">{{ order.total }}</td>
+            <td class="text-center">
               <span :class="['status-badge', order.statusClass]">{{ order.status }}</span>
             </td>
           </tr>
@@ -43,6 +46,35 @@ const props = defineProps({
     default: () => []
   }
 })
+
+const getStatusClass = (status) => {
+  const map = {
+    'pending': 'status-pending',
+    'confirmed': 'status-confirmed',
+    'delivering': 'status-delivering',
+    'completed': 'status-completed',
+    'cancelled': 'status-cancelled',
+  };
+  return map[status] || 'status-default';
+}
+
+const getStatusLabel = (status) => {
+  const map = {
+    'pending': 'Chờ xử lý',
+    'confirmed': 'Đã xác nhận',
+    'delivering': 'Đang giao',
+    'completed': 'Hoàn thành',
+    'cancelled': 'Đã hủy',
+  };
+  return map[status] || status;
+}
+
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND'
+  }).format(amount);
+}
 </script>
 
 <style scoped>
@@ -91,23 +123,39 @@ const props = defineProps({
 .custom-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
+  /* Giúp các cột chia tỷ lệ chính xác hơn */
 }
 
+/* Thêm padding trái/phải để chữ không bị dính vào nhau */
 .custom-table th {
   text-align: left;
-  color: #000;
-  font-size: 14px;
+  color: #475569;
+  font-size: 13px;
   font-weight: 600;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #F1F5F9;
+  padding: 12px 12px;
+  border-bottom: 1px solid #E2E8F0;
+  text-transform: uppercase;
+  /* In hoa nhẹ tiêu đề để sang trọng hơn */
 }
 
 .custom-table td {
-  padding: 16px 0;
+  padding: 16px 12px;
   border-bottom: 1px solid #F1F5F9;
   color: #334155;
   font-size: 14px;
   vertical-align: middle;
+}
+
+/* Bỏ padding trái của cột đầu, phải của cột cuối để bảng gọn gàng */
+.custom-table th:first-child,
+.custom-table td:first-child {
+  padding-left: 0;
+}
+
+.custom-table th:last-child,
+.custom-table td:last-child {
+  padding-right: 0;
 }
 
 .custom-table tr:last-child td {
@@ -116,12 +164,8 @@ const props = defineProps({
 
 .custom-table .code {
   font-weight: 600;
-  color: #1E293B;
-}
-
-.custom-table .code small {
-  color: #94A3B8;
-  font-weight: 400;
+  color: #3B82F6;
+  /* Đổi màu mã đơn thành xanh cho nổi bật */
 }
 
 .custom-table .price {
@@ -129,50 +173,86 @@ const props = defineProps({
   color: #1E293B;
 }
 
+/* --- XỬ LÝ TEXT DÀI (SẢN PHẨM) --- */
+.product-col {
+  max-width: 0;
+  /* Bắt buộc phải có để truncate hoạt động trong table-layout: fixed */
+}
+
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  font-weight: 500;
+  color: #0F172A;
+}
+
+/* --- BADGE TRẠNG THÁI (ĐẬM & RÕ RÀNG HƠN) --- */
 .status-badge {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 13px;
   font-weight: 600;
+  border: 1px solid transparent;
 }
 
+/* Processing - Blue */
 .status-badge.processing {
-  background: #EFF6FF;
-  color: #3B82F6;
+  background: #2563EB;
+  color: #ffffff;
+  border-color: #1D4ED8;
 }
 
+/* Shipping - Orange */
 .status-badge.shipping {
-  background: #FFEDD5;
-  color: #F97316;
+  background: #EA580C;
+  color: #ffffff;
+  border-color: #C2410C;
 }
 
-.status-badge.completed {
-  background: #DCFCE7;
-  color: #16A34A;
-}
-
+/* Completed / Success - Green */
+.status-badge.completed,
 .status-badge.success {
-  background: #DCFCE7;
-  color: #16A34A;
+  background: #16A34A;
+  color: #ffffff;
+  border-color: #15803D;
 }
 
+.status-badge.cancelled {
+  background: #DC2626;
+  color: #ffffff;
+  border-color: #B91C1C;
+}
+
+/* Warning - Amber */
 .status-badge.warning {
-  background: #FEF3C7;
-  color: #D97706;
+  background: #D97706;
+  color: #ffffff;
+  border-color: #B45309;
 }
 
+/* Danger - Red */
 .status-badge.danger {
-  background: #FEE2E2;
-  color: #DC2626;
+  background: #DC2626;
+  color: #ffffff;
+  border-color: #B91C1C;
 }
 
+/* Info - Indigo */
 .status-badge.info {
-  background: #DBEAFE;
-  color: #2563EB;
+  background: #4F46E5;
+  color: #ffffff;
+  border-color: #4338CA;
 }
 
+/* --- TIỆN ÍCH --- */
 .text-center {
-  text-align: center;
+  text-align: center !important;
+}
+
+.text-right {
+  text-align: right !important;
 }
 
 .text-muted {
