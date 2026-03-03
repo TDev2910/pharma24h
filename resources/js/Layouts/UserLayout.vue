@@ -29,18 +29,6 @@
             <span class="nav-text">Dịch vụ</span>
           </Link>
 
-          <Link href="/user/medical-records" :class="{ 'active': page.url.startsWith('/user/medical-records') }"
-            class="nav-item">
-            <i class="fas fa-user-md"></i>
-            <span class="nav-text">Hồ sơ y tế</span>
-          </Link>
-
-          <Link href="/user/payment" :class="{ 'active': page.url.startsWith('/user/payment') }" class="nav-item">
-            <i class="fas fa-credit-card"></i>
-            <span class="nav-text">Thanh toán</span>
-          </Link>
-
-
           <Link href="/user/notifications" :class="{ 'active': page.url.startsWith('/user/notifications') }"
             class="nav-item">
             <div class="nav-item-content">
@@ -56,6 +44,18 @@
             class="nav-item">
             <i class="fas fa-user-cog"></i>
             <span class="nav-text">Cài đặt hồ sơ</span>
+          </Link>
+
+          <Link href="/user/medical-gift" :class="{ 'active': page.url.startsWith('/user/medical-gift') }"
+            class="nav-item">
+            <i class="fas fa-gift"></i>
+            <span class="nav-text">Đổi quà</span>
+          </Link>
+
+          <Link href="/user/health-index" :class="{ 'active': page.url.startsWith('/user/health-index') }"
+            class="nav-item">
+            <i class="fas fa-heartbeat"></i>
+            <span class="nav-text">Theo dõi chỉ số sức khỏe</span>
           </Link>
           <Link href="/" :class="{ 'active': page.url.startsWith('/') }" class="nav-item">
             <i class="fas fa-home"></i>
@@ -75,15 +75,10 @@
     <div class="main-wrapper">
       <header class="topbar">
         <div class="page-title">
-          <h2>{{ pageTitle || 'Dashboard' }}</h2>
           <span class="date">{{ currentDate }}</span>
         </div>
 
         <div class="topbar-actions">
-          <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Tìm kiếm thuốc, đơn hàng..." />
-          </div>
           <button class="icon-btn"><i class="fas fa-bell"></i></button>
           <button class="icon-btn"><i class="fas fa-question-circle"></i></button>
         </div>
