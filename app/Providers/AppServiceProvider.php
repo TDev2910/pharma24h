@@ -13,7 +13,14 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->bind(
+            \App\Core\Customer\Ports\Outbound\CustomerRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Eloquent\CustomerRepository::class
+        );
+        $this->app->bind(
+            \App\Core\Customer\Ports\Inbound\CustomerUseCaseInterface::class,
+            \App\Core\Customer\Application\Services\CustomerService::class
+        );
     }
 
     public function boot(): void
