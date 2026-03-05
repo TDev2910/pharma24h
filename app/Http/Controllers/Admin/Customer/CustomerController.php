@@ -48,102 +48,83 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required|string|min:8|confirmed',
-                'phone' => 'nullable|string|max:15',
-                'address' => 'nullable|string|max:255',
-            ], [
-                'name.required' => 'Vui lòng nhập tên khách hàng',
-                'email.unique' => 'Email đã được sử dụng',
-                'password.confirmed' => 'Xác nhận mật khẩu không khớp',
-            ]);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+            'phone' => 'nullable|string|max:15',
+            'address' => 'nullable|string|max:255',
+        ], [
+            'name.required' => 'Vui lòng nhập tên khách hàng',
+            'email.unique' => 'Email đã được sử dụng',
+            'password.confirmed' => 'Xác nhận mật khẩu không khớp',
+        ]);
 
-            $dto = new CustomerData(
-                name: $request->name,
-                email: $request->email,
-                phone: $request->phone,
-                address: $request->address,
-                province: $this->safeInput($request->province),
-                district: $this->safeInput($request->district),
-                ward: $this->safeInput($request->ward),
-                password: $request->password
-            );
+        $dto = new CustomerData(
+            name: $request->name,
+            email: $request->email,
+            phone: $request->phone,
+            address: $request->address,
+            province: $this->safeInput($request->province),
+            district: $this->safeInput($request->district),
+            ward: $this->safeInput($request->ward),
+            password: $request->password
+        );
 
-            $user = $this->useCase->createCustomer($dto);
+        $this->useCase->createCustomer($dto);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Thêm khách hàng thành công!',
-                'data' => $user
-            ]);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['success' => false, 'errors' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        }
+        return redirect()->back()->with('success', 'Thêm khách hàng thành công!');
     }
 
     /**
-     * Edit: API lấy dữ liệu chi tiết
+     * Edit
      */
     public function edit(string $id)
     {
-        try {
-             $user = User::findOrFail($id);
-             return response()->json(['success' => true, 'data' => $user]);
-        } catch (\Exception $e) {
-             return response()->json(['success' => false, 'message' => 'Không tìm thấy user'], 404);
-        }
+        $user = User::find($id);
+        if (!$user) return response()->json(['success' => false, 'message' => 'Không tìm thấy'], 404);
+        return response()->json(['success' => true, 'data' => $user]);
     }
 
     /**
-     * Update: Return JSON
+     * Update
      */
     public function update(Request $request, string $id)
     {
-        try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $id,
-            ]);
-            
-            $dto = new CustomerData(
-                name: $request->name,
-                email: $request->email,
-                phone: $request->phone,
-                address: $request->address,
-                province: $this->safeInput($request->province),
-                district: $this->safeInput($request->district),
-                ward: $this->safeInput($request->ward),
-                password: $request->filled('password') ? $request->password : null
-            );
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'phone' => 'nullable|string|max:15',
+            'address' => 'nullable|string|max:255',
+            'province' => 'nullable|string|max:255',
+            'district' => 'nullable|string|max:255',
+            'ward' => 'nullable|string|max:255',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
 
-            $this->useCase->updateCustomer($id, $dto);
+        $dto = new CustomerData(
+            name: $request->name,
+            email: $request->email,
+            phone: $request->phone,
+            address: $request->address,
+            province: $this->safeInput($request->province),
+            district: $this->safeInput($request->district),
+            ward: $this->safeInput($request->ward),
+            password: $request->filled('password') ? $request->password : null
+        );
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Cập nhật thành công!'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        }
+        $this->useCase->updateCustomer($id, $dto);
+
+        return redirect()->back()->with('success', 'Cập nhật khách hàng thành công!');
     }
 
     /**
-     * Destroy: Dùng Redirect để Inertia tự reload list
+     * Destroy
      */
     public function destroy(string $id)
     {
-        try {
-            $this->useCase->deleteCustomer($id);
+        $this->useCase->deleteCustomer($id);
 
-            return redirect()->back()->with('success', 'Xóa khách hàng thành công!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Lỗi: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'Xóa khách hàng thành công!');
     }
 }
