@@ -260,7 +260,7 @@ const formatDate = (dateString) => {
 
                             <td class="col-amount">
                                 <span class="font-bold text-gray-800">{{ formatCurrency(order.total_amount)
-                                    }}</span>
+                                }}</span>
                             </td>
 
                             <td class="col-status">
@@ -300,8 +300,9 @@ const formatDate = (dateString) => {
             <div class="pagination-wrapper" v-if="orders.links.length > 3">
                 <div class="pagination">
                     <template v-for="(link, k) in orders.links" :key="k">
-                        <Link v-if="link.url" :href="link.url" v-html="link.label"
-                            :class="['page-link', { 'active': link.active }]" />
+                        <Link v-if="link.url" :href="link.url" :class="['page-link', { 'active': link.active }]">
+                            <span v-html="link.label"></span>
+                        </Link>
                         <span v-else v-html="link.label" class="page-link disabled"></span>
                     </template>
                 </div>
