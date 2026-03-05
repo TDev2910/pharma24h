@@ -1,16 +1,16 @@
 <?php
 namespace App\Core\Customer\Domain\DTOs;
 
-class CustomerData
+readonly class CustomerData
 {
     public function __construct(
-        public readonly string $name,
-        public readonly string $email,
-        public readonly ?string $phone = null,
-        public readonly ?string $address = null,
-        public readonly ?string $province = null,
-        public readonly ?string $district = null,
-        public readonly ?string $ward = null,
-        public readonly ?string $password = null
+        public string $name,
+        public string $email,
+        public ?string $phone = null,
+        public ?string $address = null,
+        public ?string $province = null,
+        public ?string $district = null,
+        public ?string $ward = null,
+        public ?string $password = null
     ) {}
 }

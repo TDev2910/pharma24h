@@ -20,6 +20,14 @@ class AppServiceProvider extends ServiceProvider
             \App\Core\Customer\Ports\Inbound\CustomerUseCaseInterface::class,
             \App\Core\Customer\Application\Services\CustomerService::class
         );
+        $this->app->bind(
+            \App\Core\Order\Ports\Outbound\OrderRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Eloquent\OrderRepository::class
+        );
+        $this->app->bind(
+            \App\Core\Order\Ports\Inbound\OrderUseCaseInterface::class,
+            \App\Core\Order\Application\Services\OrderService::class
+        );
     }
 
     public function boot(): void
@@ -31,7 +39,6 @@ class AppServiceProvider extends ServiceProvider
             'user'     => User::class,
         ]);
 
-        // Load Routes (Giữ nguyên code cũ của bạn)
         if (file_exists(base_path('routes/web.php'))) {
             require base_path('routes/web.php');
         }
