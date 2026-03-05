@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Core\Customer\Ports\Inbound\CustomerUseCaseInterface;
-use App\Core\Customer\Domain\CustomerData;
+use App\Core\Customer\Domain\DTOs\CustomerData;
 
 class StaffCustomerController extends Controller
 {

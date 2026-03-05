@@ -2,7 +2,7 @@
 namespace App\Core\Customer\Ports\Outbound;
 
 use App\Models\User;
-use App\Core\Customer\Domain\CustomerData;
+use App\Core\Customer\Domain\DTOs\CustomerData;
 
 interface CustomerRepositoryInterface
 {

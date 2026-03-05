@@ -4,7 +4,7 @@ namespace Tests\Unit\Infrastructure\Persistence\Eloquent;
 
 use Tests\TestCase;
 use App\Models\User;
-use App\Core\Customer\Domain\CustomerData;
+use App\Core\Customer\Domain\DTOs\CustomerData;
 use App\Infrastructure\Persistence\Eloquent\CustomerRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

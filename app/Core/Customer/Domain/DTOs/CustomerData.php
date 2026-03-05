@@ -1,5 +1,5 @@
 <?php
-namespace App\Core\Customer\Domain;
+namespace App\Core\Customer\Domain\DTOs;
 
 class CustomerData
 {
