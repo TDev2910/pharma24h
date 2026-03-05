@@ -24,8 +24,7 @@
                     <div class="nav-dropdown">
                         <div class="dropdown-col">
                             <div class="dropdown-title">Tổng quan</div>
-                            <a href="/admin/orders-test" class="dropdown-link">Đơn hàng</a>
-                            <!-- <a href="/admin/orders" class="dropdown-link">Quản lý đơn hàng</a> -->
+                            <a href="/admin/orders" class="dropdown-link">Đơn hàng</a>
                             <a href="/admin/orders/transport" class="dropdown-link">Vận đơn</a>
                         </div>
                         <div class="dropdown-col">
