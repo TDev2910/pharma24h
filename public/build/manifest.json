@@ -30,7 +30,7 @@
     "src": "node_modules/primeicons/fonts/primeicons.woff2"
   },
   "node_modules/quill/quill.js": {
-    "file": "assets/quill-7huGnbd5.js",
+    "file": "assets/quill-Cwi0QMO1.js",
     "name": "quill",
     "src": "node_modules/quill/quill.js",
     "isDynamicEntry": true,
@@ -45,7 +45,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-BPVX5aeV.js",
+    "file": "assets/app-CUabp-Ia.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -57,7 +57,7 @@
       "node_modules/quill/quill.js"
     ],
     "css": [
-      "assets/app-CL1evLSo.css"
+      "assets/app-Bb5o5Nic.css"
     ],
     "assets": [
       "assets/primeicons-DMOk5skT.eot",
