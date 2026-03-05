@@ -5,7 +5,7 @@ namespace Tests\Unit\Core\Customer\Application\Services;
 use Tests\TestCase;
 use Mockery;
 use App\Models\User;
-use App\Core\Customer\Domain\CustomerData;
+use App\Core\Customer\Domain\DTOs\CustomerData;
 use App\Core\Customer\Application\Services\CustomerService;
 use App\Core\Customer\Ports\Outbound\CustomerRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
