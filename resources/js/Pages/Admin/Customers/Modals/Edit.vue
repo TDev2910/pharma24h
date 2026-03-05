@@ -7,50 +7,52 @@
         <!-- Tên khách hàng -->
         <div class="form-field">
           <label for="name" class="field-label">Tên khách hàng *</label>
-          <InputText id="name" v-model="formData.name" type="text" placeholder="Nhập tên khách hàng" class="field-input"
-            :class="{ 'p-invalid': errors.name }" />
-          <small v-if="errors.name" class="p-error">{{ errors.name[0] }}</small>
+          <InputText id="name" v-model="form.name" type="text" placeholder="Nhập tên khách hàng" class="field-input"
+            :class="{ 'p-invalid': form.errors.name }" />
+          <small v-if="form.errors.name" class="p-error">{{ form.errors.name }}</small>
         </div>
 
         <!-- Email -->
         <div class="form-field">
           <label for="email" class="field-label">Email *</label>
-          <InputText id="email" v-model="formData.email" type="email" placeholder="email@gmail.com" class="field-input"
-            :class="{ 'p-invalid': errors.email }" />
-          <small v-if="errors.email" class="p-error">{{ errors.email[0] }}</small>
+          <InputText id="email" v-model="form.email" type="email" placeholder="email@gmail.com" class="field-input"
+            :class="{ 'p-invalid': form.errors.email }" />
+          <small v-if="form.errors.email" class="p-error">{{ form.errors.email }}</small>
         </div>
 
         <!-- Mật khẩu -->
         <div class="form-field">
-          <label for="password" class="field-label">Mật khẩu *</label>
-          <InputText id="password" v-model="formData.password" type="password" placeholder="Nhập mật khẩu"
-            class="field-input" :class="{ 'p-invalid': errors.password }" />
-          <small v-if="errors.password" class="p-error">{{ errors.password[0] }}</small>
+          <label for="password" class="field-label">Mật khẩu mới <small style="font-weight: normal; color: #6b7280;">(Bỏ
+              trống nếu không đổi)</small></label>
+          <InputText id="password" v-model="form.password" type="password" placeholder="Nhập mật khẩu"
+            class="field-input" :class="{ 'p-invalid': form.errors.password }" />
+          <small v-if="form.errors.password" class="p-error">{{ form.errors.password }}</small>
         </div>
 
         <!-- Xác nhận mật khẩu -->
         <div class="form-field">
-          <label for="password_confirmation" class="field-label">Xác nhận mật khẩu *</label>
-          <InputText id="password_confirmation" v-model="formData.password_confirmation" type="password"
+          <label for="password_confirmation" class="field-label">Xác nhận mật khẩu mới *</label>
+          <InputText id="password_confirmation" v-model="form.password_confirmation" type="password"
             placeholder="Nhập lại mật khẩu" class="field-input"
-            :class="{ 'p-invalid': errors.password_confirmation }" />
-          <small v-if="errors.password_confirmation" class="p-error">{{ errors.password_confirmation[0] }}</small>
+            :class="{ 'p-invalid': form.errors.password_confirmation }" />
+          <small v-if="form.errors.password_confirmation" class="p-error">{{ form.errors.password_confirmation
+            }}</small>
         </div>
 
         <!-- Số điện thoại -->
         <div class="form-field">
           <label for="phone" class="field-label">Số điện thoại</label>
-          <InputText id="phone" v-model="formData.phone" type="tel" placeholder="Nhập số điện thoại" class="field-input"
-            :class="{ 'p-invalid': errors.phone }" />
-          <small v-if="errors.phone" class="p-error">{{ errors.phone[0] }}</small>
+          <InputText id="phone" v-model="form.phone" type="tel" placeholder="Nhập số điện thoại" class="field-input"
+            :class="{ 'p-invalid': form.errors.phone }" />
+          <small v-if="form.errors.phone" class="p-error">{{ form.errors.phone }}</small>
         </div>
 
         <!-- Địa chỉ -->
         <div class="form-field">
           <label for="address" class="field-label">Địa chỉ</label>
-          <InputText id="address" v-model="formData.address" type="text" placeholder="Nhập địa chỉ" class="field-input"
-            :class="{ 'p-invalid': errors.address }" />
-          <small v-if="errors.address" class="p-error">{{ errors.address[0] }}</small>
+          <InputText id="address" v-model="form.address" type="text" placeholder="Nhập địa chỉ" class="field-input"
+            :class="{ 'p-invalid': form.errors.address }" />
+          <small v-if="form.errors.address" class="p-error">{{ form.errors.address }}</small>
         </div>
 
         <!-- Địa chỉ chi tiết Section -->
@@ -65,28 +67,28 @@
               <!-- Tỉnh/Thành phố -->
               <div class="form-field">
                 <label for="province" class="field-label">Tỉnh/Thành phố</label>
-                <Dropdown id="province" v-model="formData.province" :options="provinceOptions" optionLabel="name"
-                  placeholder="-- Chọn tỉnh/thành phố --" class="field-input" :class="{ 'p-invalid': errors.province }"
-                  style="width: 185px;" />
-                <small v-if="errors.province" class="p-error">{{ errors.province[0] }}</small>
+                <Dropdown id="province" v-model="form.province" :options="provinceOptions" optionLabel="name"
+                  placeholder="-- Chọn tỉnh/thành phố --" class="field-input"
+                  :class="{ 'p-invalid': form.errors.province }" style="width: 185px;" @change="onProvinceChange" />
+                <small v-if="form.errors.province" class="p-error">{{ form.errors.province }}</small>
               </div>
 
               <!-- Quận/Huyện -->
               <div class="form-field">
                 <label for="district" class="field-label">Quận/Huyện</label>
-                <Dropdown id="district" v-model="formData.district" :options="districtOptions" optionLabel="name"
-                  placeholder="-- Chọn quận/huyện --" class="field-input" :class="{ 'p-invalid': errors.district }"
-                  :disabled="!formData.province" style="width: 185px;" />
-                <small v-if="errors.district" class="p-error">{{ errors.district[0] }}</small>
+                <Dropdown id="district" v-model="form.district" :options="districtOptions" optionLabel="name"
+                  placeholder="-- Chọn quận/huyện --" class="field-input" :class="{ 'p-invalid': form.errors.district }"
+                  :disabled="!form.province" style="width: 185px;" @change="onDistrictChange" />
+                <small v-if="form.errors.district" class="p-error">{{ form.errors.district }}</small>
               </div>
 
               <!-- Xã/Phường -->
               <div class="form-field">
                 <label for="ward" class="field-label">Xã/Phường</label>
-                <Dropdown id="ward" v-model="formData.ward" :options="wardOptions" optionLabel="name"
-                  placeholder="-- Chọn xã/phường --" class="field-input" :class="{ 'p-invalid': errors.ward }"
-                  :disabled="!formData.district" style="width: 185px;" />
-                <small v-if="errors.ward" class="p-error">{{ errors.ward[0] }}</small>
+                <Dropdown id="ward" v-model="form.ward" :options="wardOptions" optionLabel="name"
+                  placeholder="-- Chọn xã/phường --" class="field-input" :class="{ 'p-invalid': form.errors.ward }"
+                  :disabled="!form.district" style="width: 185px;" />
+                <small v-if="form.errors.ward" class="p-error">{{ form.errors.ward }}</small>
               </div>
             </div>
           </div>
@@ -96,320 +98,209 @@
     <template #footer>
       <div class="flex justify-end gap-2">
         <Button type="button" label="Hủy" severity="secondary" @click="closeModal" />
-        <Button type="button" label="Lưu khách hàng" @click="saveCustomer" :loading="loading" />
+        <Button type="button" label="Lưu khách hàng" @click="saveCustomer" :loading="form.processing" />
       </div>
     </template>
   </Dialog>
 </template>
 
-<script>
+<script setup>
+import { ref, watch } from 'vue'
+import { useForm } from '@inertiajs/vue3'
+import { useToast } from 'primevue/usetoast'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Dropdown from 'primevue/dropdown'
-import Textarea from 'primevue/textarea'
-import axios from 'axios'
 
-export default {
-  name: 'EditCustomerModal',
-  components: {
-    Dialog,
-    Button,
-    InputText,
-    Dropdown,
-    Textarea
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    default: false
   },
-  props: {
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    customer: {
-      type: Object,
-      default: null
-    }
-  },
-  emits: ['close', 'updated'],
-  mounted() {
-    // Load provinces when modal opens
-    if (this.visible) {
-      this.loadProvinces()
-    }
-  },
-  watch: {
-    visible(newVal) {
-      if (newVal && this.customer) {
-        this.loadCustomerData()
-      }
-    },
-    customer(newVal) {
-      if (newVal && this.visible) {
-        this.loadCustomerData()
-      }
-    },
-    'formData.province'(newProvince) {
-      if (newProvince && newProvince.code) {
-        this.onProvinceChange(newProvince.code)
-      }
-    },
-    'formData.district'(newDistrict) {
-      if (newDistrict && newDistrict.code) {
-        this.onDistrictChange(newDistrict.code)
-      }
-    }
-  },
-  data() {
-    return {
-      loading: false,
-      formData: {
-        name: '',
-        email: '',
-        password: '',
-        password_confirmation: '',
-        phone: '',
-        address: '',
-        province: null,
-        district: null,
-        ward: null
-      },
-      errors: {},
-      provinceOptions: [],
-      districtOptions: [],
-      wardOptions: []
-    }
-  },
-  methods: {
-    closeModal() {
-      this.resetForm()
-      this.$emit('close')
-    },
-    async saveCustomer()  //lưu người dùng
-    {
-      this.loading = true
-      this.errors = {}
+  customer: {
+    type: Object,
+    default: null
+  }
+})
 
+const emit = defineEmits(['close', 'updated'])
+const toast = useToast()
+
+const form = useForm({
+  name: '',
+  email: '',
+  password: '',
+  password_confirmation: '',
+  phone: '',
+  address: '',
+  province: null,
+  district: null,
+  ward: null
+})
+
+const provinceOptions = ref([])
+const districtOptions = ref([])
+const wardOptions = ref([])
+
+const fetchWithFallback = async (url) => {
+  try {
+    const response = await fetch(url)
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+    return await response.json()
+  } catch (error) {
+    if (error.message.includes('CERT') || error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+      const httpUrl = url.replace('https://', 'http://')
       try {
-        // Chuẩn bị dữ liệu 
-        const dataToSend = {
-          name: this.formData.name,
-          email: this.formData.email,
-          password: this.formData.password,
-          password_confirmation: this.formData.password_confirmation,
-          phone: this.formData.phone,
-          address: this.formData.address,
-          // Xử lý dữ liệu tỉnh/thành phố
-          province: this.formData.province?.name || null,
-          district: this.formData.district?.name || null,
-          ward: this.formData.ward?.name || null
-        }
-
-        //gửi post request đến admin/customers
-        const response = await axios.put(`/admin/customers/${this.customer.id}`, dataToSend)
-
-        //xử lý dữ liệu đầu vào được nhập trong form
-        if (response.data.success) {
-          // Hiển thị thông báo thành công
-          this.$toast.add({
-            severity: 'success',
-            summary: 'Thành công',
-            detail: response.data.message,
-            life: 3000
-          })
-
-          this.$emit('updated', response.data.data)
-          this.closeModal()
-        }
+        const response = await fetch(httpUrl)
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+        return await response.json()
+      } catch (fallbackError) {
+        throw new Error(`Cả HTTPS và HTTP đều thất bại: ${fallbackError.message}`)
       }
-      catch (error) {
-        console.error('Error updating customer:', error)
+    }
+    throw error
+  }
+}
 
-        if (error.response && error.response.status === 422) {
-          // Lỗi validation
-          this.errors = error.response.data.errors
-          this.$toast.add({
-            severity: 'error',
-            summary: 'Lỗi validation',
-            detail: 'Vui lòng kiểm tra lại thông tin nhập vào',
-            life: 5000
-          })
-        }
-        else {
-          // Lỗi khác
-          this.$toast.add({
-            severity: 'error',
-            summary: 'Lỗi',
-            detail: error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật khách hàng',
-            life: 5000
-          })
-        }
-      }
-      finally {
-        this.loading = false
-      }
-    },
+const loadCustomerData = async () => {
+  if (!props.customer) return
 
-    loadCustomerData() {
-      if (!this.customer) return
+  form.clearErrors()
 
-      // Load dữ liệu cơ bản
-      this.formData.name = this.customer.name || ''
-      this.formData.email = this.customer.email || ''
-      this.formData.phone = this.customer.phone || ''
-      this.formData.address = this.customer.address || ''
+  form.name = props.customer.name || ''
+  form.email = props.customer.email || ''
+  form.phone = props.customer.phone || ''
+  form.address = props.customer.address || ''
+  form.password = ''
+  form.password_confirmation = ''
 
-      // Xử lý tỉnh/thành phố hiện tại
-      this.loadProvinceData()
-    },
+  try {
+    if (provinceOptions.value.length === 0) {
+      await loadProvinces()
+    }
 
-    async loadProvinceData() {
-      try {
-        // Load danh sách tỉnh trước
-        await this.loadProvinces()
+    if (props.customer.province) {
+      const currentProvince = provinceOptions.value.find(p => p.name === props.customer.province)
+      if (currentProvince) {
+        form.province = currentProvince
+        await onProvinceChange(currentProvince.code)
 
-        // Tìm tỉnh hiện tại trong danh sách
-        if (this.customer.province) {
-          const currentProvince = this.provinceOptions.find(p => p.name === this.customer.province)
-          if (currentProvince) {
-            this.formData.province = currentProvince
+        if (props.customer.district) {
+          const currentDistrict = districtOptions.value.find(d => d.name === props.customer.district)
+          if (currentDistrict) {
+            form.district = currentDistrict
+            await onDistrictChange(currentDistrict.code)
 
-            // Load districts của tỉnh này
-            await this.onProvinceChange(currentProvince.code)
-
-            // Tìm district hiện tại
-            if (this.customer.district) {
-              const currentDistrict = this.districtOptions.find(d => d.name === this.customer.district)
-              if (currentDistrict) {
-                this.formData.district = currentDistrict
-
-                // Load wards của district này
-                await this.onDistrictChange(currentDistrict.code)
-
-                // Tìm ward hiện tại
-                if (this.customer.ward) {
-                  const currentWard = this.wardOptions.find(w => w.name === this.customer.ward)
-                  if (currentWard) {
-                    this.formData.ward = currentWard
-                  }
-                }
+            if (props.customer.ward) {
+              const currentWard = wardOptions.value.find(w => w.name === props.customer.ward)
+              if (currentWard) {
+                form.ward = currentWard
               }
             }
           }
         }
-      } catch (error) {
-        console.error('Error loading province data:', error)
-      }
-    },
-
-    resetForm() {
-      this.formData = {
-        name: '',
-        email: '',
-        password: '',
-        password_confirmation: '',
-        phone: '',
-        address: '',
-        province: null,
-        district: null,
-        ward: null
-      }
-      this.errors = {}
-      this.districtOptions = []
-      this.wardOptions = []
-    },
-
-    // API tỉnh thành 
-    async loadProvinces() {
-      try {
-        // Sử dụng shared ProvinceService 
-        if (window.provinceService) {
-          const provinces = await window.provinceService.loadProvinces()
-          this.provinceOptions = provinces.map(province => ({
-            name: province.name,
-            code: province.code
-          }))
-        } else {
-          //gọi API trực tiếp
-          const response = await fetch('https://provinces.open-api.vn/api/?depth=1')
-          const data = await response.json()
-
-          this.provinceOptions = data.map(province => ({
-            name: province.name,
-            code: province.code
-          }))
-        }
-      } catch (error) {
-        console.error('Error loading provinces:', error)
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Lỗi',
-          detail: 'Không thể tải danh sách tỉnh thành',
-          life: 3000
-        })
-      }
-    },
-
-    async onProvinceChange(provinceCode) {
-      if (!provinceCode) {
-        this.districtOptions = []
-        this.wardOptions = []
-        this.formData.district = null
-        this.formData.ward = null
-        return
-      }
-
-      try {
-        const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
-        const data = await response.json()
-
-        this.districtOptions = data.districts.map(district => ({
-          name: district.name,
-          code: district.code
-        }))
-
-        // Reset district and ward
-        this.formData.district = null
-        this.formData.ward = null
-        this.wardOptions = []
-      } catch (error) {
-        console.error('Error loading districts:', error)
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Lỗi',
-          detail: 'Không thể tải danh sách quận/huyện',
-          life: 3000
-        })
-      }
-    },
-
-    async onDistrictChange(districtCode) {
-      if (!districtCode) {
-        this.wardOptions = []
-        this.formData.ward = null
-        return
-      }
-
-      try {
-        const response = await fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
-        const data = await response.json()
-
-        this.wardOptions = data.wards.map(ward => ({
-          name: ward.name,
-          code: ward.code
-        }))
-
-        // Reset ward
-        this.formData.ward = null
-      } catch (error) {
-        console.error('Error loading wards:', error)
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Lỗi',
-          detail: 'Không thể tải danh sách xã/phường',
-          life: 3000
-        })
       }
     }
+  } catch (error) {
+    console.error('Error loading province data:', error)
   }
+}
+
+const loadProvinces = async () => {
+  if (provinceOptions.value.length > 0) return
+  try {
+    if (window.provinceService) {
+      const provinces = await window.provinceService.loadProvinces()
+      provinceOptions.value = provinces.map(p => ({ name: p.name, code: p.code }))
+    } else {
+      const data = await fetchWithFallback('https://provinces.open-api.vn/api/?depth=1')
+      provinceOptions.value = data.map(p => ({ name: p.name, code: p.code }))
+    }
+  } catch (error) {
+    toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách tỉnh thành', life: 3000 })
+  }
+}
+
+const onProvinceChange = async (provCode = null) => {
+  districtOptions.value = []
+  wardOptions.value = []
+
+  // If called from user interaction, provCode will be an event or we just use form.province.code
+  const code = typeof provCode === 'string' || typeof provCode === 'number' ? provCode : form.province?.code
+
+  if (typeof provCode !== 'string' && typeof provCode !== 'number') {
+    form.district = null
+    form.ward = null
+  }
+
+  if (!code) return
+
+  try {
+    const data = await fetchWithFallback(`https://provinces.open-api.vn/api/p/${code}?depth=2`)
+    districtOptions.value = data.districts.map(d => ({ name: d.name, code: d.code }))
+  } catch (error) {
+    toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách quận/huyện', life: 3000 })
+  }
+}
+
+const onDistrictChange = async (distCode = null) => {
+  wardOptions.value = []
+
+  // If called from user interaction, distCode will be an event or we just use form.district.code
+  const code = typeof distCode === 'string' || typeof distCode === 'number' ? distCode : form.district?.code
+
+  if (typeof distCode !== 'string' && typeof distCode !== 'number') {
+    form.ward = null
+  }
+
+  if (!code) return
+
+  try {
+    const data = await fetchWithFallback(`https://provinces.open-api.vn/api/d/${code}?depth=2`)
+    wardOptions.value = data.wards.map(w => ({ name: w.name, code: w.code }))
+  } catch (error) {
+    toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách xã/phường', life: 3000 })
+  }
+}
+
+watch(() => props.visible, (newVal) => {
+  if (newVal) {
+    loadProvinces().then(() => {
+      loadCustomerData()
+    })
+  }
+})
+
+watch(() => props.customer, (newVal) => {
+  if (newVal && props.visible) {
+    loadCustomerData()
+  }
+})
+
+const closeModal = () => {
+  form.reset()
+  form.clearErrors()
+  emit('close')
+}
+
+const saveCustomer = () => {
+  form.transform((data) => ({
+    ...data,
+    province: data.province?.name || null,
+    district: data.district?.name || null,
+    ward: data.ward?.name || null
+  })).put(`/admin/customers/${props.customer.id}`, {
+    preserveScroll: true,
+    onSuccess: (page) => {
+      toast.add({ severity: 'success', summary: 'Thành công', detail: page.props.flash?.success || 'Cập nhật khách hàng thành công!', life: 3000 })
+      emit('updated')
+      closeModal()
+    },
+    onError: () => {
+      toast.add({ severity: 'error', summary: 'Lỗi validation', detail: 'Vui lòng kiểm tra lại thông tin nhập vào', life: 5000 })
+    }
+  })
 }
 </script>
 
