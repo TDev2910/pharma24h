@@ -1,7 +1,7 @@
 <?php
 namespace App\Core\Customer\Ports\Inbound;
 
-use App\Core\Customer\Domain\CustomerData;
+use App\Core\Customer\Domain\DTOs\CustomerData;
 
 interface CustomerUseCaseInterface
 {

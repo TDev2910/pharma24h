@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Models\Medicine;
 use App\Models\Goods;
 use App\Models\User;
-// use App\Models\Service; // Bỏ comment nếu có model Service
 
 class AppServiceProvider extends ServiceProvider
 {

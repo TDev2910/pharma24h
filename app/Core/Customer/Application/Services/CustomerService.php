@@ -3,7 +3,7 @@ namespace App\Core\Customer\Application\Services;
 
 use App\Core\Customer\Ports\Inbound\CustomerUseCaseInterface;
 use App\Core\Customer\Ports\Outbound\CustomerRepositoryInterface;
-use App\Core\Customer\Domain\CustomerData;
+use App\Core\Customer\Domain\DTOs\CustomerData;
 use Illuminate\Support\Facades\Storage;
 
 class CustomerService implements CustomerUseCaseInterface

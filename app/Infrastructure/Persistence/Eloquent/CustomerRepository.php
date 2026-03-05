@@ -3,7 +3,7 @@ namespace App\Infrastructure\Persistence\Eloquent;
 
 use App\Models\User;
 use App\Core\Customer\Ports\Outbound\CustomerRepositoryInterface;
-use App\Core\Customer\Domain\CustomerData;
+use App\Core\Customer\Domain\DTOs\CustomerData;
 use Illuminate\Support\Facades\Storage;
 
 class CustomerRepository implements CustomerRepositoryInterface
