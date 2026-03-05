@@ -22,7 +22,7 @@ class OrderController extends Controller
     {
         $data = $this->useCase->getAdminDashboardData($request->all());
 
-        return Inertia::render('Admin/Orders/Products/DashboardTest', [
+        return Inertia::render('Admin/Orders/Products/Dashboard', [
             'stats'   => $data['stats'],
             'orders'  => $data['orders'],
             'filters' => $request->only(['search', 'status', 'from_date', 'to_date']),
