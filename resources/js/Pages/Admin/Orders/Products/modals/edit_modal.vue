@@ -20,7 +20,6 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 
-// --- STATE ---
 const isVisible = computed({
     get: () => props.show,
     set: (value) => { if (!value) emit('close'); }
@@ -44,7 +43,6 @@ const form = useForm({
     note: '',
 });
 
-// --- WATCHERS ---
 watch(() => props.order, (newVal) => {
     if (newVal) {
         form.customer_name = newVal.customer_name || '';
