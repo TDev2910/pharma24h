@@ -37,10 +37,6 @@ class StaffOrderController extends Controller
         ]);
     }
 
-    public function create() {}
-
-    public function store(Request $request) {}
-
     public function show(Request $request, string $order)
     {
         $data = $this->useCase->getOrderDetails((int)$order);
@@ -150,6 +146,37 @@ class StaffOrderController extends Controller
     {
         $this->useCase->deleteOrder((int)$id);
         return back()->with('success', 'Đơn hàng đã được xóa thành công!');
+    }
+
+    public function approveCancellation(string $id)
+    {
+        $order = Order::findOrFail($id);
+
+        DB::transaction(function () use ($order) {
+            $order->order_status = 'cancelled';
+            $order->payment_status = 'cancelled';
+            $order->cancellation_status = 'approved';
+            $order->save();
+        });
+
+        return back()->with('success', 'Đã duyệt yêu cầu hủy đơn hàng.');
+    }
+
+    public function rejectCancellation(Request $request, string $id)
+    {
+        $request->validate([
+            'note' => 'required|string|max:1000'
+        ]);
+
+        $order = Order::findOrFail($id);
+
+        DB::transaction(function () use ($order, $request) {
+            $order->cancellation_status = 'rejected';
+            $order->cancellation_note = $request->note;
+            $order->save();
+        });
+
+        return back()->with('success', 'Đã từ chối yêu cầu hủy đơn hàng.');
     }
 
     public function markCompleted(int $id, CheckoutService $checkout)

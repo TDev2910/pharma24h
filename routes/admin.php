@@ -132,6 +132,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('orders.cancellations.approve');
     Route::post('orders/{order}/cancellations/reject', [OrderController::class, 'rejectCancellation'])
         ->name('orders.cancellations.reject');
+    Route::post('orders/{order}/update-info', [OrderController::class, 'update'])
+        ->name('orders.update-info'); 
     Route::post('orders/{order}/ghn/create', [OrderController::class, 'createGhnOrder'])->name('orders.ghn.create');
     Route::get('orders/{order}/ghn/print', [OrderController::class, 'printGhnOrder'])->name('orders.ghn.print');
     Route::post('orders/{order}/ghn/sync', [OrderController::class, 'syncGhnStatus'])->name('orders.ghn.sync');
