@@ -144,14 +144,23 @@ const processCancellation = async (action) => {
   }
   if (!confirm(`Bạn có chắc chắn muốn ${action === 'approve' ? 'DUYỆT' : 'TỪ CHỐI'} yêu cầu hủy?`)) return;
 
-  processing.value = true;
-  try {
-    alert('Chức năng xử lý hủy cần thêm Route Backend.');
-  } catch (error) {
-    console.error(error);
-  } finally {
-    processing.value = false;
-  }
+  router.post(`/staff/orders/${props.order.id}/cancellations/${action}`,
+    action === 'reject' ? { note: Note.value } : {},
+    {
+      preserveScroll: true,
+      preserveState: true,
+      onStart: () => { processing.value = true; },
+      onSuccess: () => {
+        alert(`${action === 'approve' ? 'Duyệt' : 'Từ chối'} yêu cầu hủy thành công.`);
+        emit('updated');
+        isVisible.value = false; // Đóng modal sau khi thành công
+      },
+      onError: (errors) => {
+        alert(errors.error || Object.values(errors)[0] || 'Có lỗi xảy ra khi xử lý yêu cầu hủy.');
+      },
+      onFinish: () => { processing.value = false; }
+    }
+  );
 };
 
 </script>

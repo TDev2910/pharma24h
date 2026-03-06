@@ -144,14 +144,23 @@ const processCancellation = async (action) => {
   }
   if (!confirm(`Bạn có chắc chắn muốn ${action === 'approve' ? 'DUYỆT' : 'TỪ CHỐI'} yêu cầu hủy?`)) return;
 
-  processing.value = true;
-  try {
-    alert('Chức năng xử lý hủy cần thêm Route Backend.');
-  } catch (error) {
-    console.error(error);
-  } finally {
-    processing.value = false;
-  }
+  router.post(`/admin/orders/${props.order.id}/cancellations/${action}`,
+    action === 'reject' ? { note: Note.value } : {},
+    {
+      preserveScroll: true,
+      preserveState: true,
+      onStart: () => { processing.value = true; },
+      onSuccess: () => {
+        alert(`${action === 'approve' ? 'Duyệt' : 'Từ chối'} yêu cầu hủy thành công.`);
+        emit('updated');
+        isVisible.value = false; // Đóng modal sau khi thành công
+      },
+      onError: (errors) => {
+        alert(errors.error || Object.values(errors)[0] || 'Có lỗi xảy ra khi xử lý yêu cầu hủy.');
+      },
+      onFinish: () => { processing.value = false; }
+    }
+  );
 };
 
 </script>
@@ -242,7 +251,7 @@ const processCancellation = async (action) => {
           <div class="dm-item">
             <span class="dm-label">Mã vận đơn:</span>
             <span class="dm-value text-primary">{{ localOrder.shipping_code || localOrder.ghn_order_code
-            }}</span>
+              }}</span>
           </div>
           <div class="dm-item">
             <span class="dm-label">Trạng thái GHN:</span>
@@ -274,7 +283,7 @@ const processCancellation = async (action) => {
           <Column header="Thành tiền" class="text-right">
             <template #body="slotProps">
               <span class="font-bold">{{ formatCurrency(slotProps.data.price * slotProps.data.quantity)
-              }}</span>
+                }}</span>
             </template>
           </Column>
         </DataTable>
@@ -336,7 +345,8 @@ const processCancellation = async (action) => {
               :disabled="!localOrder.district_id && !localOrder.ward_code" class="dm-btn-ghn-create" />
             <Button v-else-if="localOrder.ghn_order_code" label="Đồng bộ GHN" icon="pi pi-sync" class="dm-btn-sync"
               :loading="syncingGHN" @click="syncGhnStatus" />
-            :href="`/admin/orders/${localOrder.id}/ghn/print`" target="_blank" />
+            <Button v-else label="In Vận Đơn GHN" icon="pi pi-file-pdf" class="dm-btn-ghn-print" as="a"
+              :href="`/admin/orders/${localOrder.id}/ghn/print`" target="_blank" />
           </template>
         </div>
       </div>
