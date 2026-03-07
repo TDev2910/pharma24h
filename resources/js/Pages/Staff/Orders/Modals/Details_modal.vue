@@ -51,7 +51,7 @@ const formatDate = (dateString) => {
 const getStatusSeverity = (status) => {
   const map = {
     'pending': 'warning', 'confirmed': 'info', 'delivering': 'primary', 'new': 'info',
-    'completed': 'success', 'cancelled': 'danger'
+    'completed': 'success', 'cancelled': 'danger', 'cancellation_requested': 'danger'
   };
   return map[status] || 'secondary';
 };
@@ -59,7 +59,7 @@ const getStatusSeverity = (status) => {
 const getStatusLabel = (status) => {
   const map = {
     'pending': 'Chờ xử lý', 'confirmed': 'Đã xác nhận', 'delivering': 'Đang giao', 'new': 'Đơn hàng mới',
-    'completed': 'Hoàn thành', 'cancelled': 'Đã hủy'
+    'completed': 'Hoàn thành', 'cancelled': 'Đã hủy', 'cancellation_requested': 'Yêu cầu hủy'
   };
   return map[status] || status;
 };
@@ -118,7 +118,7 @@ const createGHNOrder = () => {
   });
 };
 
-// Đồng bộ trạng thái GHN (Giả lập logic, bạn cần thêm route sync nếu có)
+// Đồng bộ trạng thái GHN
 const syncGhnStatus = async () => {
   if (!props.order.ghn_order_code) return;
 
@@ -153,7 +153,7 @@ const processCancellation = async (action) => {
       onSuccess: () => {
         alert(`${action === 'approve' ? 'Duyệt' : 'Từ chối'} yêu cầu hủy thành công.`);
         emit('updated');
-        isVisible.value = false; // Đóng modal sau khi thành công
+        isVisible.value = false;
       },
       onError: (errors) => {
         alert(errors.error || Object.values(errors)[0] || 'Có lỗi xảy ra khi xử lý yêu cầu hủy.');
@@ -251,7 +251,7 @@ const processCancellation = async (action) => {
           <div class="dm-item">
             <span class="dm-label">Mã vận đơn:</span>
             <span class="dm-value text-primary">{{ localOrder.shipping_code || localOrder.ghn_order_code
-            }}</span>
+              }}</span>
           </div>
           <div class="dm-item">
             <span class="dm-label">Trạng thái GHN:</span>
@@ -283,7 +283,7 @@ const processCancellation = async (action) => {
           <Column header="Thành tiền" class="text-right">
             <template #body="slotProps">
               <span class="font-bold">{{ formatCurrency(slotProps.data.price * slotProps.data.quantity)
-              }}</span>
+                }}</span>
             </template>
           </Column>
         </DataTable>

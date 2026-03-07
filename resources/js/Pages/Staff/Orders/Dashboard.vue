@@ -111,6 +111,7 @@ const getStatusClass = (status) => {
         'delivering': 'status-delivering',
         'completed': 'status-completed',
         'cancelled': 'status-cancelled',
+        'cancellation_requested': 'status-cancellation-requested',
     };
     return map[status] || 'status-default';
 };
@@ -123,6 +124,7 @@ const getStatusLabel = (status) => {
         'delivering': 'Đang giao',
         'completed': 'Hoàn thành',
         'cancelled': 'Đã hủy',
+        'cancellation_requested': 'Yêu cầu hủy',
     };
     return map[status] || status;
 };
@@ -149,15 +151,16 @@ const formatDate = (dateString) => {
 
     <div class="dashboard-wrapper">
         <div class="top-header">
-            <div class="header-titles">
+            <div class="header-titles" style="margin-bottom: -20px;">
                 <h1 class="main-title">Quản Lý Đơn Hàng</h1>
                 <p class="sub-title">Theo dõi và quản lý tất cả đơn hàng của bạn</p>
             </div>
 
             <div class="header-actions">
                 <div class="search-input-wrapper">
-                    <i class="fas fa-search search-icon"></i>
-                    <input v-model="form.search" type="text" placeholder="Tìm kiếm đơn hàng..." class="custom-input" />
+                    <i class="fas fa-search search-icon" style="margin-left: 140px;"></i>
+                    <input v-model="form.search" type="text" placeholder="Tìm kiếm đơn hàng..." class="custom-input"
+                        style="margin-left: 80px;" />
                 </div>
 
                 <div class="filter-wrapper" style="margin-left: 80px;">
@@ -240,7 +243,7 @@ const formatDate = (dateString) => {
                             <th class="col-amount">Tổng Tiền</th>
                             <th class="col-status">Trạng Thái</th>
                             <th class="col-date">Ngày Đặt</th>
-                            <th class="col-action text-right">Hành Động</th>
+                            <th class="col-action text-center">Hành Động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -260,7 +263,7 @@ const formatDate = (dateString) => {
 
                             <td class="col-amount">
                                 <span class="font-bold text-gray-800">{{ formatCurrency(order.total_amount)
-                                }}</span>
+                                    }}</span>
                             </td>
 
                             <td class="col-status">
@@ -361,15 +364,15 @@ const formatDate = (dateString) => {
 
 .search-icon {
     position: absolute;
-    left: 12px;
-    top: 50%;
+    left: -44px;
+    top: 51%;
     transform: translateY(-50%);
     color: #94a3b8;
     font-size: 14px;
 }
 
 .custom-input {
-    width: 150%;
+    width: 100%;
     padding: 10px 12px 10px 36px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
@@ -644,8 +647,15 @@ const formatDate = (dateString) => {
 /* Action Buttons */
 .action-buttons {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     gap: 12px;
+}
+
+.action-buttons i {
+    cursor: pointer;
+    font-size: 18px;
+    color: #64748B;
+    transition: 0.2s;
 }
 
 .btn-icon {
