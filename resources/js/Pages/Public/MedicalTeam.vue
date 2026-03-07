@@ -131,7 +131,7 @@
                 <div class="row align-items-center">
                     <div class="col-lg-6 mb-5 mb-lg-0">
                         <div class="profile-content pe-lg-5">
-                            <h2 class="display-5 fw-bold text-dark mb-1">Dược sĩ Đạt</h2>
+                            <h2 class="display-5 fw-bold text-dark mb-1">Dược sĩ Thảo</h2>
                             <p class="text-primary fw-bold fs-5 mb-4">Chuyên gia tư vấn sức khỏe & Dược lâm sàng</p>
 
                             <p class="text-muted lead mb-4">
@@ -153,11 +153,10 @@
 
                     <div class="col-lg-6">
                         <div class="profile-image-wrapper position-relative text-center">
-                            <img :src="doctors[3].image" alt="Dược sĩ Đạt"
+                            <img src="https://img.freepik.com/premium-photo/portrait-smiling-doctor-with-arms-crossed-standing-hospital_1064728-297.jpg?semt=ais_rp_progressive&w=740&q=80"
                                 class="img-fluid main-image rounded-4 shadow-lg" />
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>

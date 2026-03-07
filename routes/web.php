@@ -20,18 +20,9 @@ Route::post('/auth/google', [AuthController::class, 'googleLogin'])->name('auth.
 Route::get('/sanctum/csrf-cookie', function () {
     return response()->json(['message' => 'CSRF cookie set']);
 })->name('csrf-cookie');
-Route::get('/co-so-kham-benh', function () {
-    return Inertia::render('Public/Facilities', [
-        'auth' => [
-            'user' => auth()->user() ? [
-                'id' => auth()->user()->id,
-                'name' => auth()->user()->name,
-                'email' => auth()->user()->email,
-                'role' => auth()->user()->role,
-            ] : null,
-        ],
-    ]);
-})->name('cosokhambenh');
+
+Route::get('/medical-team', [HomeController::class, 'medicalTeam'])->name('medical-team');
+
 Route::get('/products', [HomeController::class, 'products'])->name('products');
 Route::get('/products/{type}/{id}', [HomeController::class, 'productDetail'])->name('products.detail');
 Route::get('/services', [HomeController::class, 'services'])->name('services');
