@@ -17,7 +17,7 @@ class HomeController extends Controller
 {
 
     /**
-     * Trang chủ dùng Inertia + Vue (SPA)
+     * Trang chủ 
      */
     public function homeInertia(Request $request)
     {
@@ -32,12 +32,32 @@ class HomeController extends Controller
             ->latest()
             ->limit(4)
             ->get();
-
+        $posts = Post::with('category')
+            ->where('is_published', true)
+            ->latest()
+            ->limit(8)
+            ->get()
+            ->map(function ($post) {
+                // Format lại dữ liệu 
+                return [
+                    'id' => $post->id,
+                    'title' => $post->title,
+                    'slug' => $post->slug,
+                    'summary' => Str::limit($post->summary, 160),
+                    'image' => $post->thumbnail 
+                        ? (str_starts_with($post->thumbnail, 'http') 
+                        ? $post->thumbnail 
+                        : asset('storage/' . $post->thumbnail))
+                        : 'https://via.placeholder.com/800x600.png?text=No+Image',
+                    'date' => $post->created_at ? $post->created_at->format('d/m/Y') : '',
+                ];
+            });
         $user = $request->user();
 
         return Inertia::render('Public/Home', [
             'medicines' => $medicines,
             'goods' => $goods,
+            'posts' => $posts,
             'auth' => [
                 'user' => $user ? [
                     'id' => $user->id,
@@ -49,12 +69,9 @@ class HomeController extends Controller
         ]);
     }
 
-    /**
-     * Hiển thị trang cơ sở khám bệnh
-     */
-    public function cosokhambenh()
+    public function medicalTeam()
     {
-        return Inertia::render('Public/Cosokhambenh');
+        return Inertia::render('Public/MedicalTeam');
     }
 
     /**
