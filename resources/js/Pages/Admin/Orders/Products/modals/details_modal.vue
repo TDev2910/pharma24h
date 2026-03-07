@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
-import axios from 'axios';
+import '@/../../resources/css/Admin/orders/Modals/details_modal.css';
 
 // PrimeVue Components
 import Dialog from 'primevue/dialog';
@@ -251,7 +251,7 @@ const processCancellation = async (action) => {
           <div class="dm-item">
             <span class="dm-label">Mã vận đơn:</span>
             <span class="dm-value text-primary">{{ localOrder.shipping_code || localOrder.ghn_order_code
-              }}</span>
+            }}</span>
           </div>
           <div class="dm-item">
             <span class="dm-label">Trạng thái GHN:</span>
@@ -283,7 +283,7 @@ const processCancellation = async (action) => {
           <Column header="Thành tiền" class="text-right">
             <template #body="slotProps">
               <span class="font-bold">{{ formatCurrency(slotProps.data.price * slotProps.data.quantity)
-                }}</span>
+              }}</span>
             </template>
           </Column>
         </DataTable>
