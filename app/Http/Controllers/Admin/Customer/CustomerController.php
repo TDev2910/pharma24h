@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Core\Customer\Ports\Inbound\CustomerUseCaseInterface;
 use App\Core\Customer\Domain\DTOs\CustomerData;
+use App\Http\Requests\Customer\StoreCustomerRequest;
+use App\Http\Requests\Customer\UpdateCustomerRequest;
 
 class CustomerController extends Controller
 {
@@ -33,43 +35,11 @@ class CustomerController extends Controller
     }
 
     /**
-     * Helper: Tránh lỗi truy cập mảng trên null hoặc chuỗi
-     */
-    private function safeInput($input)
-    {
-        if (is_array($input)) {
-            return $input['name'] ?? null;
-        }
-        return $input;
-    }
-
-    /**
      * Store
      */
-    public function store(Request $request)
+    public function store(StoreCustomerRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'phone' => 'nullable|string|max:15',
-            'address' => 'nullable|string|max:255',
-        ], [
-            'name.required' => 'Vui lòng nhập tên khách hàng',
-            'email.unique' => 'Email đã được sử dụng',
-            'password.confirmed' => 'Xác nhận mật khẩu không khớp',
-        ]);
-
-        $dto = new CustomerData(
-            name: $request->name,
-            email: $request->email,
-            phone: $request->phone,
-            address: $request->address,
-            province: $this->safeInput($request->province),
-            district: $this->safeInput($request->district),
-            ward: $this->safeInput($request->ward),
-            password: $request->password
-        );
+        $dto = $request->toDTO();
 
         $this->useCase->createCustomer($dto);
 
@@ -89,29 +59,9 @@ class CustomerController extends Controller
     /**
      * Update
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCustomerRequest $request, string $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'phone' => 'nullable|string|max:15',
-            'address' => 'nullable|string|max:255',
-            'province' => 'nullable|string|max:255',
-            'district' => 'nullable|string|max:255',
-            'ward' => 'nullable|string|max:255',
-            'password' => 'nullable|string|min:8|confirmed',
-        ]);
-
-        $dto = new CustomerData(
-            name: $request->name,
-            email: $request->email,
-            phone: $request->phone,
-            address: $request->address,
-            province: $this->safeInput($request->province),
-            district: $this->safeInput($request->district),
-            ward: $this->safeInput($request->ward),
-            password: $request->filled('password') ? $request->password : null
-        );
+        $dto = $request->toDTO();
 
         $this->useCase->updateCustomer($id, $dto);
 
