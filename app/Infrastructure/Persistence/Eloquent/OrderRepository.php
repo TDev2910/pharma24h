@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Persistence\Eloquent;
 
 use App\Core\Order\Ports\Outbound\OrderRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 
 class OrderRepository implements OrderRepositoryInterface

@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
+import Swal from 'sweetalert2';
 
 // PrimeVue Components
 import Dialog from 'primevue/dialog';
@@ -68,6 +69,24 @@ const updateStatusQuick = (newStatus) => {
     statusLoading.value = newStatus;
     router.post(`/staff/orders/${props.order.id}/update-status`, { status: newStatus }, {
         preserveScroll: true,
+        onSuccess: () => {
+            Swal.fire({
+                title: 'Thành công!',
+                text: 'Cập nhật trạng thái đơn hàng thành công.',
+                icon: 'success',
+                confirmButtonColor: '#3b82f6',
+                timer: 2000,
+                timerProgressBar: true
+            });
+        },
+        onError: () => {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Không thể cập nhật trạng thái đơn hàng.',
+                icon: 'error',
+                confirmButtonColor: '#3b82f6'
+            });
+        },
         onFinish: () => { statusLoading.value = null; }
     });
 };
@@ -75,7 +94,28 @@ const updateStatusQuick = (newStatus) => {
 const submitForm = () => {
     form.post(`/staff/orders/${props.order.id}/update-info`, {
         preserveScroll: true,
-        onSuccess: () => emit('close'),
+        onSuccess: () => {
+            Swal.fire({
+                title: 'Thành công!',
+                text: 'Thông tin đơn hàng đã được cập nhật.',
+                icon: 'success',
+                confirmButtonColor: '#3b82f6',
+                timer: 2000,
+                timerProgressBar: true
+            }).then(() => {
+                emit('close');
+            });
+        },
+        onError: () => {
+            if (!Object.keys(form.errors).length) {
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: 'Vui lòng kiểm tra lại thông tin.',
+                    icon: 'error',
+                    confirmButtonColor: '#3b82f6'
+                });
+            }
+        }
     });
 };
 
@@ -147,7 +187,7 @@ const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currenc
                                 <InputText v-model="form.customer_name" class="input-full"
                                     :class="{ 'p-invalid': form.errors.customer_name }" />
                                 <small class="error-text" v-if="form.errors.customer_name">{{ form.errors.customer_name
-                                    }}</small>
+                                }}</small>
                             </div>
 
                             <div class="form-row">
