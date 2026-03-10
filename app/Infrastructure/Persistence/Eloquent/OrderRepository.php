@@ -128,11 +128,50 @@ class OrderRepository implements OrderRepositoryInterface
         return Order::findOrFail($id);
     }
 
+    public function findByIdWithRelations(int $id, array $relations = [])
+    {
+        return Order::with($relations)->findOrFail($id);
+    }
+
     public function update(int $id, array $data): bool
     {
         $order = Order::findOrFail($id);
         $order->fill($data);
         return $order->save();
+    }
+    
+    public function updateStatus(int $id, string $status, ?string $note): bool
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $status, $note) {
+            $order = Order::findOrFail($id);
+            $order->order_status = $status;
+            
+            if ($status === 'completed') {
+                $order->payment_status = 'paid';
+            }
+            
+            if (!empty($note)) {
+                $order->note = $note;
+            }
+            
+            return $order->save();
+        });
+    }
+
+    public function updateCancellationStatus(int $id, string $orderStatus, string $paymentStatus, string $cancellationStatus, ?string $cancellationNote = null): bool
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $orderStatus, $paymentStatus, $cancellationStatus, $cancellationNote) {
+            $order = Order::findOrFail($id);
+            $order->order_status = $orderStatus;
+            $order->payment_status = $paymentStatus;
+            $order->cancellation_status = $cancellationStatus;
+            
+            if (!empty($cancellationNote)) {
+                $order->cancellation_note = $cancellationNote;
+            }
+            
+            return $order->save();
+        });
     }
 
     public function delete(int $id): bool
