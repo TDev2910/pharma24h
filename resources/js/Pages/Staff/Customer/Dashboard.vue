@@ -59,9 +59,7 @@
       <h4 class="table-section-title">Danh sách dữ liệu khách hàng</h4>
 
       <div class="table-container">
-        <DataTable :value="customers.data" :lazy="true" :paginator="true" :rows="customers.per_page"
-          :totalRecords="customers.total" :first="(customers.current_page - 1) * customers.per_page"
-          @page="onPageChange" removableSort class="customers-table">
+        <DataTable :value="customers.data" removableSort class="customers-table">
 
           <Column field="avatar" header="Avatar">
             <template #body="{ data }">
@@ -96,6 +94,17 @@
             </template>
           </Column>
         </DataTable>
+
+        <div class="pagination-wrapper" v-if="customers?.links?.length > 3">
+          <div class="pagination">
+            <template v-for="(link, k) in customers.links" :key="k">
+              <Link v-if="link.url" :href="link.url" :class="['page-link', { 'active': link.active }]">
+              <span v-html="link.label"></span>
+              </Link>
+              <span v-else v-html="link.label" class="page-link disabled"></span>
+            </template>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -106,7 +115,7 @@
 
 <script>
 import { ref, watch } from 'vue';
-import { router, usePage } from '@inertiajs/vue3'; 
+import { router, usePage, Link } from '@inertiajs/vue3';
 import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -117,7 +126,7 @@ import StaffEditCustomerModal from './Modals/Edit.vue';
 
 export default {
   name: 'StaffCustomerDashboard',
-  components: { Button, DataTable, Column, StaffCreateCustomerModal, StaffEditCustomerModal },
+  components: { Button, DataTable, Column, StaffCreateCustomerModal, StaffEditCustomerModal, Link },
   props: {
     stats: Object,
     customers: Object,

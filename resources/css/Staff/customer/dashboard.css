@@ -296,3 +296,44 @@
   .table-container { overflow-x: auto; }
   .customers-table { min-width: 800px; }
 }
+
+/* --- Pagination Styles --- */
+.pagination-wrapper {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #f1f5f9;
+  background: white;
+}
+
+.pagination {
+  display: flex;
+  gap: 4px;
+}
+
+.page-link {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  text-decoration: none;
+  background-color: white;
+  transition: all 0.2s ease;
+}
+
+.page-link:hover:not(.disabled) {
+  background-color: #f8fafc;
+  color: #334155;
+}
+
+.page-link.active {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.page-link.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
