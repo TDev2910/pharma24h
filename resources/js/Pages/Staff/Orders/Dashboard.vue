@@ -36,12 +36,11 @@ watch(form, () => handleSearch(), { deep: true });
 
 // Mở Modal Xem
 const openDetail = (id) => {
-    // Gọi Inertia reload lại trang nhưng chỉ lấy dữ liệu 'selectedOrder'
     router.get('/staff/orders',
-        { ...form.value, order_id: id }, // Truyền ID lên URL
+        { ...form.value, order_id: id },
         {
-            preserveState: true,   // Giữ nguyên bộ lọc/search hiện tại
-            preserveScroll: true,  // Không bị cuộn trang lên đầu
+            preserveState: true,
+            preserveScroll: true,
             only: ['selectedOrder'],
             onSuccess: () => {
                 // Khi server trả về dữ liệu thành công => Mở Modal

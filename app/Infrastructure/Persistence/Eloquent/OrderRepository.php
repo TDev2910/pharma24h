@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Persistence\Eloquent;
 
 use App\Core\Order\Ports\Outbound\OrderRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 
 class OrderRepository implements OrderRepositoryInterface
@@ -142,7 +143,7 @@ class OrderRepository implements OrderRepositoryInterface
     
     public function updateStatus(int $id, string $status, ?string $note): bool
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $status, $note) {
+        return DB::transaction(function () use ($id, $status, $note) {
             $order = Order::findOrFail($id);
             $order->order_status = $status;
             
@@ -160,7 +161,7 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function updateCancellationStatus(int $id, string $orderStatus, string $paymentStatus, string $cancellationStatus, ?string $cancellationNote = null): bool
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $orderStatus, $paymentStatus, $cancellationStatus, $cancellationNote) {
+        return DB::transaction(function () use ($id, $orderStatus, $paymentStatus, $cancellationStatus, $cancellationNote) {
             $order = Order::findOrFail($id);
             $order->order_status = $orderStatus;
             $order->payment_status = $paymentStatus;
