@@ -17,4 +17,14 @@ interface OrderUseCaseInterface
     public function deleteOrder(int $id): bool;
     
     public function getAdminTransportData(array $filters): array;
+    
+    public function updateOrderStatus(int $id, string $status, ?string $note): void;
+    
+    public function approveCancellation(int $id): void;
+    
+    public function rejectCancellation(int $id, string $note): void;
+    
+    public function markCompleted(int $id): object;
+    
+    public function getOrderForInvoice(int $id): object;
 }

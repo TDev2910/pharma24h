@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Admin\Order;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\DB;
 use App\Services\Shipping\GHNService;
-use App\Core\Order\Domain\DTOs\OrderData;
-use App\Services\CheckoutService;
 use App\Core\Order\Ports\Inbound\OrderUseCaseInterface;
+use App\Http\Requests\Orders\UpdateOrderStatusRequest;
+use App\Http\Requests\Orders\UpdateOrderInfoRequest;
+use App\Http\Requests\Orders\RejectCancellationRequest;
 
 class OrderController extends Controller
 {
@@ -32,8 +32,7 @@ class OrderController extends Controller
             'selectedOrder' => Inertia::lazy(function () use ($request) {
                 if (!$request->has('order_id')) return null;
 
-                return Order::with(['items.item', 'user'])
-                    ->find($request->order_id);
+                return $this->useCase->getOrderForInvoice((int)$request->order_id);
             }),
         ]);
     }
@@ -64,81 +63,20 @@ class OrderController extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, string $id)
+    public function updateStatus(UpdateOrderStatusRequest $request, string $id)
     {
-        $request->validate([
-            'status' => 'required|in:pending,confirmed,delivering,completed,cancelled',
-            'note'   => 'nullable|string'
-        ]);
-
-        $order = Order::findOrFail($id);
-
-        DB::transaction(function () use ($order, $request) {
-            $order->order_status = $request->status;
-
-            if ($request->status === 'completed') {
-                $order->payment_status = 'paid';
-            }
-
-            if ($request->filled('note')) {
-                $order->note = $request->note;
-            }
-
-            $order->save();
-        });
+        $this->useCase->updateOrderStatus((int)$id, $request->status, $request->note);
 
         return back()->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateOrderInfoRequest $request, string $id)
     {
-        $validated = $request->validate([
-            'customer_name'    => 'required|string|max:255',
-            'customer_phone'   => 'required|string|max:20',
-            'customer_email'   => 'nullable|email|max:255',
-            'payment_method'   => 'nullable|string|max:50',
-            'delivery_method'  => 'nullable|in:shipping,pickup',
-            'shipping_address' => 'nullable|required_if:delivery_method,shipping|string|max:255',
-            'province'         => 'nullable|string|max:255',
-            'district'         => 'nullable|string|max:255',
-            'ward'             => 'nullable|string|max:255',
-            'pickup_location'  => 'nullable|required_if:delivery_method,pickup|string|max:255',
-            'note'             => 'nullable|string|max:1000',
-        ]);
-
         try {
-            DB::beginTransaction();
-
-            $orderData = new OrderData(
-                customer_name: $validated['customer_name'] ?? null,
-                customer_phone: $validated['customer_phone'] ?? null,
-                customer_email: $validated['customer_email'] ?? null,
-                shipping_address: $validated['shipping_address'] ?? null,
-                province: $validated['province'] ?? null,
-                district: $validated['district'] ?? null,
-                ward: $validated['ward'] ?? null,
-                pickup_location: $validated['pickup_location'] ?? null,
-                note: $validated['note'] ?? null,
-                delivery_method: $validated['delivery_method'] ?? null,
-                payment_method: $validated['payment_method'] ?? null
-            );
-
-            $this->useCase->updateOrderInfo((int)$id, $orderData);
-
-            DB::commit();
-
-            if ($request->wantsJson()) {
-                $updatedData = $this->useCase->getOrderDetails((int)$id);
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Cập nhật thông tin thành công!',
-                    'order'   => $updatedData['order']
-                ]);
-            }
+            $this->useCase->updateOrderInfo((int)$id, $request->toDTO());
 
             return back()->with('success', 'Cập nhật thông tin thành công!');
         } catch (\Exception $e) {
-            DB::rollBack();
             return back()->withErrors(['error' => 'Lỗi hệ thống: ' . $e->getMessage()]);
         }
     }
@@ -182,44 +120,27 @@ class OrderController extends Controller
 
     public function approveCancellation(string $id)
     {
-        $order = Order::findOrFail($id);
-
-        DB::transaction(function () use ($order) {
-            $order->order_status = 'cancelled';
-            $order->payment_status = 'cancelled';
-            $order->cancellation_status = 'approved';
-            $order->save();
-        });
+        $this->useCase->approveCancellation((int)$id);
 
         return back()->with('success', 'Đã duyệt yêu cầu hủy đơn hàng.');
     }
 
-    public function rejectCancellation(Request $request, string $id)
+    public function rejectCancellation(RejectCancellationRequest $request, string $id)
     {
-        $request->validate([
-            'note' => 'required|string|max:1000'
-        ]);
-
-        $order = Order::findOrFail($id);
-
-        DB::transaction(function () use ($order, $request) {
-            $order->cancellation_status = 'rejected';
-            $order->cancellation_note = $request->note;
-            $order->save();
-        });
+        $this->useCase->rejectCancellation((int)$id, $request->note);
 
         return back()->with('success', 'Đã từ chối yêu cầu hủy đơn hàng.');
     }
 
-    public function markCompleted(int $id, CheckoutService $checkout)
+    public function markCompleted(int $id)
     {
-        $order = $checkout->completeOrder($id);
+        $order = $this->useCase->markCompleted($id);
         return back()->with('success', "Đã hoàn thành đơn #{$order->id} và trừ tồn kho.");
     }
 
     public function printInvoice($id)
     {
-        $order = Order::with(['items.item', 'user'])->findOrFail($id);
+        $order = $this->useCase->getOrderForInvoice((int)$id);
 
         $pdf = Pdf::loadView('admin.orders.invoice', compact('order'));
 

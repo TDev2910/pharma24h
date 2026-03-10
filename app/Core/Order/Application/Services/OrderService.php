@@ -5,11 +5,13 @@ namespace App\Core\Order\Application\Services;
 use App\Core\Order\Ports\Inbound\OrderUseCaseInterface;
 use App\Core\Order\Ports\Outbound\OrderRepositoryInterface;
 use App\Core\Order\Domain\DTOs\OrderData;
+use App\Services\CheckoutService;
 
 class OrderService implements OrderUseCaseInterface
 {
     public function __construct(
-        protected OrderRepositoryInterface $repository
+        protected OrderRepositoryInterface $repository,
+        protected CheckoutService $checkoutService
     ) {}
 
     public function getAdminDashboardData(array $filters): array
@@ -112,6 +114,31 @@ class OrderService implements OrderUseCaseInterface
     public function deleteOrder(int $id): bool
     {
         return $this->repository->delete($id);
+    }
+    
+    public function updateOrderStatus(int $id, string $status, ?string $note): void
+    {
+        $this->repository->updateStatus($id, $status, $note);
+    }
+    
+    public function approveCancellation(int $id): void
+    {
+        $this->repository->updateCancellationStatus($id, 'cancelled', 'cancelled', 'approved');
+    }
+    
+    public function rejectCancellation(int $id, string $note): void
+    {
+        $this->repository->updateCancellationStatus($id, 'delivering', 'pending', 'rejected', $note);
+    }
+    
+    public function markCompleted(int $id): object
+    {
+        return $this->checkoutService->completeOrder($id);
+    }
+    
+    public function getOrderForInvoice(int $id): object
+    {
+        return $this->repository->findByIdWithRelations($id, ['items.item', 'user']);
     }
     
     public function getAdminTransportData(array $filters): array
