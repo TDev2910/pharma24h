@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         );
         $this->app->bind(
             \App\Core\Doctor\Ports\Inbound\DoctorUseCaseInterface::class,
-            \App\Core\Doctor\Application\DoctorService::class
+            \App\Core\Doctor\Application\Services\DoctorService::class
         );
         $this->app->bind(
             \App\Core\Doctor\Ports\Outbound\DoctorRepositoryInterface::class,
