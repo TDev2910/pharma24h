@@ -7,18 +7,18 @@
         <!-- Tên bác sĩ -->
         <div class="form-field">
           <label for="name" class="field-label">Tên bác sĩ</label>
-          <InputText id="name" v-model="formData.name" type="text" placeholder="Bắt buộc" class="field-input"
-            :class="{ 'p-invalid': errors.name }" />
-          <small v-if="errors.name" class="p-error">{{ errors.name[0] }}</small>
+          <InputText id="name" v-model="form.name" type="text" placeholder="Bắt buộc" class="field-input"
+            :class="{ 'p-invalid': form.errors.name }" />
+          <small v-if="form.errors.name" class="p-error">{{ form.errors.name }}</small>
         </div>
 
         <!-- Mã bác sĩ -->
         <div class="form-field">
           <label for="doctorCode" class="field-label" style="margin-left: -145px;">Mã bác sĩ</label>
-          <InputText id="doctorCode" v-model="formData.doctorCode" type="text" placeholder="Tự động" readonly
-            class="field-input readonly-input" :class="{ 'p-invalid': errors.doctorCode }"
+          <InputText id="doctorCode" v-model="form.doctorCode" type="text" placeholder="Tự động" readonly
+            class="field-input readonly-input" :class="{ 'p-invalid': form.errors.doctorCode }"
             style="margin-left: -145px;" />
-          <small v-if="errors.doctorCode" class="p-error">{{ errors.doctorCode[0] }}</small>
+          <small v-if="form.errors.doctorCode" class="p-error">{{ form.errors.doctorCode }}</small>
         </div>
         <!-- Right Section: Tải ảnh -->
         <div class="upload-section">
@@ -44,26 +44,26 @@
         <!-- Giới tính -->
         <div class="form-field">
           <label for="gender" class="field-label" style="margin-left: -380px;">Giới tính</label>
-          <Dropdown id="gender" v-model="formData.gender" :options="genderOptions" optionLabel="label"
-            optionValue="value" placeholder="Chọn giới tính" class="field-input" :class="{ 'p-invalid': errors.gender }"
+          <Dropdown id="gender" v-model="form.gender" :options="genderOptions" optionLabel="label" optionValue="value"
+            placeholder="Chọn giới tính" class="field-input" :class="{ 'p-invalid': form.errors.gender }"
             style="margin-left: -380px;" />
-          <small v-if="errors.gender" class="p-error">{{ errors.gender[0] }}</small>
+          <small v-if="form.errors.gender" class="p-error">{{ form.errors.gender }}</small>
         </div>
 
         <!-- Điện thoại -->
         <div class="form-field">
           <label for="phone" class="field-label" style="margin-left: 235px;margin-top: -210px;">Điện thoại</label>
-          <InputText id="phone" v-model="formData.phone" type="tel" placeholder="Nhập số điện thoại" class="field-input"
-            :class="{ 'p-invalid': errors.phone }" style="margin-left: 235px;margin-top: -6px;" />
-          <small v-if="errors.phone" class="p-error">{{ errors.phone[0] }}</small>
+          <InputText id="phone" v-model="form.phone" type="tel" placeholder="Nhập số điện thoại" class="field-input"
+            :class="{ 'p-invalid': form.errors.phone }" style="margin-left: 235px;margin-top: -6px;" />
+          <small v-if="form.errors.phone" class="p-error">{{ form.errors.phone }}</small>
         </div>
 
         <!-- Email (span 2 columns) -->
         <div class="form-field email-field">
           <label for="email" class="field-label" style="margin-top:-150px;width:60%;">Email</label>
-          <InputText id="email" v-model="formData.email" type="email" placeholder="email@gmail.com" class="field-input"
-            :class="{ 'p-invalid': errors.email }" style="width: 440px !important;" />
-          <small v-if="errors.email" class="p-error">{{ errors.email[0] }}</small>
+          <InputText id="email" v-model="form.email" type="email" placeholder="email@gmail.com" class="field-input"
+            :class="{ 'p-invalid': form.errors.email }" style="width: 440px !important;" />
+          <small v-if="form.errors.email" class="p-error">{{ form.errors.email }}</small>
         </div>
 
         <!-- Địa chỉ Section -->
@@ -72,9 +72,9 @@
             <!-- Địa chỉ Input -->
             <div class="form-field address-input">
               <label for="address" class="field-label">Địa chỉ</label>
-              <InputText id="address" v-model="formData.address" type="text" placeholder="Nhập địa chỉ"
-                class="field-input" :class="{ 'p-invalid': errors.address }" style="width: 100% !important;" />
-              <small v-if="errors.address" class="p-error">{{ errors.address[0] }}</small>
+              <InputText id="address" v-model="form.address" type="text" placeholder="Nhập địa chỉ" class="field-input"
+                :class="{ 'p-invalid': form.errors.address }" style="width: 100% !important;" />
+              <small v-if="form.errors.address" class="p-error">{{ form.errors.address }}</small>
             </div>
 
             <!-- Tỉnh/Thành phố và Quận/Huyện -->
@@ -82,19 +82,19 @@
               <!-- Tỉnh/Thành phố -->
               <div class="form-field">
                 <label for="province" class="field-label">Tỉnh/Thành phố *</label>
-                <Dropdown id="province" v-model="formData.province" :options="provinceOptions" optionLabel="name"
-                  placeholder="-- Chọn tỉnh/thành --" class="field-input" :class="{ 'p-invalid': errors.province }"
-                  style="width: 350px !important;" />
-                <small v-if="errors.province" class="p-error">{{ errors.province[0] }}</small>
+                <Dropdown id="province" v-model="form.province" :options="provinceOptions" optionLabel="name"
+                  placeholder="-- Chọn tỉnh/thành --" class="field-input"
+                  :class="{ 'p-invalid': form.errors.province }" style="width: 350px !important;" />
+                <small v-if="form.errors.province" class="p-error">{{ form.errors.province }}</small>
               </div>
 
               <!-- Quận/Huyện -->
               <div class="form-field">
                 <label for="ward" class="field-label">Quận/Huyện *</label>
-                <Dropdown id="ward" v-model="formData.ward" :options="wardOptions" optionLabel="name"
-                  placeholder="-- Chọn tỉnh/thành trước --" class="field-input" :class="{ 'p-invalid': errors.ward }"
-                  style="width: 350px !important;" :disabled="!formData.province" />
-                <small v-if="errors.ward" class="p-error">{{ errors.ward[0] }}</small>
+                <Dropdown id="ward" v-model="form.ward" :options="wardOptions" optionLabel="name"
+                  placeholder="-- Chọn tỉnh/thành trước --" class="field-input"
+                  :class="{ 'p-invalid': form.errors.ward }" style="width: 350px !important;" :disabled="!form.province" />
+                <small v-if="form.errors.ward" class="p-error">{{ form.errors.ward }}</small>
               </div>
             </div>
           </div>
@@ -113,19 +113,19 @@
               <!-- Chuyên khoa -->
               <div class="form-field">
                 <label for="specialty" class="field-label">Chuyên khoa</label>
-                <Dropdown id="specialty" v-model="formData.specialty" :options="specialtyOptions" optionLabel="label"
+                <Dropdown id="specialty" v-model="form.specialty" :options="specialtyOptions" optionLabel="label"
                   optionValue="value" placeholder="Chọn chuyên khoa" class="field-input"
-                  :class="{ 'p-invalid': errors.specialty }" style="width: 350px !important;" />
-                <small v-if="errors.specialty" class="p-error">{{ errors.specialty[0] }}</small>
+                  :class="{ 'p-invalid': form.errors.specialty }" style="width: 350px !important;" />
+                <small v-if="form.errors.specialty" class="p-error">{{ form.errors.specialty }}</small>
               </div>
 
               <!-- Trình độ -->
               <div class="form-field">
                 <label for="degree" class="field-label">Trình độ</label>
-                <Dropdown id="degree" v-model="formData.degree" :options="degreeOptions" optionLabel="label"
+                <Dropdown id="degree" v-model="form.degree" :options="degreeOptions" optionLabel="label"
                   optionValue="value" placeholder="Chọn trình độ" class="field-input"
-                  :class="{ 'p-invalid': errors.degree }" style="width: 350px !important;" />
-                <small v-if="errors.degree" class="p-error">{{ errors.degree[0] }}</small>
+                  :class="{ 'p-invalid': form.errors.degree }" style="width: 350px !important;" />
+                <small v-if="form.errors.degree" class="p-error">{{ form.errors.degree }}</small>
               </div>
             </div>
           </div>
@@ -137,9 +137,9 @@
             <!-- Ghi chú Input -->
             <div class="form-field notes-input">
               <label for="notes" class="field-label">Ghi chú</label>
-              <Textarea id="notes" v-model="formData.notes" rows="4" placeholder="Nhập ghi chú" class="field-textarea"
-                :class="{ 'p-invalid': errors.notes }" style="width: 100% !important;" />
-              <small v-if="errors.notes" class="p-error">{{ errors.notes[0] }}</small>
+              <Textarea id="notes" v-model="form.notes" rows="4" placeholder="Nhập ghi chú" class="field-textarea"
+                :class="{ 'p-invalid': form.errors.notes }" style="width: 100% !important;" />
+              <small v-if="form.errors.notes" class="p-error">{{ form.errors.notes }}</small>
             </div>
           </div>
         </div>
@@ -148,13 +148,15 @@
     <template #footer>
       <div class="flex justify-end gap-2">
         <Button type="button" label="Hủy" severity="secondary" @click="closeModal" />
-        <Button type="button" label="Lưu" @click="saveDoctor" :loading="loading" />
+        <Button type="button" label="Lưu" @click="saveDoctor" :loading="form.processing" />
       </div>
     </template>
   </Dialog>
 </template>
 
-<script>
+<script setup>
+import { ref, watch, onMounted } from 'vue'
+import { useForm } from '@inertiajs/vue3'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
@@ -162,336 +164,178 @@ import Dropdown from 'primevue/dropdown'
 import Textarea from 'primevue/textarea'
 import axios from 'axios'
 
-export default {
-  name: 'CreateDoctorModal',
-  components: {
-    Dialog,
-    Button,
-    InputText,
-    Dropdown,
-    Textarea
-  },
-  props: {
-    visible: {
-      type: Boolean,
-      default: false
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const emit = defineEmits(['close', 'created'])
+
+const form = useForm({
+  name: '',
+  doctorCode: '',
+  gender: null,
+  phone: '',
+  email: '',
+  specialty: null,
+  address: '',
+  province: null,
+  ward: null,
+  degree: null,
+  notes: '',
+  avatar: null
+})
+
+const provinceOptions = ref([])
+const wardOptions = ref([])
+const imagePreview = ref(null)
+
+const genderOptions = [
+  { label: 'Nam', value: 'male' },
+  { label: 'Nữ', value: 'female' }
+]
+
+const specialtyOptions = [
+  { label: 'Nội tổng quát', value: 'Nội tổng quát' },
+  { label: 'Y học dự phòng', value: 'Y học dự phòng' },
+  { label: 'Tim mạch', value: 'Tim mạch' },
+  { label: 'Xét nghiệm y học', value: 'Xét nghiệm y học' },
+  { label: 'Khoa nhi', value: 'Khoa nhi' },
+]
+
+const degreeOptions = [
+  { label: 'Đại học', value: 'Đại học' },
+  { label: 'Thạc sĩ', value: 'Thạc sĩ' },
+  { label: 'Tiến sĩ', value: 'Tiến sĩ' },
+  { label: 'Bác sĩ chuyên khoa I', value: 'Bác sĩ chuyên khoa I' },
+  { label: 'Bác sĩ chuyên khoa II', value: 'Bác sĩ chuyên khoa II' }
+]
+
+const closeModal = () => {
+  resetForm()
+  emit('close')
+}
+
+const saveDoctor = () => {
+  form.post('/admin/doctors', {
+    preserveScroll: true,
+    onSuccess: () => {
+      resetForm()
+      emit('created')
+      emit('close')
     }
-  },
-  emits: ['close', 'created'],
-  mounted() {
-    // Auto generate doctor code when modal opens
-    if (this.visible) {
-      this.generateDoctorCode()
-      this.loadProvinces()
+  })
+}
+
+const generateDoctorCode = async () => {
+  try {
+    const response = await axios.get('/admin/doctors/generate-code')
+    if (response.data.success) {
+      form.doctorCode = response.data.code
     }
-  },
-  watch: {
-    visible(newVal) {
-      if (newVal) {
-        this.generateDoctorCode()
-        this.loadProvinces()
-      }
-    },
-    'formData.province'(newProvince) {
-      if (newProvince && newProvince.code) {
-        this.onProvinceChange(newProvince.code)
-      }
-    }
-  },
-  data() {
-    return {
-      loading: false,
-      formData: {
-        name: '',
-        doctorCode: '',
-        gender: null,
-        phone: '',
-        email: '',
-        specialty: null,
-        address: '',
-        province: null,
-        ward: null,
-        degree: null,
-        notes: '',
-        avatar: null
-      },
-      errors: {},
-      provinceOptions: [],
-      wardOptions: [],
-      imagePreview: null,
-      genderOptions: [
-        { label: 'Nam', value: 'male' },
-        { label: 'Nữ', value: 'female' }
-      ],
-      specialtyOptions: [
-        { label: 'Nội tổng quát', value: 'Nội tổng quát' },
-        { label: 'Y học dự phòng', value: 'Y học dự phòng' },
-        { label: 'Tim mạch', value: 'Tim mạch' },
-        { label: 'Xét nghiệm y học', value: 'Xét nghiệm y học' },
-        { label: 'Khoa nhi', value: 'Khoa nhi' },
-      ],
-      degreeOptions: [
-        { label: 'Đại học', value: 'Đại học' },
-        { label: 'Thạc sĩ', value: 'Thạc sĩ' },
-        { label: 'Tiến sĩ', value: 'Tiến sĩ' },
-        { label: 'Bác sĩ chuyên khoa I', value: 'Bác sĩ chuyên khoa I' },
-        { label: 'Bác sĩ chuyên khoa II', value: 'Bác sĩ chuyên khoa II' }
-      ]
-    }
-  },
-  methods: {
-    closeModal() {
-      this.resetForm()
-      this.$emit('close')
-    },
-    async saveDoctor() {
-      this.loading = true
-      this.errors = {}
-
-      try {
-        const response = await axios.post('/admin/doctors', this.formData)
-
-        if (response.data.success) {
-          // Hiển thị thông báo thành công
-          this.$toast.add({
-            severity: 'success',
-            summary: 'Thành công',
-            detail: response.data.message,
-            life: 3000
-          })
-
-          this.$emit('created', response.data.data)
-          this.closeModal()
-        }
-      } catch (error) {
-        console.error('Error creating doctor:', error)
-
-        if (error.response && error.response.status === 422) {
-          // Validation errors
-          this.errors = error.response.data.errors
-          this.$toast.add({
-            severity: 'error',
-            summary: 'Lỗi validation',
-            detail: 'Vui lòng kiểm tra lại thông tin nhập vào',
-            life: 5000
-          })
-        } else {
-          // Other errors
-          this.$toast.add({
-            severity: 'error',
-            summary: 'Lỗi',
-            detail: error.response?.data?.message || 'Có lỗi xảy ra khi thêm bác sĩ',
-            life: 5000
-          })
-        }
-      } finally {
-        this.loading = false
-      }
-    },
-
-    async generateDoctorCode() { //tạo mã bác sĩ random 6 chữ số
-      try {
-        const response = await axios.get('/admin/doctors/generate-code')
-        if (response.data.success) {
-          this.formData.doctorCode = response.data.code
-        }
-      } catch (error) {
-        console.error('Error generating doctor code:', error)
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Lỗi',
-          detail: 'Không thể tạo mã bác sĩ',
-          life: 3000
-        })
-      }
-    },
-
-    resetForm() {
-      this.formData = {
-        name: '',
-        doctorCode: '',
-        gender: null,
-        phone: '',
-        email: '',
-        specialty: null,
-        address: '',
-        province: null,
-        ward: null,
-        degree: null,
-        notes: '',
-        avatar: null
-      }
-      this.errors = {}
-      this.imagePreview = null
-    },
-
-    handleImageUpload() {
-      const input = document.createElement('input')
-      input.type = 'file'
-      input.accept = 'image/*'
-
-      input.onchange = async (event) => {
-        const file = event.target.files[0]
-        if (!file) return
-
-        // Validate file
-        if (!file.type.startsWith('image/')) {
-          this.$toast.add({
-            severity: 'error',
-            summary: 'Lỗi',
-            detail: 'Chỉ chấp nhận file ảnh!',
-            life: 3000
-          })
-          return
-        }
-
-        if (file.size > 2 * 1024 * 1024) { // 2MB
-          this.$toast.add({
-            severity: 'error',
-            summary: 'Lỗi',
-            detail: 'File quá lớn! Tối đa 2MB',
-            life: 3000
-          })
-          return
-        }
-
-        try {
-          // Tạo FormData để upload
-          const formData = new FormData()
-          formData.append('avatar', file)
-
-          // Upload lên server
-          const response = await axios.post('/admin/doctors/upload-avatar', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          })
-
-          if (response.data.success) {
-            // Lưu path vào formData
-            this.formData.avatar = response.data.data.path
-
-            // Tạo preview
-            const reader = new FileReader()
-            reader.onload = (e) => {
-              this.imagePreview = e.target.result
-            }
-            reader.readAsDataURL(file)
-
-            this.$toast.add({
-              severity: 'success',
-              summary: 'Thành công',
-              detail: 'Ảnh đã được upload',
-              life: 3000
-            })
-          }
-
-        } catch (error) {
-          console.error('Upload error:', error)
-          this.$toast.add({
-            severity: 'error',
-            summary: 'Lỗi',
-            detail: 'Không thể upload ảnh',
-            life: 3000
-          })
-        }
-      }
-
-      input.click()
-    },
-
-    // Remove selected image
-    removeImage() {
-      this.formData.avatar = null
-      this.imagePreview = null
-    },
-
-    // API tỉnh thành 
-    async loadProvinces() {
-      try {
-        // Sử dụng shared ProvinceService 
-        if (window.provinceService) {
-          const provinces = await window.provinceService.loadProvinces()
-          this.provinceOptions = provinces.map(province => ({
-            name: province.name,
-            code: province.code
-          }))
-        } else {
-          //gọi API trực tiếp
-          const response = await fetch('https://provinces.open-api.vn/api/?depth=1')
-          const data = await response.json()
-
-          this.provinceOptions = data.map(province => ({
-            name: province.name,
-            code: province.code
-          }))
-        }
-      } catch (error) {
-        console.error('Error loading provinces:', error)
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Lỗi',
-          detail: 'Không thể tải danh sách tỉnh thành',
-          life: 3000
-        })
-      }
-    },
-
-    async onProvinceChange(provinceCode) {
-      if (!provinceCode) {
-        this.wardOptions = []
-        this.formData.ward = null
-        return
-      }
-
-      try {
-        // Sử dụng shared ProvinceService nếu có
-        if (window.provinceService) {
-          const wards = await window.provinceService.loadWards(provinceCode)
-          this.wardOptions = wards.map(ward => ({
-            name: ward.name,
-            code: ward.code
-          }))
-        } else {
-          // Fallback: gọi API trực tiếp
-          const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=3`)
-          const data = await response.json()
-
-          // Collect all wards from all districts in the province
-          let allWards = []
-          if (data.districts && Array.isArray(data.districts)) {
-            data.districts.forEach(district => {
-              if (district.wards && Array.isArray(district.wards)) {
-                district.wards.forEach(ward => {
-                  allWards.push({
-                    name: `${ward.name} (${district.name})`,
-                    code: ward.code
-                  })
-                })
-              }
-            })
-          }
-
-          // Sort wards by name
-          allWards.sort((a, b) => a.name.localeCompare(b.name))
-
-          this.wardOptions = allWards
-        }
-
-        // Reset ward
-        this.formData.ward = null
-      } catch (error) {
-        console.error('Error loading wards:', error)
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Lỗi',
-          detail: 'Không thể tải danh sách quận/huyện',
-          life: 3000
-        })
-      }
-    }
+  } catch (error) {
+    console.error('Error generating doctor code:', error)
   }
 }
+
+const resetForm = () => {
+  form.reset()
+  form.clearErrors()
+  imagePreview.value = null
+}
+
+const handleImageUpload = () => {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'image/*'
+  input.onchange = async (event) => {
+    const file = event.target.files[0]
+    if (!file) return
+
+    const formData = new FormData()
+    formData.append('avatar', file)
+
+    try {
+      const response = await axios.post('/admin/doctors/upload-avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      if (response.data.success) {
+        form.avatar = response.data.data.path
+        const reader = new FileReader()
+        reader.onload = (e) => imagePreview.value = e.target.result
+        reader.readAsDataURL(file)
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+    }
+  }
+  input.click()
+}
+
+const removeImage = () => {
+  form.avatar = null
+  imagePreview.value = null
+}
+
+const loadProvinces = async () => {
+  try {
+    if (window.provinceService) {
+      const provinces = await window.provinceService.loadProvinces()
+      provinceOptions.value = provinces.map(p => ({ name: p.name, code: p.code }))
+    } else {
+      const response = await fetch('https://provinces.open-api.vn/api/?depth=1')
+      const data = await response.json()
+      provinceOptions.value = data.map(p => ({ name: p.name, code: p.code }))
+    }
+  } catch (error) {
+    console.error('Error loading provinces:', error)
+  }
+}
+
+const onProvinceChange = async (provinceCode) => {
+  if (!provinceCode) {
+    wardOptions.value = []
+    form.ward = null
+    return
+  }
+  try {
+    if (window.provinceService) {
+      const wards = await window.provinceService.loadWards(provinceCode)
+      wardOptions.value = wards.map(w => ({ name: w.name, code: w.code }))
+    } else {
+      const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=3`)
+      const data = await response.json()
+      let allWards = []
+      if (data.districts) {
+        data.districts.forEach(d => {
+          if (d.wards) {
+            d.wards.forEach(w => allWards.push({ name: `${w.name} (${d.name})`, code: w.code }))
+          }
+        })
+      }
+      allWards.sort((a, b) => a.name.localeCompare(b.name))
+      wardOptions.value = allWards
+    }
+    form.ward = null
+  } catch (error) {
+    console.error('Error loading wards:', error)
+  }
+}
+
+watch(() => props.visible, (newVal) => {
+  if (newVal) {
+    generateDoctorCode()
+    loadProvinces()
+  }
+})
+
+watch(() => form.province, (newProvince) => {
+  if (newProvince && newProvince.code) {
+    onProvinceChange(newProvince.code)
+  }
+})
 </script>
 
 <style scoped>

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Orders;
 
-class RejectCancellationRequest extends BaseOrderRequest
+use App\Http\Requests\BaseRequest;
+ 
+class RejectCancellationRequest extends BaseRequest
 {
     /**
      * Get the validation rules that apply to the request.

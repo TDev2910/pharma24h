@@ -4,7 +4,9 @@ namespace App\Http\Requests\Orders;
 
 use App\Core\Order\Domain\DTOs\OrderData;
 
-class UpdateOrderInfoRequest extends BaseOrderRequest
+use App\Http\Requests\BaseRequest;
+ 
+class UpdateOrderInfoRequest extends BaseRequest
 {
     /**
      * Get the validation rules that apply to the request.

@@ -20,6 +20,7 @@ class OrderController extends Controller
         protected OrderUseCaseInterface $useCase
     ) {}
 
+    //hiển thị dashboard
     public function index(Request $request)
     {
         $data = $this->useCase->getAdminDashboardData($request->all());
@@ -37,6 +38,7 @@ class OrderController extends Controller
         ]);
     }
 
+    //hiển thị thông tin đơn hàng
     public function show(Request $request, string $order)
     {
         $data = $this->useCase->getOrderDetails((int)$order);
@@ -52,6 +54,7 @@ class OrderController extends Controller
         return redirect()->route('admin.orders.index');
     }
 
+    //hiển thị form cập nhật thông tin đơn hàng
     public function edit(Request $request, string $order)
     {
         $data = $this->useCase->getOrderDetails((int)$order);
@@ -63,13 +66,7 @@ class OrderController extends Controller
         ]);
     }
 
-    public function updateStatus(UpdateOrderStatusRequest $request, string $id)
-    {
-        $this->useCase->updateOrderStatus((int)$id, $request->status, $request->note);
-
-        return back()->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
-    }
-
+    //cập nhật thông tin đơn hàng
     public function update(UpdateOrderInfoRequest $request, string $id)
     {
         try {
@@ -81,6 +78,15 @@ class OrderController extends Controller
         }
     }
 
+    //cập nhật trạng thái đơn hàng
+    public function updateStatus(UpdateOrderStatusRequest $request, string $id)
+    {
+        $this->useCase->updateOrderStatus((int)$id, $request->status, $request->note);
+
+        return back()->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
+    }
+
+    //tạo vận đơn GHN
     public function createGhnOrder(Request $request, string $id)
     {
         $order = Order::with('items')->findOrFail($id);
@@ -112,12 +118,14 @@ class OrderController extends Controller
         }
     }
 
+    //xóa đơn hàng
     public function destroy(string $id)
     {
         $this->useCase->deleteOrder((int)$id);
         return back()->with('success', 'Đơn hàng đã được xóa thành công!');
     }
 
+    //duyệt yêu cầu hủy đơn hàng
     public function approveCancellation(string $id)
     {
         $this->useCase->approveCancellation((int)$id);
@@ -125,6 +133,7 @@ class OrderController extends Controller
         return back()->with('success', 'Đã duyệt yêu cầu hủy đơn hàng.');
     }
 
+    //từ chối yêu cầu hủy đơn hàng
     public function rejectCancellation(RejectCancellationRequest $request, string $id)
     {
         $this->useCase->rejectCancellation((int)$id, $request->note);
@@ -132,6 +141,7 @@ class OrderController extends Controller
         return back()->with('success', 'Đã từ chối yêu cầu hủy đơn hàng.');
     }
 
+    
     public function markCompleted(int $id)
     {
         $order = $this->useCase->markCompleted($id);
@@ -147,6 +157,7 @@ class OrderController extends Controller
         return $pdf->stream('HOADON-' . $order->order_code . '.pdf');
     }
 
+    //đồng bộ trạng thái GHN
     public function syncGhnStatus($id)
     {
         $order = Order::findOrFail($id);
@@ -204,20 +215,5 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Lỗi hệ thống: ' . $e->getMessage());
         }
-    }
-
-    public function printGhnOrder($id)
-    {
-        $order = Order::findOrFail($id);
-
-        if (!$order->ghn_order_code) {
-            return back()->with('error', 'Đơn hàng chưa có mã vận đơn GHN.');
-        }
-
-        if ($order->ghn_tracking_url) {
-            return Inertia::location($order->ghn_tracking_url);
-        }
-
-        return back()->with('warning', 'Chức năng in vận đơn đang được cập nhật.');
     }
 }

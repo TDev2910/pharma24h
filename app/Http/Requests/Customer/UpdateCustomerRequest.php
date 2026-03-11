@@ -4,7 +4,9 @@ namespace App\Http\Requests\Customer;
 
 use App\Core\Customer\Domain\DTOs\CustomerData;
 
-class UpdateCustomerRequest extends BaseCustomerRequest
+use App\Http\Requests\BaseRequest;
+ 
+class UpdateCustomerRequest extends BaseRequest
 {
     /**
      * Get the validation rules that apply to the request.
