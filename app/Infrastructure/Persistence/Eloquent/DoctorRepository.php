@@ -34,6 +34,7 @@ class DoctorRepository implements DoctorRepositoryInterface
         return Doctor::create([
             'doctor_code' => $this->generateUniqueCode(),
             'name' => $data->name,
+            'gender' => $data->gender ?? 'Male',
             'email' => $data->email,
             'phone' => $data->phone,
             'address' => $data->address,
@@ -50,6 +51,7 @@ class DoctorRepository implements DoctorRepositoryInterface
     public function update(Doctor $doctor, DoctorData $data): bool {
         $updateData = array_filter([
             'name' => $data->name,
+            'gender' => $data->gender,
             'email' => $data->email,
             'phone' => $data->phone,
             'address' => $data->address,

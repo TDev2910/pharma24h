@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Doctor\Application;
+namespace App\Core\Doctor\Application\Services;
 
 use App\Core\Doctor\Ports\Inbound\DoctorUseCaseInterface;
 use App\Core\Doctor\Ports\Outbound\DoctorRepositoryInterface;
