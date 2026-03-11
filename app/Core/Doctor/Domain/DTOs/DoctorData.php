@@ -2,12 +2,13 @@
 
 namespace App\Core\Doctor\Domain\DTOs;
 
-class DoctorData
+readonly class DoctorData
 {
     public function __construct(
         public ?int $id = null,
         public string $name,
         public string $email,
+        public ?string $gender = null,
         public ?string $phone = null,
         public ?string $address = null,
         public ?string $province = null,
