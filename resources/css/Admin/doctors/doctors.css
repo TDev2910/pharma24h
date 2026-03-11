@@ -1,5 +1,4 @@
-/* Doctors Module CSS */
-/* Styles cho Doctors/Dashboard.vue */
+/* Doctors Module CSS - Dashboard */
 
 .doctors-page {
   padding: 20px;
@@ -112,19 +111,6 @@
   margin-top: 20px;
 }
 
-/* Action Buttons */
-.action-buttons {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  align-items: center;
-}
-
-.action-buttons .p-button {
-  width: 32px;
-  height: 32px;
-}
-
 /* Avatar styling */
 .avatar-image {
   width: 40px;
@@ -144,109 +130,6 @@
   align-items: center;
   justify-content: center;
   color: #6c757d;
-}
-
-.no-avatar i {
-  font-size: 18px;
-}
-
-.title-header-column {
-  background: #B4DEBD;
-}
-
-/* DataTable Styling */
-:deep(.p-datatable) {
-  border: 2px solid #000 !important; /* Viền đen đậm bao quanh toàn bộ bảng */
-  border-radius: 12px !important;    /* Bo góc khung lớn */
-  overflow: hidden;                  /* Đảm bảo nội dung không bị trào ra khỏi góc bo */
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Đổ bóng nhẹ cho nổi bật */
-  font-family: inherit;
-}
-
-:deep(.p-datatable .p-datatable-header) {
-  background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
-  padding: 16px 20px;
-}
-
-:deep(.p-datatable .p-datatable-thead > tr > th) {
-  background-color: #a6d7bd !important; /* MÀU XANH GIỐNG MẪU (Có thể chỉnh hex này) */
-  color: #1a1a1a !important;            /* Màu chữ đen đậm */
-  font-weight: 700;                     /* Chữ in đậm hơn */
-  padding: 16px 20px;
-  border-bottom: 2px solid #000 !important; /* Đường kẻ đen đậm ngăn cách Header và Body */
-  border-right: 1px solid rgba(0,0,0,0.1);  /* Kẻ dọc mờ giữa các cột header */
-  font-size: 15px;                      /* Tăng kích thước chữ header một chút */
-}
-
-:deep(.p-datatable .p-datatable-thead > tr > th:last-child) {
-  border-right: none;
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr) {
-  background: #fff;
-  transition: background-color 0.2s;
-}
-
-/* Striped rows styling */
-:deep(.p-datatable .p-datatable-tbody > tr:nth-child(even)) {
-  background: #f8f9fa;
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr:nth-child(odd)) {
-  background: #ffffff;
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr:hover) {
-  background-color: #f1f8e9 !important; /* Màu xanh siêu nhạt khi hover */
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-  padding: 16px 20px;
-  border-bottom: 1px solid #e9ecef;     /* Kẻ ngang mờ giữa các hàng */
-  border-right: 1px solid #f0f0f0;      /* Kẻ dọc rất mờ giữa các cột dữ liệu */
-  color: #333;
-  vertical-align: middle;
-  font-size: 14px;
-}
-
-/* Loại bỏ viền dọc của cột cuối cùng trong thân bảng */
-:deep(.p-datatable .p-datatable-tbody > tr > td:last-child) {
-  border-right: none;
-}
-
-/* Loading state styling */
-:deep(.p-datatable .p-datatable-loading-overlay) {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(2px);
-}
-
-:deep(.p-datatable .p-datatable-loading-icon) {
-  color: #007bff;
-  font-size: 24px;
-}
-
-/* Empty state styling */
-:deep(.p-datatable .p-datatable-emptymessage) {
-  padding: 40px 20px;
-  color: #6c757d;
-  font-size: 16px;
-  text-align: center;
-  background: #f8f9fa;
-}
-
-:deep(.p-datatable .p-button),
-:deep(.p-datatable .p-button .p-button-icon),
-:deep(.p-datatable .p-button .p-button-label) {
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: inline-flex !important;
-}
-
-/* Đảm bảo button trong DataTable luôn hiển thị */
-:deep(.p-datatable tbody tr td .p-button) {
-  opacity: 1 !important;
-  visibility: visible !important;
 }
 
 /* Doctor Detail Container */
@@ -299,98 +182,56 @@
     opacity: 0;
     transform: translateY(10px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.detail-content .table {
-  margin-bottom: 0;
+/* DataTable Overrides */
+.doctors-page :deep(.p-datatable) {
+  border: 1px solid #000 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
 }
 
-.detail-content .table td {
-  padding: 8px 0;
-  border: none;
-  vertical-align: top;
+.doctors-page :deep(.p-datatable .p-datatable-thead > tr > th) {
+  background-color: #B4DEBD !important;
+  color: #000 !important;
+  border-bottom: 1px solid #000 !important;
+  border-top: 1px solid #000 !important;
 }
 
-.detail-content .fw-bold {
-  color: #495057;
-  font-weight: 600;
+.doctors-page :deep(.p-datatable .p-datatable-thead > tr > th:first-child) {
+  border-left: 1px solid #000 !important;
+  border-top-left-radius: 8px !important;
 }
 
-.detail-content .badge {
-  font-size: 12px;
-  padding: 4px 8px;
+.doctors-page :deep(.p-datatable .p-datatable-thead > tr > th:last-child) {
+  border-right: 1px solid #000 !important;
+  border-top-right-radius: 8px !important;
 }
 
-.detail-content .text-primary {
-  color: #007bff !important;
-  font-weight: 600;
+.doctors-page :deep(.p-datatable .p-datatable-tbody > tr > td) {
+  border-bottom: 1px solid #e9ecef !important;
+  border-left: none !important;
+  border-right: none !important;
 }
 
-.detail-content .text-primary i {
-  font-size: 16px;
+.doctors-page :deep(.p-datatable .p-datatable-tbody > tr > td:first-child) {
+  border-left: 1px solid #e9ecef !important;
 }
 
-/* Action buttons in detail */
-.detail-content .p-button {
-  margin-right: 8px;
-  margin-bottom: 8px;
+.doctors-page :deep(.p-datatable .p-datatable-tbody > tr > td:last-child) {
+  border-right: 1px solid #e9ecef !important;
 }
 
-.detail-content .p-button-sm {
-  padding: 6px 12px;
-  font-size: 12px;
-}
-
-/* Responsive improvements */
-@media (max-width: 768px) {
-  .table-container {
-    padding: 10px;
-    margin-top: 10px;
-  }
-
-  :deep(.p-datatable .p-datatable-thead > tr > th),
-  :deep(.p-datatable .p-datatable-tbody > tr > td) {
-    padding: 12px 8px;
-    font-size: 13px;
-  }
-
-  .avatar-image,
-  .no-avatar {
-    width: 32px;
-    height: 32px;
-  }
-
-  .detail-content {
-    padding: 15px;
-  }
-
-  .detail-tabs .tab {
-    padding: 10px 15px;
-    font-size: 13px;
-  }
-
-  .detail-content .row {
-    margin: 0;
-  }
-
-  .detail-content .col-md-6 {
-    margin-bottom: 20px;
-  }
+.doctors-page :deep(.p-datatable .p-datatable-tbody > tr:last-child > td) {
+  border-bottom: 1px solid #e9ecef !important;
 }
 
 /* Pagination styling */
-:deep(.p-paginator) {
+.doctors-page :deep(.p-paginator) {
   font-size: 12px;
   padding: 8px 12px;
 }
-
-:deep(.p-paginator .p-paginator-pages .p-paginator-page) {
-  font-size: 12px;
-  padding: 4px 8px;
-}
-

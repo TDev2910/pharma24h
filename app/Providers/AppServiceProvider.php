@@ -28,6 +28,14 @@ class AppServiceProvider extends ServiceProvider
             \App\Core\Order\Ports\Inbound\OrderUseCaseInterface::class,
             \App\Core\Order\Application\Services\OrderService::class
         );
+        $this->app->bind(
+            \App\Core\Doctor\Ports\Inbound\DoctorUseCaseInterface::class,
+            \App\Core\Doctor\Application\DoctorService::class
+        );
+        $this->app->bind(
+            \App\Core\Doctor\Ports\Outbound\DoctorRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Eloquent\DoctorRepository::class
+        );
     }
 
     public function boot(): void

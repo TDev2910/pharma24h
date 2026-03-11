@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Orders;
 
-class UpdateOrderStatusRequest extends BaseOrderRequest
+use App\Http\Requests\BaseRequest;
+ 
+class UpdateOrderStatusRequest extends BaseRequest
 {
     /**
      * Get the validation rules that apply to the request.

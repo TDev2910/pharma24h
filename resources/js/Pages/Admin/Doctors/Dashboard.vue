@@ -43,9 +43,9 @@
 
     <!-- DataTable -->
     <div class="table-container">
-      <DataTable :value="filteredDoctors" v-model:expandedRows="expandedRows" stripedRows responsiveLayout="scroll"
-        tableStyle="min-width: 50rem" :paginator="true" :row="5" :rows="pagination.per_page"
-        :totalRecords="pagination.total"
+      <DataTable :value="doctors.data" v-model:expandedRows="expandedRows" stripedRows :lazy="true"
+        :paginator="true" :rows="doctors.per_page" :totalRecords="doctors.total"
+        :first="(doctors.current_page - 1) * doctors.per_page" @page="onPageChange"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
         currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bác sĩ" dataKey="id"
@@ -209,11 +209,11 @@
     </div>
 
     <!-- Create Doctor Modal -->
-    <CreateDoctorModal :visible="showModal" @close="closeModal" @created="handleDoctorCreated" />
+    <CreateDoctorModal :visible="showModal" @close="showModal = false" @created="refreshPage" />
 
     <!-- Edit Doctor Modal -->
     <EditDoctorModal :visible="showEditModal" :doctorId="selectedDoctorId" @close="showEditModal = false"
-      @edited="handleDoctorEdited" />
+      @edited="refreshPage" />
   </div>
 </template>
 
@@ -225,7 +225,9 @@ import Column from 'primevue/column'
 import CreateDoctorModal from './Modals/Create.vue'
 import EditDoctorModal from './Modals/Edit.vue'
 import '@Admin/doctors/doctors.css';
-import axios from 'axios'
+import { router } from '@inertiajs/vue3'
+import Swal from 'sweetalert2'
+import debounce from 'lodash/debounce'
 
 export default {
   name: 'DoctorDashboard',
@@ -238,92 +240,59 @@ export default {
     EditDoctorModal
   },
 
+  props: {
+    doctors: Object,
+    filters: Object,
+  },
+
   data() {
     return {
       showModal: false,
       showEditModal: false,
       selectedDoctorId: null,
-      searchQuery: '',
-      loading: false,
+      searchQuery: this.filters.search || '',
+      isLoading: false,
       selectedDoctors: [],
-      doctors: [],
       expandedRows: {},
       activeTab: 'info',
-      pagination: {
-        current_page: 1,
-        last_page: 1,
-        per_page: 10,
-        total: 0,
-        from: 0,
-        to: 0
-      },
-      searchTimeout: null
     }
   },
 
-  computed: {
-    filteredDoctors() {
-      //Nếu không nhập từ khóa , thông tin bác sĩ sẽ hiển thị tất cả
-      if (!this.searchQuery || !this.searchQuery.trim()) {
-        return this.doctors; //Trả về tất cả bác sĩ có trong datatable
-      }
-
-      const term = this.searchQuery.toLowerCase().trim();
-      return this.doctors.filter(doctor => {
-        const name = (doctor.name || '').toLowerCase();
-        const code = (doctor.doctor_code || '').toLowerCase();
-        const phone = (doctor.phone || '').toLowerCase();
-        const email = (doctor.email || '').toLowerCase();
-        return name.includes(term) || code.includes(term) || phone.includes(term) || email.includes(term);
-      });
-    }
-  },
-
-  mounted() {
-    this.loadDoctors()
-  },
+  computed: {},
 
   methods: {
-    // Load danh sách bác sĩ từ API
-    async loadDoctors() {
-      this.loading = true
-      try {
-        const response = await axios.get('/admin/doctors/api', {
-          params: {
-            search: this.searchQuery,
-            per_page: this.pagination.per_page,
-            page: this.pagination.current_page
-          }
-        })
+    onPageChange(event) {
+      this.isLoading = true;
+      const page = event.page + 1;
+      const rows = event.rows;
 
-        if (response.data.success) {
-          this.doctors = response.data.data
-          this.pagination = response.data.pagination
-        } else {
-          console.error('API returned success: false')
-        }
-      } catch (error) {
-        console.error('Error loading doctors:', error)
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Lỗi',
-          detail: error.response?.data?.message || 'Không thể tải danh sách',
-          life: 5000
-        })
-      } finally {
-        this.loading = false
-      }
+      router.get('/admin/doctors', {
+        search: this.searchQuery,
+        page: page,
+        per_page: rows
+      }, {
+        preserveState: true,
+        preserveScroll: true,
+        onFinish: () => this.isLoading = false
+      });
     },
 
-    // Search functionality với debounce
-    debounceSearch() {
-      clearTimeout(this.searchTimeout)
-      this.searchTimeout = setTimeout(() => {
-        // Filter sẽ tự động áp dụng thông qua computed property
-      }, 200)
+    debounceSearch: debounce(function () {
+      this.isLoading = true;
+      router.get('/admin/doctors', {
+        search: this.searchQuery,
+        page: 1
+      }, {
+        preserveState: true,
+        replace: true,
+        onFinish: () => this.isLoading = false
+      });
+    }, 300),
+
+    refreshPage() {
+      router.reload({ only: ['doctors'] });
     },
 
-    // Modal methods
     showCreateModal() {
       this.showModal = true
     },
@@ -348,41 +317,27 @@ export default {
     },
 
     // Delete doctor
-    async deleteDoctor(doctor) {
-      if (confirm(`Bạn có chắc muốn xóa bác sĩ ${doctor.name}?`)) {
-        try {
-          const response = await axios.delete(`/admin/doctors/${doctor.id}`)
-          if (response.data.success) {
-            this.$toast.add({
-              severity: 'success',
-              summary: 'Thành công',
-              detail: 'Đã xóa bác sĩ thành công',
-              life: 3000
-            })
-            await this.loadDoctors() // Reload danh sách
-          }
-        } catch (error) {
-          console.error('Error deleting doctor:', error)
-          this.$toast.add({
-            severity: 'error',
-            summary: 'Lỗi',
-            detail: error.response?.data?.message || 'Không thể xóa bác sĩ',
-            life: 3000
-          })
+    deleteDoctor(doctor) {
+      Swal.fire({
+        title: 'Xác nhận xóa',
+        text: `Bạn có chắc chắn muốn xóa bác sĩ "${doctor.name}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.delete(`/admin/doctors/${doctor.id}`, {
+            onSuccess: () => {
+              Swal.fire('Thành công!', 'Đã xóa bác sĩ.', 'success');
+            },
+            onError: () => {
+              Swal.fire('Lỗi!', 'Không thể xóa bác sĩ.', 'error');
+            }
+          });
         }
-      }
-    },
-
-    // Handle doctor edited event
-    handleDoctorEdited(updatedDoctor) {
-      // Cập nhật danh sách doctors
-      const index = this.doctors.findIndex(d => d.id === updatedDoctor.id)
-      if (index !== -1) {
-        this.doctors.splice(index, 1, updatedDoctor)
-      }
-
-      this.showEditModal = false
-      this.selectedDoctorId = null
+      });
     },
 
     // Delete selected doctors (one by one)
@@ -513,56 +468,6 @@ export default {
 }
 </script>
 
-<style scoped>
-/* 1. Thay đổi màu nền Header */
-:deep(.p-datatable .p-datatable-thead > tr > th) {
-    background-color: #B4DEBD !important; /* Màu xanh bạn muốn */
-    color: #000 !important;               /* Màu chữ đen */
-    border-bottom: 1px solid #000 !important; /* Viền dưới đen */
-    border-top: 1px solid #000 !important;    /* Viền trên đen */
-}
-
-/* 2. Khung viền bao quanh bảng */
-:deep(.p-datatable) {
-    border: 1px solid #000 !important;
-    border-radius: 8px !important;
-    overflow: hidden !important;
-}
-
-/* 3. Xử lý viền cho cột đầu và cuối của header để bo góc đẹp */
-:deep(.p-datatable .p-datatable-thead > tr > th:first-child) {
-    border-left: 1px solid #000 !important;
-    border-top-left-radius: 8px !important;
-}
-
-:deep(.p-datatable .p-datatable-thead > tr > th:last-child) {
-    border-right: 1px solid #000 !important;
-    border-top-right-radius: 8px !important;
-}
-
-/* 4. Viền cho các ô dữ liệu bên dưới (Body) */
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-    border-bottom: 1px solid #e9ecef !important;
-    border-left: 1px solid #000 !important; /* Viền trái cho bao quanh */
-    border-right: 1px solid #000 !important; /* Viền phải cho bao quanh */
-}
-
-/* Ẩn các viền dọc ở giữa nếu bạn muốn giống mẫu Dịch vụ */
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-    border-left: none !important;
-    border-right: none !important;
-}
-
-/* Chỉ giữ lại viền bao ngoài cùng của body */
-:deep(.p-datatable .p-datatable-tbody > tr > td:first-child) {
-    border-left: 1px solid #e9ecef !important;
-}
-:deep(.p-datatable .p-datatable-tbody > tr > td:last-child) {
-    border-right: 1px solid #e9ecef !important;
-}
-
-/* Viền đáy cuối cùng của bảng */
-:deep(.p-datatable .p-datatable-tbody > tr:last-child > td) {
-    border-bottom: 1px solid #e9ecef !important;
-}
+<style>
+@import "@Admin/doctors/doctors.css";
 </style>
