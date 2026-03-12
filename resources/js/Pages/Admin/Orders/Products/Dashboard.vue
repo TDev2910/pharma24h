@@ -6,8 +6,8 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Swal from 'sweetalert2';
 
 // Components
-import EditModal from './Modals/Edit_modal.vue';
-import DetailsModal from './Modals/Details_modal.vue';
+import EditModal from './Modals/edit_modal.vue';
+import DetailsModal from './Modals/details_modal.vue';
 
 // PROPS
 const props = defineProps({
