@@ -1,55 +1,78 @@
-name: Laravel CI
+name: Laravel CI/CD Workflow # Tên quy trình: Kiểm tra và đóng gói dự án Sức Khỏe 24h
 
 on:
   push:
-    branches: [ "main", "dev" ] # Cập nhật: Theo dõi cả nhánh dev
+    branches: ["main", "dev"] # Kích hoạt khi có code push lên nhánh main hoặc dev
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: ["main", "dev"] # Kích hoạt khi có yêu cầu gộp code (Pull Request)
 
 jobs:
-  laravel-tests:
-    runs-on: ubuntu-latest
+  laravel-tests: # Công việc 1: Chạy Test và Build Assets
+    runs-on: ubuntu-latest # Chạy trên hệ điều hành Ubuntu mới nhất của GitHub
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code # Bước: Lấy mã nguồn từ GitHub vào máy ảo
+        uses: actions/checkout@v4
 
-    - uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
-        extensions: mbstring, bcmath, gd, zip, sqlite3 # Thêm sqlite3 cho chắc chắn
-        tools: composer:v2
+      - name: Setup PHP # Bước: Cài đặt môi trường PHP 8.2 và các extension cần thiết
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, bcmath, gd, zip, sqlite3
+          tools: composer:v2
 
-    # --- TỐI ƯU 1: Thêm Cache cho Composer giúp chạy nhanh gấp đôi ---
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+      - name: Cache Composer packages # Bước: Lưu trữ thư viện PHP để lần sau chạy nhanh hơn
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
 
-    - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      - name: Copy .env # Bước: Tạo file cấu hình tạm thời cho môi trường test
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-    # --- TỐI ƯU 2: Chỉ cài đặt nếu cache không tồn tại hoặc có thay đổi ---
-    - name: Install Dependencies
-      if: steps.composer-cache.outputs.cache-hit != 'true'
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --ignore-platform-reqs
+      - name: Install Dependencies # Bước: Cài đặt các thư viện PHP (Laravel Vendor)
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --ignore-platform-reqs
 
-    - name: Generate key
-      run: php artisan key:generate
+      - name: Generate key # Bước: Tạo mã bảo mật APP_KEY cho Laravel
+        run: php artisan key:generate
 
-    - name: Directory Permissions
-      run: chmod -R 777 storage bootstrap/cache
+      - name: Directory Permissions # Bước: Phân quyền cho thư mục lưu trữ (để không bị lỗi ghi file)
+        run: chmod -R 777 storage bootstrap/cache
 
-    - name: Create Database
-      run: |
-        mkdir -p database
-        touch database/database.sqlite
+      - name: Create SQLite Database # Bước: Tạo Database ảo (SQLite) để chạy Test cho nhanh
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
 
-    - name: Execute tests
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-      run: php artisan test
+      # --- VAI TRÒ QUAN TRỌNG: ĐÓNG GÓI FRONTEND ---
+      - name: Setup Node.js # Bước: Cài đặt Node.js để build giao diện (Vite/Vue)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+
+      - name: Install NPM dependencies and Build Assets # Bước: Cài thư viện JS và nén file CSS/JS (NPM Build)
+        run: |
+          npm install
+          npm run build
+
+      - name: Execute tests # Bước: Chạy toàn bộ Unit Test để đảm bảo code không có lỗi logic
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php artisan test
+
+  docker-build-check: # Công việc 2: Kiểm tra khả năng đóng gói Docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image (Check) # Bước: Thử build Docker thực tế để đảm bảo file Dockerfile không lỗi
+        run: docker build . --file Dockerfile -t suckhoe24h-check:latest
+
+
