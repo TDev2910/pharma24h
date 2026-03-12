@@ -1,0 +1,9 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/your_username/public_html/
+    - /bin/cp -R * $DEPLOYPATH
+    - /bin/chmod -R 755 $DEPLOYPATH/storage
+    - /bin/chmod -R 755 $DEPLOYPATH/bootstrap/cache
+    # Bạn có thể thêm lệnh artisan để dọn dẹp cache sau khi deploy
+    - php artisan optimize:clear

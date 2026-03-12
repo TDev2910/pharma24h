@@ -1,0 +1,27 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: suckhoe24h-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+
+      - SERVER_NAME=:8000
+      - FRANKENPHP_CONFIG="worker public/index.php"
+    command: frankenphp php-server --listen :8000 --root public/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - suckhoe24h-network
+
+networks:
+  suckhoe24h-network:
+    driver: bridge
+
