@@ -2,6 +2,7 @@
 import { useForm, Head, Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import Swal from 'sweetalert2';
+import '@/../css/Auth/auth.css';
 
 const props = defineProps({
     status: String,
@@ -70,7 +71,7 @@ const handleGoogleLogin = async () => {
     <Head title="Đăng nhập" />
 
     <div class="login-layout">
-        <div class="login-container">
+        <div class="login-container login-container--login">
             <div class="text-center mb-4">
                 <div class="logo-circle">
                     <span class="logo-text">Pharma24h</span>
@@ -114,9 +115,9 @@ const handleGoogleLogin = async () => {
                             Ghi nhớ tôi
                         </label>
                     </div>
-                    <!-- <Link :href="route('password.request')" class="forgot-password-link">
+                    <Link :href="route('password.request')" class="forgot-password-link">
                         Quên mật khẩu?
-                    </Link> -->
+                    </Link>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 mb-4" :disabled="!isFormValid || isProcessing">
@@ -144,230 +145,14 @@ const handleGoogleLogin = async () => {
             </form>
 
             <div class="text-center">
-                <!-- <p class="footer-text">
+                <p class="footer-text">
                     Không có tài khoản?
                     <Link :href="route('register')" class="footer-link">Đăng ký</Link>
-                </p> -->
+                </p>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.login-layout {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f3f4f6;
-}
-
-.login-container {
-    width: 400px;
-    max-width: 90vw;
-    padding: 40px;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.logo-circle {
-    width: 100px;
-    height: 100px;
-    background: #2b2e33;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.logo-text {
-    color: white;
-    font-weight: 700;
-    font-size: 16px;
-    letter-spacing: -0.5px;
-}
-
-.login-title {
-    font-size: 28px;
-    font-weight: 600;
-    color: #1a1a1a;
-    text-align: center;
-    margin-bottom: 16px;
-    letter-spacing: -0.5px;
-}
-
-.login-subtitle {
-    font-size: 14px;
-    color: #6b7280;
-    text-align: center;
-    margin-bottom: 32px;
-    line-height: 1.5;
-}
-
-.form-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 8px;
-    display: block;
-}
-
-.form-control {
-    width: 100%;
-    height: 48px;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 16px;
-    padding: 12px 16px;
-    transition: all 0.2s ease;
-    background: #f9fafb;
-    box-sizing: border-box;
-}
-
-.form-control:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    background: white;
-    outline: none;
-}
-
-.form-control.is-invalid {
-    border-color: #ef4444;
-}
-
-.form-check {
-    display: flex;
-    align-items: center;
-}
-
-.form-check-input {
-    margin-right: 8px;
-    width: 16px;
-    height: 16px;
-}
-
-.form-check-label {
-    font-size: 14px;
-    color: #374151;
-    cursor: pointer;
-}
-
-.forgot-password-link {
-    font-size: 14px;
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s ease;
-}
-
-.forgot-password-link:hover {
-    color: #5a67d8;
-    text-decoration: none;
-}
-
-.btn-primary {
-    height: 48px;
-    background: #4a5568;
-    border: none;
-    border-radius: 24px;
-    font-size: 16px;
-    font-weight: 600;
-    color: white;
-    transition: all 0.2s ease;
-    letter-spacing: 0.025em;
-    cursor: pointer;
-}
-
-.btn-primary:hover {
-    background: #2b2e33;
-    transform: translateY(-1px);
-    box-shadow: 0 8px 25px rgba(74, 85, 104, 0.3);
-}
-
-.btn-primary:disabled {
-    background: #9ca3af;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.footer-text {
-    font-size: 14px;
-    color: #6b7280;
-    margin-bottom: 8px;
-}
-
-.footer-link {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s ease;
-}
-
-.footer-link:hover {
-    color: #5a67d8;
-    text-decoration: none;
-}
-
-.alert {
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    padding: 12px 16px;
-}
-
-.alert-danger {
-    background: #fef2f2;
-    color: #dc2626;
-    border-left: 4px solid #dc2626;
-}
-
-.alert-success {
-    background: #f0fdf4;
-    color: #16a34a;
-    border-left: 4px solid #16a34a;
-}
-
-.invalid-feedback {
-    font-size: 12px;
-    color: #ef4444;
-    margin-top: 4px;
-}
-
-.btn-outline-danger {
-    height: 48px;
-    border: 2px solid #ea4335;
-    border-radius: 24px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #ea4335;
-    background: white;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
-.btn-outline-danger:hover {
-    background: #ea4335;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 8px 25px rgba(234, 67, 53, 0.3);
-}
-
-@media (max-width: 480px) {
-    .login-container {
-        padding: 24px;
-        width: 100%;
-        margin: 20px;
-    }
-
-    .login-title {
-        font-size: 24px;
-        margin-bottom: 24px;
-    }
-}
 </style>

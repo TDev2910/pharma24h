@@ -2,6 +2,8 @@
 
 namespace App\Core\Auth\Ports\Outbound;
 
+use App\Core\Auth\Domain\DTOs\RegisterData;
+
 interface AuthRepositoryInterface
 {
     /**
@@ -12,6 +14,7 @@ interface AuthRepositoryInterface
      * @return bool
      */
     public function attempt(array $credentials, bool $remember): bool;
+    public function register(RegisterData $data);
 
     /**
      * Logout current user

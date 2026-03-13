@@ -78,7 +78,7 @@ createInertiaApp({
   setup({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
       .use(plugin)
-      
+      .use(ZiggyVue)
       .use(PrimeVue, primevueOptions)
       .use(ToastService)    
       .component('Link', Link)
