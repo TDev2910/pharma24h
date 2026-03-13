@@ -5,6 +5,7 @@ namespace App\Core\Auth\Application\Services;
 use App\Core\Auth\Ports\Inbound\AuthUseCaseInterface;
 use App\Core\Auth\Ports\Outbound\AuthRepositoryInterface;
 use App\Core\Auth\Domain\DTOs\LoginData;
+use App\Core\Auth\Domain\DTOs\RegisterData;
 
 class AuthService implements AuthUseCaseInterface
 {
@@ -18,6 +19,11 @@ class AuthService implements AuthUseCaseInterface
             'email' => $data->email,
             'password' => $data->password
         ], $data->remember);
+    }
+
+    public function register(RegisterData $data)
+    {
+        return $this->authRepository->register($data);
     }
 
     public function logout(): void

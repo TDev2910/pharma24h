@@ -1,0 +1,25 @@
+/* resources/css/Auth/variables.css */
+:root {
+    --primary-color: #4a5568;
+    --primary-hover: #2b2e33;
+    --accent-color: #667eea;
+    --accent-hover: #5a67d8;
+    --bg-color: #f3f4f6;
+    --card-bg: white;
+    --text-main: #1a1a1a;
+    --text-muted: #6b7280;
+    --text-label: #374151;
+    --error-color: #ef4444;
+    --success-color: #10b981;
+    --warning-color: #fbbf24;
+    --border-color: #e5e7eb;
+    --input-bg: #f9fafb;
+
+    --radius-lg: 16px;
+    --radius-md: 8px;
+    --radius-sm: 6px;
+    --radius-btn: 24px;
+
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --transition: all 0.2s ease;
+}

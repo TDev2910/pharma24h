@@ -1,0 +1,99 @@
+/* resources/css/Auth/login.css */
+
+.login-container--login {
+    width: 400px;
+    max-width: 90vw;
+    padding: 40px;
+}
+
+.login-container--login .logo-circle {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 20px;
+}
+
+.login-container--login .logo-text {
+    font-size: 16px;
+}
+
+.login-container--login .login-title {
+    font-size: 28px;
+    margin-bottom: 16px;
+}
+
+.login-container--login .login-subtitle {
+    margin-bottom: 32px;
+}
+
+.login-container--login .form-control {
+    height: 48px;
+}
+
+.login-container--login .btn-primary {
+    height: 48px;
+    border-radius: 24px;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+}
+
+.form-check-input {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+}
+
+.form-check-label {
+    font-size: 14px;
+    color: var(--text-label);
+    cursor: pointer;
+}
+
+.forgot-password-link {
+    font-size: 14px;
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.forgot-password-link:hover {
+    color: var(--accent-hover);
+}
+
+.btn-outline-danger {
+    height: 48px;
+    border: 2px solid #ea4335;
+    border-radius: 24px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #ea4335;
+    background: white;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.btn-outline-danger:hover {
+    background: #ea4335;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(234, 67, 53, 0.3);
+}
+
+@media (max-width: 480px) {
+    .login-container--login {
+        padding: 24px;
+        width: 100%;
+        margin: 20px;
+    }
+
+    .login-container--login .login-title {
+        font-size: 24px;
+        margin-bottom: 24px;
+    }
+}

@@ -2,12 +2,12 @@
 
 namespace App\Core\Auth\Domain\DTOs;
 
-class LoginData
+readonly class LoginData
 {
     public function __construct(
-        public readonly string $email,
-        public readonly string $password,
-        public readonly bool $remember = false
+        public string $email,
+        public string $password,
+        public bool $remember = false
     ) {}
 
     public static function fromRequest($request): self
