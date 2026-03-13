@@ -3,6 +3,7 @@ import { createInertiaApp, Link, router } from '@inertiajs/vue3'
 
 
 // Expose route globally
+import { ZiggyVue } from 'ziggy-js';
 
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
@@ -77,7 +78,7 @@ createInertiaApp({
   setup({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
       .use(plugin)
-
+      
       .use(PrimeVue, primevueOptions)
       .use(ToastService)    
       .component('Link', Link)
