@@ -7,57 +7,53 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Services\Firebase\FirebaseService;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Core\Auth\Ports\Inbound\AuthUseCaseInterface;
+use App\Core\Auth\Domain\DTOs\LoginData;
+use Inertia\Inertia;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        private readonly AuthUseCaseInterface $authUseCase
+    ) {}
+
     /**
      * Show login form
      */
     public function showLoginForm()
     {
-        return view('auth.login');
+        return Inertia::render('Auth/Login', [
+            'status' => session('status'),
+            'success' => session('success'),
+        ]);
     }
 
     /**
      * Handle login request
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $validated = $request->validate(
-            [
-                'email' => ['required', 'email'],
-                'password' => ['required', 'min:8'],
-            ],
+        $validated = $request->validated();
+        $loginData = LoginData::fromRequest($request);
 
-            //thông báo lỗi xác thực
-            [
-                'email.required' => 'Trường email là bắt buộc.',
-                'email.email' => 'Trường email phải là một địa chỉ email hợp lệ.',
-                'password.required' => 'Trường mật khẩu là bắt buộc.',
-                'password.min' => 'Trường mật khẩu phải có ít nhất 8 ký tự.',
-            ]
-        );
-
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->boolean('remember'))) {
+        if ($this->authUseCase->login($loginData)) {
+            $request->session()->regenerate(); 
             $user = Auth::user();
 
-            // kiểm tra role trực tiếp
             if ($user->role === 'admin') {
-                return redirect('/admin/admindashboard')->with('success', 'Chào mừng Admin!');
+                return redirect()->intended('/admin/admindashboard')->with('success', 'Chào mừng Admin!');
             }
 
-            // Redirect staff về trang quản lý nhân viên hoặc dashboard riêng
             if ($user->role === 'staff') {
-                // Kiểm tra xem user có liên kết với employee không
                 $employee = $user->employee ?? null;
                 if ($employee) {
-                    return redirect('/staff/dashboard')->with('success', 'Chào mừng ' . $user->name . '!');
+                    return redirect()->intended('/staff/dashboard')->with('success', 'Chào mừng ' . $user->name . '!');
                 }
-                return redirect('/')->with('success', 'Đăng nhập thành công!');
+                return redirect()->intended('/')->with('success', 'Đăng nhập thành công!');
             }
 
-            // Redirect về Inertia route với Inertia response
-            return redirect('/admin/admindashboard')->with('success', 'Đăng nhập thành công!');
+            return redirect()->intended('/')->with('success', 'Đăng nhập thành công!');
         }
 
         return back()->withErrors([
@@ -65,9 +61,6 @@ class AuthController extends Controller
         ])->withInput();
     }
 
-    /**
-     * Show registration form
-     */
     public function showRegistrationForm()
     {
         return view('auth.register');

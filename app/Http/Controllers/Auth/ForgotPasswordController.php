@@ -88,6 +88,7 @@ class ForgotPasswordController extends Controller
         return view('auth.passwords.verify', compact('email'));
     }
 
+
     /**
      * Xác thực OTP
      */
