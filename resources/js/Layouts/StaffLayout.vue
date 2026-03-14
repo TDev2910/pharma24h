@@ -88,10 +88,10 @@
             </a>
           </li>
           <li>
-            <a href="/logout" class="menu-item logout-item">
+            <Link href="/logout" method="post" as="button" class="menu-item logout-item" style="width: 100%; border: none; background: none;">
               <i class="pi pi-sign-out"></i>
               <span>Đăng xuất</span>
-            </a>
+            </Link>
           </li>
         </div>
       </div>
@@ -129,7 +129,7 @@
 </template>
 
 <script setup>
-import { usePage } from '@inertiajs/vue3';
+import { usePage, Link } from '@inertiajs/vue3';
 import Toast from 'primevue/toast';
 
 // Lấy thông tin auth từ Inertia

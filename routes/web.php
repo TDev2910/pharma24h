@@ -45,7 +45,7 @@ Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/logout', [AuthController::class, 'logout']);
+// Route::get('/logout', [AuthController::class, 'logout']);
 
 //forgot password routes (email + phone)
 Route::prefix('password')->name('password.')->group(function () {

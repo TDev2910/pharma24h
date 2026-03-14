@@ -15,6 +15,7 @@ interface AuthRepositoryInterface
      */
     public function attempt(array $credentials, bool $remember): bool;
     public function register(RegisterData $data);
+    public function findOrCreateSocialUser(\App\Core\Auth\Domain\DTOs\SocialAuthData $data);
 
     /**
      * Logout current user
