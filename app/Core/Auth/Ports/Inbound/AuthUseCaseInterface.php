@@ -15,6 +15,7 @@ interface AuthUseCaseInterface
      */
     public function login(LoginData $data): bool;
     public function register(RegisterData $data);
+    public function socialLogin(\App\Core\Auth\Domain\DTOs\SocialAuthData $data): bool;
     /**
      * Handle logout
      * 

@@ -9,9 +9,11 @@ use App\Http\Controllers\Controller;
 use App\Services\Firebase\FirebaseService;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\LoginGoogleRequest;
 use App\Core\Auth\Ports\Inbound\AuthUseCaseInterface;
 use App\Core\Auth\Domain\DTOs\LoginData;
 use App\Core\Auth\Domain\DTOs\RegisterData;
+use App\Core\Auth\Domain\DTOs\SocialAuthData;
 use Inertia\Inertia;
 
 class AuthController extends Controller
@@ -86,113 +88,33 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        Auth::logout();
+        $this->authUseCase->logout(); 
         return redirect('/')->with('success', 'Đăng xuất thành công!');
     }
-    /**
-     * Handle Google login request
-     */
-    //Đăng nhập bằng google
-    public function googleLogin(Request $request)
+    public function googleLogin(LoginGoogleRequest $request)
     {
-        $request->validate([
-            'idToken' => 'required|string',
-            'uid' => 'required|string',
-            'email' => 'required|email',
-            'name' => 'required|string',
-            'photoURL' => 'nullable|string',
-        ]);
-
-        $uid = $request->uid;
-        $email = $request->email;
-        $name = $request->name;
-        $photoURL = $request->photoURL;
-
         try {
-            //Tìm user theo firebase_uid hoặc email 
-            //Để thực hiện tính năng Merge Account (Gộp tài khoản). 
-            //Nếu người dùng từng đăng ký thủ công bằng abc@gmail.com,
-            //hôm nay họ chọn "Login with Google" (cũng là abc@gmail.com), 
-            //hệ thống sẽ hiểu là cùng 1 người.
-            $user = User::where('firebase_uid', $uid)
-                ->orWhere('email', $email)
-                ->first();
-
-            if ($user) {
-                // User đã tồn tại - cập nhật thông tin
-                if (!$user->firebase_uid) {
-                    $user->firebase_uid = $uid;
-                }
-                if (!$user->provider) {
-                    $user->provider = 'google';
-                }
-                if ($photoURL && !$user->avatar) {
-                    $user->avatar = $photoURL;
-                }
-                $user->email_verified_at = now();
-                $user->save();
-            } else {
-                // Tạo user mới
-                $user = User::create([
-                    'name' => $name,
-                    'email' => $email,
-                    'password' => null, // Google user không cần password
-                    'avatar' => $photoURL,
-                    'firebase_uid' => $uid,
-                    'provider' => 'google',
-                    'role' => 'user',
-                    'email_verified_at' => now(), //xác thực email trực tiếp
-                ]);
-            }
-
-            // Đăng nhập user
-            Auth::login($user);
-
-            // Xác định redirect URL theo role
-            $redirectUrl = '/';
-            $message = 'Đăng nhập thành công!';
+            $validated = $request->validated();
+            $socialData = SocialAuthData::fromRequest($validated);
             
-            if ($user->role === 'admin') {
-                $redirectUrl = '/admin/admindashboard';
-                $message = 'Chào mừng Admin!';
-            } elseif ($user->role === 'staff') {
-                $employee = $user->employee ?? null;
-                if ($employee) {
+            if ($this->authUseCase->socialLogin($socialData)) {
+                $request->session()->regenerate(); 
+                $user = Auth::user();
+                $redirectUrl = '/';
+                
+                if ($user->role === 'admin') {
+                    $redirectUrl = '/admin/admindashboard';
+                } elseif ($user->role === 'staff' && $user->employee) {
                     $redirectUrl = '/staff/dashboard';
-                    $message = 'Chào mừng ' . $user->name . '!';
                 }
+
+                return redirect($redirectUrl);
             }
 
-            // Nếu là AJAX request, trả về JSON
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => $message,
-                    'redirect' => $redirectUrl,
-                    'user' => [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        'role' => $user->role,
-                    ]
-                ]);
-            }
-
-            // Nếu là form submit thông thường, redirect
-            return redirect($redirectUrl)->with('success', $message);
+            return back()->withErrors(['error' => 'Đăng nhập thất bại']);
             
         } catch (\Exception $e) {
-            // Xử lý lỗi
-            $errorMessage = 'Có lỗi xảy ra khi đăng nhập: ' . $e->getMessage();
-            
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $errorMessage
-                ], 500);
-            }
-            
-            return back()->withErrors(['error' => $errorMessage])->withInput();
+            return back()->withErrors(['error' => 'Có lỗi xảy ra khi đăng nhập: ' . $e->getMessage()]);
         }
     }
 }

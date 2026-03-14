@@ -32,6 +32,42 @@ class AuthRepository implements AuthRepositoryInterface
         
         return false;
     }
+
+    public function findOrCreateSocialUser(\App\Core\Auth\Domain\DTOs\SocialAuthData $data)
+    {
+        $user = User::where('firebase_uid', $data->uid)
+            ->orWhere('email', $data->email)
+            ->first();
+
+        if ($user) {
+            // User exists - update info if needed
+            if (!$user->firebase_uid) {
+                $user->firebase_uid = $data->uid;
+            }
+            if (!$user->provider) {
+                $user->provider = $data->provider;
+            }
+            if ($data->photoURL && !$user->avatar) {
+                $user->avatar = $data->photoURL;
+            }
+            $user->email_verified_at = now();
+            $user->save();
+        } else {
+            // Create new user
+            $user = User::create([
+                'name' => $data->name,
+                'email' => $data->email,
+                'password' => null,
+                'avatar' => $data->photoURL,
+                'firebase_uid' => $data->uid,
+                'provider' => $data->provider,
+                'role' => 'user',
+                'email_verified_at' => now(),
+            ]);
+        }
+
+        return $user;
+    }
     public function logout(): void
     {
         Auth::logout();

@@ -3,6 +3,7 @@ import { useForm, Head, Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import Swal from 'sweetalert2';
 import '@/../css/Auth/auth.css';
+import '@/library/firebaseGoogleAuth';
 
 const props = defineProps({
     status: String,
@@ -57,12 +58,49 @@ const submit = () => {
 };
 
 const handleGoogleLogin = async () => {
-    // Logic cho Google Login sẽ được tích hợp sau hoặc dùng library có sẵn
-    Swal.fire({
-        title: 'Thông báo',
-        text: 'Tính năng đăng nhập Google đang được tích hợp lại cho Vue.',
-        icon: 'info'
-    });
+    isProcessing.value = true;
+    try {
+        // Kiểm tra xem Service có tồn tại trong window không (do load từ script ngoài)
+        if (typeof window.FirebaseGoogleAuthService === 'undefined') {
+            throw new Error('Dịch vụ Google chưa tải xong. Vui lòng tải lại trang.');
+        }
+
+        const result = await window.FirebaseGoogleAuthService.signInWithGoogle();
+
+        if (!result.success) {
+            throw new Error(result.message || 'Đăng nhập Google thất bại');
+        }
+
+        // Gửi thông tin lên backend qua Inertia router
+        // Ta dùng route('auth.google') như trong web.php
+        const { router } = await import('@inertiajs/vue3');
+        router.post(route('auth.google'), {
+            idToken: result.idToken,
+            uid: result.user.uid,
+            email: result.user.email,
+            name: result.user.name,
+            photoURL: result.user.photoURL || '',
+        }, {
+            onFinish: () => {
+                isProcessing.value = false;
+            },
+            onError: (errors) => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi đăng nhập Google',
+                    text: Object.values(errors)[0] || 'Có lỗi xảy ra',
+                });
+            }
+        });
+
+    } catch (error) {
+        isProcessing.value = false;
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: error.message,
+        });
+    }
 };
 </script>
 
