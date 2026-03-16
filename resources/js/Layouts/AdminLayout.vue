@@ -99,7 +99,7 @@
                 </a> -->
 
 
-                <a href="/logout" class="nav-item">Đăng xuất</a>
+                <Link href="/logout" method="post" as="button" class="nav-item">Đăng xuất</Link>
             </div>
         </nav>
 
@@ -114,6 +114,7 @@
 </template>
 
 <script setup>
+import { Link } from '@inertiajs/vue3'
 import Toast from 'primevue/toast'
 
 </script>

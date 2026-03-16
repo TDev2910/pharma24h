@@ -3,6 +3,7 @@ import { createInertiaApp, Link, router } from '@inertiajs/vue3'
 
 
 // Expose route globally
+import { ZiggyVue } from 'ziggy-js';
 
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
@@ -42,15 +43,15 @@ const primevueOptions = {
 
 //khởi tạo spa
 createInertiaApp({
-  resolve: (name) => {
-    const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
+  resolve: async (name) => {
+    const pages = import.meta.glob('./Pages/**/*.vue')
     const pagePath = `./Pages/${name}.vue`
     
     if (!pages[pagePath]) {
       throw new Error(`Page not found: ${pagePath}`)
     }
     
-    const page = pages[pagePath].default
+    const page = (await pages[pagePath]()).default
     
     // Gán layout mặc định cho các trang admin nếu page chưa set layout
     if (name.startsWith('Admin/') && !page.layout) {
@@ -77,7 +78,7 @@ createInertiaApp({
   setup({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
       .use(plugin)
-
+      .use(ZiggyVue)
       .use(PrimeVue, primevueOptions)
       .use(ToastService)    
       .component('Link', Link)

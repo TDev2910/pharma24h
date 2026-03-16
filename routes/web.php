@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\ServiceBookingController;
 use App\Http\Controllers\Public\ReviewController;
@@ -39,29 +39,29 @@ Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store
 Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy')->middleware('auth');
 // Auth routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login-saas');
 
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/logout', [AuthController::class, 'logout']);
+// Route::get('/logout', [AuthController::class, 'logout']);
 
 //forgot password routes (email + phone)
 Route::prefix('password')->name('password.')->group(function () {
-    Route::get('/reset', [ForgotPasswordController::class, 'showEmailForm'])->name('request');
-    Route::post('/email', [ForgotPasswordController::class, 'sendOtp'])->name('email');
-    Route::get('/verify', [ForgotPasswordController::class, 'showVerifyForm'])->name('verify');
-    Route::post('/verify', [ForgotPasswordController::class, 'verifyOtp'])->name('verify.post');
-    Route::get('/reset-password', [ForgotPasswordController::class, 'showResetForm'])->name('reset');
-    Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('reset.post');
+    Route::get('/reset', [PasswordResetController::class, 'showEmailForm'])->name('request');
+    Route::post('/email', [PasswordResetController::class, 'sendOtp'])->name('email');
+    Route::get('/verify', [PasswordResetController::class, 'showVerifyForm'])->name('verify');
+    Route::post('/verify', [PasswordResetController::class, 'verifyOtp'])->name('verify.post');
+    Route::get('/reset-password', [PasswordResetController::class, 'showResetForm'])->name('reset');
+    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('reset.post');
 
     //phone verification routes
-    Route::get('/verify-phone', [ForgotPasswordController::class, 'showPhoneVerifyForm'])->name('verify.phone');
-    Route::post('/verify-phone', [ForgotPasswordController::class, 'verifyPhoneOtp'])->name('verify.phone.post');
-    Route::post('/auth/phone-verify', [ForgotPasswordController::class, 'handlePhoneVerification'])->name('phone.verify');
-    Route::post('/save-phone', [ForgotPasswordController::class, 'savePhoneToSession'])->name('save.phone');
-    Route::post('/reset-phone-otp-attempts', [ForgotPasswordController::class, 'resetPhoneOtpAttempts'])->name('phone.otp.reset.attempts');
+    Route::get('/verify-phone', [PasswordResetController::class, 'showPhoneVerifyForm'])->name('verify.phone');
+    Route::post('/verify-phone', [PasswordResetController::class, 'verifyPhoneOtp'])->name('verify.phone.post');
+    Route::post('/auth/phone-verify', [PasswordResetController::class, 'handlePhoneVerification'])->name('phone.verify');
+    Route::post('/save-phone', [PasswordResetController::class, 'savePhoneToSession'])->name('save.phone');
+    Route::post('/reset-phone-otp-attempts', [PasswordResetController::class, 'resetPhoneOtpAttempts'])->name('phone.otp.reset.attempts');
 });
 
 

@@ -36,10 +36,25 @@ class AppServiceProvider extends ServiceProvider
             \App\Core\Doctor\Ports\Outbound\DoctorRepositoryInterface::class,
             \App\Infrastructure\Persistence\Eloquent\DoctorRepository::class
         );
+        $this->app->bind(
+            \App\Core\Auth\Ports\Outbound\AuthRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Eloquent\AuthRepository::class
+        );
+        $this->app->bind(
+            \App\Core\Auth\Ports\Inbound\AuthUseCaseInterface::class,
+            \App\Core\Auth\Application\Services\AuthService::class
+        );
     }
 
     public function boot(): void
     {
+        // Define Rate Limiter for Login SaaS
+        \Illuminate\Support\Facades\RateLimiter::for('login-saas', function (\Illuminate\Http\Request $request) {
+            $email = (string) $request->input('email');
+            $key = \Illuminate\Support\Str::transliterate(\Illuminate\Support\Str::lower($email) . '|' . $request->ip());
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(5)->by($key);
+        });
+
         // Định nghĩa Map đa hình
         Relation::enforceMorphMap([
             'medicine' => Medicine::class,

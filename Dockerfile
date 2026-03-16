@@ -1,34 +1,50 @@
-# SỬ DỤNG FRANKENPHP SIÊU NHẸ CHO LOCAL
+FROM composer:latest AS vendor
+WORKDIR /app
+
+COPY composer.json composer.lock ./
+
+# Install dependencies without scripts/plugins to speed up and stay secure
+RUN composer install \
+    --ignore-platform-reqs \
+    --no-interaction \
+    --no-plugins \
+    --no-scripts \
+    --prefer-dist
+
 FROM dunglas/frankenphp:1-php8.2-alpine
 
-# Cài đặt PHP extensions cần thiết nhất
-RUN install-php-extensions \
+ENV SERVER_NAME=:8000
+ENV APP_ENV=local
+ENV APP_DEBUG=true
+
+RUN apk add --no-cache \
+    curl \
+    libpng-dev \
+    libzip-dev \
+    && install-php-extensions \
     pdo_mysql \
     gd \
     intl \
     zip \
     bcmath \
-    mbstring
+    opcache
 
-# Thiết lập thư mục làm việc
+# 2. Set up the working directory
 WORKDIR /app
 
-# CHỈ COPY FILE CODE (Đã loại bỏ node_modules thông qua .dockerignore)
+COPY --from=vendor /app/vendor /app/vendor
+
 COPY . .
 
-# Cấu hình Composer
-ENV COMPOSER_ALLOW_SUPERUSER=1
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Thiết lập quyền và link storage
 RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs \
-    && chmod -R 777 storage bootstrap/cache
+    && chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
 
-# Cấu hình Server
-ENV SERVER_NAME=:8000
-ENV APP_ENV=local
-ENV APP_DEBUG=true
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/ || exit 1
 
 EXPOSE 8000
+
+# USER www-data
 
 CMD ["frankenphp", "php-server", "--listen", ":8000"]

@@ -1,0 +1,71 @@
+/* resources/css/Auth/register.css */
+
+.login-container--register {
+    width: 600px;
+    max-width: 95vw;
+    padding: 30px 40px;
+}
+
+.login-container--register .logo-circle {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 15px;
+}
+
+.login-container--register .logo-text {
+    font-size: 14px;
+}
+
+.login-container--register .login-title {
+    font-size: 22px;
+    margin-top: -15px;
+    margin-bottom: 5px;
+}
+
+.login-container--register .login-subtitle {
+    margin-bottom: 20px;
+}
+
+.login-container--register .btn-primary {
+    margin-top: 15px;
+}
+
+.strength-meter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.strength-bars {
+    display: flex;
+    flex: 1;
+    gap: 3px;
+}
+
+.bar {
+    height: 4px;
+    flex: 1;
+    border-radius: 2px;
+    background-color: var(--border-color);
+    transition: background-color 0.3s ease;
+}
+
+.strength-text {
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 50px;
+    text-align: right;
+}
+
+.row {
+    display: flex;
+    margin-right: -4px;
+    margin-left: -4px;
+}
+
+.col-6 {
+    flex: 0 0 50%;
+    padding-right: 4px;
+    padding-left: 4px;
+    box-sizing: border-box;
+}
