@@ -3,6 +3,11 @@
 namespace App\Infrastructure\Persistence\Eloquent;
 
 use App\Core\Auth\Ports\Outbound\AuthRepositoryInterface;
+use App\Core\Auth\Domain\DTOs\SocialAuthData;
+use App\Core\Auth\Domain\DTOs\ForgetPasswordData;
+use App\Core\Auth\Domain\DTOs\VerifyOtpData;
+use App\Core\Auth\Domain\DTOs\ResetPasswordData;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Core\Auth\Domain\DTOs\RegisterData;
@@ -33,7 +38,7 @@ class AuthRepository implements AuthRepositoryInterface
         return false;
     }
 
-    public function findOrCreateSocialUser(\App\Core\Auth\Domain\DTOs\SocialAuthData $data)
+    public function findOrCreateSocialUser(SocialAuthData $data)
     {
         $user = User::where('firebase_uid', $data->uid)
             ->orWhere('email', $data->email)
@@ -68,6 +73,52 @@ class AuthRepository implements AuthRepositoryInterface
 
         return $user;
     }
+    public function findByEmail(string $email) :?User 
+    {
+        return User::where('email',$email)->first();
+    }
+
+    public function createOtp(string $email): string
+    {
+        $otp = (string) rand(100000,999999);
+        DB::table('password_reset_tokens')->updateOrInsert(
+        ['email' => $email],
+        [
+            'token' => $otp, //token thời hạn 10 phút
+            'created_at' => now()
+        ]);
+        return $otp;
+    }
+
+    
+    public function verifyOtp(string $email, string $otp): bool
+    {
+        $record = DB::table('password_reset_tokens')
+            ->where('email', $email)
+            ->where('token', $otp)
+            ->first();
+
+        if ($record && now()->diffInMinutes($record->created_at) < 10) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function updatePassword(string $email, string $password): bool
+    {
+        $user = User::where('email', $email)->first();
+        if ($user) {
+            $user->password = bcrypt($password);
+            $user->save();
+
+            // Clear OTP after success
+            DB::table('password_reset_tokens')->where('email', $email)->delete();
+            return true;
+        }
+        return false;
+    }
+
     public function logout(): void
     {
         Auth::logout();
