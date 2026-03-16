@@ -43,15 +43,15 @@ const primevueOptions = {
 
 //khởi tạo spa
 createInertiaApp({
-  resolve: (name) => {
-    const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
+  resolve: async (name) => {
+    const pages = import.meta.glob('./Pages/**/*.vue')
     const pagePath = `./Pages/${name}.vue`
     
     if (!pages[pagePath]) {
       throw new Error(`Page not found: ${pagePath}`)
     }
     
-    const page = pages[pagePath].default
+    const page = (await pages[pagePath]()).default
     
     // Gán layout mặc định cho các trang admin nếu page chưa set layout
     if (name.startsWith('Admin/') && !page.layout) {

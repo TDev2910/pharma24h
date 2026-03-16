@@ -26,12 +26,11 @@
 }
 
 .login-container--login .form-control {
-    height: 48px;
+    height: 40px;
 }
 
 .login-container--login .btn-primary {
-    height: 48px;
-    border-radius: 24px;
+    margin-top: 10px;
 }
 
 .form-check {
@@ -63,20 +62,7 @@
     color: var(--accent-hover);
 }
 
-.btn-outline-danger {
-    height: 48px;
-    border: 2px solid #ea4335;
-    border-radius: 24px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #ea4335;
-    background: white;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
+/* Google button styling is handled in base.css or updated below if specific to login */
 
 .btn-outline-danger:hover {
     background: #ea4335;

@@ -168,7 +168,7 @@ const handleGoogleLogin = async () => {
                 </div>
 
                 <button type="button" class="btn btn-outline-danger w-100 mb-3" @click="handleGoogleLogin">
-                    <svg width="18" height="18" viewBox="0 0 18 18" style="margin-right: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 18 18" style="margin-right: 12px;">
                         <path fill="#4285F4"
                             d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" />
                         <path fill="#34A853"
@@ -191,6 +191,3 @@ const handleGoogleLogin = async () => {
         </div>
     </div>
 </template>
-
-<style scoped>
-</style>
