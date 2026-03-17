@@ -330,9 +330,6 @@ html, body {
 }
 
 /* Đảm bảo footer luôn sát đáy nếu nội dung ít */
-html, body {
-    height: 100%;
-}
 body {
     display: flex;
     flex-direction: column;

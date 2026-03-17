@@ -96,3 +96,10 @@ document.addEventListener('click', (event) => {
   event.preventDefault()
   router.visit(href)
 })
+
+// Cách 2: Fix scroll cho toàn bộ project
+router.on('finish', () => {
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+})
