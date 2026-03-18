@@ -1,58 +1,58 @@
 <template>
-  <div class="chatbot-container">
-    <div class="chat-messages" ref="messagesContainer">
-      <div v-if="messages.length === 0" class="welcome-screen">
-        <div class="bot-avatar-large">
+  <div class="v-chatbot-container">
+    <div class="v-chatbot-messages" ref="messagesContainer">
+      <div v-if="messages.length === 0" class="v-chatbot-welcome">
+        <div class="v-chatbot-avatar-large">
           <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Bot" />
         </div>
         <h3>Xin chào! Tôi có thể giúp gì cho bạn?</h3>
         <p>Bạn cần tìm sản phẩm, dịch vụ nào không?</p>
       </div>
 
-      <div v-for="(message, index) in messages" :key="index" class="message-row" :class="message.type">
+      <div v-for="(message, index) in messages" :key="index" class="v-chatbot-msg-row" :class="message.type">
 
-        <div v-if="message.type === 'bot'" class="avatar">
+        <div v-if="message.type === 'bot'" class="v-chatbot-avatar">
           <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Bot" />
         </div>
 
-        <div class="message-content-wrapper">
+        <div class="v-chatbot-content-wrapper">
 
           <div v-if="message.type === 'bot' && message.products && message.products.length > 0"
-            class="products-carousel">
-            <div v-for="product in message.products" :key="product.id" class="product-card">
-              <div class="product-image">
+            class="v-chatbot-products">
+            <div v-for="product in message.products" :key="product.id" class="v-chatbot-card">
+              <div class="v-chatbot-img">
                 <img :src="product.image" :alt="product.name"
                   @error="$event.target.src = 'https://via.placeholder.com/150?text=No+Image'" />
               </div>
-              <div class="product-info">
-                <div class="product-name" :title="product.name">{{ product.name }}</div>
-                <div class="product-price">{{ product.price }}</div>
-                <button class="view-btn">Chi tiết</button>
+              <div class="v-chatbot-info">
+                <div class="v-chatbot-name" :title="product.name">{{ product.name }}</div>
+                <div class="v-chatbot-price">{{ product.price }}</div>
+                <button class="v-chatbot-view-btn">Chi tiết</button>
               </div>
             </div>
           </div>
 
-          <div v-if="message.content || isLoading" class="message-bubble"
-            :class="{ 'user-bubble': message.type === 'user', 'bot-bubble': message.type === 'bot', 'loading-bubble': !message.content && isLoading && message.type === 'bot' }">
+          <div v-if="message.content || isLoading" class="v-chatbot-bubble"
+            :class="{ 'v-chatbot-user-bubble': message.type === 'user', 'v-chatbot-bot-bubble': message.type === 'bot' }">
             <span v-if="message.content" v-html="formatMessage(message.content)"></span>
 
-            <div v-else-if="isLoading && message.type === 'bot'" class="typing-dots">
+            <div v-else-if="isLoading && message.type === 'bot'" class="v-chatbot-typing">
               <span></span><span></span><span></span>
             </div>
           </div>
 
-          <div class="message-time">{{ message.time }}</div>
+          <div class="v-chatbot-time">{{ message.time }}</div>
         </div>
 
       </div>
 
-      <div v-if="isLoading" class="message-row bot">
-        <div class="avatar">
+      <div v-if="isLoading" class="v-chatbot-msg-row bot">
+        <div class="v-chatbot-avatar">
           <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Bot" />
         </div>
-        <div class="message-content-wrapper">
-          <div class="message-bubble loading-bubble">
-            <div class="typing-dots">
+        <div class="v-chatbot-content-wrapper">
+          <div class="v-chatbot-bubble v-chatbot-bot-bubble">
+            <div class="v-chatbot-typing">
               <span></span><span></span><span></span>
             </div>
           </div>
@@ -60,19 +60,19 @@
       </div>
     </div>
 
-    <div class="chat-input-area">
+    <div class="v-chatbot-input-area">
       <form @submit.prevent="sendMessage">
-        <div class="input-container">
+        <div class="v-chatbot-input-container">
           <textarea v-model="currentMessage" @keydown.enter.exact.prevent="sendMessage" @keydown.ctrl.enter="addNewLine"
             placeholder="Nhập tin nhắn..." :disabled="isLoading" rows="1" ref="messageInput"
-            class="chat-textarea"></textarea>
+            class="v-chatbot-textarea"></textarea>
 
-          <div class="input-actions">
-            <button type="button" class="action-btn emoji-btn" title="Chèn emoji">
+          <div class="v-chatbot-input-actions">
+            <button type="button" class="v-chatbot-action-btn" title="Chèn emoji">
               <i class="far fa-smile"></i>
             </button>
 
-            <button type="submit" :disabled="!currentMessage.trim() || isLoading" class="action-btn send-btn">
+            <button type="submit" :disabled="!currentMessage.trim() || isLoading" class="v-chatbot-action-btn v-chatbot-send-btn">
               <i class="fas fa-paper-plane"></i>
             </button>
           </div>

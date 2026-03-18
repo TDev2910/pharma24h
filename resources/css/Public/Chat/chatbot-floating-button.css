@@ -1,5 +1,5 @@
-/* Chatbot Floating Button & Sidebar Styles */
-.floating-btn {
+/* Chatbot Floating Button & Sidebar Styles - Prefixed to avoid conflicts */
+.v-chatbot-floating-btn {
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -19,21 +19,21 @@
   z-index: 1000;
 }
 
-.floating-btn:hover {
+.v-chatbot-floating-btn:hover {
   transform: scale(1.1);
   box-shadow: none;
 }
 
-.robot-icon {
-  margin-top: 90px;
-  margin-bottom: 90px;
+.v-chatbot-robot-icon {
+  margin-top: 10px;
+  margin-bottom: 10px;
   width: 70px;
   height: 65px;
   object-fit: contain;
 }
 
 /* Sidebar Widget */
-.chatbot-sidebar {
+.v-chatbot-sidebar {
   position: fixed;
   right: 20px;
   bottom: 20px;
@@ -49,7 +49,7 @@
 }
 
 /* Sidebar Header */
-.chatbot-sidebar-header {
+.v-chatbot-sidebar-header {
   background: #1a56db;
   color: white;
   padding: 15px 20px;
@@ -59,19 +59,19 @@
   flex-shrink: 0;
 }
 
-.chatbot-sidebar-header h3 {
+.v-chatbot-sidebar-header h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
 }
 
-.header-buttons {
+.v-chatbot-header-btns {
   display: flex;
   gap: 8px;
   align-items: center;
 }
 
-.clear-btn {
+.v-chatbot-clear-btn {
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
@@ -86,11 +86,11 @@
   transition: background 0.3s;
 }
 
-.clear-btn:hover {
+.v-chatbot-clear-btn:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
-.close-btn-sidebar {
+.v-chatbot-close-btn-sidebar {
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
@@ -105,38 +105,38 @@
   transition: background 0.3s;
 }
 
-.close-btn-sidebar:hover {
+.v-chatbot-close-btn-sidebar:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
 /* Sidebar Transitions */
-.sidebar-enter-active,
-.sidebar-leave-active {
+.sidebar-v-enter-active,
+.sidebar-v-leave-active {
   transition: all 0.3s ease;
 }
 
-.sidebar-enter-from,
-.sidebar-leave-to {
+.sidebar-v-enter-from,
+.sidebar-v-leave-to {
   transform: translateY(100%) scale(0.8);
   opacity: 0;
 }
 
-.sidebar-enter-to,
-.sidebar-leave-from {
+.sidebar-v-enter-to,
+.sidebar-v-leave-from {
   transform: translateY(0) scale(1);
   opacity: 1;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .chatbot-sidebar {
+  .v-chatbot-sidebar {
     width: calc(100% - 40px);
     height: 70vh;
     right: 20px;
     bottom: 20px;
   }
 
-  .floating-btn {
+  .v-chatbot-floating-btn {
     bottom: 15px;
     right: 15px;
     width: 45px;
