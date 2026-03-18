@@ -1,5 +1,6 @@
 import { createApp, h } from 'vue'
 import { createInertiaApp, Link, router } from '@inertiajs/vue3'
+import './bootstrap'
 
 
 // Expose route globally
@@ -18,24 +19,13 @@ import UserLayout from '@/Layouts/UserLayout.vue'
 import './library/firebase'
 import './library/firebasePhoneAuth'
 
-// Import axios - QUAN TRỌNG
-import axios from 'axios'
-window.axios = axios
-
-
-// Setup CSRF token
-const token = document.head.querySelector('meta[name="csrf-token"]')
-if (token) {
-    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content
-}
-
 const primevueOptions = {
   ripple: true,
-  inputVariant: 'outlined', // hoặc 'filled'
+  inputVariant: 'outlined', 
   theme: {
     preset: Aura,
     options: {
-      darkModeSelector: 'none', // ép light mode → input nền trắng
+      darkModeSelector: 'none', 
       cssLayer: false
     }
   }
