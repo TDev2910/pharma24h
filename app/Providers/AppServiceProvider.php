@@ -44,6 +44,22 @@ class AppServiceProvider extends ServiceProvider
             \App\Core\Auth\Ports\Inbound\AuthUseCaseInterface::class,
             \App\Core\Auth\Application\Services\AuthService::class
         );
+
+        // Binds Chat Module
+        $this->app->bind(
+            \App\Core\Chat\Ports\Inbound\ChatPortInterface::class,
+            \App\Core\Chat\Application\Services\ChatService::class
+        );
+
+        $this->app->bind(
+            \App\Core\Chat\Ports\Outbound\ChatRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Eloquent\ChatRepository::class
+        );
+
+        $this->app->bind(
+            \App\Core\Chat\Ports\Outbound\BroadcastNotificationPortInterface::class,
+            \App\Infrastructure\Broadcasting\PusherBroadcastAdapter::class
+        );
     }
 
     public function boot(): void

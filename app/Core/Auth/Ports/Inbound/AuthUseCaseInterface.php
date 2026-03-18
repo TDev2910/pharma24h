@@ -7,6 +7,7 @@ use App\Core\Auth\Domain\DTOs\RegisterData;
 use App\Core\Auth\Domain\DTOs\ForgetPasswordData;
 use App\Core\Auth\Domain\DTOs\VerifyOtpData;
 use App\Core\Auth\Domain\DTOs\ResetPasswordData;
+use App\Core\Auth\Domain\DTOs\SocialAuthData;
 
 interface AuthUseCaseInterface
 {
@@ -18,7 +19,7 @@ interface AuthUseCaseInterface
      */
     public function login(LoginData $data): bool;
     public function register(RegisterData $data);
-    public function socialLogin(\App\Core\Auth\Domain\DTOs\SocialAuthData $data): bool;
+    public function socialLogin(SocialAuthData $data): bool;
     public function sendOtp(ForgetPasswordData $data);
     public function verifyOtp(VerifyOtpData $data);
     public function resetPassword(ResetPasswordData $data);

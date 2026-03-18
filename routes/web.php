@@ -11,10 +11,11 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Store\CheckoutController;
 use App\Http\Controllers\SupportTicketController;
+use App\Http\Controllers\ChatController;
 use Inertia\Inertia;
 
 //public routes
-Route::get('/',[HomeController::class,'homeInertia'])->name('home');
+Route::get('/', [HomeController::class, 'homeInertia'])->name('home');
 Route::post('/auth/google', [AuthController::class, 'googleLogin'])->name('auth.google');
 //csrf token refresh route
 Route::get('/sanctum/csrf-cookie', function () {
@@ -31,7 +32,7 @@ Route::get('/services/{id}', [HomeController::class, 'serviceDetail'])->name('se
 Route::get('/posts', [HomeController::class, 'posts'])->name('posts');
 Route::get('/bai-viet/{slug}', [HomeController::class, 'detailsPost'])->name('posts.details');
 // 3. Trang liên hệ
-Route::get('/contact', fn () => Inertia::render('Public/Contact'))->name('contact');
+Route::get('/contact', fn() => Inertia::render('Public/Contact'))->name('contact');
 // 4. Gửi liên hệ
 Route::post('/contact', [SupportTicketController::class, 'store'])->name('contact.store');
 // Review routes
@@ -45,6 +46,9 @@ Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+Route::get('/chat/messages/{sessionId}', [ChatController::class, 'getMessages'])->name('chat.messages');
+
 // Route::get('/logout', [AuthController::class, 'logout']);
 
 //forgot password routes (email + phone)
@@ -66,12 +70,12 @@ Route::prefix('password')->name('password.')->group(function () {
 
 
 //user routes
-require __DIR__.'/user.php';
+require __DIR__ . '/user.php';
 
 //store routes
 Route::post('/checkout/shipping-fee', [CheckoutController::class, 'getShippingFee'])
     ->name('checkout.get_shipping_fee');
-require __DIR__.'/store.php';
+require __DIR__ . '/store.php';
 
 //admin routes
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -92,7 +96,7 @@ Route::post('/api/ghn/webhook', [\App\Http\Controllers\Api\GHNWebhookController:
     ->name('ghn.webhook')
     ->withoutMiddleware(['web']);
 // Include admin routes
-require __DIR__.'/admin.php';
+require __DIR__ . '/admin.php';
 
 // Include staff routes
-require __DIR__.'/staff.php';
+require __DIR__ . '/staff.php';
