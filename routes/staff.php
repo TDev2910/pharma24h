@@ -10,6 +10,7 @@ use App\Http\Controllers\Staff\StafGHNController;
 use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\Staff\PostController;
 use App\Http\Controllers\Staff\CategoryController;
+use App\Http\Controllers\ChatController;
 
 Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
@@ -91,7 +92,15 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
     //Category
     Route::resource('categories', CategoryController::class);
 
-    //Post
+    // Chat
+    Route::prefix('chat')->name('chat.')->group(function () {
+        Route::get('/', [ChatController::class, 'index'])->name('index');
+        Route::get('/sessions', [ChatController::class, 'getSessions'])->name('sessions');
+        Route::get('/messages/{sessionId}', [ChatController::class, 'getMessages'])->name('messages');
+        Route::post('/send', [ChatController::class, 'sendMessage'])->name('send');
+    });
+
+    // Post
     Route::resource('posts', PostController::class);
     Route::delete('posts/images/{id}', [PostController::class, 'deleteImage']);
 });

@@ -49,6 +49,10 @@
               <i class="pi pi-users"></i>
               <span>Danh sách khách hàng</span>
             </a>
+            <Link :href="route('staff.chat.index')" class="menu-item" :class="{ 'active': $page.component === 'Staff/Chat/Index' }">
+              <i class="pi pi-comments"></i>
+              <span>Chat trực tuyến</span>
+            </Link>
           </li>
 
           <li class="menu-label">Tickets</li>

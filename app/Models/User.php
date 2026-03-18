@@ -74,7 +74,6 @@ class User extends Authenticatable
         return $this->role === 'user';
     }
 
-    
 
     public function orders()
     {
@@ -105,5 +104,21 @@ class User extends Authenticatable
     public function isGoogleUser()
     {
         return $this->provider === 'google';
+    }
+
+    /**
+     * Get chat sessions for the user
+     */
+    public function chat_sessions()
+    {
+        return $this->hasMany(ChatSession::class);
+    }
+
+    /**
+     * Check if user owns a specific chat session
+     */
+    public function ownsChatSession($sessionId)
+    {
+        return $this->chat_sessions()->where('id', $sessionId)->exists();
     }
 }

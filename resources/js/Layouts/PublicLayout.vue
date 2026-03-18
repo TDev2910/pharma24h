@@ -9,8 +9,9 @@
     </main>
     
     <!-- Footer Component -->
-    <Footer />
+    <Footer :auth="auth" />
     
+    <!-- Các widget khác đã được chuyển vào Footer để gom nhóm -->
     
     <!-- Back to Top Button -->
     <button class="btn-back-top" id="backToTop" title="Lên đầu trang">
@@ -22,6 +23,7 @@
 <script setup>
 import Header from '@/Components/Global/Header.vue'
 import Footer from '@/Components/Global/Footer.vue'
+// import ChatWidget from '@/Components/Global/Chat/ChatWidget.vue'
 import { onMounted, onUnmounted } from 'vue'
 
 // Props từ Inertia
