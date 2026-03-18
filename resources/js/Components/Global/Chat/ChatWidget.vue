@@ -1,56 +1,56 @@
 <template>
-  <div class="chat-wrapper">
+  <div class="v-human-wrapper">
     <!-- Chat Button -->
-    <button v-if="!isOpen && props.showTrigger" @click="toggleChat" class="chat-trigger-btn"
+    <button v-if="!isOpen && props.showTrigger" @click="toggleChat" class="v-human-trigger-btn"
       :class="{ 'has-unread': hasUnread }">
       <i class="fas fa-comment-dots"></i>
-      <span v-if="hasUnread" class="unread-badge"></span>
-      <span class="pulse"></span>
+      <span v-if="hasUnread" class="v-human-unread-badge"></span>
+      <span class="v-human-pulse"></span>
     </button>
 
     <!-- Chat Window -->
-    <Transition name="slide-up">
-      <div v-if="isOpen" class="chat-window shadow-premium">
+    <Transition name="v-human-slide-up">
+      <div v-if="isOpen" class="v-human-window v-human-shadow-premium">
         <!-- Header -->
-        <div class="chat-header">
-          <div class="header-info">
-            <div class="status-indicator"></div>
-            <div class="header-text">
+        <div class="v-human-header">
+          <div class="v-human-header-info">
+            <div class="v-human-status-indicator"></div>
+            <div class="v-human-header-text">
               <h3>Hỗ trợ trực tuyến</h3>
               <p>Chúng tôi luôn sẵn sàng giúp đỡ</p>
             </div>
           </div>
-          <button @click="toggleChat" class="close-btn">
+          <button @click="toggleChat" class="v-human-close-btn">
             <i class="fas fa-times"></i>
           </button>
         </div>
 
         <!-- Messages Area -->
-        <div class="chat-messages" ref="messageContainer">
-          <div v-if="messages.length === 0" class="empty-state">
-            <div class="welcome-icon">
+        <div class="v-human-messages" ref="messageContainer">
+          <div v-if="messages.length === 0" class="v-human-empty-state">
+            <div class="v-human-welcome-icon">
               <i class="fas fa-headset"></i>
             </div>
             <p>Chào bạn! Hãy để lại tin nhắn, nhân viên của chúng tôi sẽ phản hồi ngay.</p>
           </div>
 
-          <div v-for="(msg, index) in messages" :key="index" class="message-group"
-            :class="{ 'message-mine': msg.sender_type === currentSenderType }">
-            <div class="message-bubble">
+          <div v-for="(msg, index) in messages" :key="index" class="v-human-msg-group"
+            :class="{ 'v-human-msg-mine': msg.sender_type === currentSenderType }">
+            <div class="v-human-bubble">
               {{ msg.content }}
             </div>
-            <span class="message-time">{{ formatTime(msg.created_at) }}</span>
+            <span class="v-human-msg-time">{{ formatTime(msg.created_at) }}</span>
           </div>
         </div>
 
         <!-- Input Area -->
-        <div class="chat-input-area">
-          <div class="input-wrapper">
+        <div class="v-human-input-area">
+          <div class="v-human-input-wrapper">
             <textarea v-model="newMessage" @keydown.enter.exact.prevent="sendMessage" placeholder="Nhập tin nhắn..."
-              rows="1" ref="textarea"></textarea>
-            <button @click="sendMessage" :disabled="!newMessage.trim() || isSending" class="send-btn">
+              rows="1" ref="textarea" class="v-human-textarea"></textarea>
+            <button @click="sendMessage" :disabled="!newMessage.trim() || isSending" class="v-human-send-btn">
               <i class="fas fa-paper-plane" v-if="!isSending"></i>
-              <div class="spinner" v-else></div>
+              <div class="v-human-spinner" v-else></div>
             </button>
           </div>
         </div>

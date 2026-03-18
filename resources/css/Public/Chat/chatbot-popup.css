@@ -1,5 +1,5 @@
-/* Chatbot Popup & Message Styles */
-.chatbot-container {
+/* Chatbot Popup & Message Styles - Prefixed to avoid conflicts */
+.v-chatbot-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -10,7 +10,7 @@
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-.chat-header {
+.v-chatbot-header {
   background: #1a73e8;
   color: white;
   padding: 15px;
@@ -23,7 +23,7 @@
   border-top-right-radius: 10px;
 }
 
-.close-btn-popup {
+.v-chatbot-close-btn {
   background: none;
   border: none;
   color: white;
@@ -34,12 +34,12 @@
   transition: opacity 0.2s;
 }
 
-.close-btn-popup:hover {
+.v-chatbot-close-btn:hover {
   opacity: 1;
 }
 
 /* --- Khu vực tin nhắn --- */
-.chat-messages {
+.v-chatbot-messages {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
@@ -50,78 +50,79 @@
 }
 
 /* --- Welcome Screen --- */
-.welcome-screen {
+.v-chatbot-welcome {
   text-align: center;
   margin-top: 30px;
   padding: 20px;
   flex: 1;
 }
 
-.bot-avatar-large img {
+.v-chatbot-avatar-large img {
   width: 80px;
   height: 80px;
   margin-bottom: 20px;
 }
 
-.welcome-screen h3 {
+.v-chatbot-welcome h3 {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 10px;
   color: #333;
 }
 
-.welcome-screen p {
+.v-chatbot-welcome p {
   font-size: 15px;
   color: #666;
 }
 
 /* --- Message Row --- */
-.message-row {
+.v-chatbot-msg-row {
   display: flex;
   align-items: flex-start;
   max-width: 85%;
+  margin-bottom: 15px;
 }
 
-.message-row.user {
+.v-chatbot-msg-row.user {
   align-self: flex-end;
   flex-direction: row-reverse;
   max-width: 100%;
 }
 
-.message-row.bot {
+.v-chatbot-msg-row.bot {
   align-self: flex-start;
 }
 
-.avatar {
+.v-chatbot-avatar {
   width: 36px;
   height: 36px;
   margin-right: 10px;
   flex-shrink: 0;
 }
 
-.message-row.user .avatar {
+.v-chatbot-msg-row.user .v-chatbot-avatar {
   margin-left: 10px;
   margin-right: 0;
 }
 
-.avatar img {
+.v-chatbot-avatar img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.message-content-wrapper {
+.v-chatbot-content-wrapper {
   display: flex;
   flex-direction: column;
   max-width: 100%;
 }
 
-.message-row.user .message-content-wrapper {
+.v-chatbot-msg-row.user .v-chatbot-content-wrapper {
   align-items: flex-end;
 }
 
-.message-bubble {
+.v-chatbot-bubble {
   padding: 12px 16px;
   border-radius: 20px;
   font-size: 15px;
@@ -129,57 +130,57 @@
   word-wrap: break-word;
 }
 
-.bot-bubble {
+.v-chatbot-bot-bubble {
   background-color: white;
   color: #1c1e21;
   border: 1px solid #e9ecef;
   border-top-left-radius: 4px;
 }
 
-.user-bubble {
+.v-chatbot-user-bubble {
   background: #0084ff;
   color: white;
   border-bottom-right-radius: 4px;
 }
 
-.message-time {
+.v-chatbot-time {
   font-size: 11px;
   color: #999;
   margin-top: 4px;
   padding: 0 5px;
 }
 
-.message-row.user .message-time {
+.v-chatbot-msg-row.user .v-chatbot-time {
   text-align: right;
 }
 
-.typing-dots {
+.v-chatbot-typing {
   display: flex;
   gap: 4px;
   padding: 4px 0;
 }
 
-.typing-dots span {
+.v-chatbot-typing span {
   width: 8px;
   height: 8px;
   background: #ccc;
   border-radius: 50%;
-  animation: typing 1.4s infinite ease-in-out both;
+  animation: v-chatbot-typing-anim 1.4s infinite ease-in-out both;
 }
 
-@keyframes typing {
+@keyframes v-chatbot-typing-anim {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
 
 /* --- Input Area --- */
-.chat-input-area {
+.v-chatbot-input-area {
   padding: 10px 15px;
   background: white;
   border-top: 1px solid #e9ecef;
 }
 
-.input-container {
+.v-chatbot-input-container {
   display: flex;
   align-items: flex-end;
   background: white;
@@ -189,11 +190,11 @@
   transition: box-shadow 0.2s, border-color 0.2s;
 }
 
-.input-container:focus-within {
+.v-chatbot-input-container:focus-within {
   border-color: #0084ff;
 }
 
-.chat-textarea {
+.v-chatbot-textarea {
   flex: 1;
   border: none;
   background: transparent;
@@ -208,7 +209,7 @@
 }
 
 /* --- Product Carousel --- */
-.products-carousel {
+.v-chatbot-products {
   display: flex;
   gap: 12px;
   overflow-x: auto;
@@ -218,16 +219,16 @@
   scrollbar-width: thin;
 }
 
-.products-carousel::-webkit-scrollbar {
+.v-chatbot-products::-webkit-scrollbar {
   height: 6px;
 }
 
-.products-carousel::-webkit-scrollbar-thumb {
+.v-chatbot-products::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 3px;
 }
 
-.product-card {
+.v-chatbot-card {
   min-width: 160px;
   max-width: 160px;
   background: white;
@@ -240,12 +241,12 @@
   transition: transform 0.2s;
 }
 
-.product-card:hover {
+.v-chatbot-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-.product-image {
+.v-chatbot-img {
   height: 120px;
   width: 100%;
   background: #f9f9f9;
@@ -255,20 +256,20 @@
   overflow: hidden;
 }
 
-.product-image img {
+.v-chatbot-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.product-info {
+.v-chatbot-info {
   padding: 10px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-.product-name {
+.v-chatbot-name {
   font-size: 13px;
   font-weight: 600;
   color: #333;
@@ -282,14 +283,14 @@
   height: 34px;
 }
 
-.product-price {
+.v-chatbot-price {
   font-size: 14px;
   color: #d32f2f;
   font-weight: bold;
   margin-bottom: 8px;
 }
 
-.view-btn {
+.v-chatbot-view-btn {
   margin-top: auto;
   background: #e3f2fd;
   color: #1976d2;
@@ -303,17 +304,17 @@
   transition: background 0.2s;
 }
 
-.view-btn:hover {
+.v-chatbot-view-btn:hover {
   background: #bbdefb;
 }
 
-.input-actions {
+.v-chatbot-input-actions {
   display: flex;
   gap: 4px;
   margin-bottom: 2px;
 }
 
-.action-btn {
+.v-chatbot-action-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -324,24 +325,24 @@
   font-size: 18px;
 }
 
-.action-btn:hover {
+.v-chatbot-action-btn:hover {
   background-color: #f2f2f2;
 }
 
-.send-btn-chatbot {
+.v-chatbot-send-btn {
   color: #0084ff;
 }
 
-.send-btn-chatbot:disabled {
+.v-chatbot-send-btn:disabled {
   color: #bcc0c4;
   cursor: not-allowed;
 }
 
-.chat-messages::-webkit-scrollbar {
+.v-chatbot-messages::-webkit-scrollbar {
   width: 6px;
 }
 
-.chat-messages::-webkit-scrollbar-thumb {
+.v-chatbot-messages::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 3px;
 }

@@ -1,18 +1,18 @@
 <template>
   <div>
     <!-- Floating Button -->
-    <button @click="toggleChat" class="floating-btn floating-chatbot">
-      <img :src="robotImageUrl" alt="Chatbot" class="robot-icon" />
+    <button @click="toggleChat" class="v-chatbot-floating-btn">
+      <img :src="robotImageUrl" alt="Chatbot" class="v-chatbot-robot-icon" />
     </button>
 
     <!-- Sidebar Widget -->
-    <Transition name="sidebar">
-      <div v-if="isOpen" class="chatbot-sidebar">
-        <div class="chatbot-sidebar-header">
+    <Transition name="sidebar-v">
+      <div v-if="isOpen" class="v-chatbot-sidebar">
+        <div class="v-chatbot-sidebar-header">
           <h3>Hỗ Trợ Khách Hàng</h3>
-          <div class="header-buttons">
-            <!-- <button @click="clearChat" class="clear-btn"></button> -->
-            <button @click="closeChat" class="close-btn">&times;</button>
+          <div class="v-chatbot-header-btns">
+            <!-- <button @click="clearChat" class="v-chatbot-clear-btn"></button> -->
+            <button @click="closeChat" class="v-chatbot-close-btn-sidebar">&times;</button>
           </div>
         </div>
         <ChatbotPopup />
