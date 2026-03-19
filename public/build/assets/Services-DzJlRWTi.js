@@ -1,1 +1,0 @@
-import{_ as e,c as o,o as a}from"./app-B3u1iKtU.js";import"./firebase-CLx4k24K.js";const c={name:"PurchaseReturnsDashboard"};function r(s,t,n,_,p,d){return a(),o("div",null," Xin chào bạn ")}const f=e(c,[["render",r],["__scopeId","data-v-6a82eb23"]]);export{f as default};
