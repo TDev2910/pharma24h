@@ -61,7 +61,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue';
-import axios from 'axios';
+// import axios from 'axios';  <-- Bỏ dòng này vì chúng ta sẽ dùng window.axios
 import { usePage } from '@inertiajs/vue3';
 import { v4 as uuidv4 } from 'uuid';
 import "@/../css/Public/Chat/chat-widget.css";
@@ -91,7 +91,7 @@ const sessionId = ref(localStorage.getItem('chat_session_id') || uuidv4());
 
 const fetchMessages = async () => {
   try {
-    const response = await axios.get(`/chat/messages/${sessionId.value}`);
+    const response = await window.axios.get(`/chat/messages/${sessionId.value}`);
     messages.value = response.data;
     scrollToBottom();
   } catch (error) {
@@ -136,7 +136,7 @@ const sendMessage = async () => {
   scrollToBottom();
 
   try {
-    const response = await axios.post('/chat/send', {
+    const response = await window.axios.post('/chat/send', {
       content,
       session_id: sessionId.value
     });

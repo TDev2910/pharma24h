@@ -1,0 +1,1 @@
+import{_ as e,c as o,o as a}from"./app-DDQyqZMM.js";import"./firebase-CLx4k24K.js";const c={name:"AdminDashboard"};function t(r,s,n,d,_,p){return a(),o("div")}const f=e(c,[["render",t],["__scopeId","data-v-6b934c70"]]);export{f as default};
