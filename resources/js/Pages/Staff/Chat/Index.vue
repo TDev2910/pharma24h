@@ -129,7 +129,7 @@
 
 <script setup>
 import { Head } from '@inertiajs/vue3';
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
 import axios from 'axios';
 
 const sessions = ref([]);
@@ -168,11 +168,32 @@ const fetchSessions = async () => {
 };
 
 const selectSession = async (session) => {
+  // Rời khỏi kênh cũ nếu đang có session khác active
+  if (activeSession.value && window.Echo) {
+    window.Echo.leave(`chat.${activeSession.value.id}`);
+  }
+
   activeSession.value = session;
   try {
     const response = await axios.get(route('staff.chat.messages', { sessionId: session.id }));
     activeMessages.value = response.data;
     scrollToBottom();
+
+    // Lắng nghe real-time cho session này
+    if (window.Echo) {
+      window.Echo.channel(`chat.${session.id}`)
+        .listen('.message.sent', (e) => {
+          // Chỉ thêm vào nếu là tin nhắn từ khách (tránh bị lặp tin của chính mình)
+          if (e.message.senderType !== 'staff') {
+            activeMessages.value.push({
+              content: e.message.content,
+              sender_type: e.message.senderType,
+              created_at: new Date().toISOString()
+            });
+            scrollToBottom();
+          }
+        });
+    }
   } catch (error) { console.error(error); }
 };
 
@@ -194,7 +215,18 @@ const scrollToBottom = async () => {
 onMounted(() => {
   fetchSessions();
   if (window.Echo) {
-    window.Echo.channel('chat-global').listen('.message.sent', () => fetchSessions());
+    window.Echo.channel('chat-global').listen('.message.sent', () => {
+      fetchSessions();
+    });
+  }
+});
+
+onUnmounted(() => {
+  if (activeSession.value && window.Echo) {
+    window.Echo.leave(`chat.${activeSession.value.id}`);
+  }
+  if (window.Echo) {
+    window.Echo.leave('chat-global');
   }
 });
 </script>
