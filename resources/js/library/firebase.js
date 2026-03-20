@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBQUz0ue4L2g2ykPVJh2p-khzxyNNVmHSU",
+  apiKey: "AIzaSyCi8A_iSddlHwDonyEjk_BLVogKj8j4Cng",
   authDomain: "pharma24h-f0cd2.firebaseapp.com",
   projectId: "pharma24h-f0cd2",
   storageBucket: "pharma24h-f0cd2.firebasestorage.app",
