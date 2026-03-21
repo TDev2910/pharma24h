@@ -159,11 +159,14 @@
   </div>
 
   <!-- Các widget ẩn hoặc điều khiển riêng -->
+  <!-- ChatWidget ẩn giao diện nhưng vẫn lắng nghe sự kiện 'open-human-chat' từ nút Nhân viên -->
+  <ChatWidget :show-trigger="false" />
   <VchatWidget :auth="auth" />
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
+import ChatWidget from '@/Components/Global/Chat/ChatWidget.vue'
 import VchatWidget from '@/Components/Global/Chat/VchatWidget.vue'
 import ChatbotFloatingButton from '@/Components/Global/Chat/ChatbotFloatingButton.vue'
 
