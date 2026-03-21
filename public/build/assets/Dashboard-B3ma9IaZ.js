@@ -1,1 +1,0 @@
-import{_ as a,c as o,o as c}from"./app-Da1Rc8zJ.js";import"./firebase-b1DSsoBO.js";const e={name:"SalaryDashboard"};function r(t,n,s,_,p,d){return c(),o("div",null," xin chào bạn ")}const l=a(e,[["render",r],["__scopeId","data-v-7221cf9c"]]);export{l as default};
