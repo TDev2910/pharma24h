@@ -346,3 +346,32 @@
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 3px;
 }
+
+/* --- Mobile Spacing & Alignment Fixes --- */
+@media (max-width: 500px) {
+  .v-chatbot-messages {
+    padding: 15px 10px;
+    gap: 12px;
+  }
+
+  .v-chatbot-msg-row {
+    max-width: 92%;
+  }
+
+  .v-chatbot-bubble {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .v-chatbot-welcome h3 {
+    font-size: 18px;
+  }
+
+  .v-chatbot-input-area {
+    padding: 8px 10px;
+  }
+
+  .v-chatbot-input-container {
+    padding: 4px 10px;
+  }
+}

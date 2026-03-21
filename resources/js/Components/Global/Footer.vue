@@ -123,6 +123,7 @@
 
   <!-- Speed Dial FAB (Floating Action Button) -->
   <div class="fab-wrapper">
+    <!-- Options bung lên trên -->
     <TransitionGroup name="speed-dial">
       <div v-if="isFabOpen" class="fab-options" key="options">
         <!-- Zalo -->
@@ -145,22 +146,24 @@
       </div>
     </TransitionGroup>
 
-    <!-- Nút chính FAB -->
-    <button @click="isFabOpen = !isFabOpen" :class="['fab-main', { 'is-active': isFabOpen }]">
-      <i :class="isFabOpen ? 'fas fa-times' : 'fas fa-comment-dots'"></i>
-      <span v-if="!isFabOpen" class="pulse-ring"></span>
-    </button>
+    <!-- Hàng dưới: Robot AI + Nút FAB chính nằm cạnh nhau -->
+    <div class="fab-bottom-row">
+      <!-- AI Chatbot Button -->
+      <ChatbotFloatingButton />
+      <!-- Nút chính FAB -->
+      <button @click="isFabOpen = !isFabOpen" :class="['fab-main', { 'is-active': isFabOpen }]">
+        <i :class="isFabOpen ? 'fas fa-times' : 'fas fa-comment-dots'"></i>
+        <span v-if="!isFabOpen" class="pulse-ring"></span>
+      </button>
+    </div>
   </div>
 
   <!-- Các widget ẩn hoặc điều khiển riêng -->
-  <ChatWidget :show-trigger="false" />
-  <ChatbotFloatingButton />
   <VchatWidget :auth="auth" />
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
-import ChatWidget from '@/Components/Global/Chat/ChatWidget.vue'
 import VchatWidget from '@/Components/Global/Chat/VchatWidget.vue'
 import ChatbotFloatingButton from '@/Components/Global/Chat/ChatbotFloatingButton.vue'
 
@@ -262,18 +265,26 @@ const currentYear = computed(() => new Date().getFullYear())
 /* 5. Speed Dial FAB Styles */
 .fab-wrapper {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
+  bottom: 100px;        /* Nhấc lên để tránh nút scroll-to-top */
+  right: 10px;
   display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 15px;
+  flex-direction: column;      /* options ở trên, bottom-row ở dưới */
+  align-items: flex-end;       /* canh phải */
+  gap: 12px;
   z-index: 9999;
+}
+
+/* Hàng dọc: Robot AI ở trên, FAB chính ở dưới */
+.fab-bottom-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 .fab-main {
   width: 60px;
-  height: 55px;
+  height: 60px;
   border-radius: 50%;
   background-color: #1a56db;
   color: white;
@@ -286,6 +297,7 @@ const currentYear = computed(() => new Date().getFullYear())
   justify-content: center;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
+  flex-shrink: 0;
 }
 
 .fab-main.is-active {
