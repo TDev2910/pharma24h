@@ -1,7 +1,7 @@
 .v-human-wrapper {
   position: fixed;
-  bottom: 25px;
-  right: 25px;
+  bottom: 100px; /* Nằm ngay trên nút AI Bot */
+  right: 25px;   /* Cùng một hàng dọc với AI Bot */
   z-index: 9999;
 }
 
@@ -68,9 +68,9 @@
 
 /* Chat Window */
 .v-human-window {
-  position: absolute;
-  bottom: 80px;
-  right: 0;
+  position: fixed; /* Chuyển sang fixed để dễ canh bottom độc lập */
+  bottom: 110px;
+  right: 25px;
   width: 380px;
   height: 520px;
   max-height: calc(100vh - 120px);
@@ -301,10 +301,17 @@
 }
 
 /* Mobile adjustments */
-@media (max-width: 450px) {
+@media (max-width: 500px) {
+  .v-human-wrapper {
+    right: 14px !important; 
+    bottom: 90px !important;
+  }
   .v-human-window {
-    width: calc(100vw - 40px);
-    right: -10px;
-    height: 480px;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    border-radius: 0 !important;
   }
 }
