@@ -146,7 +146,6 @@ class ProductSearchService
                 $q->where($nameColumn, 'like', '%' . $keyword . '%');
                 if ($modelClass === Medicine::class) {
                     $q->orWhere('hoat_chat', 'like', '%' . $keyword . '%')
-                        ->orWhere('cong_dung', 'like', '%' . $keyword . '%')
                         ->orWhere('mo_ta', 'like', '%' . $keyword . '%')
                         ->orWhere('ham_luong', 'like', '%' . $keyword . '%');
                 }
@@ -169,7 +168,6 @@ class ProductSearchService
                     $q->orWhere($nameColumn, 'like', '%' . $keyword . '%');
                     if ($modelClass === Medicine::class) {
                         $q->orWhere('hoat_chat', 'like', '%' . $keyword . '%')
-                            ->orWhere('cong_dung', 'like', '%' . $keyword . '%')
                             ->orWhere('mo_ta', 'like', '%' . $keyword . '%')
                             ->orWhere('ham_luong', 'like', '%' . $keyword . '%');
                     }
@@ -330,7 +328,7 @@ class ProductSearchService
     }
 
 
-
+    //truy ấn
     public function formatForGemini(array $searchResults): string
     {
         $formatted = "THÔNG TIN SẢN PHẨM/DỊCH VỤ LIÊN QUAN:\n\n";
@@ -351,7 +349,7 @@ class ProductSearchService
             foreach ($searchResults['medicines'] as $index => $medicine) {
                 $formatted .= "- Sản phẩm: {$medicine->ten_thuoc}\n";
                 $formatted .= "  Giá: {$medicine->gia_ban_formatted} | Kho: " . ($medicine->ton_kho > 0 ? "Còn hàng" : "Hết") . "\n";
-                $shortDesc = Str::limit($medicine->mo_ta ?? $medicine->cong_dung ?? 'Hỗ trợ điều trị', 150);
+                $shortDesc = Str::limit($medicine->mo_ta ?? 'Hỗ trợ điều trị', 150);
                 $formatted .= "  Công dụng chính: {$shortDesc}\n";
                 if ($medicine->mo_ta) {
                     $formatted .= "  [Thông tin chi tiết - Chỉ dùng khi khách hỏi sâu]: {$medicine->mo_ta}\n";

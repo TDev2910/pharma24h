@@ -11,7 +11,6 @@
         <div class="v-chatbot-sidebar-header">
           <h3>Hỗ Trợ Khách Hàng</h3>
           <div class="v-chatbot-header-btns">
-            <!-- <button @click="clearChat" class="v-chatbot-clear-btn"></button> -->
             <button @click="closeChat" class="v-chatbot-close-btn-sidebar">&times;</button>
           </div>
         </div>
