@@ -19,4 +19,6 @@ interface ChatPortInterface
     public function getSessions();
 
     public function getMessages(string $sessionId);
+
+    public function getSessionById(string $sessionId);
 }

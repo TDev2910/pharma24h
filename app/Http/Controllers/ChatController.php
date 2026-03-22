@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Core\Chat\Ports\Inbound\ChatPortInterface;
 use App\Core\Chat\Domain\DTOs\MessageData;
+use App\Events\NewChatMessage;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -50,6 +51,8 @@ class ChatController extends Controller
         );
 
         $message = $this->chatService->sendMessage($messageData);
+        $chatSession = $this->chatService->getSessionById($request->input('session_id'));
+        broadcast(new NewChatMessage($chatSession, $message))->toOthers();
 
         return response()->json($message);
     }
