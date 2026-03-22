@@ -172,6 +172,7 @@ import ChatbotFloatingButton from '@/Components/Global/Chat/ChatbotFloatingButto
 
 const isFabOpen = ref(false)
 
+// Hàm này sẽ gửi tín hiệu đi khắp trang
 const openHumanChat = () => {
   window.dispatchEvent(new CustomEvent('open-human-chat'));
   isFabOpen.value = false;

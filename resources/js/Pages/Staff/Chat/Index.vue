@@ -130,7 +130,6 @@
 <script setup>
 import { Head } from '@inertiajs/vue3';
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
-import axios from 'axios';
 
 const sessions = ref([]);
 const activeSession = ref(null);
@@ -162,7 +161,7 @@ const formatDate = (dateStr) => dateStr ? new Date(dateStr).toLocaleDateString('
 
 const fetchSessions = async () => {
   try {
-    const response = await axios.get(route('staff.chat.sessions'));
+    const response = await window.axios.get(route('staff.chat.sessions'));
     sessions.value = response.data;
   } catch (error) { console.error(error); }
 };
@@ -175,7 +174,7 @@ const selectSession = async (session) => {
 
   activeSession.value = session;
   try {
-    const response = await axios.get(route('staff.chat.messages', { sessionId: session.id }));
+    const response = await window.axios.get(route('staff.chat.messages', { sessionId: session.id }));
     activeMessages.value = response.data;
     scrollToBottom();
 
@@ -201,7 +200,7 @@ const sendMessage = async () => {
   if (!newMessage.value.trim() || !activeSession.value || isSending.value) return;
   const content = newMessage.value; newMessage.value = ''; isSending.value = true;
   try {
-    const response = await axios.post(route('staff.chat.send'), { content, session_id: activeSession.value.id });
+    const response = await window.axios.post(route('staff.chat.send'), { content, session_id: activeSession.value.id });
     activeMessages.value.push(response.data);
     scrollToBottom();
   } catch (error) { console.error(error); } finally { isSending.value = false; }
@@ -215,7 +214,7 @@ const scrollToBottom = async () => {
 onMounted(() => {
   fetchSessions();
   if (window.Echo) {
-    window.Echo.channel('chat-global').listen('.message.sent', () => {
+    window.Echo.private('staff.chats').listen('.new.chat.message', () => {
       fetchSessions();
     });
   }
@@ -226,7 +225,7 @@ onUnmounted(() => {
     window.Echo.leave(`chat.${activeSession.value.id}`);
   }
   if (window.Echo) {
-    window.Echo.leave('chat-global');
+    window.Echo.leave('staff.chats');
   }
 });
 </script>

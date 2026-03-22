@@ -61,7 +61,6 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue';
-// import axios from 'axios';  <-- Bỏ dòng này vì chúng ta sẽ dùng window.axios
 import { usePage } from '@inertiajs/vue3';
 import { v4 as uuidv4 } from 'uuid';
 import "@/../css/Public/Chat/chat-widget.css";
@@ -180,7 +179,7 @@ onMounted(() => {
   fetchMessages();
   initEcho();
 
-  // Listen for external trigger
+  // Đăng ký lắng nghe sự kiện từ trình duyệt (window)
   window.addEventListener('open-human-chat', () => {
     if (!isOpen.value) toggleChat();
   });
