@@ -37,4 +37,9 @@ class ChatService implements ChatPortInterface
     {
         return $this->repository->getSessionMessages($sessionId);
     }
+
+    public function getSessionById(string $sessionId)
+    {
+        return $this->repository->findSession($sessionId);
+    }
 }
