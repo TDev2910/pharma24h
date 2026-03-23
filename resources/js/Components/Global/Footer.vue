@@ -80,7 +80,7 @@
               <div class="payment-icons">
                 <div class="payment-icon bg-white rounded p-1">
                   <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png"
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZHjLoIrydHpn35cieRu557nqVPnd-Ou298g&s"
                     alt="Visa" title="Visa">
                 </div>
                 <div class="payment-icon bg-white rounded p-1">
@@ -269,11 +269,14 @@ const currentYear = computed(() => new Date().getFullYear())
 /* 5. Speed Dial FAB Styles */
 .fab-wrapper {
   position: fixed;
-  bottom: 100px;        /* Nhấc lên để tránh nút scroll-to-top */
+  bottom: 100px;
+  /* Nhấc lên để tránh nút scroll-to-top */
   right: 10px;
   display: flex;
-  flex-direction: column;      /* options ở trên, bottom-row ở dưới */
-  align-items: flex-end;       /* canh phải */
+  flex-direction: column;
+  /* options ở trên, bottom-row ở dưới */
+  align-items: flex-end;
+  /* canh phải */
   gap: 12px;
   z-index: 9999;
 }

@@ -79,7 +79,7 @@
 
                     <div class="col-lg-4 text-center my-4 my-lg-0">
                         <div class="profile-image-wrapper position-relative text-center">
-                            <img :src="doctors[4].image" alt="Dược sĩ Đạt"
+                            <img :src="doctors[0].image" alt="Dược sĩ Đạt"
                                 class="img-fluid main-image rounded-4 shadow-lg" />
                         </div>
                     </div>
@@ -202,16 +202,6 @@ const doctors = ref([
         id: 3,
         name: 'Dr. Le Van C',
         image: 'https://img.freepik.com/free-photo/female-doctor-hospital-with-stethoscope_23-2148827775.jpg'
-    },
-    {
-        id: 4,
-        name: 'Dr. Nguyen Van A',
-        image: '/storage/avatars/doctors/dsd.jpg'
-    },
-    {
-        id: 5,
-        name: 'Dr. Nguyen Van A',
-        image: '/storage/banner/healthy.jpg'
     },
 ]);
 </script>
