@@ -268,7 +268,7 @@ const formatPrice = (p) => new Intl.NumberFormat('vi-VN').format(p || 0)
 const getImageUrl = (item) => item.image ? `/storage/${item.image}` : '/images/placeholder.png'
 
 // --- ACTIONS ---
-
+// Close mobile menu
 const closeMenu = () => {
   const menuElement = document.getElementById('mobileMenu');
   const bsOffcanvas = bootstrap.Offcanvas.getInstance(menuElement);
