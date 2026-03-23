@@ -219,12 +219,24 @@
       </div>
       <div class="offcanvas-body">
         <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link" href="/" data-inertia>Trang chủ</a></li>
-          <li class="nav-item"><a class="nav-link" href="/medical-team" data-inertia>Đội ngũ</a></li>
-          <li class="nav-item"><a class="nav-link" href="/products" data-inertia>Sản phẩm</a></li>
-          <li class="nav-item"><a class="nav-link" href="/services" data-inertia>Dịch vụ</a></li>
-          <li class="nav-item"><a class="nav-link" href="/posts" data-inertia>Góc sức khỏe</a></li>
-          <li class="nav-item"><a class="nav-link" href="/contact" data-inertia>Liên hệ</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/" data-inertia @click="closeMenu">Trang chủ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/medical-team" data-inertia @click="closeMenu">Đội ngũ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/products" data-inertia @click="closeMenu">Sản phẩm</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/services" data-inertia @click="closeMenu">Dịch vụ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/posts" data-inertia @click="closeMenu">Góc sức khỏe</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contact" data-inertia @click="closeMenu">Liên hệ</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -256,6 +268,15 @@ const formatPrice = (p) => new Intl.NumberFormat('vi-VN').format(p || 0)
 const getImageUrl = (item) => item.image ? `/storage/${item.image}` : '/images/placeholder.png'
 
 // --- ACTIONS ---
+// Close mobile menu
+const closeMenu = () => {
+  const menuElement = document.getElementById('mobileMenu');
+  const bsOffcanvas = bootstrap.Offcanvas.getInstance(menuElement);
+  if (bsOffcanvas) {
+    bsOffcanvas.hide();
+  }
+};
+
 const toggleCart = () => {
   isCartOpen.value = !isCartOpen.value
   if (isCartOpen.value) fetchCart()

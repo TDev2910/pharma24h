@@ -10,6 +10,10 @@
     padding: 10px 0;
   }
 
+  .input-group {
+    width: 100% !important;
+  }
+
   .products-toolbar .toolbar-left,
   .products-toolbar .toolbar-right {
     width: 100%;
