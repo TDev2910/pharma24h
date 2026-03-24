@@ -18,5 +18,6 @@ interface PaymentGatewayInterface
     /**
      * Xử lý dữ liệu phản hồi (Return/IPN)
      */
+    //xử lý kiểm tra chữ ký
     public function verifyPayment(array $data): array;
 }
