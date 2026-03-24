@@ -21,7 +21,7 @@ class CheckoutRequest extends FormRequest
     {
         $rules = [
             'delivery_method' => 'required|in:shipping,pickup',
-            'payment_method' => 'required|in:cod,vnpay',
+            'payment_method' => 'required|in:cod,vnpay,sepay',
             'note' => 'nullable|string',
             'customer_email' => 'nullable|email|max:255',
             'shipping_fee' => 'nullable|integer|min:0', // Phí hiển thị cho khách

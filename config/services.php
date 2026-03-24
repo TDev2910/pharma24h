@@ -40,6 +40,15 @@ return [
         'hash_secret' => env('VNPAY_HASH_SECRET'),
     ],
 
+    'sepay' => [
+        'merchant_id'  => env('SEPAY_MERCHANT_ID'),
+        'secret_key'   => env('SEPAY_SECRET_KEY'),
+        'api_url'      => env('SEPAY_API_URL', 'https://my.sepay.vn/paymentapi'),
+        'account_num'  => env('SEPAY_ACCOUNT_NUMBER'),
+        'bank_code'    => env('SEPAY_BANK_CODE'),
+        'sandbox'      => env('SEPAY_SANDBOX', true),
+    ],
+
     'ghn' => [
         'token' => env('GHN_TOKEN'),
         'shop_id' => env('GHN_SHOP_ID'),

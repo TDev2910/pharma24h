@@ -443,6 +443,23 @@ onMounted(() => {
                                             </div>
                                         </div>
                                     </label>
+
+                                    <!-- SePay Option -->
+                                    <label class="payment-option-card"
+                                        :class="{ active: form.payment_method === 'sepay' }">
+                                        <input type="radio" v-model="form.payment_method" value="sepay">
+                                        <div class="content d-flex align-items-center p-3">
+                                            <div class="icon-wrap me-3 bg-white rounded-circle d-flex align-items-center justify-content-center"
+                                                style="width: 48px; height: 48px;">
+                                                <img src="https://sepay.vn/wp-content/uploads/2023/12/sepay-icon-512x512-1.png"
+                                                    alt="SePay" style="width: 32px; height: 32px; object-fit: contain;">
+                                            </div>
+                                            <div class="flex-fill">
+                                                <div class="fw-bold text-dark">Chuyển khoản QR (SePay)</div>
+                                                <div class="small text-muted">Xác nhận ngay lập tức qua ứng dụng Ngân hàng</div>
+                                            </div>
+                                        </div>
+                                    </label>
                                 </div>
                             </div>
                         </div>
