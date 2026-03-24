@@ -16,13 +16,11 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.in
 Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/checkout/failed', [CheckoutController::class, 'failed'])->name('checkout.failed');
-//thanh toán vnpay
+// Luồng thanh toán tập trung (VNPay, SePay...)
 Route::prefix('payment')->name('payment.')->group(function () {
-    Route::prefix('vnpay')->name('vnpay.')->group(function () {
-        Route::get('/checkout/{order_id}', [PaymentController::class, 'vnpayCheckout'])->name('checkout');
-        Route::get('/return', [PaymentController::class, 'vnpayReturn'])->name('return');
-        Route::post('/ipn', [PaymentController::class, 'vnpayIpn'])->name('ipn');
-    });
+    Route::get('/{driver}/checkout/{order_id}', [PaymentController::class, 'checkout'])->name('checkout');
+    Route::get('/{driver}/return', [PaymentController::class, 'return'])->name('return');
+    Route::post('/{driver}/ipn', [PaymentController::class, 'ipn'])->name('ipn');
 });
 
 // GHN API routes (public for checkout form)
