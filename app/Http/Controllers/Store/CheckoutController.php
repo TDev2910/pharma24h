@@ -81,8 +81,12 @@ class CheckoutController extends Controller
             $orderData['ghn_fee']      = $request->input('ghn_fee', 0);
             $order = $this->checkoutService->createOrder($orderData);
 
-            if ($request->payment_method === 'vnpay') {
-                return redirect()->route('payment.vnpay.checkout', ['order_id' => $order->id]);
+            // Xử lý thanh toán Online (VNPay, SePay...)
+            if (in_array($request->payment_method, ['vnpay', 'sepay'])) {
+                return redirect()->route('payment.checkout', [
+                    'driver'   => $request->payment_method,
+                    'order_id' => $order->id
+                ]);
             }
 
             // Gửi email cho đơn COD (cod)

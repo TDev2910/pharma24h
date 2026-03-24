@@ -3,55 +3,100 @@
 namespace App\Http\Controllers\Store;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
-use App\Services\Payment\VNPayService;
-use App\Services\EmailSMTP\EmailService;
+use App\Core\Payment\Ports\Inbound\PaymentUseCaseInterface;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
-    protected VNPayService $vnpayService;
-    protected EmailService $emailService;
+    /**
+     * @var PaymentUseCaseInterface - Kết nối qua Inbound Port
+     */
+    protected PaymentUseCaseInterface $paymentUseCase;
 
-    public function __construct(VNPayService $vnpayService, EmailService $emailService)
+    public function __construct(PaymentUseCaseInterface $paymentUseCase)
     {
-        $this->vnpayService = $vnpayService;
-        $this->emailService = $emailService;
+        $this->paymentUseCase = $paymentUseCase;
     }
 
-    // Khởi tạo thanh toán VNPAY cho đơn hàng cụ thể và lấy orderid
-    public function vnpayCheckout(int $order_id)
+    /**
+     * Khởi tạo thanh toán - Chỉ nhận diện Luồng (Flow) 
+     * còn Logic thì giao phó cho UseCase.
+     */
+    public function checkout(string $driver, int $order_id)
     {
-        $order = Order::findOrFail($order_id); //Lấy đơn hàng theo order_id
-        $url = $this->vnpayService->generatePaymentUrl($order);
-        // Inertia external redirect
-        return Inertia::location($url);
-    }
+        // Gọi qua Inbound Port (Tính trừu tượng ở ĐÂY!)
+        $response = $this->paymentUseCase->handleCheckout($driver, $order_id);
+        
+        $paymentData = $response['payment_data'];
+        $order = $response['order'];
 
-    // Return URL từ VNPAY
-    public function vnpayReturn(Request $request)
-    {
-        $result = $this->vnpayService->processReturn($request->all());
-        if ($result['success']) {
-            // Gửi email xác nhận đơn hàng
-            try {
-                $this->emailService->sendOrderConfirmation($result['order']);
-            } catch (\Exception $e) {
-                // Silent fail - không log lỗi
-            }
-            
-            return redirect()->route('checkout.success', ['order_id' => $result['order']->id]);
+        // Controller chỉ lo phần "Giao diện" và "Điều hướng"
+        if ($paymentData['type'] === 'url') {
+            return Inertia::location($paymentData['payment_url']);
         }
+
+        // Nếu là SePay hoặc các loại thanh toán yêu cầu POST Form
+        if ($paymentData['type'] === 'form_post') {
+            return Inertia::render('Public/Checkout/PaymentRedirect', [
+                'action_url' => $paymentData['action_url'],
+                'fields'     => $paymentData['fields'],
+                'amount'     => $paymentData['amount'],
+                'message'    => 'Đang chuyển hướng bạn đến cổng thanh toán an toàn của SePay...'
+            ]);
+        }
+
+        if ($paymentData['type'] === 'qr') {
+            return Inertia::render('Public/Checkout/PaymentQR', [
+                'order'       => $order,
+                'qr_url'      => $paymentData['qr_url'],
+                'description' => $paymentData['description'],
+                'amount'      => $paymentData['amount'],
+                'bank_info'   => [
+                    'account_num' => $paymentData['account_num'],
+                    'bank_code'   => $paymentData['bank_code']
+                ]
+            ]);
+        }
+
+        return redirect()->route('checkout.failed');
+    }
+
+    /**
+     * Xử lý ReturnUrl 
+     */
+    public function return(string $driver, Request $request)
+    {
+        // Gọi qua Inbound Port
+        $result = $this->paymentUseCase->handleReturn($driver, $request->all());
+
+        if ($result['success']) {
+            return redirect()->route('checkout.success', [
+                'order_id' => $result['order']->id
+            ]);
+        }
+
         return redirect()->route('checkout.failed')->with('error', $result['message']);
     }
 
-    public function vnpayIpn(Request $request)
+    /**
+     * Webhook/IPN xử lý ngầm
+     */
+    public function ipn(string $driver, Request $request)
     {
-        $result = $this->vnpayService->processReturn($request->all());
+        // Gọi qua Inbound Port
+        $result = $this->paymentUseCase->handleIpn($driver, $request->all());
+
+        if ($driver === 'vnpay') {
+            return response()->json([
+                'RspCode' => $result['success'] ? '00' : '97',
+                'Message' => $result['message'],
+            ]);
+        }
+
         return response()->json([
-            'RspCode' => $result['success'] ? '00' : '97',
-            'Message' => $result['message'] ?? 'Invalid signature',
+            'success' => $result['success'],
+            'message' => $result['message'],
         ]);
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "013c9504c52bb139693bb009bb00c475",
+    "content-hash": "f46843647b1a41d21e5bfaa27a64f0a8",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -5285,6 +5285,71 @@
                 "source": "https://github.com/MyIntervals/PHP-CSS-Parser/tree/v8.9.0"
             },
             "time": "2025-07-11T13:20:48+00:00"
+        },
+        {
+            "name": "sepay/sepay-pg",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sepayvn/sepay-pg-php.git",
+                "reference": "2c7eb9261794fab4ae854a4e05d7edd86b2879f1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sepayvn/sepay-pg-php/zipball/2c7eb9261794fab4ae854a4e05d7edd86b2879f1",
+                "reference": "2c7eb9261794fab4ae854a4e05d7edd86b2879f1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^7.10",
+                "php": ">=7.4",
+                "psr/log": "^1.1|^2.0|^3.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.87",
+                "mockery/mockery": "^1.6",
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^9.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SePay\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "SePay Team",
+                    "email": "info@sepay.vn",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Ngô Quốc Đạt",
+                    "email": "quocdat@sepay.vn",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Official PHP SDK for SePay Payment Gateway — simple integration for payments, bank transfers, VietQR.",
+            "homepage": "https://sepay.vn",
+            "keywords": [
+                "SePay",
+                "bank-transfer",
+                "gateway",
+                "payment",
+                "vietnam",
+                "vietqr"
+            ],
+            "support": {
+                "issues": "https://github.com/sepayvn/sepay-pg-php/issues",
+                "source": "https://github.com/sepayvn/sepay-pg-php/tree/1.0.0"
+            },
+            "time": "2025-10-13T03:57:01+00:00"
         },
         {
             "name": "shuchkin/simplexlsx",
@@ -10577,12 +10642,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
 }

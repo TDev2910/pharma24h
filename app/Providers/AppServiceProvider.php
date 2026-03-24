@@ -60,6 +60,12 @@ class AppServiceProvider extends ServiceProvider
             \App\Core\Chat\Ports\Outbound\BroadcastNotificationPortInterface::class,
             \App\Infrastructure\Broadcasting\PusherBroadcastAdapter::class
         );
+
+        // Binds Payment Module
+        $this->app->bind(
+            \App\Core\Payment\Ports\Inbound\PaymentUseCaseInterface::class,
+            \App\Core\Payment\Services\PaymentUseCase::class
+        );
     }
 
     public function boot(): void
