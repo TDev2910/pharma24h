@@ -1,0 +1,32 @@
+# ============================================================
+# docker-compose.prod.yml — CHỈ DÙNG Ở PRODUCTION SERVER
+# Chạy bằng lệnh: docker-compose -f docker-compose.prod.yml up -d
+# ============================================================
+#
+# LƯU Ý QUAN TRỌNG:
+# - File này KHÔNG dùng volumes để gắn code từ ngoài vào
+# - Toàn bộ code, thư viện, file build ĐÃ được đóng gói
+#   sẵn bên trong Docker Image (xem Dockerfile)
+# - Mỗi khi deploy chỉ cần: docker-compose -f docker-compose.prod.yml pull
+#                            && docker-compose -f docker-compose.prod.yml up -d
+# ============================================================
+services:
+  app:
+    image: ghcr.io/tdev2910/pharma24h:latest
+    container_name: suckhoe24h-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - SERVER_NAME=:8000
+    env_file:
+      - .env
+    command: frankenphp php-server --listen :8000 --root public/
+    networks:
+      - suckhoe24h-network
+
+networks:
+  suckhoe24h-network:
+    driver: bridge
