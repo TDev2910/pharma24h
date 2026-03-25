@@ -1,0 +1,32 @@
+# ============================================================
+# docker-compose.local.yml — CHỈ DÙNG Ở MÁY LOCAL
+# Chạy bằng lệnh: docker-compose -f docker-compose.local.yml up -d
+# ============================================================
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: suckhoe24h-app-local
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    # Volume để hot-reload: code thay đổi ở máy thật
+    # sẽ được ánh xạ ngay vào bên trong container
+    volumes:
+      - .:/app
+      - /app/vendor       # Giữ nguyên vendor của container, không bị overwrite
+      - /app/node_modules # Giữ nguyên node_modules của container
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - SERVER_NAME=:8000
+    command: frankenphp php-server --listen :8000 --root public/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - suckhoe24h-network
+
+networks:
+  suckhoe24h-network:
+    driver: bridge

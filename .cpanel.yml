@@ -1,9 +1,25 @@
 ---
+# ================================================================
+# .cpanel.yml — Kịch bản deploy tự động trên cPanel
+# ================================================================
+# Sau khi bạn nhấn "Deploy HEAD Commit" trên cPanel,
+# hệ thống sẽ tự động chạy các lệnh dưới đây theo thứ tự.
+# ================================================================
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/your_username/public_html/
-    - /bin/cp -R * $DEPLOYPATH
-    - /bin/chmod -R 755 $DEPLOYPATH/storage
-    - /bin/chmod -R 755 $DEPLOYPATH/bootstrap/cache
-    # Bạn có thể thêm lệnh artisan để dọn dẹp cache sau khi deploy
-    - php artisan optimize:clear
+    # 1. Đặt đường dẫn thư mục gốc của dự án
+    - export DEPLOYPATH=/home/bjzezjqv/public_html/
+
+    # 2. Cài đặt / cập nhật thư viện PHP (composer)
+    #    Lệnh này sẽ tự cài thêm bất kỳ thư viện nào bạn thêm mới
+    - /usr/local/bin/php /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --working-dir=$DEPLOYPATH
+
+    # 3. Chạy database migration (an toàn, chỉ thêm bảng/cột mới)
+    - /usr/local/bin/php $DEPLOYPATH/artisan migrate --force
+
+    # 4. Xóa cache cũ và tối ưu hóa cho Production
+    - /usr/local/bin/php $DEPLOYPATH/artisan config:clear
+    - /usr/local/bin/php $DEPLOYPATH/artisan cache:clear
+    - /usr/local/bin/php $DEPLOYPATH/artisan view:clear
+    - /usr/local/bin/php $DEPLOYPATH/artisan route:clear
+    - /usr/local/bin/php $DEPLOYPATH/artisan optimize
