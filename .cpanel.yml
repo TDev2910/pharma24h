@@ -1,25 +1,18 @@
 ---
-# ================================================================
-# .cpanel.yml — Kịch bản deploy tự động trên cPanel
-# ================================================================
-# Sau khi bạn nhấn "Deploy HEAD Commit" trên cPanel,
-# hệ thống sẽ tự động chạy các lệnh dưới đây theo thứ tự.
-# ================================================================
 deployment:
   tasks:
-    # 1. Đặt đường dẫn thư mục gốc của dự án
-    - export DEPLOYPATH=/home/bjzezjqv/public_html/
+    # Đường dẫn thư mục chạy web trên cPanel của bạn
+    - export DEPLOYPATH=/home/bjzezjqv/public_html
 
-    # 2. Cài đặt / cập nhật thư viện PHP (composer)
-    #    Lệnh này sẽ tự cài thêm bất kỳ thư viện nào bạn thêm mới
-    - /usr/local/bin/php /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --working-dir=$DEPLOYPATH
+    # Sao chép toàn bộ code vào thư mục web (trừ các thư mục không cần thiết)
+    - /bin/rsync -av --exclude '.git' --exclude '.github' --exclude 'node_modules' --exclude 'tests' . $DEPLOYPATH/
 
-    # 3. Chạy database migration (an toàn, chỉ thêm bảng/cột mới)
-    - /usr/local/bin/php $DEPLOYPATH/artisan migrate --force
+    # Cài đặt thư viện PHP (composer)
+    - cd $DEPLOYPATH && /usr/local/bin/php /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
 
-    # 4. Xóa cache cũ và tối ưu hóa cho Production
-    - /usr/local/bin/php $DEPLOYPATH/artisan config:clear
-    - /usr/local/bin/php $DEPLOYPATH/artisan cache:clear
-    - /usr/local/bin/php $DEPLOYPATH/artisan view:clear
-    - /usr/local/bin/php $DEPLOYPATH/artisan route:clear
-    - /usr/local/bin/php $DEPLOYPATH/artisan optimize
+    # Chạy database migration
+    - cd $DEPLOYPATH && /usr/local/bin/php artisan migrate --force
+
+    # Xóa cache cũ và tối ưu lại
+    - cd $DEPLOYPATH && /usr/local/bin/php artisan optimize:clear
+    - cd $DEPLOYPATH && /usr/local/bin/php artisan optimize
