@@ -25,10 +25,11 @@ class SePayAdapter implements PaymentGatewayInterface
         $this->secretKey = config('services.sepay.secret_key');
     }
 
+    //tạo dữ liệu thanh toán
     public function generatePaymentData(Order $order): array
     {
         $checkoutData = CheckoutBuilder::make()
-            ->paymentMethod('BANK_TRANSFER') 
+            ->paymentMethod('BANK_TRANSFER')
             ->currency('VND')
             ->orderInvoiceNumber('INV-' . $order->id . '-' . time())
             ->orderAmount((int)$order->total_amount)
@@ -48,7 +49,7 @@ class SePayAdapter implements PaymentGatewayInterface
         $order->save();
 
         return [
-            'type'        => 'form_post', 
+            'type'        => 'form_post',
             'action_url'  => $actionUrl,
             'fields'      => $formFields,
             'description' => $checkoutData['order_description'],
@@ -56,6 +57,7 @@ class SePayAdapter implements PaymentGatewayInterface
         ];
     }
 
+    //xử lý kiểm tra chữ ký
     public function verifyPayment(array $data): array
     {
         // 1. Xác thực Webhook Token từ Header Authorization

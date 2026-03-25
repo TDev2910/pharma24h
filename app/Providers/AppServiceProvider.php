@@ -64,7 +64,7 @@ class AppServiceProvider extends ServiceProvider
         // Binds Payment Module
         $this->app->bind(
             \App\Core\Payment\Ports\Inbound\PaymentUseCaseInterface::class,
-            \App\Core\Payment\Services\PaymentUseCase::class
+            \App\Core\Payment\Application\Services\PaymentUseCase::class
         );
     }
 
