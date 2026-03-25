@@ -4,14 +4,13 @@ namespace App\Http\Controllers\Store;
 
 use App\Http\Controllers\Controller;
 use App\Core\Payment\Ports\Inbound\PaymentUseCaseInterface;
+use App\Core\Payment\Domain\DTOs\PaymentCheckoutData;
+use App\Core\Payment\Domain\DTOs\PaymentReturnData;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
-    /**
-     * @var PaymentUseCaseInterface - Kết nối qua Inbound Port
-     */
     protected PaymentUseCaseInterface $paymentUseCase;
 
     public function __construct(PaymentUseCaseInterface $paymentUseCase)
@@ -25,13 +24,14 @@ class PaymentController extends Controller
      */
     public function checkout(string $driver, int $order_id)
     {
-        // Gọi qua Inbound Port (Tính trừu tượng ở ĐÂY!)
-        $response = $this->paymentUseCase->handleCheckout($driver, $order_id);
-        
+        $data = new PaymentCheckoutData($driver, $order_id);
+
+        //Gọi qua Inbound Port với DTO
+        $response = $this->paymentUseCase->handleCheckout($data);
+
         $paymentData = $response['payment_data'];
         $order = $response['order'];
 
-        // Controller chỉ lo phần "Giao diện" và "Điều hướng"
         if ($paymentData['type'] === 'url') {
             return Inertia::location($paymentData['payment_url']);
         }
@@ -67,8 +67,11 @@ class PaymentController extends Controller
      */
     public function return(string $driver, Request $request)
     {
-        // Gọi qua Inbound Port
-        $result = $this->paymentUseCase->handleReturn($driver, $request->all());
+        // 1. Tạo DTO phản hồi
+        $data = new PaymentReturnData($driver, $request->all());
+
+        // 2. Gọi qua Inbound Port
+        $result = $this->paymentUseCase->handleReturn($data);
 
         if ($result['success']) {
             return redirect()->route('checkout.success', [
@@ -84,8 +87,11 @@ class PaymentController extends Controller
      */
     public function ipn(string $driver, Request $request)
     {
-        // Gọi qua Inbound Port
-        $result = $this->paymentUseCase->handleIpn($driver, $request->all());
+        // 1. Tạo DTO phản hồi
+        $data = new PaymentReturnData($driver, $request->all());
+
+        // 2. Gọi qua Inbound Port
+        $result = $this->paymentUseCase->handleIpn($data);
 
         if ($driver === 'vnpay') {
             return response()->json([

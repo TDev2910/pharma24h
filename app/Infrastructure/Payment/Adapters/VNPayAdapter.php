@@ -68,6 +68,7 @@ class VNPayAdapter implements PaymentGatewayInterface
         ];
     }
 
+    //xử lý kiểm tra chữ ký
     public function verifyPayment(array $data): array
     {
         $vnp_SecureHash = $data['vnp_SecureHash'] ?? '';
