@@ -25,6 +25,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: 🛠️ Thiết lập Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: 🏷️ Tạo metadata (tags, labels) cho Image
         id: meta
         uses: docker/metadata-action@v5
@@ -63,23 +66,17 @@ jobs:
           key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
           port: ${{ secrets.PROD_SSH_PORT }}
           script: |
-            # Di chuyển vào thư mục dự án trên server
-            cd /var/www/suckhoe24h
+            # Di chuyển vào thư mục dự án trên cPanel
+            cd /home/bjzezjqv/public_html
 
-            # Đăng nhập vào GitHub Container Registry trên server
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            # Nếu bạn dùng Git Version Control của cPanel, lệnh này sẽ kéo code về
+            git pull origin main
 
-            # Kéo Image mới nhất về
-            docker-compose -f docker-compose.prod.yml pull
+            # Chạy composer cài đặt thư viện mới (Dùng PHP 8.2 của cPanel)
+            php /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
 
-            # Khởi động lại container với Image mới (không có downtime)
-            docker-compose -f docker-compose.prod.yml up -d --remove-orphans
+            # Chạy migration database
+            php artisan migrate --force
 
-            # Chạy migration database (an toàn, chỉ thêm không xóa)
-            docker-compose -f docker-compose.prod.yml exec -T app php artisan migrate --force
-
-            # Xóa cache cũ và tối ưu
-            docker-compose -f docker-compose.prod.yml exec -T app php artisan optimize
-
-            # Dọn dẹp các Image cũ không dùng để tiết kiệm dung lượng
-            docker image prune -f
+            # Tối ưu hóa cache
+            php artisan optimize
