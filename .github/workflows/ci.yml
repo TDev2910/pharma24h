@@ -1,15 +1,21 @@
-name: CI - Kiểm tra code trước khi deploy
+name: CI - Kiem tra code
 
-# Chỉ kích hoạt khi push lên main hoặc dev
+# Chay CI tren tat ca cac nhanh quan trong
+# CD (deploy) duoc xu ly rieng boi cpanel.yml khi merge vao main
 on:
   push:
-    branches: ["main", "dev"]
+    branches:
+      - main
+      - dev
+      - "feature/**" # Chay CI cho tat ca nhanh feature
   pull_request:
-    branches: ["main", "dev"]
+    branches:
+      - main # Kiem tra ky truoc khi merge vao production
+      - dev  # Kiem tra ky truoc khi merge vao dev
 
 jobs:
   laravel-ci:
-    name: Kiểm tra code (CI)
+    name: Kiem tra code (CI)
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +29,7 @@ jobs:
           extensions: mbstring, bcmath, gd, zip, sqlite3
           tools: composer:v2
 
-      - name: 📦 Cache Composer packages
+      - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v4
         with:
@@ -32,20 +38,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-php-
 
-      - name: Tạo file .env tạm
+      - name: Tao file .env tam
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-      - name: Cài đặt Composer dependencies
+      - name: Cai dat Composer dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --ignore-platform-reqs
 
       - name: Generate APP_KEY
         run: php artisan key:generate
 
-      - name: Phân quyền thư mục storage
+      - name: Phan quyen thu muc storage
         run: chmod -R 777 storage bootstrap/cache
 
-      - name: Tạo SQLite Database test
+      - name: Tao SQLite Database test
         run: |
           mkdir -p database
           touch database/database.sqlite
@@ -61,7 +67,7 @@ jobs:
           npm install
           npm run build
 
-      - name: Chạy Laravel Tests
+      - name: Chay Laravel Tests
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
