@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 class GeminiAiProvider implements AiProviderInterface
 {
     private string $apiKey;
-    private array $models = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+    private array $models = ['gemini-3.0-flash', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
     public function __construct()
     {
         $this->apiKey = config('services.gemini.api_key');
@@ -33,7 +33,8 @@ class GeminiAiProvider implements AiProviderInterface
                     return;
                 }
 
-                Log::warning("Model {$modelName} failed, trying next model...");
+                $errorDetail = $response->body();
+                Log::warning("Model {$modelName} failed. Response: {$errorDetail}");
             } catch (\Exception $e) {
                 Log::error("Error with model {$modelName}: " . $e->getMessage());
                 continue;
