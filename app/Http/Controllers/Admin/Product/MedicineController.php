@@ -11,6 +11,7 @@ use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class MedicineController extends Controller
@@ -128,7 +129,7 @@ class MedicineController extends Controller
     {
         try {
             // Validate the request
-            $validator = \Validator::make($request->all(), [
+            $validator = Validator::make($request->all(), [
                 'ten_thuoc'         => 'required|string|max:255',
                 'ma_hang'           => 'nullable|string|max:50|unique:medicines,ma_hang',
                 'ten_viet_tat'      => 'nullable|string|max:100',
@@ -169,6 +170,7 @@ class MedicineController extends Controller
 
             // Prepare data
             $data = $request->all();
+            $data['slug'] = Str::slug($request->ten_thuoc) . '-' . time();
             $data['ban_truc_tiep'] = $request->has('ban_truc_tiep') ? 1 : 0;
 
             // Handle image upload
@@ -268,6 +270,11 @@ class MedicineController extends Controller
             $medicine = Medicine::findOrFail($id);
 
             $data = $request->all();
+
+            // Cập nhật slug tương tự như Post
+            if ($request->has('ten_thuoc')) {
+                $data['slug'] = Str::slug($request->ten_thuoc) . '-' . time();
+            }
 
             // Xử lý checkbox ban_truc_tiep
             $data['ban_truc_tiep'] = $request->has('ban_truc_tiep') ? 1 : 0;
