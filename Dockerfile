@@ -1,50 +1,101 @@
-FROM composer:latest AS vendor
+# ============================================================
+# Stage 1: PHP + Composer dependencies (production only)
+# ============================================================
+FROM composer:2.8 AS vendor
+
 WORKDIR /app
 
 COPY composer.json composer.lock ./
 
-# Install dependencies without scripts/plugins to speed up and stay secure
 RUN composer install \
-    --ignore-platform-reqs \
-    --no-interaction \
-    --no-plugins \
+    --no-dev \
     --no-scripts \
-    --prefer-dist
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader \
+    --ignore-platform-reqs
 
-FROM dunglas/frankenphp:1-php8.2-alpine
+# ============================================================
+# Stage 2: Node / Vite – build frontend assets
+# ============================================================
+FROM node:22-alpine AS frontend
 
-ENV SERVER_NAME=:8000
-ENV APP_ENV=local
-ENV APP_DEBUG=true
-
-RUN apk add --no-cache \
-    curl \
-    libpng-dev \
-    libzip-dev \
-    && install-php-extensions \
-    pdo_mysql \
-    gd \
-    intl \
-    zip \
-    bcmath \
-    opcache
-
-# 2. Set up the working directory
 WORKDIR /app
 
-COPY --from=vendor /app/vendor /app/vendor
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts
 
 COPY . .
+COPY --from=vendor /app/vendor ./vendor
 
-RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs \
-    && chmod -R 775 storage bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache
+RUN npm run build
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/ || exit 1
+# ============================================================
+# Stage 3: Final production image (lean & secure)
+# ============================================================
+FROM php:8.2-fpm-alpine AS production
 
-EXPOSE 8000
+LABEL org.opencontainers.image.title="Suckhoe24h API"
+LABEL org.opencontainers.image.description="Laravel production image – optimized"
 
-# USER www-data
+# ── System dependencies (single layer) 
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    curl \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    libwebp-dev \
+    freetype-dev \
+    oniguruma-dev \
+    libzip-dev \
+    icu-dev \
+    && mkdir -p /var/log/supervisor \
+    && docker-php-ext-configure gd \
+        --with-freetype \
+        --with-jpeg \
+        --with-webp \
+    && docker-php-ext-install -j$(nproc) \
+        pdo_mysql \
+        mbstring \
+        zip \
+        exif \
+        pcntl \
+        bcmath \
+        gd \
+        opcache \
+        intl
 
-CMD ["frankenphp", "php-server", "--listen", ":8000"]
+# ── PHP configuration 
+COPY docker/php/php.ini /usr/local/etc/php/conf.d/app.ini
+COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+# ── Nginx configuration 
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
+
+# ── Supervisor configuration 
+COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+WORKDIR /var/www/html
+
+# ── Application code 
+COPY --chown=www-data:www-data . .
+COPY --chown=www-data:www-data --from=vendor /app/vendor ./vendor
+COPY --chown=www-data:www-data --from=frontend /app/public/build ./public/build
+
+# ── Permissions 
+RUN mkdir -p storage/logs \
+    storage/framework/{cache,sessions,views} \
+    bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+# ── Entrypoint 
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

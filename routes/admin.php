@@ -133,7 +133,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('orders/{order}/cancellations/reject', [OrderController::class, 'rejectCancellation'])
         ->name('orders.cancellations.reject');
     Route::post('orders/{order}/update-info', [OrderController::class, 'update'])
-        ->name('orders.update-info'); 
+        ->name('orders.update-info');
     Route::post('orders/{order}/ghn/create', [OrderController::class, 'createGhnOrder'])->name('orders.ghn.create');
     Route::get('orders/{order}/ghn/print', [OrderController::class, 'printGhnOrder'])->name('orders.ghn.print');
     Route::post('orders/{order}/ghn/sync', [OrderController::class, 'syncGhnStatus'])->name('orders.ghn.sync');
@@ -159,12 +159,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     // Customers
+    // Route::resource tự sinh đủ: index, create, store, show, edit, update, destroy
     Route::resource('customers', CustomerController::class)->names('customers');
-    Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
-    Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
-    Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
-    Route::get('/customers/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
-    Route::delete('/customers/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 
     // Employees
     Route::prefix('employees')->name('employees.')->group(function () {
@@ -259,8 +255,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Legacy medicine routes
     Route::get('products/create-medicine', [ProductController::class, 'createMedicine'])->name('products.createMedicine');
     Route::post('products/store-medicine', [ProductController::class, 'storeMedicine'])->name('products.storeMedicine');
-    Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
-    Route::post('products/store', [ProductController::class, 'store'])->name('products.store');
     Route::get('products/{id}/detail', [ProductController::class, 'showDetail'])->name('products.detail');
 
     // Legacy goods routes
@@ -288,5 +282,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/{id}', [SupportTicketController::class, 'show'])->name('show');
         Route::post('/{id}/reply', [SupportTicketController::class, 'reply'])->name('reply');
     });
-
 });

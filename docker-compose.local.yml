@@ -15,8 +15,8 @@ services:
     # sẽ được ánh xạ ngay vào bên trong container
     volumes:
       - .:/app
-      - /app/vendor       # Giữ nguyên vendor của container, không bị overwrite
-      - /app/node_modules # Giữ nguyên node_modules của container
+      - /app/vendor       
+      - /app/node_modules 
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
