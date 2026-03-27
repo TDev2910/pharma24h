@@ -40,7 +40,7 @@ const productName = computed(() => {
 
 // Handle product click to navigate to detail page
 function handleProductClick() {
-  router.visit(`/products/${props.type}/${props.product.id}`)
+  router.visit(`/san-pham/${props.product.slug}`)
 }
 
 // Handle image error - fallback image
@@ -211,4 +211,3 @@ async function handleAddToCart() {
   }
 }
 </style>
-

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Medicine extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'ma_hang',
@@ -25,6 +25,7 @@ class Medicine extends Model
         'hoat_chat',
         'ham_luong',
         'drugusage_id',
+        'slug',
         'quy_cach_dong_goi',
         'manufacturer_id',
         'nuoc_san_xuat',
@@ -93,7 +94,7 @@ class Medicine extends Model
         do {
             $code = str_pad(rand(10000000, 99999999), 8, '0', STR_PAD_LEFT);
         } while (self::where('ma_hang', $code)->exists());
-        
+
         return $code;
     }
 
@@ -103,7 +104,7 @@ class Medicine extends Model
         do {
             $barcode = str_pad(rand(10000000, 99999999), 8, '0', STR_PAD_LEFT);
         } while (self::where('ma_vach', $barcode)->exists());
-        
+
         return $barcode;
     }
 }

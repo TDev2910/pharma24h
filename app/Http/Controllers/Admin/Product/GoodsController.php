@@ -9,6 +9,8 @@ use App\Models\Position;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class GoodsController extends Controller
@@ -160,7 +162,7 @@ class GoodsController extends Controller
     {
         try {
             // Validate the request
-            $validator = \Validator::make($request->all(), [
+            $validator = Validator::make($request->all(), [
                 'ten_hang_hoa'      => 'required|string|max:255',
                 'ma_hang'           => 'nullable|string|max:50',
                 'ma_vach'           => 'nullable|string|max:100',
@@ -190,6 +192,7 @@ class GoodsController extends Controller
 
             // Prepare data
             $data = $request->all();
+            $data['slug'] = Str::slug($request->ten_hang_hoa) . '-' . time();
             $data['ban_truc_tiep'] = $request->has('ban_truc_tiep') ? 1 : 0;
             $data['quan_ly_theo_lo'] = $request->has('quan_ly_theo_lo') ? 1 : 0;
 
@@ -239,7 +242,7 @@ class GoodsController extends Controller
     public function update(Request $request, $id)
     {
         // Validate the request
-        $validator = \Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'ten_hang_hoa'      => 'nullable|string|max:255',
             'ma_hang'           => 'nullable|string|max:50|unique:goods,ma_hang,' . $id,
             'ma_vach'           => 'nullable|string|max:100|unique:goods,ma_vach,' . $id,
@@ -288,6 +291,11 @@ class GoodsController extends Controller
             $goods = Goods::findOrFail($id);
 
             $data = $request->all();
+
+            // Cập nhật slug tương tự như Post
+            if ($request->has('ten_hang_hoa')) {
+                $data['slug'] = Str::slug($request->ten_hang_hoa) . '-' . time();
+            }
 
             // Xử lý checkbox ban_truc_tiep
             $data['ban_truc_tiep'] = $request->has('ban_truc_tiep') ? 1 : 0;

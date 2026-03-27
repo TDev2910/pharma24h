@@ -328,7 +328,12 @@ async function addToCartHandler(product) {
 
 //chuyển hướng đến trang chi tiết sản phẩm
 function goToProductDetail(product) {
-  router.visit(`/products/${product.type}/${product.id}`)
+  if (!product.slug) {
+    alert("Lỗi: Sản phẩm này chưa có Slug! Kiểm tra Database của bạn.");
+    console.log("Sản phẩm lỗi:", product);
+    return;
+  }
+  router.visit(`/san-pham/${product.slug}`);
 }
 
 onMounted(() => {

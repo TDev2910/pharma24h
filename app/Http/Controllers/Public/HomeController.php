@@ -44,10 +44,10 @@ class HomeController extends Controller
                     'title' => $post->title,
                     'slug' => $post->slug,
                     'summary' => Str::limit($post->summary, 160),
-                    'image' => $post->thumbnail 
-                        ? (str_starts_with($post->thumbnail, 'http') 
-                        ? $post->thumbnail 
-                        : asset('storage/' . $post->thumbnail))
+                    'image' => $post->thumbnail
+                        ? (str_starts_with($post->thumbnail, 'http')
+                            ? $post->thumbnail
+                            : asset('storage/' . $post->thumbnail))
                         : 'https://via.placeholder.com/800x600.png?text=No+Image',
                     'date' => $post->created_at ? $post->created_at->format('d/m/Y') : '',
                 ];
@@ -81,47 +81,47 @@ class HomeController extends Controller
     {
         //lấy sản phẩm thuộc loại danh mục thuốc
         $medicines = Medicine::with(['category', 'manufacturer'])
-        ->where('ban_truc_tiep', true)
-        ->latest()
-        ->get()
-        ->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'name' => $item->ten_thuoc,
-                'gia_ban' => $item->gia_ban ?? 0,
-                'gia_khuyen_mai' => $item->gia_khuyen_mai ?? 0,
-                'ton_kho' => $item->ton_kho ?? 0,
-                'ton_khuyen_mai' => $item->ton_khuyen_mai ?? 0,
-                'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? '') : '',
-                'unit'  => $item->don_vi_tinh,
-                'don_vi_tinh' => $item->don_vi_tinh,
-                'image' => $item->image ? asset('storage/' . $item->image) : null,
-                'type'  => 'medicine',
-                'created_at' => $item->created_at
-            ];
-        });
-
-        //lấy sản phẩm thuộc loại danh mục vật tư y tế
+            ->where('ban_truc_tiep', true)
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->ten_thuoc,
+                    'slug' => $item->slug,
+                    'gia_ban' => $item->gia_ban ?? 0,
+                    'gia_khuyen_mai' => $item->gia_khuyen_mai ?? 0,
+                    'ton_kho' => $item->ton_kho ?? 0,
+                    'ton_khuyen_mai' => $item->ton_khuyen_mai ?? 0,
+                    'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? '') : '',
+                    'unit'  => $item->don_vi_tinh,
+                    'don_vi_tinh' => $item->don_vi_tinh,
+                    'image' => $item->image ? asset('storage/' . $item->image) : null,
+                    'type'  => 'medicine',
+                    'created_at' => $item->created_at
+                ];
+            });
         $goods = Goods::with(['category', 'manufacturer'])
-        ->where('ban_truc_tiep', true)
-        ->latest()
-        ->get()
-        ->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'name' => $item->ten_hang_hoa,
-                'gia_ban' => $item->gia_ban ?? 0,
-                'gia_khuyen_mai' => $item->gia_khuyen_mai ?? 0,
-                'ton_kho' => $item->ton_kho ?? 0,
-                'ton_khuyen_mai' => $item->ton_khuyen_mai ?? 0,
-                'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? '') : '',
-                'unit'  => $item->don_vi_tinh,
-                'don_vi_tinh' => $item->don_vi_tinh,
-                'image' => $item->image ? asset('storage/' . $item->image) : null,
-                'type'  => 'goods',
-                'created_at' => $item->created_at
-            ];
-        });
+            ->where('ban_truc_tiep', true)
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->ten_hang_hoa,
+                    'slug' => $item->slug,
+                    'gia_ban' => $item->gia_ban ?? 0,
+                    'gia_khuyen_mai' => $item->gia_khuyen_mai ?? 0,
+                    'ton_kho' => $item->ton_kho ?? 0,
+                    'ton_khuyen_mai' => $item->ton_khuyen_mai ?? 0,
+                    'gia_ban_formatted' => $item->gia_ban ? number_format($item->gia_ban, 0, ',', '.') . ' đ/' . ($item->don_vi_tinh ?? '') : '',
+                    'unit'  => $item->don_vi_tinh,
+                    'don_vi_tinh' => $item->don_vi_tinh,
+                    'image' => $item->image ? asset('storage/' . $item->image) : null,
+                    'type'  => 'goods',
+                    'created_at' => $item->created_at
+                ];
+            });
 
         $allProducts = $medicines->merge($goods)
             ->sortByDesc('created_at')
@@ -131,14 +131,21 @@ class HomeController extends Controller
             'products' => $allProducts
         ]);
     }
-    public function productDetail(Request $request, $type, $id)
+    public function productDetailBySlug(Request $request, $slug)
     {
-        if ($type === 'medicine') {
-            $product = Medicine::with(['category', 'manufacturer', 'drugRoute', 'position'])->findOrFail($id);
-        } else {
-            $product = Goods::with(['category', 'manufacturer', 'position'])->findOrFail($id);
+        $product = Medicine::with(['category', 'manufacturer', 'drugRoute', 'position'])
+            ->where('slug', $slug)
+            ->first();
+        $type = 'medicine';
+        // Nếu Medicine không có, tìm tiếp bảng Goods
+        if (!$product) {
+            $product = Goods::with(['category', 'manufacturer', 'position'])
+                ->where('slug', $slug)
+                ->first();
+            $type = 'goods';
         }
 
+        $id = $product->id;
         $user = $request->user();
 
         //lấy thông tin tất cả review của sản phẩm
@@ -185,7 +192,7 @@ class HomeController extends Controller
     public function services(Request $request)
     {
         $query = Service::with(['category'])
-            ->where('trang_thai', 'kich_hoat'); 
+            ->where('trang_thai', 'kich_hoat');
 
         // Search functionality
         if ($request->filled('search')) {
@@ -223,7 +230,7 @@ class HomeController extends Controller
      */
     public function serviceDetail(Request $request, $id)
     {
-        $service = Service::with(['category','doctor'])
+        $service = Service::with(['category', 'doctor'])
             ->where('trang_thai', 'kich_hoat')
             ->findOrFail($id);
 
@@ -267,29 +274,29 @@ class HomeController extends Controller
                 'summary' => Str::limit($post->summary, 160),
                 'category' => $post->category->name ?? 'Tin tức',
                 'categorySlug' => $post->category->slug ?? '',
-                'image' => $post->thumbnail 
+                'image' => $post->thumbnail
                     ? (str_starts_with($post->thumbnail, 'http') ? $post->thumbnail : asset('storage/' . $post->thumbnail))
                     : 'https://via.placeholder.com/800x600.png?text=No+Image',
                 'slug' => $post->slug,
                 'date' => $post->created_at ? $post->created_at->format('d/m/Y') : '',
-                'views' => rand(100, 2000), 
+                'views' => rand(100, 2000),
             ];
         };
 
         $allPosts = $query->take(6)->get(); // lấy 6 bài cho phần Featured
-        $featuredPosts = $allPosts->map($formatPost)->values(); 
+        $featuredPosts = $allPosts->map($formatPost)->values();
 
         // Lấy Section theo Danh mục gốc (Inheritance)
         $rootCategories = Category::whereNull('parent_id')
-            ->where(function($q) {
-                $q->whereHas('posts', function($pq) {
+            ->where(function ($q) {
+                $q->whereHas('posts', function ($pq) {
                     $pq->where('is_published', true);
-                })->orWhereHas('children.posts', function($pq) {
+                })->orWhereHas('children.posts', function ($pq) {
                     $pq->where('is_published', true);
                 });
             })
-            ->with(['children' => function($q) {
-                $q->whereHas('posts', function($pq) {
+            ->with(['children' => function ($q) {
+                $q->whereHas('posts', function ($pq) {
                     $pq->where('is_published', true);
                 });
             }])->get();
@@ -303,7 +310,7 @@ class HomeController extends Controller
                 ->whereIn('category_id', $catIds)
                 ->where('is_published', true)
                 ->latest()
-                ->take(5) 
+                ->take(5)
                 ->get()
                 ->map($formatPost)
                 ->values();
@@ -329,7 +336,7 @@ class HomeController extends Controller
             'featuredPosts' => $featuredPosts,
             'categorySections' => $categorySections,
             'filters' => $request->only(['category']),
-             'auth' => [
+            'auth' => [
                 'user' => $user ? [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -350,16 +357,16 @@ class HomeController extends Controller
         $postData = [
             'id' => $post->id,
             'title' => $post->title,
-            'content' => $post->content, 
+            'content' => $post->content,
             'summary' => $post->summary,
-            'image' => $post->thumbnail 
+            'image' => $post->thumbnail
                 ? (str_starts_with($post->thumbnail, 'http') ? $post->thumbnail : asset('storage/' . $post->thumbnail))
                 : 'https://via.placeholder.com/1200x600.png?text=No+Image',
             'category' => $post->category->name ?? 'Tin tức',
             'categorySlug' => $post->category->slug ?? '',
             'author' => $post->author ? $post->author->name : 'Admin',
             'date' => $post->created_at ? $post->created_at->format('d/m/Y') : '',
-            'views' => rand(100, 5000), 
+            'views' => rand(100, 5000),
         ];
 
         // Tìm root category để lấy bài liên quan từ cả "nhánh"
@@ -385,16 +392,16 @@ class HomeController extends Controller
         $relatedPosts = $relatedPostQuery->take(4)
             ->latest()
             ->get()
-            ->map(function($p) {
-                 return [
+            ->map(function ($p) {
+                return [
                     'id' => $p->id,
                     'title' => $p->title,
                     'slug' => $p->slug,
-                    'image' => $p->thumbnail 
+                    'image' => $p->thumbnail
                         ? (str_starts_with($p->thumbnail, 'http') ? $p->thumbnail : asset('storage/' . $p->thumbnail))
                         : 'https://via.placeholder.com/800x600.png?text=No+Image',
                     'date' => $p->created_at ? $p->created_at->format('d/m/Y') : '',
-                 ];
+                ];
             });
 
         $user = $request->user();
@@ -412,7 +419,7 @@ class HomeController extends Controller
             ],
         ]);
     }
-    
+
     public function contact()
     {
         return Inertia::render('Public/Contact');
@@ -431,4 +438,3 @@ class HomeController extends Controller
         return array_unique($ids);
     }
 }
-

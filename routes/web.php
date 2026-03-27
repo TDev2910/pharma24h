@@ -25,7 +25,7 @@ Route::get('/sanctum/csrf-cookie', function () {
 Route::get('/medical-team', [HomeController::class, 'medicalTeam'])->name('medical-team');
 
 Route::get('/products', [HomeController::class, 'products'])->name('products');
-Route::get('/products/{type}/{id}', [HomeController::class, 'productDetail'])->name('products.detail');
+Route::get('/san-pham/{slug}', [HomeController::class, 'productDetailBySlug'])->name('products.detail');
 Route::get('/services', [HomeController::class, 'services'])->name('services');
 Route::get('/services/{id}', [HomeController::class, 'serviceDetail'])->name('services.detail');
 // posts
