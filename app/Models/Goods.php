@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Goods extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'ma_hang',
@@ -25,6 +25,7 @@ class Goods extends Model
         'ton_cao_nhat',
         'quan_ly_theo_lo',
         'quy_cach_dong_goi',
+        'slug',
         'manufacturer_id',
         'nuoc_san_xuat',
         'position_id',
@@ -106,7 +107,7 @@ class Goods extends Model
         do {
             $code = str_pad(rand(10000000, 99999999), 8, '0', STR_PAD_LEFT);
         } while (self::where('ma_hang', $code)->exists());
-        
+
         return $code;
     }
 
@@ -116,7 +117,7 @@ class Goods extends Model
         do {
             $barcode = str_pad(rand(10000000, 99999999), 8, '0', STR_PAD_LEFT);
         } while (self::where('ma_vach', $barcode)->exists());
-        
+
         return $barcode;
     }
 }
