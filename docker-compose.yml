@@ -1,27 +1,47 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: suckhoe24h-app
-    restart: unless-stopped
-    ports:
-      - "8000:8000"
-    volumes:
-      - .:/app
-    environment:
-      - APP_ENV=local
-      - APP_DEBUG=true
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: production
+        container_name: suckhoe24h_dev_app
+        restart: unless-stopped
+        volumes:
+            - .:/var/www/html
+            - ./storage:/var/www/html/storage
+        ports:
+            - "8000:80"
+            - "5173:5173"
+        environment:
+            APP_ENV: local
+            APP_DEBUG: "true"
+            DB_HOST: host.docker.internal
+            DB_DATABASE: ${DB_DATABASE}
+            DB_USERNAME: ${DB_USERNAME}
+            DB_PASSWORD: ${DB_PASSWORD}
+#        depends_on:
+#            - db
 
-      - SERVER_NAME=:8000
-      - FRANKENPHP_CONFIG="worker public/index.php"
-    command: frankenphp php-server --listen :8000 --root public/
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    networks:
-      - suckhoe24h-network
+#    db:
+#        image: 'mysql:8.4'
+#        container_name: suckhoe24h_dev_db
+#        restart: unless-stopped
+#        ports:
+#            - "3307:3306"
+#        environment:
+#            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD:-password}'
+#            MYSQL_ROOT_HOST: "%"
+#            MYSQL_DATABASE: '${DB_DATABASE:-suckhoe24h}'
+#            MYSQL_USER: '${DB_USERNAME:-sail}'
+#            MYSQL_PASSWORD: '${DB_PASSWORD:-password}'
+#            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+#        volumes:
+#            - 'suckhoe24h_dev_db:/var/lib/mysql'
+#        healthcheck:
+#            test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD:-password}"]
+#            retries: 3
+#            timeout: 5s
 
-networks:
-  suckhoe24h-network:
-    driver: bridge
-
+volumes:
+    suckhoe24h_dev_db:
+        driver: local
