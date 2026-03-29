@@ -30,7 +30,6 @@ class StoreMedicineRequest extends FormRequest
             'gia_ban'           => 'nullable|numeric|min:0',
             'gia_von'           => 'nullable|numeric|min:0',
             'ton_thap_nhat'     => 'nullable|integer|min:0',
-            'khach_dat'         => 'nullable|integer|min:0',
             'mo_ta'             => 'nullable|string',
             'image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'nhom_hang_id'      => 'nullable|exists:product_categories,id',
@@ -46,7 +45,7 @@ class StoreMedicineRequest extends FormRequest
             'ton_cao_nhat'      => 'nullable|integer|min:0',
             'trong_luong'       => 'nullable|numeric|min:0',
             'don_vi_tinh'       => 'nullable|string',
-            'ban_truc_tiep' => $this->has('ban_truc_tiep'),
+            'ban_truc_tiep'     => 'nullable|boolean',
         ];
     }
 
@@ -72,7 +71,6 @@ class StoreMedicineRequest extends FormRequest
             gia_ban: $this->validated('gia_ban'),
             gia_von: $this->validated('gia_von'),
             ton_thap_nhat: $this->validated('ton_thap_nhat'),
-            khach_dat: $this->validated('khach_dat'),
             mo_ta: $this->validated('mo_ta'),
             image: $this->validated('image'),
             nhom_hang_id: $this->validated('nhom_hang_id'),
@@ -88,9 +86,7 @@ class StoreMedicineRequest extends FormRequest
             ton_cao_nhat: $this->validated('ton_cao_nhat'),
             trong_luong: $this->validated('trong_luong'),
             don_vi_tinh: $this->validated('don_vi_tinh'),
-            ban_truc_tiep: $this->validated('ban_truc_tiep'),
-            gia_khuyen_mai: $this->validated('gia_khuyen_mai'),
-            ton_khuyen_mai: $this->validated('ton_khuyen_mai'),
+            ban_truc_tiep: $this->boolean('ban_truc_tiep'),
             slug: $this->validated('slug'),
         );
     }
