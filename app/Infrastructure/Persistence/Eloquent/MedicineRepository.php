@@ -95,9 +95,8 @@ class MedicineRepository implements MedicineRepositoryInterface
             'ban_truc_tiep'     => $data->ban_truc_tiep,
             'mo_ta'             => $data->mo_ta,
             'image'             => $data->image,
-            'khach_dat'         => $data->khach_dat,
-            'gia_khuyen_mai'    => $data->gia_khuyen_mai,
-            'ton_khuyen_mai'    => $data->ton_khuyen_mai,
+            'gia_khuyen_mai'    => $data->gia_khuyen_mai ?? 0,
+            'ton_khuyen_mai'    => $data->ton_khuyen_mai ?? 0,
         ]);
     }
 
@@ -127,7 +126,6 @@ class MedicineRepository implements MedicineRepositoryInterface
             'don_vi_tinh'       => $data->don_vi_tinh,
             'ban_truc_tiep'     => $data->ban_truc_tiep,
             'mo_ta'             => $data->mo_ta,
-            'khach_dat'         => $data->khach_dat,
             'gia_khuyen_mai'    => $data->gia_khuyen_mai,
             'ton_khuyen_mai'    => $data->ton_khuyen_mai,
         ];

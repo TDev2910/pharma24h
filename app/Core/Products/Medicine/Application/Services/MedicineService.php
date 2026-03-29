@@ -96,9 +96,6 @@ class MedicineService implements MedicineUseCaseInterface
             don_vi_tinh:       $data->don_vi_tinh,
             ban_truc_tiep:     $data->ban_truc_tiep,
             mo_ta:             $data->mo_ta,
-            khach_dat:         $data->khach_dat,
-            gia_khuyen_mai:    $data->gia_khuyen_mai,
-            ton_khuyen_mai:    $data->ton_khuyen_mai,
             image:             $imagePath,
             slug:              $slug,
         );
@@ -161,7 +158,6 @@ class MedicineService implements MedicineUseCaseInterface
             don_vi_tinh:       $data->don_vi_tinh       ?? $medicine->don_vi_tinh,
             ban_truc_tiep:     $data->ban_truc_tiep,
             mo_ta:             $data->mo_ta             ?? $medicine->mo_ta,
-            khach_dat:         $data->khach_dat         ?? $medicine->khach_dat,
             gia_khuyen_mai:    $data->gia_khuyen_mai,
             ton_khuyen_mai:    $data->ton_khuyen_mai,
             image:             $imagePath,

@@ -37,7 +37,6 @@ class Medicine extends Model
         'ban_truc_tiep',
         'mo_ta',
         'image',
-        'khach_dat',
     ];
     protected $dates = ['deleted_at'];
 
