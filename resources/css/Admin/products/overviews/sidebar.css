@@ -1,0 +1,133 @@
+/* Sidebar Container */
+.left-sidebar {
+  width: 280px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #f1f3f5;
+  height: fit-content;
+  flex-shrink: 0;
+}
+
+.filter-card {
+  margin-bottom: 10px;
+}
+
+.divider {
+  border-top: 1px solid #f1f3f5;
+  margin: 20px 0;
+}
+
+/* Header & Link Styles */
+h6 {
+  font-size: 15px;
+  letter-spacing: -0.3px;
+}
+
+.btn-create-link {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.btn-create-link:hover {
+  background-color: #eef6ff;
+  text-decoration: none;
+}
+
+/* Category Tree */
+.category-tree-wrapper {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-right: -10px;
+  padding-right: 10px;
+}
+
+/* --- MODERN TREE STYLES --- */
+:deep(.modern-tree) {
+  border: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+:deep(.modern-tree .p-treenode-content) {
+  padding: 8px 10px !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
+  border: 1px solid transparent;
+}
+
+:deep(.modern-tree .p-treenode-content:hover) {
+  background-color: #f8f9fa !important;
+  color: #000;
+}
+
+:deep(.modern-tree .p-treenode-content.p-highlight) {
+  background-color: #eef6ff !important;
+  color: #007bff !important;
+  font-weight: 600;
+}
+
+.custom-tree-node {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 14px;
+}
+
+.node-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+:deep(.modern-tree .p-treenode-content:hover) .node-actions {
+  opacity: 1;
+}
+
+/* Selected Filter Chip */
+.selected-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  background-color: #eef6ff;
+  color: #007bff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid #cce5ff;
+}
+
+.selected-filter-chip .remove-icon {
+  margin-left: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* DatePicker customization */
+:deep(.custom-datepicker .p-inputtext) {
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+/* Filter Section */
+.filter-section {
+  margin-bottom: 25px;
+}
+
+.filter-section h5 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-weight: 600;
+  font-size: 16px;
+}

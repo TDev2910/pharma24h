@@ -183,14 +183,14 @@ class ServiceController extends Controller
     public function destroy($id)
     {
         try {
-            $service = Service::findOrFail($id);
+        $service = Service::findOrFail($id);
 
             // Delete image if exists
-            if ($service->image && Storage::disk('public')->exists($service->image)) {
-                Storage::disk('public')->delete($service->image);
-            }
+        if ($service->image && Storage::disk('public')->exists($service->image)) {
+            Storage::disk('public')->delete($service->image);
+        }
 
-            $service->delete();
+        $service->delete();
 
             return response()->json([
                 'success' => true,
