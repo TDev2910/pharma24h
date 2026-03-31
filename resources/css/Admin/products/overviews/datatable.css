@@ -1,0 +1,121 @@
+/* Right Content */
+.right-content {
+  flex: 1;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  min-height: 400px;
+}
+
+/* DataTable Styling */
+:deep(.p-datatable) {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+}
+
+:deep(.p-datatable .p-datatable-header) {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  padding: 16px 20px;
+}
+
+:deep(.p-datatable .p-datatable-thead > tr > th) {
+  background: #B4DEBD;
+  color: #495057;
+  font-weight: 600;
+  border-bottom: 2px solid #e9ecef;
+  padding: 16px 20px;
+  font-size: 14px;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr:hover) {
+  background: #e3f2fd !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Product image styling */
+.product-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 2px solid #e9ecef;
+}
+
+.no-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+}
+
+/* Product Detail Container (Expansion) */
+.product-detail-container {
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  padding: 0;
+}
+
+.detail-tabs {
+  display: flex;
+  border-bottom: 1px solid #e9ecef;
+  background: #ffffff;
+}
+
+.detail-tabs .tab {
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6c757d;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.detail-tabs .tab.active {
+  color: #007bff;
+  border-bottom-color: #007bff;
+  background: #ffffff;
+}
+
+.detail-content {
+  padding: 20px;
+  background: #ffffff;
+}
+
+/* Badge styling */
+.badge {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.bg-primary { background-color: #007bff !important; color: white; }
+.bg-success { background-color: #28a745 !important; color: white; }
+.bg-info { background-color: #17a2b8 !important; color: white; }
+.bg-warning { background-color: #ffc107 !important; color: black; }
+.bg-secondary { background-color: #6c757d !important; color: white; }
+
+/* Inventory Input styling */
+.inventory-input {
+  width: 80px;
+  text-align: center;
+}
+
+:deep(.inventory-input .p-inputnumber-input) {
+  text-align: center;
+  font-weight: 600;
+  color: #007bff;
+}

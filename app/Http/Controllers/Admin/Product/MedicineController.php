@@ -74,7 +74,7 @@ class MedicineController extends Controller
     public function store(StoreMedicineRequest $request)
     {
         $this->useCase->createMedicine($request->toDTO());
-        
+
         return redirect()->route('admin.products.index')->with('success', 'Thuốc đã được thêm thành công!');
     }
 

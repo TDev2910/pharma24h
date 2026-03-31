@@ -32,7 +32,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Dashboard - Vue Component
     Route::get('products', function () {
-        return Inertia::render('Admin/Products/Overviews/Dashboard');
+        return Inertia::render('Admin/Products/Overviews/Index');
     })->name('products.index');
 
     Route::get('/services-dashboard', function () {
