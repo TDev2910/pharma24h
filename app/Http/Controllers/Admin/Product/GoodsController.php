@@ -371,7 +371,7 @@ class GoodsController extends Controller
         $goods->delete();
 
         // Kiểm tra nếu là AJAX request
-        if (request()->ajax() || request()->wantsJson()) {
+        if (request()->ajax() || request()->wantsJson() || request()->has('ajax')) {
             return response()->json([
                 'success' => true,
                 'message' => 'Xóa hàng hóa thành công!'

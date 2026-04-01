@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Content\Category;
 use App\Models\Content\PostImage;
 
-class Post extends Model    
+class Post extends Model
 {
     use HasFactory;
 
@@ -20,7 +21,7 @@ class Post extends Model
         'user_id',
         'category_id',
     ];
-    
+
     public function author()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -28,7 +29,7 @@ class Post extends Model
 
     public function category()
     {
-        return $this->belongsTo(\App\Models\Content\Category::class);
+        return $this->belongsTo(Category::class);
     }
 
     //format date to d/m/Y

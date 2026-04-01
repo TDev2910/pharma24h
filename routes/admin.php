@@ -32,7 +32,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Dashboard - Vue Component
     Route::get('products', function () {
-        return Inertia::render('Admin/Products/Overviews/Dashboard');
+        return Inertia::render('Admin/Products/Overviews/Index');
     })->name('products.index');
 
     Route::get('/services-dashboard', function () {
@@ -69,15 +69,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Medicines
     Route::prefix('medicines')->name('medicines.')->group(function () {
-        Route::get('/', [MedicineController::class, 'index'])->name('index');
-        Route::get('/api', [MedicineController::class, 'apiIndex'])->name('api');
-        Route::get('/list', [MedicineController::class, 'listMedicines'])->name('list');
-        Route::get('/generate-codes', [MedicineController::class, 'generateCodes'])->name('generate-codes');
-        Route::post('/', [MedicineController::class, 'store'])->name('store');
-        Route::get('/{medicine}/edit', [MedicineController::class, 'edit'])->name('edit');
-        Route::put('/{medicine}', [MedicineController::class, 'update'])->name('update');
-        Route::delete('/{medicine}', [MedicineController::class, 'destroy'])->name('delete');
-        Route::get('/{medicine}/detail', [MedicineController::class, 'show'])->name('detail');
+        Route::get('', [MedicineController::class, 'index'])->name('index');
+        Route::get('api', [MedicineController::class, 'apiIndex'])->name('api');
+        Route::get('list', [MedicineController::class, 'listMedicines'])->name('list');
+        Route::get('generate-codes', [MedicineController::class, 'generateCodes'])->name('generate-codes');
+        Route::post('', [MedicineController::class, 'store'])->name('store');
+        Route::get('{medicine}/edit', [MedicineController::class, 'edit'])->name('edit');
+        Route::put('{medicine}', [MedicineController::class, 'update'])->name('update');
+        Route::delete('{medicine}', [MedicineController::class, 'destroy'])->name('delete');
+        Route::get('{medicine}/detail', [MedicineController::class, 'show'])->name('detail');
     });
 
     // Goods

@@ -8,7 +8,7 @@ use App\Models\Goods;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class StockController extends \App\Http\Controllers\Controller
+class StockController extends Controller
 {
     public function index()
     {

@@ -66,6 +66,16 @@ class AppServiceProvider extends ServiceProvider
             \App\Core\Payment\Ports\Inbound\PaymentUseCaseInterface::class,
             \App\Core\Payment\Application\Services\PaymentUseCase::class
         );
+
+        // Binds Medicine Module
+        $this->app->bind(
+            \App\Core\Products\Medicine\Ports\Inbound\MedicineUseCaseInterface::class,
+            \App\Core\Products\Medicine\Application\Services\MedicineService::class
+        );
+        $this->app->bind(
+            \App\Core\Products\Medicine\Ports\Outbound\MedicineRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Eloquent\MedicineRepository::class
+        );
     }
 
     public function boot(): void
