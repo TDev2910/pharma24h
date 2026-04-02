@@ -88,7 +88,7 @@ class Medicine extends Model
         return number_format($this->gia_von, 0, ',', '.') . ' VND';
     }
 
-    public static function generateProductCode() //tao mã hàng ngẫu nhiên
+    public static function generateProductCode() 
     {
         do {
             $code = str_pad(rand(10000000, 99999999), 8, '0', STR_PAD_LEFT);
@@ -98,7 +98,7 @@ class Medicine extends Model
     }
 
     // Auto generate 8-digit barcode
-    public static function generateBarcode() //tao mã vạch ngẫu nhiên
+    public static function generateBarcode()
     {
         do {
             $barcode = str_pad(rand(10000000, 99999999), 8, '0', STR_PAD_LEFT);

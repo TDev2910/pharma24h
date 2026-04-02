@@ -3,88 +3,70 @@
 namespace App\Http\Requests\Admin\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Core\Products\Medicine\Domain\DTOs\MedicineData;
+use App\Core\Products\Good\Domain\DTOs\GoodData;
 
-class UpdateMedicineRequest extends FormRequest
+class StoreGoodRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
     public function rules(): array
     {
-        $id = $this->route('id') ?? $this->id;
-
         return [
-            'ten_thuoc'         => 'nullable|string|max:255',
+            'ten_hang_hoa'      => 'required|string|max:255',
+            'ma_hang'           => 'nullable|string|max:50|unique:goods,ma_hang',
+            'ma_vach'           => 'nullable|string|unique:goods,ma_vach',
             'ten_viet_tat'      => 'nullable|string|max:100',
+            'ton_kho'           => 'required|integer|min:0',
             'gia_ban'           => 'nullable|numeric|min:0',
             'gia_von'           => 'nullable|numeric|min:0',
             'ton_thap_nhat'     => 'nullable|integer|min:0',
+            'ton_cao_nhat'      => 'nullable|integer|min:0',
             'mo_ta'             => 'nullable|string',
             'image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'nhom_hang_id'      => 'nullable|exists:product_categories,id',
             'manufacturer_id'   => 'nullable|exists:manufacturers,id',
-            'drugusage_id'      => 'nullable|exists:drug_routes,id',
             'position_id'       => 'nullable|exists:positions,id',
-            'so_dang_ky'        => "nullable|string|unique:medicines,so_dang_ky,{$id}",
-            'hoat_chat'         => 'nullable|string',
-            'ham_luong'         => 'nullable|string',
             'nuoc_san_xuat'     => 'nullable|string',
             'quy_cach_dong_goi' => 'nullable|string',
-            'ton_cao_nhat'      => 'nullable|integer|min:0',
             'trong_luong'       => 'nullable|numeric|min:0',
-            'don_vi_tinh'       => 'nullable|string',
+            'don_vi_tinh'       => 'nullable|string|max:50',
             'ban_truc_tiep'     => 'nullable|boolean',
-            'gia_khuyen_mai'    => 'nullable|numeric|min:0',
-            'ton_khuyen_mai'    => 'nullable|integer|min:0',
         ];
     }
 
-    /**
-     * Get custom messages for validator errors.
-     */
     public function messages(): array
     {
         return [
-            'so_dang_ky.unique' => 'Số đăng ký bạn nhập đang trùng với một sản phẩm khác.',
+            'ma_hang.unique'    => 'Mã hàng bạn nhập đang trùng với một sản phẩm khác.',
+            'ma_vach.unique'    => 'Mã vạch bạn nhập đang trùng với một sản phẩm khác.',
         ];
     }
 
-    public function toDTO(): MedicineData
+    public function toDTO(): GoodData
     {
-        return new MedicineData(
-            ten_thuoc:         $this->validated('ten_thuoc'),
+        return new GoodData(
+            ten_hang_hoa:      $this->validated('ten_hang_hoa'),
+            ma_hang:           $this->validated('ma_hang'),
+            ma_vach:           $this->validated('ma_vach'),
             ten_viet_tat:      $this->validated('ten_viet_tat'),
             ton_kho:           $this->validated('ton_kho'),
             gia_ban:           $this->validated('gia_ban'),
             gia_von:           $this->validated('gia_von'),
             ton_thap_nhat:     $this->validated('ton_thap_nhat'),
+            ton_cao_nhat:      $this->validated('ton_cao_nhat'),
             mo_ta:             $this->validated('mo_ta'),
             image:             $this->validated('image'),
             nhom_hang_id:      $this->validated('nhom_hang_id'),
             manufacturer_id:   $this->validated('manufacturer_id'),
-            drugusage_id:      $this->validated('drugusage_id'),
             position_id:       $this->validated('position_id'),
-            so_dang_ky:        $this->validated('so_dang_ky'),
-            hoat_chat:         $this->validated('hoat_chat'),
-            ham_luong:         $this->validated('ham_luong'),
             nuoc_san_xuat:     $this->validated('nuoc_san_xuat'),
             quy_cach_dong_goi: $this->validated('quy_cach_dong_goi'),
-            ton_cao_nhat:      $this->validated('ton_cao_nhat'),
             trong_luong:       $this->validated('trong_luong'),
             don_vi_tinh:       $this->validated('don_vi_tinh'),
-            ban_truc_tiep:     $this->boolean('ban_truc_tiep'),
-            gia_khuyen_mai:    $this->validated('gia_khuyen_mai'),
-            ton_khuyen_mai:    $this->validated('ton_khuyen_mai'),
-            // ma_hang và ma_vach không truyền từ request update
+            ban_truc_tiep:     $this->has('ban_truc_tiep') ? (bool)$this->ban_truc_tiep : true,
         );
     }
 }
