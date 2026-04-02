@@ -76,6 +76,16 @@ class AppServiceProvider extends ServiceProvider
             \App\Core\Products\Medicine\Ports\Outbound\MedicineRepositoryInterface::class,
             \App\Infrastructure\Persistence\Eloquent\MedicineRepository::class
         );
+
+        // Binds Goods Module
+        $this->app->bind(
+            \App\Core\Products\Good\Ports\Inbound\GoodUseCaseInterface::class,
+            \App\Core\Products\Good\Application\Services\GoodService::class
+        );
+        $this->app->bind(
+            \App\Core\Products\Good\Ports\Outbound\GoodRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Eloquent\GoodRepository::class
+        );
     }
 
     public function boot(): void
