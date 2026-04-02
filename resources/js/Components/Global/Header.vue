@@ -1,6 +1,6 @@
 <template>
   <header class="mediaid-header">
-    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
       <div class="container">
         <button class="navbar-toggler border-0 p-0 me-3" type="button" data-bs-toggle="offcanvas"
           data-bs-target="#mobileMenu">

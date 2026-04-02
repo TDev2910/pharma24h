@@ -2,7 +2,7 @@
     <div class="page-wrapper">
         <Header :auth="auth" />
 
-        <div class="contact-banner">
+        <div class="contact-banner" style="margin-top: -120px;">
             <div class="container">
                 <h1 class="fw-bold text-primary-dark">Liên hệ</h1>
                 <p class="text-secondary">Hãy liên hệ với chúng tôi để hỏi thông tin, thông tin y tế hoặc cơ hội hợp

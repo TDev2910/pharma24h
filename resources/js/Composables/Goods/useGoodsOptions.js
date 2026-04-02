@@ -1,11 +1,10 @@
 import { ref } from 'vue'
 import {
   fetchCategories,
-  fetchDrugRoutes,
   fetchManufacturers,
   fetchPositions,
-  fetchMedicineCodes
-} from '../../Utils/medicineApi'
+  fetchGoodCodes
+} from '../../Utils/goodsApi'
 import {
   convertToDropdownOptions,
   convertToTreeNodes,
@@ -13,11 +12,10 @@ import {
   flattenTreeNodes
 } from '../../Utils/treeHelpers'
 
-export function useMedicineOptions(form) {
+export function useGoodsOptions(form) {
   const categoryOptions = ref([])
   const categoryTreeNodes = ref([])
   const filteredCategoryNodes = ref([])
-  const drugRouteOptions = ref([])
   const manufacturerOptions = ref([])
   const positionOptions = ref([])
   
@@ -35,9 +33,12 @@ export function useMedicineOptions(form) {
       } catch (e) { console.error('Error fetching categories:', e) }
     }
 
+    // Tự động khởi tạo selectedCategoryKey
     if (form.nhom_hang_id) {
       const idStr = form.nhom_hang_id.toString()
       selectedCategoryKey.value = { [idStr]: true }
+      
+      // Cập nhật cả label nếu tìm thấy
       const findNodeLabel = (nodes, id) => {
         for (const node of nodes) {
           if (node.data === id || node.key === id.toString()) return node.label
@@ -52,21 +53,14 @@ export function useMedicineOptions(form) {
       if (label) selectedCategoryName.value = label
     }
 
-    // 2. Drug Routes
-    if (props.drugRoutes && props.drugRoutes.length > 0) {
-      drugRouteOptions.value = props.drugRoutes
-    } else {
-      await loadDrugRoutes()
-    }
-
-    // 3. Manufacturers
+    // 2. Manufacturers
     if (props.manufacturers && props.manufacturers.length > 0) {
       manufacturerOptions.value = props.manufacturers
     } else {
       await loadManufacturers()
     }
 
-    // 4. Positions
+    // 3. Positions
     if (props.positions && props.positions.length > 0) {
       positionOptions.value = props.positions
     } else {
@@ -78,13 +72,6 @@ export function useMedicineOptions(form) {
     categoryOptions.value = convertToDropdownOptions(categories)
     categoryTreeNodes.value = convertToTreeSelectNodes(categories)
     filteredCategoryNodes.value = flattenTreeNodes(convertToTreeNodes(categories))
-  }
-
-  const loadDrugRoutes = async () => {
-    try {
-      const res = await fetchDrugRoutes()
-      drugRouteOptions.value = res.data || []
-    } catch(e) { console.error('Error fetching drug routes:', e) }
   }
 
   const loadManufacturers = async () => {
@@ -101,16 +88,16 @@ export function useMedicineOptions(form) {
     } catch(e) { console.error('Error fetching positions:', e) }
   }
 
-  // --- Handlers cho các tính năng Sinh Mã, Chọn nhóm, Chọn Options ---
+  // --- Handlers ---
   
-  const generateMedicineCode = () => {
-    fetchMedicineCodes().then(res => {
+  const generateGoodsCode = () => {
+    fetchGoodCodes().then(res => {
       if (res.ma_hang) form.ma_hang = res.ma_hang
     }).catch(e => console.error(e))
   }
 
-  const generateMedicineBarcode = () => {
-    fetchMedicineCodes().then(res => {
+  const generateGoodsBarcode = () => {
+    fetchGoodCodes().then(res => {
       if (res.ma_vach) form.ma_vach = res.ma_vach
     }).catch(e => console.error(e))
   }
@@ -118,6 +105,7 @@ export function useMedicineOptions(form) {
   const onCategoryChange = (event) => {
     selectedCategoryKey.value = event.value
     const selectedKey = event.value ? Object.keys(event.value)[0] : null
+    
     if (selectedKey) {
       const findNodeById = (nodes, key) => {
         for (const node of nodes) {
@@ -141,12 +129,7 @@ export function useMedicineOptions(form) {
     }
   }
 
-  // Reload events từ các Modals con
-  const onDrugRouteUpdated = async (newData) => {
-    await loadDrugRoutes()
-    if (newData && newData.id) form.drugusage_id = newData.id
-  }
-
+  // Callbacks từ Modals con
   const onManufacturerUpdated = async (newData) => {
     await loadManufacturers()
     if (newData && newData.id) form.manufacturer_id = newData.id
@@ -157,28 +140,27 @@ export function useMedicineOptions(form) {
     if (newData && newData.id) form.position_id = newData.id
   }
 
+  // Khi lưu đơn vị tính từ Modal
+  const onUnitSaved = (unitData) => {
+    if (unitData && unitData.unitName) {
+      form.don_vi_tinh = unitData.unitName
+    }
+  }
+
   return {
-    // Data References
     categoryOptions,
     categoryTreeNodes,
     filteredCategoryNodes,
-    drugRouteOptions,
     manufacturerOptions,
     positionOptions,
     selectedCategoryKey,
     selectedCategoryName,
-    
-    // Core Fetch Method
     loadInitialData,
-
-    // Sub-fetch methods directly mapping to Update callbacks
-    onDrugRouteUpdated,
     onManufacturerUpdated,
     onPositionUpdated,
-    
-    // Event actions tied to the options and form
-    generateMedicineCode,
-    generateMedicineBarcode,
+    onUnitSaved,
+    generateGoodsCode,
+    generateGoodsBarcode,
     onCategoryChange
   }
 }

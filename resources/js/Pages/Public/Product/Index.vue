@@ -1,8 +1,8 @@
 <template>
-  <div style="margin-top: -20px;">
+  <div>
     <Header :auth="auth" />
 
-    <div class="container my-4 responsive-top-spacing" style="padding-top: 100px;">
+    <div class="container my-4 responsive-top-spacing" style="margin-top: -160px;">
       <div class="banner-wrapper">
         <img src="https://nhathuocminhchau.com/storage/uploads/logo/slider-2-5886-hinh.webp" alt="Banner"
           class="banner-image" />

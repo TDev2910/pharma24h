@@ -4,7 +4,7 @@
         <Header :auth="auth" />
 
         <!-- Service Detail Content -->
-        <div class="container py-5">
+        <div class="container py-5" style="margin-top: -130px;">
             <div class="row">
                 <!-- Service Image -->
                 <div class="col-md-5">

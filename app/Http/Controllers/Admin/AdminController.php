@@ -11,8 +11,9 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
 use App\Models\ServiceBooking;
+use App\Http\Controllers\Controller;
 
-class AdminController extends \App\Http\Controllers\Controller
+class AdminController extends Controller
 {
     public function dashboard()
     {

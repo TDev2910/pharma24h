@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Staff;
 
-use App\Http\Controllers\Base\TreeBaseController;
+use App\Http\Controllers\Controller;
+use App\Traits\HasTreeStructure;
 use App\Models\Post;
 use App\Models\Content\Category;
 use App\Models\Content\PostImage;
@@ -13,8 +14,10 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
-class PostController extends TreeBaseController
+class PostController extends Controller
 {
+    use HasTreeStructure;
+
     /**
      * Display a listing of the resource.
      */
