@@ -78,13 +78,9 @@ class GoodsController extends Controller
      */
     public function store(StoreGoodRequest $request)
     {
-        $result = $this->useCase->createGood($request->toDTO());
+        $this->useCase->createGood($request->toDTO());
 
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json($result, 201);
-        }
-
-        return redirect()->route('admin.products.index')->with('success', 'Hàng hóa đã được thêm thành công!');
+        return redirect()->back()->with('success', 'Hàng hóa đã được thêm thành công!');
     }
 
     /**
@@ -106,11 +102,7 @@ class GoodsController extends Controller
      */
     public function update(UpdateGoodRequest $request, $id)
     {
-        $result = $this->useCase->updateGood($id, $request->toDTO());
-
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json($result);
-        }
+        $this->useCase->updateGood($id, $request->toDTO());
 
         return redirect()->back()->with('success', 'Cập nhật hàng hóa thành công!');
     }
@@ -120,11 +112,7 @@ class GoodsController extends Controller
      */
     public function destroy($id)
     {
-        $result = $this->useCase->deleteGood($id);
-
-        if (request()->ajax() || request()->wantsJson()) {
-            return response()->json($result);
-        }
+        $this->useCase->deleteGood($id);
 
         return redirect()->back()->with('success', 'Xóa hàng hóa thành công!');
     }
