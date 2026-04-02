@@ -10,6 +10,11 @@ export default defineConfig({
         hmr: {
             host: 'localhost',
         },
+        // Bắt buộc dùng polling trên Windows + Docker vì inotify không hoạt động
+        watch: {
+            usePolling: true,
+            interval: 1000, // kiểm tra mỗi 1 giây
+        },
     },
     plugins: [
         laravel({

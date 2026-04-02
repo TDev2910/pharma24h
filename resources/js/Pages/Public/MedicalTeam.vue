@@ -1,5 +1,5 @@
 <template>
-    <div class="page-wrapper">
+    <div class="page-wrapper" style="margin-top: -100px;">
         <Header :auth="auth" />
 
         <section class="hero-section d-flex align-items-center position-relative overflow-hidden">

@@ -33,6 +33,26 @@ export function useGoodsOptions(form) {
       } catch (e) { console.error('Error fetching categories:', e) }
     }
 
+    // Tự động khởi tạo selectedCategoryKey
+    if (form.nhom_hang_id) {
+      const idStr = form.nhom_hang_id.toString()
+      selectedCategoryKey.value = { [idStr]: true }
+      
+      // Cập nhật cả label nếu tìm thấy
+      const findNodeLabel = (nodes, id) => {
+        for (const node of nodes) {
+          if (node.data === id || node.key === id.toString()) return node.label
+          if (node.children) {
+            const found = findNodeLabel(node.children, id)
+            if (found) return found
+          }
+        }
+        return null
+      }
+      const label = findNodeLabel(categoryTreeNodes.value, form.nhom_hang_id)
+      if (label) selectedCategoryName.value = label
+    }
+
     // 2. Manufacturers
     if (props.manufacturers && props.manufacturers.length > 0) {
       manufacturerOptions.value = props.manufacturers
@@ -83,7 +103,9 @@ export function useGoodsOptions(form) {
   }
   
   const onCategoryChange = (event) => {
+    selectedCategoryKey.value = event.value
     const selectedKey = event.value ? Object.keys(event.value)[0] : null
+    
     if (selectedKey) {
       const findNodeById = (nodes, key) => {
         for (const node of nodes) {

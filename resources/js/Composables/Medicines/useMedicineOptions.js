@@ -35,6 +35,23 @@ export function useMedicineOptions(form) {
       } catch (e) { console.error('Error fetching categories:', e) }
     }
 
+    if (form.nhom_hang_id) {
+      const idStr = form.nhom_hang_id.toString()
+      selectedCategoryKey.value = { [idStr]: true }
+      const findNodeLabel = (nodes, id) => {
+        for (const node of nodes) {
+          if (node.data === id || node.key === id.toString()) return node.label
+          if (node.children) {
+            const found = findNodeLabel(node.children, id)
+            if (found) return found
+          }
+        }
+        return null
+      }
+      const label = findNodeLabel(categoryTreeNodes.value, form.nhom_hang_id)
+      if (label) selectedCategoryName.value = label
+    }
+
     // 2. Drug Routes
     if (props.drugRoutes && props.drugRoutes.length > 0) {
       drugRouteOptions.value = props.drugRoutes
@@ -99,6 +116,7 @@ export function useMedicineOptions(form) {
   }
   
   const onCategoryChange = (event) => {
+    selectedCategoryKey.value = event.value
     const selectedKey = event.value ? Object.keys(event.value)[0] : null
     if (selectedKey) {
       const findNodeById = (nodes, key) => {
