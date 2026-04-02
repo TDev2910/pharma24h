@@ -1,6 +1,6 @@
 <template>
   <!-- Banner Layout: Left carousel + Right fixed banners -->
-  <div class="container-xxl" style="margin-top: 100px;">
+  <div class="container-xxl">
     <div class="row g-3">
       <!-- LEFT: main carousel -->
       <div class="col-lg-8">
@@ -74,4 +74,3 @@
   border-radius: 10px;
 }
 </style>
-

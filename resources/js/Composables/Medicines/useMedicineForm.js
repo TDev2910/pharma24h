@@ -9,7 +9,6 @@ export function useMedicineForm(onSuccessCallback) {
   const form = useForm({ ...defaultFormState })
 
   const saveMedicine = (event) => {
-    // Ngăn hành vi submit mặc định nếu được gọi qua thẻ form
     if (event) {
       event.preventDefault()
       event.stopPropagation()
@@ -17,16 +16,15 @@ export function useMedicineForm(onSuccessCallback) {
 
     form.clearErrors()
 
-    // Sử dụng form.post của Inertia thay vì Axios thủ công
     form.post('/admin/medicines', {
-      forceFormData: true, // Tự động xử lý FormData nếu có File (ảnh)
+      forceFormData: true, 
       onSuccess: () => {
         toast.add({ severity: 'success', summary: 'Thành công', detail: 'Thuốc đã được thêm thành công!', life: 3000 })
         
-        // Gọi callback nếu có (vd: đóng modal, reset tab)
+        // Gọi callback 
         if (onSuccessCallback) onSuccessCallback()
 
-        // Reload trang để dữ liệu mới nhất được cập nhật trên Table
+        // Reload trang 
         setTimeout(() => {
           router.reload({ only: [] })
         }, 300)

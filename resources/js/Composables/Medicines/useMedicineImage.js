@@ -4,7 +4,7 @@ export function useMedicineImage(form) {
   const imagePreview = ref(null)
 
   const handleImageUpload = () => {
-    // Tạo input file ảo thay vì viết trong template để giữ template gọn gàng
+    // Tạo input 
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = 'image/*'
@@ -34,7 +34,6 @@ export function useMedicineImage(form) {
       reader.readAsDataURL(file)
     }
     
-    // Kích hoạt dialog duyệt file
     input.click()
   }
 

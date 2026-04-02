@@ -14,7 +14,7 @@ class ProductCategoryController extends Controller
     use HasTreeStructure;
 
     /**
-     * 1. GET: Hiển thị form tạo/sửa (Thường dùng trong Dashboard)
+     * Hiển thị form tạo/sửa (Thường dùng trong Dashboard)
      */
     public function edit(ProductCategory $category)
     {
@@ -23,7 +23,7 @@ class ProductCategoryController extends Controller
     }
 
     /**
-     * 2. POST: Lưu danh mục mới
+     * Lưu danh mục mới
      */
     public function store(StoreProductCategoryRequest $request)
     {
@@ -33,7 +33,7 @@ class ProductCategoryController extends Controller
     }
 
     /**
-     * 3. PUT/PATCH: Cập nhật danh mục
+     *Cập nhật danh mục
      */
     public function update(UpdateProductCategoryRequest $request, ProductCategory $category)
     {
@@ -43,7 +43,7 @@ class ProductCategoryController extends Controller
     }
 
     /**
-     * 4. DELETE: Xóa danh mục
+     * Xóa danh mục
      */
     public function destroy(ProductCategory $category)
     {
@@ -52,15 +52,12 @@ class ProductCategoryController extends Controller
     }
 
     /**
-     * 5. API: Lấy dữ liệu cây cho Modal/TreeSelect
+     *API: Lấy dữ liệu cây cho Modal/TreeSelect
      */
     public function getCategoriesForModal(Request $request)
     {
-        $categories = ProductCategory::whereNull('parent_id')
-            ->with(['children' => function($q) {
-                $q->orderBy('sort_order')->orderBy('name');
-            }])
-            ->orderBy('sort_order')->orderBy('name')->get();
+        // Load đệ quy tất cả cấp con
+        $categories = ProductCategory::all();
 
         $treeData = $this->buildTreeNodes($categories, null, ['key' => 'id', 'label' => 'name']);
 
@@ -68,14 +65,14 @@ class ProductCategoryController extends Controller
     }
 
     /**
-     * Hàm phụ trợ trả về Response thống nhất
+     * Hàm phụ trợ trả về Response 
      */
     private function respondWithSuccess($message, $data = null, $status = 200)
     {
         if (request()->expectsJson()) {
             return response()->json([
-                'success' => true, 
-                'message' => $message, 
+                'success' => true,
+                'message' => $message,
                 'data' => $data
             ], $status);
         }

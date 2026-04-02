@@ -25,10 +25,10 @@ export function useGoodsForm(onSuccessCallback) {
           life: 3000 
         })
         
-        // Gọi callback nếu có (vd: đóng modal, reset tab)
+        // Gọi callback 
         if (onSuccessCallback) onSuccessCallback()
 
-        // Reload trang để dữ liệu mới nhất được cập nhật trên Table
+        // Reload trang 
         setTimeout(() => {
           router.reload({ only: [] })
         }, 300)

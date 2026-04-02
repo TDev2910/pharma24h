@@ -2,17 +2,17 @@
   <div class="public-layout">
     <!-- Header Component -->
     <Header :auth="auth" />
-    
+
     <!-- Main Content -->
     <main class="main-content">
       <slot />
     </main>
-    
+
     <!-- Footer Component -->
     <Footer :auth="auth" />
-    
+
     <!-- Các widget khác đã được chuyển vào Footer để gom nhóm -->
-    
+
     <!-- Back to Top Button -->
     <button class="btn-back-top" id="backToTop" title="Lên đầu trang">
       <i class="fas fa-chevron-up"></i>
@@ -56,13 +56,13 @@ function scrollToTop() {
 
 onMounted(() => {
   backToTopButton = document.getElementById('backToTop')
-  
+
   if (backToTopButton) {
     backToTopButton.addEventListener('click', scrollToTop)
   }
-  
+
   window.addEventListener('scroll', handleScroll)
-  
+
   // Initialize cart functionality
   if (typeof window.initCart === 'function') {
     window.initCart()
@@ -73,7 +73,7 @@ onUnmounted(() => {
   if (backToTopButton) {
     backToTopButton.removeEventListener('click', scrollToTop)
   }
-  
+
   window.removeEventListener('scroll', handleScroll)
 })
 </script>
@@ -88,7 +88,8 @@ onUnmounted(() => {
 
 .main-content {
   flex: 1;
-  padding-top: 0; /* Header đã có position fixed */
+  padding-top: 40px;
+
 }
 
 /* Floating Contacts */
@@ -136,9 +137,12 @@ onUnmounted(() => {
 }
 
 @keyframes pulse-phone {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 3px 15px rgba(40, 167, 69, 0.4);
   }
+
   50% {
     box-shadow: 0 3px 20px rgba(40, 167, 69, 0.7);
     transform: scale(1.05);
@@ -180,7 +184,7 @@ onUnmounted(() => {
     right: 15px;
     bottom: 70px;
   }
-  
+
   .floating-btn {
     width: 45px;
     height: 45px;
@@ -193,13 +197,13 @@ onUnmounted(() => {
     right: 10px;
     bottom: 60px;
   }
-  
+
   .floating-btn {
     width: 40px;
     height: 40px;
     font-size: 0.9rem;
   }
-  
+
   .btn-back-top {
     width: 40px;
     height: 40px;

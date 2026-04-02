@@ -4,7 +4,7 @@
         <Header :auth="auth" />
 
         <!-- Hero Banner Section -->
-        <section class="hero-section">
+        <section class="hero-section" style="margin-top: -120px;">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-6">
