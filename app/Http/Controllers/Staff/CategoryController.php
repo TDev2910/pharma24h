@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Staff;
 
-use App\Http\Controllers\Base\TreeBaseController;
+use App\Http\Controllers\Controller;
+use App\Traits\HasTreeStructure;
 use App\Http\Requests\Staff\Category\StoreCategoryRequest;
 use App\Http\Requests\Staff\Category\UpdateCategoryRequest;
 use Illuminate\Http\Request;
@@ -10,8 +11,10 @@ use Inertia\Inertia;
 use Illuminate\Support\Str;
 use App\Models\Content\Category;
 
-class CategoryController extends TreeBaseController
+class CategoryController extends Controller
 {
+    use HasTreeStructure;
+
     public function index(Request $request)
     {
         $allCategories = Category::withCount('posts')

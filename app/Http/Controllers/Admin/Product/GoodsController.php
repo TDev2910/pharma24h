@@ -7,6 +7,7 @@ use App\Models\Goods;
 use App\Models\Manufacturer;
 use App\Models\Position;
 use App\Models\ProductCategory;
+use App\Traits\HasTreeStructure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -15,6 +16,8 @@ use Inertia\Inertia;
 
 class GoodsController extends Controller
 {
+    use HasTreeStructure;
+
     /**
      * Display main goods listing page.
      */
@@ -66,7 +69,8 @@ class GoodsController extends Controller
                 ];
             });
 
-        $categories = ProductCategory::select('id', 'name')->get();
+        $allCategories = ProductCategory::orderBy('sort_order')->orderBy('name')->get();
+        $categories = $this->buildSelectOptions($allCategories);
 
         return Inertia::render('Admin/Products/Lists/UnifiedList', [
             'productType' => 'goods',
@@ -412,9 +416,12 @@ class GoodsController extends Controller
      */
     protected function getFormData() //lấy dữ liệu cho form
     {
+        $allCategories = ProductCategory::orderBy('sort_order')->orderBy('name')->get();
+        $categoryOptions = $this->buildSelectOptions($allCategories);
+
         return [
-            'categories'       => ProductCategory::getAllCategoriesWithDepth(),
-            'parentCategories' => ProductCategory::getAllCategoriesWithDepth(),
+            'categories'       => $categoryOptions,
+            'parentCategories' => $categoryOptions,
             'manufacturers'    => Manufacturer::all(),
             'positions'        => Position::all(),
         ];

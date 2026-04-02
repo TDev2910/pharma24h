@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\Product\ProductController;
+use App\Http\Controllers\Admin\Product\ProductOverviewController;
 use App\Http\Controllers\Admin\Product\MedicineController;
 use App\Http\Controllers\Admin\Product\GoodsController;
 use App\Http\Controllers\Admin\Product\ServiceController;
@@ -119,7 +119,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('categories', ProductCategoryController::class)->except(['index', 'create', 'edit'])->names('categories');
     Route::get('categories/modal/data', [ProductCategoryController::class, 'getCategoriesForModal'])->name('categories.modal.data');
     Route::post('categories', [ProductCategoryController::class, 'store'])->name('categories.store');
-    Route::resource('products', ProductController::class)->except(['index'])->names('products');
+    Route::resource('products', ProductOverviewController::class)->except(['index', 'edit', 'update'])->names('products');
     // ORDER MANAGEMENT ROUTES
 
     // Orders
@@ -253,18 +253,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     // Legacy medicine routes
-    Route::get('products/create-medicine', [ProductController::class, 'createMedicine'])->name('products.createMedicine');
-    Route::post('products/store-medicine', [ProductController::class, 'storeMedicine'])->name('products.storeMedicine');
-    Route::get('products/{id}/detail', [ProductController::class, 'showDetail'])->name('products.detail');
+    Route::get('products/create-medicine', [ProductOverviewController::class, 'createMedicine'])->name('products.createMedicine');
+    Route::post('products/store-medicine', [ProductOverviewController::class, 'storeMedicine'])->name('products.storeMedicine');
+    Route::get('products/{id}/detail', [ProductOverviewController::class, 'showDetail'])->name('products.detail');
 
     // Legacy goods routes
-    Route::get('products/create-goods', [ProductController::class, 'createGoods'])->name('products.createGoods');
-    Route::post('products/store-goods', [ProductController::class, 'storeGoods'])->name('products.storeGoods');
-    Route::get('products/goods', [ProductController::class, 'listGoods'])->name('products.goods.list');
-    Route::get('products/goods/{goods}/edit', [ProductController::class, 'editGoods'])->name('products.goods.edit');
-    Route::put('products/goods/{goods}', [ProductController::class, 'updateGoods'])->name('products.goods.update');
-    Route::delete('products/goods/{goods}', [ProductController::class, 'deleteGoods'])->name('products.goods.delete');
-    Route::get('products/goods/{goods}/detail', [ProductController::class, 'showGoodsDetail'])->name('products.goods.detail');
+    Route::get('products/create-goods', [ProductOverviewController::class, 'createGoods'])->name('products.createGoods');
+    Route::post('products/store-goods', [ProductOverviewController::class, 'storeGoods'])->name('products.storeGoods');
+    Route::get('products/goods', [ProductOverviewController::class, 'listGoods'])->name('products.goods.list');
+    Route::get('products/goods/{goods}/edit', [ProductOverviewController::class, 'editGoods'])->name('products.goods.edit');
+    Route::put('products/goods/{goods}', [ProductOverviewController::class, 'updateGoods'])->name('products.goods.update');
+    Route::delete('products/goods/{goods}', [ProductOverviewController::class, 'deleteGoods'])->name('products.goods.delete');
+    Route::get('products/goods/{goods}/detail', [ProductOverviewController::class, 'showGoodsDetail'])->name('products.goods.detail');
 
     //Report Routes
     Route::prefix('reports')->name('reports.')->group(function () {

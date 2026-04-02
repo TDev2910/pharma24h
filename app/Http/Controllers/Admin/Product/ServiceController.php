@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Product;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use App\Models\ProductCategory;
+use App\Traits\HasTreeStructure;
 use App\Models\Doctor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,12 +15,15 @@ use Illuminate\Support\Str;
 
 class ServiceController extends Controller
 {
+    use HasTreeStructure;
+
     /**
      * Display a listing of services
      */
     public function index()
     {
-        $categories = ProductCategory::getCategoriesForSelect();
+        $allCategories = ProductCategory::orderBy('sort_order')->orderBy('name')->get();
+        $categories = $this->buildSelectOptions($allCategories);
         $services = Service::with(['category'])->orderBy('created_at', 'desc')->get();
         $doctors = Doctor::all();
 
@@ -100,7 +104,8 @@ class ServiceController extends Controller
     public function edit($id)
     {
         $service = Service::with(['category'])->findOrFail($id);
-        $categories = ProductCategory::getCategoriesForSelect();
+        $allCategories = ProductCategory::orderBy('sort_order')->orderBy('name')->get();
+        $categories = $this->buildSelectOptions($allCategories);
         $manufacturers = \App\Models\Manufacturer::all();
         $positions = \App\Models\Position::all();
 
@@ -292,8 +297,9 @@ class ServiceController extends Controller
      */
     protected function getFormData()
     {
+        $allCategories = ProductCategory::orderBy('sort_order')->orderBy('name')->get();
         return [
-            'categories' => ProductCategory::select('id', 'name')->get(),
+            'categories' => $this->buildSelectOptions($allCategories),
             'doctors' => Doctor::all(),
         ];
     }
