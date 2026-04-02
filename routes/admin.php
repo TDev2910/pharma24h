@@ -82,17 +82,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Goods
     Route::prefix('goods')->name('goods.')->group(function () {
-        Route::get('/', [GoodsController::class, 'index'])->name('index');
-        Route::get('/api', [GoodsController::class, 'apiIndex'])->name('api');
-        Route::get('/list', [GoodsController::class, 'vueListGoods'])->name('list');
-        Route::get('/vue-list', [GoodsController::class, 'vueListGoods'])->name('vue-list');
-        Route::get('/generate-codes', [GoodsController::class, 'generateCodes'])->name('generate-codes');
-        Route::get('/inventory', [GoodsController::class, 'inventory'])->name('inventory');
-        Route::post('/', [GoodsController::class, 'store'])->name('store');
-        Route::get('/{goods}/edit', [GoodsController::class, 'edit'])->name('edit');
-        Route::put('/{goods}', [GoodsController::class, 'update'])->name('update');
-        Route::delete('/{goods}', [GoodsController::class, 'destroy'])->name('delete');
-        Route::get('/{goods}/detail', [GoodsController::class, 'show'])->name('detail');
+        Route::get('', [GoodsController::class, 'index'])->name('index');
+        Route::get('api', [GoodsController::class, 'apiIndex'])->name('api');
+        Route::get('list', [GoodsController::class, 'vueListGoods'])->name('list');
+        Route::get('vue-list', [GoodsController::class, 'vueListGoods'])->name('vue-list');
+        Route::get('generate-codes', [GoodsController::class, 'generateCodes'])->name('generate-codes');
+        Route::get('inventory', [GoodsController::class, 'inventory'])->name('inventory');
+        Route::post('', [GoodsController::class, 'store'])->name('store');
+        Route::get('{goods}/edit', [GoodsController::class, 'edit'])->name('edit');
+        Route::put('{goods}', [GoodsController::class, 'update'])->name('update');
+        Route::delete('{goods}', [GoodsController::class, 'destroy'])->name('delete');
+        Route::get('{goods}/detail', [GoodsController::class, 'show'])->name('detail');
     });
 
     // Services

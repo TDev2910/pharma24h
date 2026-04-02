@@ -1,0 +1,23 @@
+export const defaultFormState = {
+  ma_hang: '',
+  ma_vach: '',
+  ten_hang_hoa: '',
+  ten_viet_tat: '',
+  nhom_hang_id: null,
+  gia_von: 0,
+  gia_ban: 0,
+  quy_cach_dong_goi: '',
+  manufacturer_id: null,
+  nuoc_san_xuat: '',
+  ton_kho: 0,
+  ton_thap_nhat: 0,
+  ton_cao_nhat: 0,
+  position_id: null,
+  trong_luong: 0,
+  don_vi_tinh: '',
+  ban_truc_tiep: true,
+  mo_ta: '',
+  image: null,
+  gia_khuyen_mai: 0,
+  ton_khuyen_mai: 0
+}

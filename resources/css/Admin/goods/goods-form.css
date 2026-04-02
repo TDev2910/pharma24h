@@ -1,0 +1,86 @@
+/* Goods Form Styles */
+.form-grid {
+    display: flex;
+    flex-direction: column;
+}
+
+.tabs-container {
+    margin-bottom: 1.5rem;
+}
+
+.tabs-header {
+    display: flex;
+    gap: 1rem;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.tab-button {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    color: #6b7280;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+}
+
+.tab-button.active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+}
+
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-column {
+    flex: 1;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.field-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.readonly-input {
+    background-color: #f9fafb !important;
+}
+
+.error-messages {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+    border-radius: 0.5rem;
+}
+
+.error-title {
+    color: #991b1b;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.error-list {
+    list-style: disc;
+    margin-left: 1.25rem;
+    color: #b91c1c;
+    font-size: 0.875rem;
+}
