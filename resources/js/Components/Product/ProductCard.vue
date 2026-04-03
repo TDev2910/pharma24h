@@ -45,7 +45,11 @@ function handleProductClick() {
 
 // Handle image error - fallback image
 function handleImageError(event) {
-  event.target.src = '/images/products/đạt.jpg'
+  const fallback = 'https://via.placeholder.com/150?text=No+Image'
+  // Nếu ảnh hiện tại đã là ảnh dự phòng rồi thì không gán lại nữa để tránh vòng lặp
+  if (event.target.src !== fallback) {
+    event.target.src = fallback
+  }
 }
 
 // Handle add to cart

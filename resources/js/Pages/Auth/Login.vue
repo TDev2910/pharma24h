@@ -108,7 +108,7 @@ const handleGoogleLogin = async () => {
 
     <Head title="Đăng nhập" />
 
-    <div class="login-layout">
+    <div class="login-layout" style="margin-top: -77px;">
         <div class="login-container login-container--login">
             <div class="text-center mb-4">
                 <div class="logo-circle">

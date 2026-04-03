@@ -3,10 +3,15 @@ require __DIR__.'/vendor/autoload.php';
 
 use Pusher\Pusher;
 
-$app_id = '2129330';
-$app_key = '6cac0c642eb827f1dc56';
-$app_secret = 'b5cd5e745717ae48c219';
-$app_cluster = 'ap1';
+if (file_exists(__DIR__.'/.env')) {
+    $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+}
+
+$app_id = $_ENV['PUSHER_APP_ID'] ?? '';
+$app_key = $_ENV['PUSHER_APP_KEY'] ?? '';
+$app_secret = $_ENV['PUSHER_APP_SECRET'] ?? '';
+$app_cluster = $_ENV['PUSHER_APP_CLUSTER'] ?? 'ap1';
 
 $pusher = new Pusher(
     $app_key,
