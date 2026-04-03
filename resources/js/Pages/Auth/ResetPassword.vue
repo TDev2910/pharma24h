@@ -29,8 +29,8 @@ const confirmationError = computed(() => {
 });
 
 const isFormValid = computed(() => {
-    return form.password && !passwordError.value && 
-           form.password_confirmation && !confirmationError.value;
+    return form.password && !passwordError.value &&
+        form.password_confirmation && !confirmationError.value;
 });
 
 const submit = () => {
@@ -38,7 +38,7 @@ const submit = () => {
 
     form.post(route('password.reset.post'), {
         onSuccess: () => {
-             Swal.fire({
+            Swal.fire({
                 icon: 'success',
                 title: 'Thành công',
                 text: 'Mật khẩu của bạn đã được cập nhật!',
@@ -56,9 +56,10 @@ const submit = () => {
 </script>
 
 <template>
+
     <Head title="Đặt lại mật khẩu" />
 
-    <div class="login-layout">
+    <div class="login-layout" style="margin-top: -77px;">
         <div class="login-container login-container--password-reset">
             <div class="text-center mb-4">
                 <div class="logo-circle">

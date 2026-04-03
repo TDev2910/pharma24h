@@ -98,7 +98,7 @@ const submit = () => {
 
     <Head title="Đăng ký tài khoản" />
 
-    <div class="login-layout">
+    <div class="login-layout" style="margin-top: -77px;">
         <div class="login-container login-container--register">
             <div class="text-center mb-4">
                 <div class="logo-circle">

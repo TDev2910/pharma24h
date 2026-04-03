@@ -21,12 +21,12 @@ const handleInput = (index, event) => {
     if (val.length > 1) {
         otpInputs.value[index] = val.slice(-1);
     }
-    
+
     // Move to next input
     if (val && index < 5) {
         inputs.value[index + 1].focus();
     }
-    
+
     updateOtpValue();
 };
 
@@ -81,9 +81,10 @@ onMounted(() => {
 </script>
 
 <template>
+
     <Head title="Xác thực OTP" />
 
-    <div class="login-layout">
+    <div class="login-layout" style="margin-top: -77px;">
         <div class="login-container login-container--password-reset">
             <div class="text-center mb-4">
                 <div class="logo-circle">
@@ -99,16 +100,10 @@ onMounted(() => {
 
             <form @submit.prevent="submit">
                 <div class="otp-container d-flex justify-content-between mb-4">
-                    <input v-for="(digit, index) in 6" :key="index"
-                        type="text"
-                        maxlength="1"
-                        v-model="otpInputs[index]"
-                        @input="handleInput(index, $event)"
-                        @keydown="handleKeyDown(index, $event)"
-                        ref="inputs"
+                    <input v-for="(digit, index) in 6" :key="index" type="text" maxlength="1" v-model="otpInputs[index]"
+                        @input="handleInput(index, $event)" @keydown="handleKeyDown(index, $event)" ref="inputs"
                         class="form-control text-center mx-1 otp-input"
-                        style="width: 45px; height: 55px; font-size: 1.5rem; font-weight: bold;"
-                    >
+                        style="width: 45px; height: 55px; font-size: 1.5rem; font-weight: bold;">
                 </div>
 
                 <div v-if="form.errors.otp" class="text-danger text-center mb-3">
