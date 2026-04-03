@@ -46,9 +46,10 @@ const submit = () => {
 </script>
 
 <template>
+
     <Head title="Quên mật khẩu" />
 
-    <div class="login-layout">
+    <div class="login-layout" style="margin-top: -77px;">
         <div class="login-container login-container--password-reset">
             <div class="text-center mb-4">
                 <div class="logo-circle">
@@ -73,9 +74,8 @@ const submit = () => {
                 <div class="form-group mb-4">
                     <label for="email" class="form-label">Email tài khoản</label>
                     <input type="email" v-model="form.email" class="form-control"
-                        :class="{ 'is-invalid': emailError || form.errors.email }" id="email" 
-                        placeholder="example@gmail.com"
-                        required autofocus>
+                        :class="{ 'is-invalid': emailError || form.errors.email }" id="email"
+                        placeholder="example@gmail.com" required autofocus>
                     <div v-if="emailError" class="invalid-feedback">{{ emailError }}</div>
                 </div>
 
