@@ -37,6 +37,7 @@ class HandleInertiaRequests extends Middleware
             'firebase' => [
                 'config' => FirebaseConfig::getConfig(),
             ],
+            'csrf_token' => csrf_token(),
         ]);
     }
 }
