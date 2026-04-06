@@ -1,6 +1,6 @@
 <template>
-  <Dialog :visible="visible" @update:visible="(val) => $emit('update:visible', val)" header="Tạo thuốc"
-    :style="{ width: '900px' }" modal :closable="true" @hide="closeModal">
+  <Dialog :visible="visible" @update:visible="$emit('close')" header="Tạo thuốc" :style="{ width: '900px' }" modal
+    :closable="true" @hide="closeModal">
     <div class="flex gap-6 form-grid">
       <!-- Left Section: Form Fields -->
       <div style="flex: 1;">
@@ -151,6 +151,6 @@ const closeModal = () => {
   activeTab.value = 'info'
   selectedCategoryKey.value = null
   emit('close')
-  emit('update:visible', false)
+  // emit('update:visible', false)
 }
 </script>

@@ -19,12 +19,12 @@ if (import.meta.env.VITE_PUSHER_APP_KEY) {
 }
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios.defaults.withCredentials = true;
 
-// Lấy CSRF token từ meta tag
-const token = document.head.querySelector('meta[name="csrf-token"]');
+/**
+ * Inertia will automatically handle CSRF token via cookies,
+ * but for manual axios requests, we ensure it uses the XSRF-TOKEN cookie.
+ */
+window.axios.defaults.xsrfCookieName = 'XSRF-TOKEN';
+window.axios.defaults.xsrfHeaderName = 'X-XSRF-TOKEN';
 
-if (token) {
-    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
-} else {
-    console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
-}
