@@ -1,10 +1,7 @@
 <template>
     <div class="root-container">
-        <!-- Header Component -->
-        <Header :auth="auth" />
-
         <!-- Service Detail Content -->
-        <div class="container py-5" style="margin-top: -130px;">
+        <div class="container py-5">
             <div class="row">
                 <!-- Service Image -->
                 <div class="col-md-5">
@@ -190,8 +187,6 @@
 </template>
 
 <script setup>
-import Header from '@/Components/Global/Header.vue'
-import Footer from '@/Components/Global/Footer.vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'

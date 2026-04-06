@@ -1,6 +1,5 @@
 <template>
-    <div class="page-wrapper" style="margin-top: -100px;">
-        <Header :auth="auth" />
+    <div class="page-wrapper">
 
         <section class="hero-section d-flex align-items-center position-relative overflow-hidden">
             <div class="decoration-dots dots-left"></div>
@@ -165,7 +164,6 @@
 </template>
 
 <script setup>
-import Header from '@/Components/Global/Header.vue'
 import { ref } from 'vue';
 
 import { Swiper, SwiperSlide } from 'swiper/vue';

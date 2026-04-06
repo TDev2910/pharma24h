@@ -1,6 +1,6 @@
 <template>
-  <header class="mediaid-header">
-    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+  <header class="mediaid-header sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
       <div class="container">
         <button class="navbar-toggler border-0 p-0 me-3" type="button" data-bs-toggle="offcanvas"
           data-bs-target="#mobileMenu">
@@ -345,6 +345,10 @@ onUnmounted(() => {
 
 <style scoped>
 /* --- 1. CẤU HÌNH CHUNG --- */
+.sticky-top {
+  z-index: 1030 !important;
+}
+
 .mediaid-header {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   background: #fff;

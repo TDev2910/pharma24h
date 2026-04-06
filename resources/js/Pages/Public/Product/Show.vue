@@ -1,8 +1,5 @@
 <template>
-    <div style="margin-top: 100px;">
-        <!-- Header Component -->
-        <Header :auth="auth" />
-
+    <div>
         <!-- Product Detail Content -->
         <div class="container py-5">
             <div class="row">
@@ -218,8 +215,6 @@
 </template>
 
 <script setup>
-import Header from '@/Components/Global/Header.vue'
-import Footer from '@/Components/Global/Footer.vue'
 import axios from 'axios'
 import { computed, ref } from 'vue'
 import DOMPurify from 'dompurify'

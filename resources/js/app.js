@@ -37,9 +37,9 @@ createInertiaApp({
     const pages = import.meta.glob('./Pages/**/*.vue')
     const pagePath = `./Pages/${name}.vue`
     
-    if (!pages[pagePath]) {
-      throw new Error(`Page not found: ${pagePath}`)
-    }
+    // if (!pages[pagePath]) {
+    //   throw new Error(`Page not found: ${pagePath}`)
+    // }
     
     const page = (await pages[pagePath]()).default
     
