@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="app-wrapper">
     <aside class="sidebar">
       <div class="sidebar-content">
@@ -74,13 +74,15 @@
 
     <div class="main-wrapper">
       <header class="topbar">
-        <div class="page-title">
-          <span class="date">{{ currentDate }}</span>
-        </div>
+        <div class="topbar-container">
+          <div class="page-title">
+            <span class="date">{{ currentDate }}</span>
+          </div>
 
-        <div class="topbar-actions">
-          <button class="icon-btn"><i class="fas fa-bell"></i></button>
-          <button class="icon-btn"><i class="fas fa-question-circle"></i></button>
+          <div class="topbar-actions">
+            <button class="icon-btn"><i class="fas fa-bell"></i></button>
+            <button class="icon-btn"><i class="fas fa-question-circle"></i></button>
+          </div>
         </div>
       </header>
 
@@ -184,6 +186,7 @@ const currentDate = computed(() => {
   padding: 20px 16px;
   flex: 1;
   overflow-y: auto;
+  margin-top: -70px;
 }
 
 /* User Card in Sidebar */
@@ -330,15 +333,21 @@ const currentDate = computed(() => {
 .topbar {
   height: 70px;
   background: white;
-  /* Or transparent depending on preference */
+  border-bottom: 1px solid #E2E8F0;
+  position: sticky;
+  margin-top: -70px;
+  z-index: 40;
+}
+
+.topbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
   padding: 0 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #E2E8F0;
-  position: sticky;
-  top: 0;
-  z-index: 40;
+  height: 100%;
 }
 
 .page-title h2 {
@@ -351,6 +360,7 @@ const currentDate = computed(() => {
 .page-title .date {
   font-size: 13px;
   color: #94A3B8;
+  margin-left: -130px;
 }
 
 .topbar-actions {
