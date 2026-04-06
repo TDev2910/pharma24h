@@ -31,8 +31,8 @@ class OrderRepository implements OrderRepositoryInterface
             $term = $filters['search'];
             $query->where(function ($q) use ($term) {
                 $q->where('order_code', 'like', "%{$term}%")
-                  ->orWhere('customer_name', 'like', "%{$term}%")
-                  ->orWhere('customer_phone', 'like', "%{$term}%");
+                    ->orWhere('customer_name', 'like', "%{$term}%")
+                    ->orWhere('customer_phone', 'like', "%{$term}%");
             });
         }
 
@@ -55,8 +55,8 @@ class OrderRepository implements OrderRepositoryInterface
             $term = $filters['search'];
             $query->where(function ($q) use ($term) {
                 $q->where('order_code', 'like', "%{$term}%")
-                  ->orWhere('customer_name', 'like', "%{$term}%")
-                  ->orWhere('customer_phone', 'like', "%{$term}%");
+                    ->orWhere('customer_name', 'like', "%{$term}%")
+                    ->orWhere('customer_phone', 'like', "%{$term}%");
             });
         }
 
@@ -115,9 +115,9 @@ class OrderRepository implements OrderRepositoryInterface
             $searchTerm = $filters['search'];
             $query->where(function ($subQ) use ($searchTerm) {
                 $subQ->where('ghn_order_code', 'like', "%{$searchTerm}%")
-                     ->orWhere('order_code', 'like', "%{$searchTerm}%")
-                     ->orWhere('customer_name', 'like', "%{$searchTerm}%")
-                     ->orWhere('customer_phone', 'like', "%{$searchTerm}%");
+                    ->orWhere('order_code', 'like', "%{$searchTerm}%")
+                    ->orWhere('customer_name', 'like', "%{$searchTerm}%")
+                    ->orWhere('customer_phone', 'like', "%{$searchTerm}%");
             });
         }
 
@@ -140,37 +140,37 @@ class OrderRepository implements OrderRepositoryInterface
         $order->fill($data);
         return $order->save();
     }
-    
+
     public function updateStatus(int $id, string $status, ?string $note): bool
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $status, $note) {
+        return DB::transaction(function () use ($id, $status, $note) {
             $order = Order::findOrFail($id);
             $order->order_status = $status;
-            
+
             if ($status === 'completed') {
                 $order->payment_status = 'paid';
             }
-            
+
             if (!empty($note)) {
                 $order->note = $note;
             }
-            
+
             return $order->save();
         });
     }
 
     public function updateCancellationStatus(int $id, string $orderStatus, string $paymentStatus, string $cancellationStatus, ?string $cancellationNote = null): bool
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $orderStatus, $paymentStatus, $cancellationStatus, $cancellationNote) {
+        return DB::transaction(function () use ($id, $orderStatus, $paymentStatus, $cancellationStatus, $cancellationNote) {
             $order = Order::findOrFail($id);
             $order->order_status = $orderStatus;
             $order->payment_status = $paymentStatus;
             $order->cancellation_status = $cancellationStatus;
-            
+
             if (!empty($cancellationNote)) {
                 $order->cancellation_note = $cancellationNote;
             }
-            
+
             return $order->save();
         });
     }

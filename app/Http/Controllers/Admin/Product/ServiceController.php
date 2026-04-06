@@ -3,304 +3,120 @@
 namespace App\Http\Controllers\Admin\Product;
 
 use App\Http\Controllers\Controller;
-use App\Models\Service;
-use App\Models\ProductCategory;
-use App\Traits\HasTreeStructure;
-use App\Models\Doctor;
+use App\Http\Requests\Admin\Product\StoreServiceRequest;
+use App\Http\Requests\Admin\Product\UpdateServiceRequest;
+use App\Core\Products\Services\Ports\Inbound\ServiceUseCaseInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use Illuminate\Support\Str;
 
 class ServiceController extends Controller
 {
-    use HasTreeStructure;
+    public function __construct(
+        private readonly ServiceUseCaseInterface $serviceUseCase
+    ) {}
 
     /**
      * Display a listing of services
      */
-    public function index()
+    public function index(Request $request)
     {
-        $allCategories = ProductCategory::orderBy('sort_order')->orderBy('name')->get();
-        $categories = $this->buildSelectOptions($allCategories);
-        $services = Service::with(['category'])->orderBy('created_at', 'desc')->get();
-        $doctors = Doctor::all();
+        $search = $request->get('search');
+        $perPage = $request->get('per_page', 10);
 
-        return view('admin.products.Danhsachhanghoa.index', compact('categories', 'services', 'doctors'));
+        $data = $this->serviceUseCase->getServiceList($search, $perPage);
+        $formData = $this->serviceUseCase->getFormData();
+
+        return Inertia::render('Admin/Products/Lists/ListServices', array_merge(
+            $data,
+            $formData
+        ));
     }
 
     /**
-     * Store a newly created service
+     * Show the form for creating a new service.
      */
-    public function store(Request $request)
+    public function create()
     {
-        $request->validate([
-            'ten_dich_vu' => 'required|string|max:255',
-            'nhom_hang_id' => 'nullable|exists:product_categories,id',
-            'doctor_id' => 'nullable|exists:doctors,id',
-            'gia_dich_vu' => 'required|numeric|min:0',
-            'mo_ta' => 'nullable|string',
-            'hinh_thuc' => 'required|in:tai_phong_kham,tai_nha_khach',
-            'thoi_gian_thuc_hien' => 'nullable|integer|min:1',
-            'trang_thai' => 'required|in:kich_hoat,tam_ngung,luu_tam',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'ghi_chu' => 'nullable|string',
-            'ma_dich_vu' => 'nullable|string|max:255'
-        ]);
-
-        $data = $request->except(['image']);
-
-
-        // Auto generate service code if not provided
-        if (empty($data['ma_dich_vu'])) {
-            $data['ma_dich_vu'] = 'DV' . date('Ymd') . str_pad(Service::count() + 1, 4, '0', STR_PAD_LEFT);
-        }
-
-        // Add user tracking
-        $data['created_by'] = Auth::id();
-        $data['updated_by'] = Auth::id();
-
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-            $imagePath = $image->storeAs('services', $imageName, 'public');
-            $data['image'] = $imagePath;
-        }
-
-        try {
-            $service = Service::create($data);
-
-            // Return JSON response for AJAX requests
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Dịch vụ đã được tạo thành công!',
-                    'data' => $service->load('category')
-                ]);
-            }
-
-            return redirect()->route('admin.products.index')
-                ->with('success', 'Dịch vụ đã được tạo thành công!');
-        } catch (\Exception $e) {
-
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Có lỗi xảy ra khi tạo dịch vụ: ' . $e->getMessage()
-                ], 500);
-            }
-
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Có lỗi xảy ra khi tạo dịch vụ: ' . $e->getMessage());
-        }
+        $formData = $this->serviceUseCase->getFormData();
+        return Inertia::render('Admin/Products/Create/Service', $formData);
     }
 
     /**
-     * Show the form for editing the specified service
+     * Store a newly created service.
      */
-    public function edit($id)
+    public function store(StoreServiceRequest $request)
     {
-        $service = Service::with(['category'])->findOrFail($id);
-        $allCategories = ProductCategory::orderBy('sort_order')->orderBy('name')->get();
-        $categories = $this->buildSelectOptions($allCategories);
-        $manufacturers = \App\Models\Manufacturer::all();
-        $positions = \App\Models\Position::all();
+        $this->serviceUseCase->createService($request->toDTO());
 
-        return view('admin.products.Danhsachhanghoa.edit.service', compact('service', 'categories', 'manufacturers', 'positions'));
+        return redirect()->route('admin.products.index')->with('success', 'Dịch vụ đã được tạo thành công!');
     }
 
     /**
-     * Display the specified service
+     * Show the form for editing a service.
      */
-    public function show($id)
+    public function edit(int|string $id)
     {
-        try {
-            $service = Service::with(['category', 'creator', 'updater'])->findOrFail($id);
+        $detail = $this->serviceUseCase->getServiceById($id);
+        $formData = $this->serviceUseCase->getFormData();
 
-            return response()->json([
-                'success' => true,
-                'service' => $service
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Không tìm thấy dịch vụ!'
-            ], 404);
-        }
+        return Inertia::render('Admin/Products/Edit/Service', array_merge(
+            $detail,
+            $formData
+        ));
     }
 
     /**
-     * Update the specified service
+     * Update the specified service.
      */
-    public function update(Request $request, $id)
+    public function update(UpdateServiceRequest $request, int|string $id)
     {
-        $service = Service::findOrFail($id);
-
-        $request->validate([
-            'ma_dich_vu' => 'required|string|max:255|unique:services,ma_dich_vu,' . $id,
-            'ten_dich_vu' => 'required|string|max:255',
-            'nhom_hang_id' => 'nullable|exists:product_categories,id',
-            'doctor_id' => 'nullable|exists:doctors,id',
-            'gia_dich_vu' => 'required|numeric|min:0',
-            'mo_ta' => 'nullable|string',
-            'hinh_thuc' => 'required|in:tai_nha_thuoc,tai_nha_khach',
-            'thoi_gian_thuc_hien' => 'nullable|integer|min:1',
-            'trang_thai' => 'required|in:kich_hoat,tam_ngung,luu_tam',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'ghi_chu' => 'nullable|string'
-        ]);
-
-        $data = $request->except(['image']);
-
-        // No field mapping needed since form fields match database columns
-
-        // Xử lý ảnh mới
-        if ($request->hasFile('image')) {
-            // Xóa ảnh cũ
-            if ($service->image && Storage::disk('public')->exists($service->image)) {
-                Storage::disk('public')->delete($service->image);
-            }
-
-            $image = $request->file('image');
-            $imageName = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-            $imagePath = $image->storeAs('services', $imageName, 'public');
-            $data['image'] = $imagePath;
-        }
-
-        try {
-            $service->update($data);
-
-            return redirect()->route('admin.products.index')
-                ->with('success', 'Dịch vụ đã được cập nhật thành công!');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Có lỗi xảy ra khi cập nhật dịch vụ: ' . $e->getMessage());
-        }
+        $this->serviceUseCase->updateService($id, $request->toDTO());
+        return redirect()->back()->with('success', 'Cập nhật dịch vụ thành công!');
     }
 
     /**
-     * Remove the specified service
+     * Remove the specified service.
      */
-    public function destroy($id)
+    public function destroy(int|string $id)
     {
-        try {
-        $service = Service::findOrFail($id);
-
-            // Delete image if exists
-        if ($service->image && Storage::disk('public')->exists($service->image)) {
-            Storage::disk('public')->delete($service->image);
-        }
-
-        $service->delete();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Dịch vụ đã được xóa thành công!'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Có lỗi xảy ra khi xóa dịch vụ: ' . $e->getMessage()
-            ], 500);
-        }
+        $this->serviceUseCase->deleteService($id);
+        return redirect()->back()->with('success', 'Xóa dịch vụ thành công!');
     }
 
     /**
-     * Get service detail for edit modal
+     * Display the specified service (JSON for modals if needed)
      */
-    public function detail($id)
+    public function show(int|string $id)
     {
-        try {
-            $service = Service::with(['category'])->findOrFail($id);
-
-            return response()->json([
-                'success' => true,
-                'product' => $service  // Changed from 'service' to 'product' for consistency
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Không tìm thấy dịch vụ!'
-            ], 404);
-        }
+        return response()->json($this->serviceUseCase->getServiceById($id));
     }
 
     /**
-     * Update service status
-     */
-    public function updateStatus(Request $request, $id)
-    {
-        $request->validate([
-            'trang_thai' => 'required|in:kich_hoat,tam_ngung,luu_tam'
-        ]);
-
-        try {
-            $service = Service::findOrFail($id);
-            $service->update([
-                'trang_thai' => $request->trang_thai,
-                'updated_by' => Auth::id()
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Trạng thái dịch vụ đã được cập nhật!',
-                'service' => $service->fresh()
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Có lỗi xảy ra khi cập nhật trạng thái!'
-            ], 500);
-        }
-    }
-
-    /**
-     * List services for Vue component
+     * List services for unified product list page.
      */
     public function listServices(Request $request)
     {
-        $query = Service::with(['category', 'doctor']);
+        $search = $request->get('search');
+        $perPage = $request->get('per_page', 10);
+        
+        $data = $this->serviceUseCase->getServiceList($search, $perPage);
 
-        // Search functionality
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('ten_dich_vu', 'LIKE', "%{$search}%")
-                    ->orWhere('ma_dich_vu', 'LIKE', "%{$search}%");
-            });
-        }
-
-        // Filter by category
-        if ($request->filled('category_id')) {
-            $query->where('nhom_hang_id', $request->category_id);
-        }
-
-        $services = $query->latest()->get();
-        $data = $this->getFormData();
-
-        return Inertia::render('Admin/Products/Lists/UnifiedList', [
-            'productType' => 'service',
-            'medicines' => [],
-            'goods' => [],
-            'services' => $services,
-            'categories' => [],
-            'data' => $data
-        ]);
+        return Inertia::render('Admin/Products/Lists/UnifiedList', array_merge(
+            $data,
+            $this->serviceUseCase->getFormData(),
+            [
+                'productType' => 'service',
+                'medicines' => [],
+                'goods' => []
+            ]
+        ));
     }
 
     /**
-     * Get form data for services
+     * Generate codes for API
      */
-    protected function getFormData()
+    public function generateCodes()
     {
-        $allCategories = ProductCategory::orderBy('sort_order')->orderBy('name')->get();
-        return [
-            'categories' => $this->buildSelectOptions($allCategories),
-            'doctors' => Doctor::all(),
-        ];
+        return response()->json($this->serviceUseCase->generateCodes());
     }
 }

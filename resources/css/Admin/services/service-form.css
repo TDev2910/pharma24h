@@ -1,0 +1,271 @@
+/* Form Layout & Grid */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Tabs */
+.tabs-container {
+  margin-bottom: 20px;
+}
+
+.tabs-header {
+  display: flex;
+  gap: 0;
+}
+
+.tab-button {
+  padding: 12px 24px;
+  border: none;
+  background: #f8f9fa;
+  color: #6c757d;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.2s ease;
+}
+
+.tab-button.active {
+  background: #fff;
+  color: #2c3e50;
+  border-bottom: 2px solid #007bff;
+}
+
+.tabs-divider {
+  height: 2px;
+  background: #dee2e6;
+  margin-top: -2px;
+}
+
+.tab-content {
+  padding: 20px 0;
+}
+
+/* Form Sections */
+.form-section {
+  margin-bottom: 30px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  background: #fff;
+  margin-top: -30px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.section-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+}
+
+/* Rows & Columns */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.form-row.three-columns {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Input Styles */
+.input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.input-group .field-input {
+  flex: 1;
+}
+
+.field-label {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 0; /* Changed from 6px to use gap in parent instead */
+  gap: 4px;
+}
+
+.form-field:focus-within .field-label {
+  color: #2563eb; /* Blue-600 */
+}
+
+.field-input,
+.price-input,
+.p-inputtext,
+.p-dropdown,
+.modern-treeselect {
+  width: 100% !important;
+  font-size: 14px !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  height: 42px !important;
+  background: #ffffff !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: #1f2937 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  display: flex !important;
+  align-items: center !important;
+  overflow: hidden;
+}
+
+/* Ensure padding only on text inputs, not dropdown wrappers */
+.field-input:not(.p-dropdown):not(.p-inputnumber),
+.p-inputtext:not(.p-dropdown-label) {
+  padding: 0 14px !important;
+}
+
+/* PrimeVue Dropdown label padding */
+.p-dropdown .p-dropdown-label {
+  padding: 0 14px !important;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.field-input:hover,
+.price-input:hover,
+.p-inputtext:not(.p-disabled):hover,
+.p-dropdown:not(.p-disabled):hover,
+.modern-treeselect:hover {
+  border-color: #3b82f6 !important; /* Blue-500 */
+}
+
+.field-input:focus-within,
+.price-input:focus-within,
+.p-inputtext:not(.p-disabled):focus,
+.p-dropdown.p-focus,
+.modern-treeselect.p-focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
+  outline: none !important;
+  background: #fff !important;
+}
+
+/* Fix for PrimeVue InputNumber wrapper */
+.p-inputnumber {
+  width: 100% !important;
+}
+
+.readonly-input {
+  background-color: #f3f4f6 !important;
+  border-color: #e5e7eb !important;
+  color: #6b7280 !important;
+  cursor: not-allowed !important;
+}
+
+/* Checkbox & Errors */
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-label {
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+}
+
+.p-error {
+  color: #e24c4c;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.p-invalid {
+  border-color: #e24c4c !important;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
+.text-muted {
+  color: #6c757d;
+  font-size: 12px;
+}
+
+/* Error Summary Box */
+.error-messages {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-top: 20px;
+}
+
+.error-title {
+  color: #721c24;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.error-list {
+  color: #721c24;
+  margin: 0;
+  padding-left: 20px;
+}
+
+/* Fieldset Enhancement */
+fieldset {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  padding: 24px !important;
+  margin-top: 30px !important;
+  background: #f9fafb !important;
+  position: relative;
+}
+
+legend {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #1a56db !important; /* Medical-like blue */
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  padding: 4px 16px !important;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 9999px !important;
+  margin-left: 10px !important;
+  float: none !important;
+  width: auto !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+@media (max-width: 768px) {
+  .form-row, .form-row.three-columns {
+    grid-template-columns: 1fr;
+  }
+}

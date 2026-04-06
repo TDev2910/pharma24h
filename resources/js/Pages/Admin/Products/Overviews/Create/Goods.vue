@@ -1,7 +1,6 @@
 <template>
-  <Dialog :visible="visible" @update:visible="(val) => $emit('update:visible', val)" header="Vật tư y tế"
-    :style="{ width: '900px' }" modal :closable="true" @hide="closeModal">
-    
+  <Dialog :visible="visible" @update:visible="$emit('close')" header="Vật tư y tế" :style="{ width: '900px' }" modal
+    :closable="true" @hide="closeModal">
     <div class="flex gap-6 form-grid">
       <!-- Left Section: Form Fields -->
       <div style="flex: 1;">
@@ -21,19 +20,11 @@
         </div>
 
         <!-- Tab Content -->
-        <TabInfo v-show="activeTab === 'info'" 
-          :form="form" 
-          :selectedCategoryKey="selectedCategoryKey"
-          :categoryTreeNodes="categoryTreeNodes" 
-          :manufacturerOptions="manufacturerOptions" 
-          :positionOptions="positionOptions"
-          @generate-code="generateGoodsCode" 
-          @generate-barcode="generateGoodsBarcode"
-          @category-change="onCategoryChange" 
-          @open-unit-modal="showUnitModal = true"
-          @open-manufacturer-modal="showManufacturerModal = true"
-          @open-position-modal="showPositionModal = true"
-        >
+        <TabInfo v-show="activeTab === 'info'" :form="form" :selectedCategoryKey="selectedCategoryKey"
+          :categoryTreeNodes="categoryTreeNodes" :manufacturerOptions="manufacturerOptions"
+          :positionOptions="positionOptions" @generate-code="generateGoodsCode" @generate-barcode="generateGoodsBarcode"
+          @category-change="onCategoryChange" @open-unit-modal="showUnitModal = true"
+          @open-manufacturer-modal="showManufacturerModal = true" @open-position-modal="showPositionModal = true">
           <!-- Plugin the ImageUploader using named slot -->
           <template #image>
             <ImageUploader :imagePreview="imagePreview" @upload="handleImageUpload" @remove="removeImage" />
