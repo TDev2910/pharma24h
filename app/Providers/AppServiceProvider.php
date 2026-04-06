@@ -86,6 +86,16 @@ class AppServiceProvider extends ServiceProvider
             \App\Core\Products\Good\Ports\Outbound\GoodRepositoryInterface::class,
             \App\Infrastructure\Persistence\Eloquent\GoodRepository::class
         );
+
+        // Binds Service Module
+        $this->app->bind(
+            \App\Core\Products\Services\Ports\Inbound\ServiceUseCaseInterface::class,
+            \App\Core\Products\Services\Application\Services\ServiceService::class
+        );
+        $this->app->bind(
+            \App\Core\Products\Services\Ports\Outbound\ServiceRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Eloquent\ServiceRepository::class
+        );
     }
 
     public function boot(): void
