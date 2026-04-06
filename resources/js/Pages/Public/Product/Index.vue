@@ -1,8 +1,6 @@
 <template>
   <div>
-    <Header :auth="auth" />
-
-    <div class="container my-4 responsive-top-spacing" style="margin-top: -160px;">
+    <div class="container my-4 responsive-top-spacing">
       <div class="banner-wrapper">
         <img src="https://nhathuocminhchau.com/storage/uploads/logo/slider-2-5886-hinh.webp" alt="Banner"
           class="banner-image" />
@@ -143,8 +141,6 @@
 </template>
 
 <script setup>
-import Header from '@/Components/Global/Header.vue'
-import Footer from '@/Components/Global/Footer.vue'
 import { computed, onMounted, ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';

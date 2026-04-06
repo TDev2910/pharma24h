@@ -23,7 +23,6 @@
 <script setup>
 import Header from '@/Components/Global/Header.vue'
 import Footer from '@/Components/Global/Footer.vue'
-// import ChatWidget from '@/Components/Global/Chat/ChatWidget.vue'
 import { onMounted, onUnmounted } from 'vue'
 
 // Props từ Inertia
@@ -88,8 +87,6 @@ onUnmounted(() => {
 
 .main-content {
   flex: 1;
-  padding-top: 40px;
-
 }
 
 /* Floating Contacts */

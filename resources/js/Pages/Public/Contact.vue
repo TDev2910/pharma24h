@@ -1,8 +1,6 @@
 <template>
     <div class="page-wrapper">
-        <Header :auth="auth" />
-
-        <div class="contact-banner" style="margin-top: -120px;">
+        <div class="contact-banner">
             <div class="container">
                 <h1 class="fw-bold text-primary-dark">Liên hệ</h1>
                 <p class="text-secondary">Hãy liên hệ với chúng tôi để hỏi thông tin, thông tin y tế hoặc cơ hội hợp
@@ -104,7 +102,6 @@
 </template>
 
 <script setup>
-import Header from '@/Components/Global/Header.vue'
 import { router } from '@inertiajs/vue3';
 import { ref, reactive } from 'vue';
 
@@ -154,7 +151,6 @@ const form = reactive({
     message: ''
 });
 
-// Danh sách chủ đề Dropdown
 const subjects = [
     { name: 'Yêu cầu chung', code: 'general' },
     { name: 'Thông tin sản phẩm', code: 'product' },
@@ -162,15 +158,9 @@ const subjects = [
     { name: 'Hợp tác', code: 'partnership' },
     { name: 'Khác', code: 'other' }
 ];
-
 </script>
 
 <style scoped>
-.page-wrapper {
-    margin-top: 80px;
-    /* Khoảng cách header */
-}
-
 /* 1. Banner Style */
 .contact-banner {
     background: linear-gradient(180deg, #E6F3FF 0%, #FFFFFF 100%);
