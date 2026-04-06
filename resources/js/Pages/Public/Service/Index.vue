@@ -1,10 +1,7 @@
 <template>
     <div>
-        <!-- Header Component -->
-        <Header :auth="auth" />
-
         <!-- Hero Banner Section -->
-        <section class="hero-section" style="margin-top: -120px;">
+        <section class="hero-section">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-6">
@@ -349,7 +346,6 @@
 </template>
 
 <script setup>
-import Header from '@/Components/Global/Header.vue'
 import { router } from '@inertiajs/vue3'
 import { ref } from 'vue'
 

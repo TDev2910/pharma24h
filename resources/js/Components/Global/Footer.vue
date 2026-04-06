@@ -3,43 +3,37 @@
     <div class="container pt-5 pb-4">
       <div class="row g-4">
 
-        <div class="col-lg-4 col-md-6">
+        <div class="col-lg-3 col-md-6">
           <div class="footer-brand mb-4">
             <span class="fw-bold fs-4 text-white">Pharma PCT</span>
           </div>
-          <p class="text-gray-400 mb-4 text-justify">
+          <p class="text-gray-400 mb-4 text-justify small">
             Sứ mệnh của chúng tôi là cung cấp các giải pháp dược phẩm tiên tiến,
             cải thiện sức khỏe và cuộc sống của mọi người trên toàn cầu thông qua
             nghiên cứu và đổi mới không ngừng.
           </p>
         </div>
 
-        <div class="col-lg-4 col-md-6">
-          <h5 class="text-white fw-bold mb-4">Thông tin liên hệ</h5>
-          <ul class="list-unstyled contact-info">
+        <div class="col-lg-3 col-md-6">
+          <h5 class="text-white fw-bold mb-4 fs-6">Thông tin liên hệ</h5>
+          <ul class="list-unstyled contact-info small">
             <li class="d-flex mb-3">
               <i class="fas fa-map-marker-alt mt-1 me-3 text-white"></i>
               <span class="text-gray-400">
-                <strong>Trụ sở chính:</strong><br>
-                12 Đô Lương, Phường 11, Vũng Tàu,<br>
-                Bà Rịa - Vũng Tàu, Việt Nam
+                <strong>Vũng Tàu:</strong> 12 Đô Lương, P.11
               </span>
             </li>
             <li class="d-flex mb-3">
-              <i class="fas fa-phone-alt mt-1 me-3 text-white"></i>
+              <i class="fas fa-phone-alt mt-1 me-2 text-white"></i>
               <span class="text-gray-400">
-                <strong>Điện thoại:</strong><br>
                 <a href="tel:0901645269" class="text-gray-400 text-decoration-none hover-white">
                   0901 645 269
                 </a>
-                <br>
-                <small>(Thứ 2 - CN: 7:00 - 22:00)</small>
               </span>
             </li>
             <li class="d-flex mb-3">
-              <i class="fas fa-envelope mt-1 me-3 text-white"></i>
+              <i class="fas fa-envelope mt-1 me-2 text-white"></i>
               <span class="text-gray-400">
-                <strong>Email:</strong><br>
                 <a href="mailto:info@pharmapct.vn" class="text-gray-400 text-decoration-none hover-white">
                   info@pharmapct.vn
                 </a>
@@ -48,64 +42,53 @@
           </ul>
         </div>
 
-        <div class="col-lg-4 col-md-12">
+        <div class="col-lg-3 col-md-6">
           <div class="row">
-            <div class="col-12 mb-4">
-              <div class="social-links d-flex gap-3">
-                <a href="https://www.facebook.com/chokiot" target="_blank" class="social-btn">
+            <div class="col-12 mb-3">
+              <div class="social-links d-flex gap-2">
+                <a href="https://www.facebook.com/chokiot" target="_blank" class="social-btn btn-sm">
                   <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href="#" class="social-btn">
-                  <i class="fab fa-twitter"></i>
-                </a>
-                <a href="#" class="social-btn">
+                <a href="#" class="social-btn btn-sm">
                   <i class="fab fa-youtube"></i>
                 </a>
-                <a href="#" class="social-btn">
+                <a href="#" class="social-btn btn-sm">
                   <i class="fab fa-linkedin-in"></i>
                 </a>
               </div>
             </div>
 
-            <div class="col-12">
-              <ul class="list-unstyled footer-links">
-                <li class="mb-2"><a href="#">Chính sách bảo mật</a></li>
-                <li class="mb-2"><a href="#">Điều khoản sử dụng</a></li>
-                <li class="mb-2"><a href="#">Sơ đồ trang web</a></li>
-                <li class="mb-2"><a href="#">Khả năng truy cập</a></li>
+            <div class="col-12 mb-3">
+              <ul class="list-unstyled footer-links small">
+                <li class="mb-1"><a href="#">Chính sách bảo mật</a></li>
+                <li class="mb-1"><a href="#">Điều khoản sử dụng</a></li>
               </ul>
             </div>
-            <div class="payment-support mt-3">
-              <h6 class="text-white fw-bold mb-3">Hỗ trợ thanh toán</h6>
-              <div class="payment-icons">
-                <div class="payment-icon bg-white rounded p-1">
-                  <img
+
+            <div class="col-12">
+              <h6 class="text-white fw-bold mb-2 small">Thanh toán</h6>
+              <div class="payment-grid d-flex flex-wrap gap-1">
+                <div class="payment-tile"><img
                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZHjLoIrydHpn35cieRu557nqVPnd-Ou298g&s"
-                    alt="Visa" title="Visa">
-                </div>
-                <div class="payment-icon bg-white rounded p-1">
-                  <img
+                    alt="Visa"></div>
+                <div class="payment-tile"><img
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png"
-                    alt="MasterCard" title="MasterCard">
-                </div>
-                <div class="payment-icon bg-white rounded p-1">
-                  <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/JCB_logo.svg/1200px-JCB_logo.svg.png"
-                    alt="JCB" title="JCB">
-                </div>
-                <div class="payment-icon bg-white rounded p-1">
-                  <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-MoMo-Transparent.png" alt="MoMo"
-                    title="MoMo">
-                </div>
-                <div class="payment-icon bg-white rounded p-1">
-                  <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ZaloPay-Square.png" alt="ZaloPay"
-                    title="ZaloPay">
-                </div>
-                <div class="payment-icon bg-white rounded p-1">
-                  <img src="https://vnpay.vn/assets/images/logo-icon/logo-primary.svg" alt="VNPAY" title="VNPAY">
-                </div>
+                    alt="MC"></div>
+                <div class="payment-tile"><img
+                    src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-MoMo-Transparent.png" alt="MoMo"></div>
+                <div class="payment-tile"><img
+                    src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ZaloPay-Square.png" alt="ZaloPay"></div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-12">
+          <div class="footer-map-container rounded overflow-hidden shadow border border-secondary" style="height: 200px;">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3924.627294326521!2d107.0844538152865!3d10.341395992617757!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31756fd27f273ab9%3A0x671d1170ccf60f6f!2zQsOjaSBTYXUsIFZũngIFTw6B1!5e0!3m2!1svi!2s!4v1680000000000!5m2!1svi!2s"
+              width="100%" height="100%" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
           </div>
         </div>
 
@@ -243,27 +226,30 @@ const currentYear = computed(() => new Date().getFullYear())
   color: #fff;
 }
 
-/* 4. Payment Icons */
-.payment-icons {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  max-width: 200px;
+/* 4. Payment Grid */
+.payment-grid {
+  max-width: 160px;
 }
 
-.payment-icon {
-  width: 100%;
-  height: 30px;
+.payment-tile {
+  width: 35px;
+  height: 22px;
+  background-color: #fff;
+  border-radius: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s;
+  padding: 2px;
 }
 
-.payment-icon img {
+.payment-tile img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+.footer-map-container {
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* 5. Speed Dial FAB Styles */
