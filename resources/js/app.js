@@ -36,7 +36,7 @@ createInertiaApp({
     resolve: (name) => {
         return resolvePageComponent(
             `./Pages/${name}.vue`,
-            import.meta.glob("./Pages/**/*.vue")
+            import.meta.glob("./Pages/**/*.vue"),
         ).then((page) => {
             if (page.default.layout === undefined) {
                 if (name.startsWith("Admin/")) {
@@ -62,7 +62,7 @@ createInertiaApp({
             .mount(el);
     },
     progress: {
-        color: "#1a56db", // Màu xanh thương hiệu PCT Pharma
+        color: "#1a56db",
         showSpinner: true,
     },
 });
@@ -71,4 +71,3 @@ createInertiaApp({
 router.on("finish", () => {
     window.scrollTo({ top: 0, behavior: "instant" });
 });
-

@@ -101,9 +101,10 @@ const submit = () => {
     <div class="login-layout" style="margin-top: -77px;">
         <div class="login-container login-container--register">
             <div class="text-center mb-4">
-                <div class="logo-circle">
-                    <span class="logo-text">Pharma24h</span>
-                </div>
+                <Link href="/">
+                <img :src="'/images/logo.png'" alt="Pharma Logo"
+                    style="height: 150px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
+                </Link>
             </div>
 
             <h2 class="login-title">Đăng ký</h2>

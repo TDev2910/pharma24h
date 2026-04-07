@@ -45,7 +45,13 @@
 
 .product-grid {
   margin-bottom: 0;
-  margin-left: 80px;
+}
+
+/* Chỉ áp dụng khoảng cách này trên Desktop để tránh lệch Mobile */
+@media (min-width: 992px) {
+  .product-grid {
+    margin-left: 80px;
+  }
 }
 
 .product-card-modern {
@@ -153,6 +159,7 @@
   color: #fff !important;
   transition: none !important;
   margin-top: auto;
+  height: 40px;
   box-shadow: none !important;
 }
 

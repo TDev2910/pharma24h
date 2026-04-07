@@ -29,8 +29,8 @@
                 </div>
               </div>
 
-              <button id="applyFilterBtn" class="btn btn-primary fw-bold sidebar-btn"
-                style="background-color:#005EB8; border:none; width: 113%; color: white;">
+              <button id="applyFilterBtn" class="btn btn-primary fw-bold sidebar-btn w-100"
+                style="width: 110% !important; background-color:#005EB8; border:none; color: white;">
                 Áp dụng
               </button>
             </div>

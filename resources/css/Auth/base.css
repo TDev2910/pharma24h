@@ -16,19 +16,6 @@
     box-sizing: border-box;
 }
 
-.logo-circle {
-    background: var(--primary-hover);
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.logo-text {
-    color: white;
-    font-weight: 700;
-    letter-spacing: -0.2px;
-}
 
 .login-title {
     font-weight: 600;
