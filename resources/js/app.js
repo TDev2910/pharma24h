@@ -1,5 +1,6 @@
 import { createApp, h } from "vue";
 import { createInertiaApp, Link, router } from "@inertiajs/vue3";
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import "./bootstrap";
 
 // Expose route globally
@@ -31,27 +32,26 @@ const primevueOptions = {
     },
 };
 
-// 1. Quét toàn bộ trang một lần duy nhất ở ngoài (Fix Duplicate Layout)
-const pages = import.meta.glob("./Pages/**/*.vue");
-
 createInertiaApp({
-    resolve: async (name) => {
-        const pagePath = `./Pages/${name}.vue`;
-        
-        // 2. Nạp trang bất đồng bộ (Fix lỗi "dữ liệu thô" JSON)
-        const pageModule = await pages[pagePath]();
-        const page = pageModule.default;
+    resolve: (name) => {
+        // Dùng resolvePageComponent để đảm bảo component được cache đúng cách bởi Vite/Inertia
+        const page = resolvePageComponent(
+            `./Pages/${name}.vue`,
+            import.meta.glob("./Pages/**/*.vue")
+        );
 
-        // Gán layout mặc định cho các thư mục tương ứng
-        if (name.startsWith("Admin/")) {
-            page.layout = page.layout || AdminLayout;
-        } else if (name.startsWith("Public/")) {
-            page.layout = page.layout || PublicLayout;
-        } else if (name.startsWith("Staff/")) {
-            page.layout = page.layout || StaffLayout;
-        } else if (name.startsWith("User/")) {
-            page.layout = page.layout || UserLayout;
-        }
+        page.then((module) => {
+            // Chỉ gán Layout nếu Component chưa tự khai báo layout riêng
+            if (name.startsWith("Admin/")) {
+                module.default.layout = module.default.layout || AdminLayout;
+            } else if (name.startsWith("Public/")) {
+                module.default.layout = module.default.layout || PublicLayout;
+            } else if (name.startsWith("Staff/")) {
+                module.default.layout = module.default.layout || StaffLayout;
+            } else if (name.startsWith("User/")) {
+                module.default.layout = module.default.layout || UserLayout;
+            }
+        });
 
         return page;
     },
@@ -66,19 +66,7 @@ createInertiaApp({
     },
 });
 
-// 3. Bộ đánh chặn click chuột (Để nhấn Logo không bị reload trang & thoát lỗi Duplicate)
-document.addEventListener("click", (event) => {
-    const anchor = event.target.closest("a[data-inertia]");
-    if (!anchor) return;
-    
-    const href = anchor.getAttribute("href");
-    if (!href || href.startsWith("http")) return;
-    
-    event.preventDefault();
-    router.visit(href);
-});
-
-// Tự động cuộn về đầu trang sau khi chuyển trang thành công
+// Fix scroll về đầu trang sau khi chuyển trang
 router.on("finish", () => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
