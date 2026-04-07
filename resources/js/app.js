@@ -83,6 +83,18 @@ createInertiaApp({
     },
 });
 
+// Bộ đánh chặn click chuột dành cho thẻ a [data-inertia] (Tối ưu cho click Logo/Mobile)
+document.addEventListener("click", (event) => {
+    const anchor = event.target.closest("a[data-inertia]");
+    if (!anchor) return;
+    
+    const href = anchor.getAttribute("href");
+    if (!href || href.startsWith("http")) return;
+    
+    event.preventDefault();
+    router.visit(href);
+});
+
 // Xử lý scroll khi chuyển trang
 router.on("finish", () => {
     window.scrollTo({ top: 0, behavior: "instant" });

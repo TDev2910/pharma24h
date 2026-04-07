@@ -16,22 +16,22 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <Link class="nav-link" href="/">Trang chủ</Link>
+              <a class="nav-link" href="/" data-inertia>Trang chủ</a>
             </li>
             <li class="nav-item">
-              <Link class="nav-link" href="/medical-team">Đội ngũ</Link>
+              <a class="nav-link" href="/medical-team" data-inertia>Đội ngũ</a>
             </li>
             <li class="nav-item">
-              <Link class="nav-link" href="/products">Sản phẩm</Link>
+              <a class="nav-link" href="/products" data-inertia>Sản phẩm</a>
             </li>
             <li class="nav-item">
-              <Link class="nav-link" href="/services">Dịch vụ</Link>
+              <a class="nav-link" href="/services" data-inertia>Dịch vụ</a>
             </li>
             <li class="nav-item">
-              <Link class="nav-link" href="/posts">Góc sức khỏe</Link>
+              <a class="nav-link" href="/posts" data-inertia>Góc sức khỏe</a>
             </li>
             <li class="nav-item">
-              <Link class="nav-link" href="/contact">Liên hệ</Link>
+              <a class="nav-link" href="/contact" data-inertia>Liên hệ</a>
             </li>
           </ul>
 
@@ -232,22 +232,22 @@
       <div class="offcanvas-body">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <Link class="nav-link" href="/" @click="closeMenu">Trang chủ</Link>
+            <a class="nav-link" href="/" data-inertia @click="closeMenu">Trang chủ</a>
           </li>
           <li class="nav-item">
-            <Link class="nav-link" href="/medical-team" @click="closeMenu">Đội ngũ</Link>
+            <a class="nav-link" href="/medical-team" data-inertia @click="closeMenu">Đội ngũ</a>
           </li>
           <li class="nav-item">
-            <Link class="nav-link" href="/products" @click="closeMenu">Sản phẩm</Link>
+            <a class="nav-link" href="/products" data-inertia @click="closeMenu">Sản phẩm</a>
           </li>
           <li class="nav-item">
-            <Link class="nav-link" href="/services" @click="closeMenu">Dịch vụ</Link>
+            <a class="nav-link" href="/services" data-inertia @click="closeMenu">Dịch vụ</a>
           </li>
           <li class="nav-item">
-            <Link class="nav-link" href="/posts" @click="closeMenu">Góc sức khỏe</Link>
+            <a class="nav-link" href="/posts" data-inertia @click="closeMenu">Góc sức khỏe</a>
           </li>
           <li class="nav-item">
-            <Link class="nav-link" href="/contact" @click="closeMenu">Liên hệ</Link>
+            <a class="nav-link" href="/contact" data-inertia @click="closeMenu">Liên hệ</a>
           </li>
         </ul>
       </div>
