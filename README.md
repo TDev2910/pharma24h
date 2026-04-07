@@ -50,6 +50,8 @@ Admins and staff manage products, orders, users, and content through a dedicated
 - Self-implemented **Retrieval-Augmented Generation** pipeline using **Google Gemini API**
 - AI answers health-related questions based on a curated local dataset — not raw API calls
 - Responses streamed in real time via **Server-Sent Events (SSE)**
+<img width="1581" height="716" alt="image" src="https://github.com/user-attachments/assets/93ac9166-81c6-4c4e-bacc-6b14d9987b7d" />
+
 
 ### Authentication & Authorization
 - **Laravel Sanctum** + **Google OAuth** for secure login
@@ -67,6 +69,8 @@ Admins and staff manage products, orders, users, and content through a dedicated
 
 ### Logistics
 - **GHN API** integration for automated shipping fee calculation and order tracking
+<img width="1914" height="964" alt="image" src="https://github.com/user-attachments/assets/f91e4123-2e2f-4495-b0b8-bee488f1b0ec" />
+
 
 ###  DevOps
 - Containerized with **Docker** (separate local and production compose files)
@@ -248,12 +252,11 @@ SSH into production server (CPanel)
 You can log in to explore the system with the following demo accounts:
 
 > ⚠️ These accounts are for demo/testing purposes only. Please do not change passwords or delete data.
-> ⚠️ These accounts are for demo/testing purposes only. Please do not change passwords or delete data.
 > Nếu mọi người có test - là người tốt mong đừng phá data và đổi tài khoản nhé vì mình muốn mọi người có thể trải nghiệm
-                                    | Role | Email | Password |
-                                    |---|---|---|
-                                    | **Admin** | admin@example.com | `Trong123` |
-                                    | **Staff** | banhmibosua123@gmail.com | `Trong2910` |
+| Role | Email | Password |
+|---|---|---|
+| **Admin** | admin@example.com | `Trong123` |
+| **Staff** | banhmibosua123@gmail.com | `Trong2910` |
                                     | **User** | phamchitrong2910@gmail.com | `Trong123` |
 > ⚠️ These accounts are for demo/testing purposes only. Please do not change passwords or delete data.
 > ⚠️ These accounts are for demo/testing purposes only. Please do not change passwords or delete data.
@@ -274,6 +277,7 @@ Performed with **K6** on key endpoints (product listing, checkout):
 ```bash
 k6 run stress_test.js
 ```
+<img width="935" height="527" alt="image" src="https://github.com/user-attachments/assets/9e058f1b-b14c-483b-bae4-56243aa3ec14" />
 
 Identified bottleneck: unindexed category/price filter queries on the products table.
 
