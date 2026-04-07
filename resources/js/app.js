@@ -35,33 +35,29 @@ const primevueOptions = {
 createInertiaApp({
   resolve: (name) => {
     const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
-    let page = pages[`./Pages/${name}.vue`]
+    const page = pages[`./Pages/${name}.vue`]
     
     if (!page) {
         console.error(`Page not found: ./Pages/${name}.vue`)
         return null
     }
 
-    page = page.default || page
+    const pageContent = page.default || page
     
-    // Gán layout mặc định
-    if (name.startsWith('Admin/') && !page.layout) {
-      page.layout = AdminLayout
+    // Gán layout mặc định CHỈ KHI component chưa có layout riêng (Fix lỗi Duplicate layout)
+    if (pageContent.layout === undefined) {
+        if (name.startsWith('Admin/')) {
+            pageContent.layout = AdminLayout
+        } else if (name.startsWith('Public/')) {
+            pageContent.layout = PublicLayout
+        } else if (name.startsWith('Staff/')) {
+            pageContent.layout = StaffLayout
+        } else if (name.startsWith('User/')) {
+            pageContent.layout = UserLayout
+        }
     }
     
-    if (name.startsWith('Public/') && !page.layout) {
-      page.layout = PublicLayout
-    }
-    
-    if (name.startsWith('Staff/') && !page.layout) {
-      page.layout = StaffLayout
-    }
-    
-    if (name.startsWith('User/') && !page.layout) {
-      page.layout = UserLayout
-    }
-    
-    return page
+    return pageContent
   },
   setup({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
