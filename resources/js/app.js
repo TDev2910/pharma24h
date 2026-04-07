@@ -1,21 +1,20 @@
 import { createApp, h } from "vue";
 import { createInertiaApp, Link, router } from "@inertiajs/vue3";
 import "./bootstrap";
-
-// Expose route globally
 import { ZiggyVue } from "ziggy-js";
 
+// UI Framework & Plugins
 import PrimeVue from "primevue/config";
 import Aura from "@primeuix/themes/aura";
 import ToastService from "primevue/toastservice";
 import "primeicons/primeicons.css";
 
+// Import Layouts (Đảm bảo các file này nằm trong @/Layouts, KHÔNG nằm trong @/Pages)
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 import StaffLayout from "@/Layouts/StaffLayout.vue";
 import UserLayout from "@/Layouts/UserLayout.vue";
 
-// Import Firebase modules
 import "./library/firebase";
 import "./library/firebasePhoneAuth";
 
@@ -31,24 +30,28 @@ const primevueOptions = {
     },
 };
 
-// Caching pages glob for efficiency
+// Caching glob cho hiệu năng
 const pages = import.meta.glob("./Pages/**/*.vue");
 
 createInertiaApp({
     resolve: async (name) => {
         const pagePath = `./Pages/${name}.vue`;
-        
+
         if (!pages[pagePath]) {
-            console.error(`MISSING COMPONENT: ${pagePath}`);
+            console.error(`KHÔNG TÌM THẤY COMPONENT: ${pagePath}`);
             return null;
         }
 
         const pageModule = await pages[pagePath]();
         const page = pageModule.default;
 
-        // SAFE LAYOUT RESOLUTION: Avoid double-wrapping
+        /**
+         * XỬ LÝ LAYOUT TỰ ĐỘNG (FIX LỖI ĐỆ QUY)
+         * 1. Chỉ gán nếu page.layout chưa được định nghĩa thủ công trong file .vue
+         * 2. Kiểm tra folder để gán Layout tương ứng
+         */
         if (page.layout === undefined) {
-             if (name.startsWith("Admin/")) {
+            if (name.startsWith("Admin/")) {
                 page.layout = AdminLayout;
             } else if (name.startsWith("Public/")) {
                 page.layout = PublicLayout;
@@ -57,12 +60,14 @@ createInertiaApp({
             } else if (name.startsWith("User/")) {
                 page.layout = UserLayout;
             }
+            // Mặc định nếu không thuộc folder nào bên trên (tùy chọn)
+            // else { page.layout = PublicLayout; }
         }
 
         return page;
     },
     setup({ el, App, props, plugin }) {
-        // CLEANUP: Ensure we don't have multiple app instances on the same element
+        // Tránh lỗi khi hot-reload hoặc mount nhiều lần
         if (el.__vue_app__) {
             el.__vue_app__.unmount();
         }
@@ -72,16 +77,13 @@ createInertiaApp({
             .use(ZiggyVue)
             .use(PrimeVue, primevueOptions)
             .use(ToastService)
-            .component("Link", Link);
-            
-        // Mount and save instance reference for future cleanup
+            .component("Link", Link); // Đăng ký Link global cho tiện sử dụng
+
         el.__vue_app__ = app.mount(el);
     },
 });
 
-// Smooth scroll to top on every successful navigation
+// Xử lý scroll khi chuyển trang
 router.on("finish", () => {
-    window.scrollTo(0, 0);
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
+    window.scrollTo({ top: 0, behavior: "instant" });
 });

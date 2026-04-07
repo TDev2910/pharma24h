@@ -232,22 +232,22 @@
       <div class="offcanvas-body">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="/" data-inertia @click="closeMenu">Trang chủ</a>
+            <Link class="nav-link" href="/" @click="closeMenu">Trang chủ</Link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/medical-team" data-inertia @click="closeMenu">Đội ngũ</a>
+            <Link class="nav-link" href="/medical-team" @click="closeMenu">Đội ngũ</Link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/products" data-inertia @click="closeMenu">Sản phẩm</a>
+            <Link class="nav-link" href="/products" @click="closeMenu">Sản phẩm</Link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/services" data-inertia @click="closeMenu">Dịch vụ</a>
+            <Link class="nav-link" href="/services" @click="closeMenu">Dịch vụ</Link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/posts" data-inertia @click="closeMenu">Góc sức khỏe</a>
+            <Link class="nav-link" href="/posts" @click="closeMenu">Góc sức khỏe</Link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/contact" data-inertia @click="closeMenu">Liên hệ</a>
+            <Link class="nav-link" href="/contact" @click="closeMenu">Liên hệ</Link>
           </li>
         </ul>
       </div>
