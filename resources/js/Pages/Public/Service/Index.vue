@@ -5,21 +5,13 @@
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-6">
-                        <p class="hero-subtitle" style="font-size: 25px;">CHĂM SÓC SỨC KHỎE TOÀN DIỆN</p>
                         <h1 class="hero-title">
-                            Dịch vụ Y tế Đa dạng
-                            <br />
+                            Dịch vụ Y tế Đa dạng<br />
                             <span class="highlight-text">Nhanh Chóng - Tận Tâm</span>
                         </h1>
-                        <p class="hero-description">
-                            Trải nghiệm dịch vụ y tế chất lượng cao với đội ngũ bác sĩ giỏi, hệ thống cơ sở hiện đại,
-                            dịch vụ đa dạng,
-                            khám nhanh chóng, tư vấn tận tình và chăm sóc tận tâm. Gửi ra hiệu quả tối ưu.
+                        <p class="hero-description text-secondary">
+                            Chăm sóc sức khỏe chất lượng cao với đội ngũ bác sĩ giỏi, cơ sở hiện đại và quy trình chuyên nghiệp, mang lại hiệu quả điều trị tối ưu.
                         </p>
-                        <!-- <div class="hero-buttons">
-              <button class="btn btn-primary btn-hero" @click="scrollToBooking">Đặt Lịch Khám</button>
-              <button class="btn btn-outline-primary btn-hero">Tìm Hiểu Thêm</button>
-            </div> -->
                     </div>
                     <div class="col-lg-6">
                         <div class="hero-image">
@@ -268,10 +260,10 @@
                             </ul>
 
                             <div class="mt-auto">
-                                <a href="https://zalo.me/0376193244" target="_blank"
-                                    class="btn btn-primary btn-booking rounded-pill d-flex align-items-center justify-content-center text-decoration-none">
-                                    <i class="fas fa-comment-dots me-2"></i> Kết Nối Zalo Ngay
-                                </a>
+                                <button @click="openChat"
+                                    class="btn btn-primary btn-booking rounded-pill d-flex align-items-center justify-content-center w-100 border-0">
+                                    <i class="fas fa-comment-dots me-2"></i> Kết Nối Trực Tiếp
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -349,40 +341,45 @@
 import { router } from '@inertiajs/vue3'
 import { ref } from 'vue'
 
+// biến để mở chat
+const openChat = () => {
+    window.dispatchEvent(new CustomEvent('open-human-chat'));
+}
+
 const props = defineProps({
     auth: { type: Object, default: () => ({ user: null }) },
     services: { type: Array, default: () => [] }
 })
 
-// Sample doctors data
+// data ảo 
 const doctors = ref([
     {
         id: 1,
-        name: 'BS. Hồ Đạt',
-        specialty: 'Nội khoa',
-        description: 'Chuyên gia giàu kinh nghiệm trong lĩnh vực nội khoa với hơn 15 năm kinh nghiệm',
-        image: '/storage/avatars/doctors/dsd.jpg'
+        name: 'BS. Lê Thu Hà',
+        specialty: 'Khám Tổng Quát',
+        description: 'Chuyên gia tư vấn sức khỏe gia đình, tận tâm và chu đáo với mọi bệnh nhân.',
+        image: 'https://images.pexels.com/photos/6749765/pexels-photo-6749765.jpeg?cs=srgb&dl=pexels-shkrabaanthony-6749765.jpg&fm=jpg'
     },
     {
         id: 2,
-        name: 'BS. Lương Hùng',
-        specialty: 'Nhi khoa',
-        description: 'Chuyên gia về sức khỏe trẻ em, tận tâm với mỗi bệnh nhi',
-        image: '/storage/avatars/doctors/doctor3.jpg'
+        name: 'BS. Nguyễn Văn Hùng',
+        specialty: 'Tư vấn Tiêm Chủng',
+        description: 'Hỗ trợ tư vấn lộ trình tiêm ngừa và các vấn đề sức khỏe phổ biến hàng ngày.',
+        image: 'https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=1200:*'
     },
     {
         id: 3,
-        name: 'BS. Tommy Quốc Anh',
-        specialty: 'Tim mạch',
-        description: 'Bác sĩ tim mạch hàng đầu với nhiều năm kinh nghiệm điều trị',
-        image: '/storage/avatars/doctors/doctor4.jpg'
+        name: 'BS. Phạm Thanh Mai',
+        specialty: 'Tư vấn Dinh Dưỡng',
+        description: 'Chuyên gia hỗ trợ chế độ ăn uống và chăm sóc sức khỏe ban đầu cho cộng đồng.',
+        image: 'https://img.freepik.com/free-psd/doctor-preparing-routine-medical-check_23-2150493277.jpg'
     },
     {
         id: 4,
-        name: 'BS. Minh Cường',
-        specialty: 'Da liễu',
-        description: 'Chuyên gia da liễu với phương pháp điều trị hiện đại',
-        image: '/storage/avatars/doctors/doctor2.jpg'
+        name: 'DS. Trần Hoàng Nam',
+        specialty: 'Dược Sĩ Tư Vấn',
+        description: 'Tư vấn sử dụng thuốc an toàn, hiệu quả và các sản phẩm chăm sóc sức khỏe thiết yếu.',
+        image: 'https://t4.ftcdn.net/jpg/07/07/89/33/360_F_707893394_5DEhlBjWOmse1nyu0rC9T7ZRvsAFDkYC.jpg'
     }
 ])
 
@@ -395,14 +392,12 @@ const formatCurrency = (value) => {
     }).format(value)
 }
 
-// Navigate to service detail
 const goToServiceDetail = (service) => {
     router.visit(`/services/${service.id}`)
 }
 
 // Book service
 const bookService = (service) => {
-    // Implement booking functionality
     console.log('Book service:', service)
 }
 
