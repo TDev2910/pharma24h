@@ -31,7 +31,7 @@ const primevueOptions = {
     },
 };
 
-// Quét toàn bộ trang một lần ở ngoài
+// Caching pages glob for efficiency
 const pages = import.meta.glob("./Pages/**/*.vue");
 
 createInertiaApp({
@@ -39,14 +39,14 @@ createInertiaApp({
         const pagePath = `./Pages/${name}.vue`;
         
         if (!pages[pagePath]) {
-            console.error(`KHÔNG TÌM THẤY COMPONENT: ${pagePath}`);
+            console.error(`MISSING COMPONENT: ${pagePath}`);
             return null;
         }
 
         const pageModule = await pages[pagePath]();
         const page = pageModule.default;
 
-        // XỬ LÝ LAYOUT: Chỉ gán khi bản thân component không khai báo layout: null
+        // SAFE LAYOUT RESOLUTION: Avoid double-wrapping
         if (page.layout === undefined) {
              if (name.startsWith("Admin/")) {
                 page.layout = AdminLayout;
@@ -62,17 +62,24 @@ createInertiaApp({
         return page;
     },
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
+        // CLEANUP: Ensure we don't have multiple app instances on the same element
+        if (el.__vue_app__) {
+            el.__vue_app__.unmount();
+        }
+
+        const app = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
             .use(PrimeVue, primevueOptions)
             .use(ToastService)
-            .component("Link", Link)
-            .mount(el);
+            .component("Link", Link);
+            
+        // Mount and save instance reference for future cleanup
+        el.__vue_app__ = app.mount(el);
     },
 });
 
-// Tự động cuộn về đầu trang sau khi chuyển trang thành công
+// Smooth scroll to top on every successful navigation
 router.on("finish", () => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;

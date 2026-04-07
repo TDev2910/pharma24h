@@ -7,12 +7,12 @@
           <i class="fas fa-bars fs-5"></i>
         </button>
 
-        <Link class="navbar-brand d-flex align-items-center" href="/">
-        <div class="brand-container">
-          <img :src="'/images/pharma.jpg'" alt="Pharma Logo" class="brand-logo"
-            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <div class="navbar-brand d-flex align-items-center" style="cursor: default;">
+          <div class="brand-container">
+            <img :src="'/images/pharma.jpg'" alt="Pharma Logo" class="brand-logo"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          </div>
         </div>
-        </Link>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
