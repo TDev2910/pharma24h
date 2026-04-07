@@ -5,31 +5,33 @@
 }
 
 .hero-subtitle {
-    color: #2196F3;
-    font-size: 14px;
+    color: #3b82f6;
+    font-size: 15px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 16px;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
 }
 
 .hero-title {
-    font-size: 48px;
+    font-size: 52px;
     font-weight: 700;
-    color: #1a1a1a;
-    line-height: 1.2;
+    color: #0f172a;
+    line-height: 1.1;
     margin-bottom: 24px;
+    letter-spacing: -0.5px;
 }
 
 .highlight-text {
-    color: #2196F3;
+    color: #1d4ed8;
 }
 
 .hero-description {
-    font-size: 16px;
-    color: #666;
-    line-height: 1.6;
+    font-size: 18px;
+    color: #4b5563;
+    line-height: 1.8;
     margin-bottom: 32px;
+    max-width: 90%;
 }
 
 .hero-buttons {

@@ -6,15 +6,6 @@
     padding: 40px;
 }
 
-.login-container--login .logo-circle {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 20px;
-}
-
-.login-container--login .logo-text {
-    font-size: 16px;
-}
 
 .login-container--login .login-title {
     font-size: 28px;

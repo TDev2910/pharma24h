@@ -66,7 +66,7 @@ const loadMore = () => {
 
     <div class="contact-banner mt-1">
         <div class="container">
-            <h1 class="fw-bold text-primary-dark">Góc sức khỏe</h1>
+            <h1 class="fw-bold text-primary-dark">Góc Sức Khỏe</h1>
             <p class="text-secondary">Hãy tìm hiểu thông tin y tế, sức khỏe và các thông tin liên quan đến sức khỏe.</p>
         </div>
     </div>
@@ -220,4 +220,14 @@ const loadMore = () => {
 
 <style scoped>
 @import "../../../../css/Public/Posts/index/index.css";
+
+.contact-banner {
+    background: linear-gradient(180deg, #E6F3FF 0%, #FFFFFF 100%);
+    padding: 60px 0 40px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.text-primary-dark {
+    color: #1a4f6e;
+}
 </style>

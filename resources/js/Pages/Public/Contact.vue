@@ -188,7 +188,6 @@ const subjects = [
 </script>
 
 <style scoped>
-/* 1. Banner Style */
 .contact-banner {
     background: linear-gradient(180deg, #E6F3FF 0%, #FFFFFF 100%);
     padding: 60px 0 40px;
@@ -197,7 +196,6 @@ const subjects = [
 
 .text-primary-dark {
     color: #1a4f6e;
-    /* Màu xanh đậm của tiêu đề */
 }
 
 
