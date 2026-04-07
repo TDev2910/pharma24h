@@ -1,4 +1,4 @@
-# 💊 Pharma24H — AI Healthcare & Pharmacy Platform
+#  Pharma24H — AI Healthcare & Pharmacy Platform
 
 <p align="center">
   <img src="https://img.shields.io/badge/PHP-8.2-777BB4?style=flat-square&logo=php&logoColor=white"/>
@@ -11,11 +11,13 @@
 
 > A full-stack healthcare & pharmacy platform featuring an AI medical assistant, real-time payment processing, live chat, and automated logistics — built solo in 6+ months and deployed to production.
 
-🌐 **Live Demo:** [healthviet.com](https://healthviet.com)
+**Live Demo:** [healthviet.com](https://healthviet.com)
+account staff : banhmibosua123@gmail.com / Trong2910
+account admin : admin@example.com / Trong123
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
@@ -44,29 +46,29 @@ Admins and staff manage products, orders, users, and content through a dedicated
 
 ## Features
 
-### 🤖 AI Medical Assistant (RAG)
+### AI Medical Assistant (RAG)
 - Self-implemented **Retrieval-Augmented Generation** pipeline using **Google Gemini API**
 - AI answers health-related questions based on a curated local dataset — not raw API calls
 - Responses streamed in real time via **Server-Sent Events (SSE)**
 
-### 🔐 Authentication & Authorization
+### Authentication & Authorization
 - **Laravel Sanctum** + **Google OAuth** for secure login
 - Role-based access control: `Admin` / `Staff` / `User`
 - Rate limiting on sensitive endpoints to prevent abuse
 
-### 💳 Payment Integration
+### Payment Integration
 - **VNPay** and **SePay** integrated and tested in both sandbox and production environments
 - Webhook/IPN handling with checksum verification to prevent transaction spoofing
 - Idempotent payment processing to handle duplicate IPN callbacks
 
-### 💬 Real-time Features
+### Real-time Features
 - Live chat between users and staff using **Laravel Broadcasting + Pusher**
 - Background jobs (email notifications, order status updates) via **Laravel Queues**
 
-### 🚚 Logistics
+### Logistics
 - **GHN API** integration for automated shipping fee calculation and order tracking
 
-### 🛡️ DevOps
+### DevOps
 - Containerized with **Docker** (separate local and production compose files)
 - **GitHub Actions** CI/CD pipeline → auto-deploy to CPanel on every push to `main`
 
@@ -147,50 +149,7 @@ Visit `http://localhost` in your browser.
 
 ---
 
-## Environment Variables
 
-Key variables to configure in `.env`:
-
-```env
-# App
-APP_URL=http://localhost
-
-# Database
-DB_CONNECTION=mysql
-DB_HOST=mysql
-DB_DATABASE=pharma24h
-DB_USERNAME=root
-DB_PASSWORD=
-
-# AI
-GEMINI_API_KEY=your_gemini_api_key
-
-# Pusher (Real-time)
-PUSHER_APP_ID=
-PUSHER_APP_KEY=
-PUSHER_APP_SECRET=
-PUSHER_APP_CLUSTER=
-
-# VNPay
-VNPAY_TMN_CODE=
-VNPAY_HASH_SECRET=
-VNPAY_URL=
-
-# SePay
-SEPAY_API_KEY=
-
-# GHN Shipping
-GHN_TOKEN=
-GHN_SHOP_ID=
-
-# Queue
-QUEUE_CONNECTION=database
-
-# Firebase
-FIREBASE_CREDENTIALS=
-```
-
----
 
 ## CI/CD & Deployment
 
@@ -232,6 +191,8 @@ Performed with **K6** on key endpoints (product listing, checkout):
 | Environment | Local Docker |
 | Endpoints Tested | `/products`, `/checkout`, `/orders` |
 
+<img width="1114" height="645" alt="image" src="https://github.com/user-attachments/assets/084f5383-1cbc-4cd9-83fe-be6a4dbeb233" />
+
 ```bash
 # Run load test
 k6 run stress_test.js
@@ -244,11 +205,9 @@ Identified bottleneck: unindexed category/price filter queries on the products t
 ## Author
 
 **Phạm Chí Trọng**
-- 📧 phamchitrong2910@gmail.com
-- 📱 0901 645 269
-- 🐙 [github.com/TDev2910](https://github.com/TDev2910)
-- 🌐 [healthviet.com](https://healthviet.com)
+-  phamchitrong2910@gmail.com
+- 0901 645 269
+- [github.com/TDev2910](https://github.com/TDev2910)
+- [healthviet.com](https://healthviet.com)
 
----
 
-<p align="center">Built with ❤️ by Phạm Chí Trọng — 2024/2025</p>
