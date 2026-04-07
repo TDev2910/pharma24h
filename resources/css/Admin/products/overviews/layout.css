@@ -3,11 +3,6 @@
   padding: 0;
 }
 
-.main-content {
-  display: flex;
-  gap: 20px;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
   .main-content {

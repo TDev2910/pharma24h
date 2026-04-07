@@ -23,7 +23,10 @@
 
                             <div class="form-group">
                                 <label class="fw-bold mb-1 small">Địa chỉ Email</label>
-                                <InputText v-model="form.email" placeholder="Nhập email của bạn" class="w-100" />
+                                <InputText v-model="form.email" placeholder="Nhập email của bạn" class="w-100"
+                                    :class="{ 'p-invalid': errors.email && form.email }" />
+                                <small v-if="errors.email && form.email" class="text-danger d-block mt-1">{{ errors.email
+                                    }}</small>
                             </div>
 
                             <div class="form-group">
@@ -35,11 +38,15 @@
                             <div class="form-group">
                                 <label class="fw-bold mb-1 small">Tin nhắn</label>
                                 <Textarea v-model="form.message" placeholder="Chúng tôi có thể giúp gì cho bạn?"
-                                    rows="5" class="w-100" autoResize />
+                                    rows="5" class="w-100" autoResize
+                                    :class="{ 'p-invalid': errors.message && form.message }" />
+                                <small v-if="errors.message && form.message" class="text-danger d-block mt-1">{{
+                                    errors.message }}</small>
                             </div>
 
                             <div class="mt-2">
-                                <Button label="Gửi tin nhắn" type="submit" :loading="loading" class="btn-submit" />
+                                <Button label="Gửi tin nhắn" type="submit" :loading="loading" class="btn-submit"
+                                    :disabled="!isFormValid" />
                             </div>
 
                         </div>
@@ -103,7 +110,7 @@
 
 <script setup>
 import { router } from '@inertiajs/vue3';
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 
 // Import Components
 import InputText from 'primevue/inputtext';
@@ -115,9 +122,29 @@ const props = defineProps({
     auth: { type: Object, default: () => ({ user: null }) }
 })
 
+const errors = computed(() => {
+    const errs = {};
+    if (!form.email) {
+        errs.email = "Email là bắt buộc!";
+    } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+        errs.email = "Địa chỉ email không hợp lệ!";
+    }
+
+    if (!form.message) {
+        errs.message = "Vui lòng nhập nội dung tin nhắn!";
+    } else if (form.message.length <= 10) {
+        errs.message = "Tin nhắn phải dài hơn 10 ký tự!";
+    }
+    return errs;
+});
+
+const isFormValid = computed(() => {
+    return form.fullName && form.email && !errors.value.email && !errors.value.message;
+});
+
 const handleSubmit = () => {
-    if (!form.fullName || !form.email) {
-        alert("Vui lòng nhập đầy đủ thông tin!");
+    if (!isFormValid.value) {
+        alert("Vui lòng nhập đầy đủ và chính xác thông tin!");
         return;
     }
 

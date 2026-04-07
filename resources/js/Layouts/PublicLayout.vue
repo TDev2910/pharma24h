@@ -4,7 +4,7 @@
     <Header :auth="auth" />
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="public-main-content">
       <slot />
     </main>
 
@@ -83,10 +83,14 @@ onUnmounted(() => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f8fafc;
+  width: 100%;
 }
 
-.main-content {
+.public-main-content {
   flex: 1;
+  width: 100%;
+  padding-bottom: 3rem;
 }
 
 /* Floating Contacts */

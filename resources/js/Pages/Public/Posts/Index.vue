@@ -64,7 +64,7 @@ const loadMore = () => {
 
     <Head title="Góc sức khỏe" />
 
-    <div class="contact-banner" style="margin-top: -45px;">
+    <div class="contact-banner mt-1">
         <div class="container">
             <h1 class="fw-bold text-primary-dark">Góc sức khỏe</h1>
             <p class="text-secondary">Hãy tìm hiểu thông tin y tế, sức khỏe và các thông tin liên quan đến sức khỏe.</p>

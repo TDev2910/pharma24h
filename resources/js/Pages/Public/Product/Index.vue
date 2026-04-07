@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-5 pt-3">
     <div class="container my-4 responsive-top-spacing">
       <div class="banner-wrapper">
         <img src="https://nhathuocminhchau.com/storage/uploads/logo/slider-2-5886-hinh.webp" alt="Banner"
@@ -7,40 +7,14 @@
       </div>
     </div>
     <div class="container my-4 py-4">
-      <div class="products-toolbar d-flex align-items-center justify-content-between mb-3">
-        <div class="d-flex align-items-center gap-3 toolbar-left">
-          <span class="fw-bold">Bộ lọc</span>
-          <button type="button" class="btn btn-outline-secondary btn-sm reset-btn" style="margin-left: 70px;"
-            @click="resetPriceFilter">
-            Thiết lập lại
-          </button>
-        </div>
-
-        <div class="d-flex align-items-center gap-2 toolbar-right" style="margin-left: auto;">
-          <span class="title-filter">Sắp xếp theo:</span>
-
-          <div class="sort-buttons">
-            <button type="button" class="btn-sort" :class="{ 'active': currentSort === 'desc' }"
-              @click="sortProducts('desc')">
-              Giá giảm dần
-            </button>
-
-            <button type="button" class="btn-sort" :class="{ 'active': currentSort === 'asc' }"
-              @click="sortProducts('asc')">
-              Giá tăng dần
+      <div class="row g-4">
+        <div class="col-lg-2 col-md-3 mb-4 mb-md-0">
+          <div class="d-flex align-items-center justify-content-between mb-3 toolbar-left">
+            <span class="fw-bold">Bộ lọc</span>
+            <button type="button" class="btn btn-outline-secondary btn-sm reset-btn" @click="resetPriceFilter">
+              Thiết lập lại
             </button>
           </div>
-
-          <input type="text" class="form-control search-input" placeholder="Tìm kiếm" style="width: 300px;margin-left: 10px;background-color: #f9fbff; /* bỏ nền trắng */
-            border: 1.5px solid #cfe0ff;
-            border-radius: 10px;
-            padding: 8px 14px;
-            transition: all 0.3s ease;" v-model="searchQuery" @input="handleSearch">
-        </div>
-      </div>
-      <hr class="light-divider sidebar-divider" style="width: 215px; background-color: grey;">
-      <div class="row">
-        <div class="col-lg-3 col-md-4 mb-4 mb-md-0">
           <div class="mb-4">
             <h6 class="mb-3 fw-bold">Khoảng giá</h6>
             <div class="mb-2">
@@ -56,7 +30,7 @@
               </div>
 
               <button id="applyFilterBtn" class="btn btn-primary fw-bold sidebar-btn"
-                style="background-color:#005EB8; border:none; width: 215px;color: white;">
+                style="background-color:#005EB8; border:none; width: 113%; color: white;">
                 Áp dụng
               </button>
             </div>
@@ -86,10 +60,29 @@
           </div>
         </div>
 
-        <div class="col-lg-9 col-md-8">
-          <div class="row g-3 g-md-4 product-grid" id="productGrid">
-            <div v-for="product in displayedProducts" :key="product.id + '-' + product.type"
-              class="col-6 col-md-6 col-lg-3">
+        <div class="col-lg-10 col-md-9">
+          <!-- Toolbar Moved Here -->
+          <div class="products-toolbar d-flex align-items-center justify-content-between mb-3 p-0"
+            style="background: transparent; border: none;">
+            <div class="d-flex align-items-center gap-2 toolbar-right ms-auto">
+              <span class="title-filter">Sắp xếp:</span>
+              <div class="sort-buttons">
+                <button type="button" class="btn-sort" :class="{ 'active': currentSort === 'desc' }"
+                  @click="sortProducts('desc')">
+                  Giá giảm
+                </button>
+                <button type="button" class="btn-sort" :class="{ 'active': currentSort === 'asc' }"
+                  @click="sortProducts('asc')">
+                  Giá tăng
+                </button>
+              </div>
+              <input type="text" class="form-control search-input" placeholder="Tìm kiếm sản phẩm..." style="width: 250px; background-color: #f9fbff; 
+                border: 1.5px solid #cfe0ff; border-radius: 10px; padding: 8px 14px; transition: all 0.3s ease;"
+                v-model="searchQuery" @input="handleSearch">
+            </div>
+          </div>
+          <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2 g-md-3 product-grid" id="productGrid">
+            <div v-for="product in displayedProducts" :key="product.id + '-' + product.type" class="col">
               <div class="product-card-modern">
                 <div class="product-label" v-if="isPromotionActive(product)">-{{ Math.round((1 -
                   product.gia_khuyen_mai / product.gia_ban) * 100) }}%</div>
@@ -333,9 +326,6 @@ function goToProductDetail(product) {
 }
 
 onMounted(() => {
-  // window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  // Thêm event listener cho nút Áp dụng (vanilla JS như bạn muốn)
   const minPriceInput = document.getElementById('minPrice')
   const maxPriceInput = document.getElementById('maxPrice')
   const applyFilterBtn = document.getElementById('applyFilterBtn')

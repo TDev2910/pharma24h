@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4">
+  <div class="mt-5 pt-3">
     <!-- Banner Section -->
     <BannerSection />
 
@@ -117,7 +117,22 @@ const bottomPosts = computed(() => (props.posts || []).slice(4, 8))
 
 <style scoped>
 .product-grid {
-  margin-bottom: 0;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  margin-right: -10px !important;
+  margin-left: -10px !important;
+}
+
+.product-grid>[class*="col-"] {
+  padding-right: 10px !important;
+  padding-left: 10px !important;
+}
+
+@media (min-width: 992px) {
+  .product-grid>.col-lg-3 {
+    flex: 0 0 25% !important;
+    max-width: 25% !important;
+  }
 }
 
 .product-section-title {
@@ -158,6 +173,7 @@ const bottomPosts = computed(() => (props.posts || []).slice(4, 8))
   -webkit-line-clamp: 2;
   /* Số dòng muốn hiển thị */
   -webkit-box-orient: vertical;
+  line-clamp: 2;
   overflow: hidden;
   text-overflow: ellipsis;
   min-height: 48px;

@@ -189,7 +189,7 @@ const formatDate = (dateString) => {
                 </div>
 
                 <div class="related-grid">
-                    <Link v-for="related in relatedPosts" :key="related.id" :href="`/posts/${related.slug}`"
+                    <Link v-for="related in relatedPosts" :key="related.id" :href="`/bai-viet/${related.slug}`"
                         class="related-item">
                         <div class="related-img-wrap">
                             <img :src="related.image" :alt="related.title" class="related-img">
@@ -213,9 +213,7 @@ const formatDate = (dateString) => {
                         </div>
                     </Link>
                 </div>
-
             </div>
-
         </div>
     </div>
 </template>

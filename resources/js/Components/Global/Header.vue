@@ -1,26 +1,38 @@
 <template>
   <header class="mediaid-header sticky-top">
-    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-0">
       <div class="container">
         <button class="navbar-toggler border-0 p-0 me-3" type="button" data-bs-toggle="offcanvas"
           data-bs-target="#mobileMenu">
           <i class="fas fa-bars fs-5"></i>
         </button>
 
-        <a class="navbar-brand d-flex align-items-center" href="/" data-inertia>
-          <div class="brand-container">
-            <span class="brand-text">PCT Pharma</span>
-          </div>
-        </a>
-
+        <Link class="navbar-brand d-flex align-items-center" href="/">
+        <div class="brand-container">
+          <img :src="'/images/pharma.jpg'" alt="Pharma Logo" class="brand-logo"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        </div>
+        </Link>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
-            <li class="nav-item"><a class="nav-link" href="/" data-inertia>Trang chủ</a></li>
-            <li class="nav-item"><a class="nav-link" href="/medical-team" data-inertia>Đội ngũ</a></li>
-            <li class="nav-item"><a class="nav-link" href="/products" data-inertia>Sản phẩm</a></li>
-            <li class="nav-item"><a class="nav-link" href="/services" data-inertia>Dịch vụ</a></li>
-            <li class="nav-item"><a class="nav-link" href="/posts" data-inertia>Góc sức khỏe</a></li>
-            <li class="nav-item"><a class="nav-link" href="/contact" data-inertia>Liên hệ</a></li>
+            <li class="nav-item">
+              <Link class="nav-link" href="/">Trang chủ</Link>
+            </li>
+            <li class="nav-item">
+              <Link class="nav-link" href="/medical-team">Đội ngũ</Link>
+            </li>
+            <li class="nav-item">
+              <Link class="nav-link" href="/products">Sản phẩm</Link>
+            </li>
+            <li class="nav-item">
+              <Link class="nav-link" href="/services">Dịch vụ</Link>
+            </li>
+            <li class="nav-item">
+              <Link class="nav-link" href="/posts">Góc sức khỏe</Link>
+            </li>
+            <li class="nav-item">
+              <Link class="nav-link" href="/contact">Liên hệ</Link>
+            </li>
           </ul>
 
           <div class="user-actions d-flex align-items-center">
@@ -352,6 +364,14 @@ onUnmounted(() => {
 .mediaid-header {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   background: #fff;
+}
+
+.brand-logo {
+  height: 95px;
+  width: auto;
+  object-fit: contain;
+  margin-right: 5px;
+  display: block;
 }
 
 .brand-text {
