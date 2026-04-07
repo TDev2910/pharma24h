@@ -1,6 +1,5 @@
 import { createApp, h } from "vue";
 import { createInertiaApp, Link, router } from "@inertiajs/vue3";
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import "./bootstrap";
 
 // Expose route globally
@@ -32,26 +31,33 @@ const primevueOptions = {
     },
 };
 
-createInertiaApp({
-    resolve: (name) => {
-        // Dùng resolvePageComponent để đảm bảo component được cache đúng cách bởi Vite/Inertia
-        const page = resolvePageComponent(
-            `./Pages/${name}.vue`,
-            import.meta.glob("./Pages/**/*.vue")
-        );
+// Quét toàn bộ trang một lần ở ngoài
+const pages = import.meta.glob("./Pages/**/*.vue");
 
-        page.then((module) => {
-            // Chỉ gán Layout nếu Component chưa tự khai báo layout riêng
-            if (name.startsWith("Admin/")) {
-                module.default.layout = module.default.layout || AdminLayout;
+createInertiaApp({
+    resolve: async (name) => {
+        const pagePath = `./Pages/${name}.vue`;
+        
+        if (!pages[pagePath]) {
+            console.error(`KHÔNG TÌM THẤY COMPONENT: ${pagePath}`);
+            return null;
+        }
+
+        const pageModule = await pages[pagePath]();
+        const page = pageModule.default;
+
+        // XỬ LÝ LAYOUT: Chỉ gán khi bản thân component không khai báo layout: null
+        if (page.layout === undefined) {
+             if (name.startsWith("Admin/")) {
+                page.layout = AdminLayout;
             } else if (name.startsWith("Public/")) {
-                module.default.layout = module.default.layout || PublicLayout;
+                page.layout = PublicLayout;
             } else if (name.startsWith("Staff/")) {
-                module.default.layout = module.default.layout || StaffLayout;
+                page.layout = StaffLayout;
             } else if (name.startsWith("User/")) {
-                module.default.layout = module.default.layout || UserLayout;
+                page.layout = UserLayout;
             }
-        });
+        }
 
         return page;
     },
@@ -66,7 +72,7 @@ createInertiaApp({
     },
 });
 
-// Fix scroll về đầu trang sau khi chuyển trang
+// Tự động cuộn về đầu trang sau khi chuyển trang thành công
 router.on("finish", () => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
