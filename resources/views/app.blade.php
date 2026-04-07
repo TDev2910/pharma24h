@@ -21,30 +21,27 @@
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-    <!-- App CSS (giữ CSS hiện có) -->
+    <!-- App CSS -->
     <link href="{{ asset('css/home.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
-
 
     @vite(['resources/css/app.css','resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/home-sections.css') }}">
 </head>
 
 <body>
-    {{-- Inertia page content with header --}}
-    <main class="main-content">
-        @inertia
-    </main>
+    {{-- Inertia mount point - KHÔNG bọc thêm bất kỳ thẻ HTML nào ở đây --}}
+    @inertia
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    <!-- Admin Notifications Handler -->
-    <script src="{{ asset('js/admin-notifications.js') }}"></script>
-    <!-- App JS hiện có -->
-    <script src="{{ asset('js/cart.js') }}"></script>
-    <script src="{{ asset('js/user.js') }}"></script>
+
+    {{-- KHÔNG nạp các file JS cũ - đã tích hợp vào Vue 3 để tránh xung đột --}}
+    {{-- <script src="{{ asset('js/admin-notifications.js') }}"></script> --}}
+    {{-- <script src="{{ asset('js/cart.js') }}"></script> --}}
+    {{-- <script src="{{ asset('js/user.js') }}"></script> --}}
 </body>
 
 </html>
