@@ -1,3 +1,5 @@
+##Dự án đang trong quá trình phát triển lại giao diện - một số bug và giao diện sẽ bị vỡ đang trong quá trình phát triển lại tối ưu hơn
+
 #  Pharma24H — AI Healthcare & Pharmacy Platform
 
 <p align="center">
