@@ -3,14 +3,32 @@
   padding: 0;
 }
 
+.product-overview-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
 /* Responsive */
-@media (max-width: 768px) {
-  .main-content {
+@media (max-width: 1200px) {
+  .product-overview-layout {
     flex-direction: column;
+    gap: 20px;
   }
 
-  :deep(.p-datatable .p-datatable-thead > tr > th),
-  :deep(.p-datatable .p-datatable-tbody > tr > td) {
+  .left-sidebar {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .products-page {
+    padding: 0;
+  }
+
+  .p-datatable .p-datatable-thead > tr > th,
+  .p-datatable .p-datatable-tbody > tr > td {
     padding: 12px 8px;
     font-size: 13px;
   }

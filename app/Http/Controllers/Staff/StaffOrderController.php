@@ -21,7 +21,7 @@ class StaffOrderController extends Controller
     ) {}
 
     public function index(Request $request)
-    {   
+    {
         $data = $this->useCase->getStaffDashboardData($request->all());
 
         return Inertia::render('Staff/Orders/Dashboard', [
@@ -33,6 +33,16 @@ class StaffOrderController extends Controller
                 if (!$request->has('order_id')) return null;
                 return $this->useCase->getOrderForInvoice((int)$request->order_id);
             }),
+        ]);
+    }
+
+    public function transport(Request $request)
+    {
+        $data = $this->useCase->getAdminTransportData($request->all());
+
+        return Inertia::render('Admin/Orders/Products/Transport/TransportDashboard', [
+            'orders' => $data['orders'],
+            'filters' => $request->only(['status', 'partner', 'cod', 'search']),
         ]);
     }
 

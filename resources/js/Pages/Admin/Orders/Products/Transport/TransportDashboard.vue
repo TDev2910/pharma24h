@@ -107,9 +107,7 @@ export default {
       this.reloadData({ page, per_page })
     },
     handleViewDetail(order) {
-      // Mở modal hoặc điều hướng đến trang chi tiết
       console.log('View detail:', order)
-      // Có thể emit event hoặc mở modal ở đây
     },
     reloadData(additionalParams = {}) {
       const params = {
@@ -129,7 +127,7 @@ export default {
 
       this.isLoading = true
       
-      router.get('/admin/orders/transport', params, {
+      router.get(window.location.pathname, params, {
         preserveState: true,
         preserveScroll: true,
         only: ['orders', 'filters'],

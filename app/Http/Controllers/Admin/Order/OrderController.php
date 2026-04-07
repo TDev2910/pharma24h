@@ -38,6 +38,16 @@ class OrderController extends Controller
         ]);
     }
 
+    public function transport(Request $request)
+    {
+        $data = $this->useCase->getAdminTransportData($request->all());
+
+        return Inertia::render('Admin/Orders/Products/Transport/TransportDashboard', [
+            'orders' => $data['orders'],
+            'filters' => $request->only(['status', 'partner', 'cod', 'search']),
+        ]);
+    }
+
     //hiển thị thông tin đơn hàng
     public function show(Request $request, string $order)
     {

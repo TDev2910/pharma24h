@@ -6,7 +6,7 @@
       @create-service="createService" @export-file="exportFile" @debounce-search="debounceSearch" />
 
     <!-- Main Content với 2 columns (Sidebar & DataTable) -->
-    <div class="main-content">
+    <div class="product-overview-layout">
       <!-- Left Sidebar Component -->
       <ProductSidebar :loadingCategories="loadingCategories" :categoryTreeNodes="categoryTreeNodes"
         v-model:selectedCategoryKeys="selectedCategoryKeys" :selectedCategoryName="selectedCategoryName"
