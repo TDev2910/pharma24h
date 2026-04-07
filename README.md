@@ -1,21 +1,19 @@
-##Dự án đang trong quá trình phát triển lại giao diện - một số bug và giao diện sẽ bị vỡ đang trong quá trình phát triển lại tối ưu hơn
-
-#  Pharma24H — AI Healthcare & Pharmacy Platform
+# Pharma24H — AI Healthcare & Pharmacy Platform
 
 <p align="center">
   <img src="https://img.shields.io/badge/PHP-8.2-777BB4?style=flat-square&logo=php&logoColor=white"/>
   <img src="https://img.shields.io/badge/Laravel-12-FF2D20?style=flat-square&logo=laravel&logoColor=white"/>
   <img src="https://img.shields.io/badge/Vue.js-3-4FC08D?style=flat-square&logo=vue.js&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Inertia.js-9553E9?style=flat-square&logo=inertia&logoColor=white"/>
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat-square&logo=mysql&logoColor=white"/>
   <img src="https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white"/>
   <img src="https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=flat-square&logo=github-actions&logoColor=white"/>
   <img src="https://img.shields.io/badge/Live-healthviet.com-brightgreen?style=flat-square"/>
 </p>
 
-> A full-stack healthcare & pharmacy platform featuring an AI medical assistant, real-time payment processing, live chat, and automated logistics — built solo in 6+ months and deployed to production.
+> A full-stack healthcare & pharmacy platform featuring an AI medical assistant (Gemini RAG), real-time payment processing, live chat, and automated logistics — built solo in 6+ months and deployed to production.
 
 **Live Demo:** [healthviet.com](https://healthviet.com)
-account staff : banhmibosua123@gmail.com / Trong2910
-account admin : admin@example.com / Trong123
 
 ---
 
@@ -25,9 +23,9 @@ account admin : admin@example.com / Trong123
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
+- [Git Workflow & Commit Convention](#git-workflow--commit-convention)
 - [CI/CD & Deployment](#cicd--deployment)
+- [Test Accounts](#test-accounts)
 - [Load Testing](#load-testing)
 - [Author](#author)
 
@@ -70,9 +68,9 @@ Admins and staff manage products, orders, users, and content through a dedicated
 ### Logistics
 - **GHN API** integration for automated shipping fee calculation and order tracking
 
-### DevOps
+###  DevOps
 - Containerized with **Docker** (separate local and production compose files)
-- **GitHub Actions** CI/CD pipeline → auto-deploy to CPanel on every push to `main`
+- **GitHub Actions** CI/CD pipeline with branch-based workflow (`dev` → `main`)
 
 ---
 
@@ -80,107 +78,187 @@ Admins and staff manage products, orders, users, and content through a dedicated
 
 | Layer | Technologies |
 |---|---|
-| **Backend** | PHP 8.2, Laravel 12, Laravel Sanctum, Eloquent ORM |
-| **Frontend** | Vue 3 (Composition API), Inertia.js, Bootstrap 5, Axios |
-| **Database** | MySQL, Firebase (real-time data) |
-| **AI** | Google Gemini API (RAG strategy) |
-| **Payments** | VNPay, SePay |
-| **Real-time** | Laravel Broadcasting, Pusher |
-| **DevOps** | Docker, GitHub Actions (CI/CD), CPanel |
-| **Logistics** | GHN API |
+| **Backend** | PHP 8.2, Laravel 12, Laravel Sanctum, Eloquent ORM, RESTful API |
+| **Frontend** | Vue 3 (Composition API), Inertia.js, Bootstrap 5, Axios, Vite |
+| **Database** | MySQL 8.x, Firebase (real-time data) |
+| **AI** | Google Gemini API (RAG strategy), Server-Sent Events (SSE) |
+| **Payments** | VNPay, SePay (sandbox + production tested) |
+| **Real-time** | Laravel Broadcasting, Pusher, Laravel Echo |
+| **Queue** | Laravel Queues (Database driver) |
+| **DevOps** | Docker, Docker Compose, GitHub Actions (CI/CD), CPanel |
+| **Logistics** | GHN API (shipping fee + order tracking) |
 | **Testing** | K6 Load Testing |
+| **Tools** | Git, Postman, Laragon, Vercel, Stitch |
 
 ---
 
 ## Architecture
 
-This project follows **Hexagonal Architecture** (Ports & Adapters), separating domain logic from infrastructure concerns:
+This project follows **Hexagonal Architecture** (Ports & Adapters), clearly separating domain logic from infrastructure and framework concerns. Each module (e.g. `Customer`, `Order`, `Product`) is self-contained with its own Domain, Ports, Application, and Infrastructure layers.
 
 ```
 app/
-├── Domain/              # Business entities, interfaces, rules
-│   ├── Order/
-│   ├── Product/
-│   └── User/
-├── Application/         # Use cases orchestrating domain logic
-│   ├── PlaceOrderUseCase.php
-│   └── ConsultAIUseCase.php
-├── Infrastructure/      # Concrete implementations (Eloquent, APIs)
-│   ├── Repositories/
-│   ├── Payment/
-│   └── Shipping/
-└── Http/                # Controllers, Middleware, Requests
+├── Core/
+│   └── Customer/
+│       ├── Domain/
+│       │   └── DTOs/
+│       │       └── CustomerData.php
+│       ├── Ports/
+│       │   ├── Inbound/
+│       │   │   └── CustomerUseCaseInterface.php
+│       │   └── Outbound/
+│       │       └── CustomerRepositoryInterface.php
+│       └── Application/
+│           └── Services/
+│               └── CustomerService.php        # Implements Inbound Port, depends on Outbound Port
+│
+├── Infrastructure/
+│   └── Persistence/
+│       └── Eloquent/
+│           └── CustomerRepository.php         # Implements Outbound Port
+│
+└── Http/
+    └── Controllers/
+        ├── Admin/Customer/CustomerController.php
+        └── Staff/StaffCustomerController.php
 ```
 
-This structure keeps domain logic framework-agnostic and makes each layer independently testable.
+### Layer Responsibilities
+
+| Layer | Responsibility |
+|---|---|
+| **Domain / DTOs** | Pure data structures — no framework dependency |
+| **Ports / Inbound** | Interface defining what use cases the application exposes |
+| **Ports / Outbound** | Interface defining what the application needs from infrastructure |
+| **Application / Services** | Implements Inbound Port, orchestrates domain logic, calls Outbound Port |
+| **Infrastructure / Eloquent** | Concrete implementation of Outbound Port using Laravel Eloquent |
+| **Http / Controllers** | Entry point — validates request, calls Application Service, returns response |
+
+### Data Flow Example (Place Order)
+
+```
+HTTP Request
+    │
+    ▼
+OrderController          # Http layer — validates, delegates
+    │
+    ▼
+OrderService             # Application layer — orchestrates business logic
+    │  (via OrderRepositoryInterface — Outbound Port)
+    ▼
+EloquentOrderRepository  # Infrastructure layer — Eloquent + MySQL
+```
+
+This structure keeps domain logic **framework-agnostic** — swapping Eloquent for another ORM requires changes only in the Infrastructure layer.
 
 ---
 
-## Getting Started
+## Git Workflow & Commit Convention
 
-### Prerequisites
-- PHP 8.2+
-- Composer
-- Node.js 18+
-- Docker & Docker Compose
-- MySQL 8.x
+### Branch Strategy
 
-### Local Setup (Docker)
+```
+main          ← production-ready, deployed to healthviet.com
+  └── dev     ← integration branch, CI/CD tested here first
+        ├── feature/add-payment-vnpay
+        ├── feature/ai-rag-gemini
+        ├── fix/ipn-race-condition
+        └── chore/update-docker-config
+```
 
+**Rules:**
+- All development happens on `feature/*` or `fix/*` branches cut from `dev`
+- Pull requests merge into `dev` first — must pass CI before merging
+- `dev` → `main` only when the build is clean, tested, and stable
+- Direct pushes to `main` are not allowed
+
+### Commit Message Convention
+
+This project follows [Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/v1.0.0/).
+
+**Format:**
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer]
+```
+
+**Types used in this project:**
+
+| Type | When to use |
+|---|---|
+| `feat` | New feature (e.g. `feat(payment): integrate SePay webhook`) |
+| `fix` | Bug fix (e.g. `fix(ipn): handle duplicate VNPay callbacks`) |
+| `refactor` | Code restructure without behavior change |
+| `chore` | Tooling, config, dependencies (e.g. `chore: update docker-compose`) |
+| `docs` | Documentation only (e.g. `docs: update README architecture`) |
+| `test` | Add or update tests |
+| `ci` | CI/CD pipeline changes |
+
+**Examples:**
 ```bash
-# Clone the repository
-git clone https://github.com/TDev2910/pharma24h.git
-cd pharma24h
-
-# Copy environment file
-cp .env.example .env
-
-# Start Docker containers
-docker-compose -f docker-compose.local.yml up -d
-
-# Install dependencies
-docker exec -it app composer install
-docker exec -it app php artisan key:generate
-docker exec -it app php artisan migrate --seed
-
-# Install frontend dependencies
-npm install && npm run dev
+feat(auth): add Google OAuth login with Sanctum
+fix(queue): retry failed email jobs with exponential backoff
+feat(ai): implement RAG pipeline with Gemini API and SSE streaming
+chore(docker): separate local and production compose files
+ci: add GitHub Actions workflow for dev branch deployment
 ```
 
-Visit `http://localhost` in your browser.
-
 ---
-
-
 
 ## CI/CD & Deployment
 
-GitHub Actions workflow on push to `main`:
-
 ```
-git push main
+feature/* or fix/*
     │
+    │  Pull Request → dev
     ▼
-GitHub Actions triggered
+dev branch
     │
-    ├── composer install
+    │  GitHub Actions triggered on push to dev
+    ├── composer install --no-dev
     ├── npm run build
+    └── php artisan config:cache
     │
+    │  ✅ All checks pass → Pull Request: dev → main
     ▼
-SSH into production server
+main branch
+    │
+    │  GitHub Actions triggered on push to main
+    ▼
+SSH into production server (CPanel)
     │
     ├── git pull origin main
+    ├── composer install --no-dev --optimize-autoloader
     ├── php artisan migrate --force
     ├── php artisan config:cache
+    ├── php artisan route:cache
     └── php artisan queue:restart
     │
     ▼
-Live at healthviet.com ✓
+🚀 Live at healthviet.com (~3–4 minutes)
 ```
 
-Total deploy time: ~3–4 minutes.
-
 ---
+
+## 🔑 Test Accounts
+
+You can log in to explore the system with the following demo accounts:
+
+> ⚠️ These accounts are for demo/testing purposes only. Please do not change passwords or delete data.
+> ⚠️ These accounts are for demo/testing purposes only. Please do not change passwords or delete data.
+> Nếu mọi người có test - là người tốt mong đừng phá data và đổi tài khoản nhé vì mình muốn mọi người có thể trải nghiệm
+                                    | Role | Email | Password |
+                                    |---|---|---|
+                                    | **Admin** | admin@example.com | `Trong123` |
+                                    | **Staff** | banhmibosua123@gmail.com | `Trong2910` |
+                                    | **User** | phamchitrong2910@gmail.com | `Trong123` |
+> ⚠️ These accounts are for demo/testing purposes only. Please do not change passwords or delete data.
+> ⚠️ These accounts are for demo/testing purposes only. Please do not change passwords or delete data.
+
+
 
 ## Load Testing
 
@@ -193,10 +271,7 @@ Performed with **K6** on key endpoints (product listing, checkout):
 | Environment | Local Docker |
 | Endpoints Tested | `/products`, `/checkout`, `/orders` |
 
-<img width="1114" height="645" alt="image" src="https://github.com/user-attachments/assets/084f5383-1cbc-4cd9-83fe-be6a4dbeb233" />
-
 ```bash
-# Run load test
 k6 run stress_test.js
 ```
 
@@ -207,9 +282,11 @@ Identified bottleneck: unindexed category/price filter queries on the products t
 ## Author
 
 **Phạm Chí Trọng**
--  phamchitrong2910@gmail.com
+- phamchitrong2910@gmail.com
 - 0901 645 269
 - [github.com/TDev2910](https://github.com/TDev2910)
 - [healthviet.com](https://healthviet.com)
 
+---
 
+<p align="center">Built with ❤️ by Phạm Chí Trọng — 2024/2025</p>
