@@ -293,4 +293,3 @@ Identified bottleneck: unindexed category/price filter queries on the products t
 
 ---
 
-<p align="center">Built with ❤️ by Phạm Chí Trọng — 2024/2025</p>
